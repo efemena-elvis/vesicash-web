@@ -5,7 +5,7 @@
     <div class="auth-area position-relative mgt-40">
       <!-- VESICASH FEATHER BRAND LOGO -->
       <a
-        href="/"
+        href="https://vesicash.com"
         class="brand-logo mgb-32 text-center d-flex justify-content-center"
         style="width: max-width"
       >

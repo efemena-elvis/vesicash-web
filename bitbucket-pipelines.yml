@@ -2,27 +2,24 @@ image: node:14
 
 pipelines:
   branches:
-    master:
+    main:
       - step:
-          name: Build
+          name: Build for Production
           script:
             - npm install
-            - if [ "process.env.VUE_APP_ENVIRONMENT" = 'production' ]; then \
-              npm run build:prod; else \
-              npm run build:dev; \
-              fi
+            - npm run build:prod
           artifacts:
             - dist/**
       - step:
-          name: Deploy
+          name: Deploy to Production
           deployment: production
           script:
             - pipe: atlassian/aws-s3-deploy:0.2.4
               variables:
                 AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
                 AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
-                AWS_DEFAULT_REGION: process.env.VUE_APP_PIPELINE_REGION
-                S3_BUCKET: process.env.VUE_APP_PIPELINE_BUCKET_NAME
+                AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
+                S3_BUCKET: $AWS_S3_BUCKET_NAME
                 ACL: "public-read"
                 LOCAL_PATH: "dist"
             
@@ -30,7 +27,34 @@ pipelines:
               variables:
                 AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
                 AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
-                AWS_DEFAULT_REGION: process.env.VUE_APP_PIPELINE_REGION
-                DISTRIBUTION_ID: process.env.VUE_APP_PIPELINE_DISTRIBUTION
+                AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
+                DISTRIBUTION_ID: $AWS_CLOUDFRONT_DISTRIBUTION
 
+    sandbox:
+       - step:
+          name: Build for Sandbox
+          script:
+            - npm install
+            - npm run build:dev
+          artifacts:
+            - dist/**
+      - step:
+          name: Deploy to Sandbox
+          deployment: sandbox
+          script:
+            - pipe: atlassian/aws-s3-deploy:0.2.4
+              variables:
+                AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+                AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+                AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
+                S3_BUCKET: $AWS_S3_BUCKET_NAME
+                ACL: "public-read"
+                LOCAL_PATH: "dist"
+            
+            - pipe: atlassian/aws-cloudfront-invalidate:0.6.0
+              variables:
+                AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+                AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+                AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
+                DISTRIBUTION_ID: $AWS_CLOUDFRONT_DISTRIBUTION
   
