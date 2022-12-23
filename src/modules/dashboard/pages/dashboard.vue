@@ -14,7 +14,11 @@
       </div>
 
       <!-- DISBURSE MONEY BUTTON -->
-      <router-link :to="{ name: 'TransactionSetup' }" class="btn btn-primary btn-md">Create Escrow</router-link>
+      <router-link
+        :to="{ name: 'TransactionSetup' }"
+        class="btn btn-primary btn-md"
+        >Create Escrow</router-link
+      >
     </div>
 
     <!-- METRICS SECTION -->
@@ -26,7 +30,10 @@
       />
 
       <!-- ESCROW SECTION -->
-      <EscrowMetricCard :escrow_balance="escrow_wallet" :loading_wallet="loading_wallet" />
+      <EscrowMetricCard
+        :escrow_balance="escrow_wallet"
+        :loading_wallet="loading_wallet"
+      />
 
       <!-- DISBURSE MONEY BUTTON -->
       <!-- <router-link :to="{ name: 'TransactionSetup' }" class="btn btn-primary btn-md">Create Escrow</router-link> -->
@@ -229,8 +236,8 @@ export default {
 
   .welcome-row {
     @include flex-row-between-wrap;
+    align-items: center;
     gap: toRem(24);
-
     margin-bottom: toRem(24);
 
     @include breakpoint-down(lg) {

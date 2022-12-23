@@ -61,10 +61,11 @@
         Withdraw
       </button>
 
-       <router-link class="btn btn-tertiary btn-md" to="/exchange/setup">
+      <router-link class="btn btn-tertiary btn-md" to="/exchange/setup">
         <div class="mgr-8 position-relative" style="top: -1px">
           <ExchangeIcon small />
-        </div>Exchange money
+        </div>
+        Exchange money
       </router-link>
       <!-- closeWalletOpenAccount will be replaced with toggleWalletModal when dollar withdrawal is ready -->
     </div>
@@ -263,7 +264,7 @@ export default {
   width: toRem(595);
 
   @include breakpoint-custom-down(530) {
-    padding: toRem(16) toRem(20);
+    padding: toRem(20);
     width: 100%;
   }
 
@@ -339,6 +340,10 @@ export default {
   .bottom-row {
     @include flex-row-start-wrap;
     gap: toRem(24);
+
+    @include breakpoint-down(md) {
+      gap: toRem(20);
+    }
 
     .btn {
       border: toRem(1) solid getColor("teal-100") !important;
