@@ -5,6 +5,7 @@ pipelines:
     main:
       - step:
           name: Build for Production
+          trigger: manual
           script:
             - npm install
             - npm run build:prod
@@ -13,6 +14,7 @@ pipelines:
       - step:
           name: Deploy to Production
           deployment: production
+          trigger: manual
           script:
             - pipe: atlassian/aws-s3-deploy:0.2.4
               variables:
@@ -31,8 +33,9 @@ pipelines:
                 DISTRIBUTION_ID: $AWS_CLOUDFRONT_DISTRIBUTION
 
     sandbox:
-       - step:
+      - step:
           name: Build for Sandbox
+          trigger: manual
           script:
             - npm install
             - npm run build:dev
@@ -41,6 +44,7 @@ pipelines:
       - step:
           name: Deploy to Sandbox
           deployment: sandbox
+          trigger: manual
           script:
             - pipe: atlassian/aws-s3-deploy:0.2.4
               variables:
