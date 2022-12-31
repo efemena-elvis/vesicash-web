@@ -3,73 +3,73 @@
 // ============================================================
 
 class serviceCurrency {
-    // ===================================
-    // FORMAT CURRENCY SIGN
-    // ===================================
-    getSign(currency) {
-        let currency_type = "",
-            naira = "₦",
-            dollar = "$",
-            pound = "£";
+  // ===================================
+  // FORMAT CURRENCY SIGN
+  // ===================================
+  getSign(currency) {
+    let currency_type = "",
+      naira = "₦",
+      dollar = "$",
+      pound = "£";
 
-        switch (currency) {
-            case "naira":
-            case "NGN":
-            case "ng":
-                currency_type = naira;
-                break;
-            case "dollar":
-            case "USD":
-            case "us":
-                currency_type = dollar;
-                break;
-            case "pound":
-            case "GBP":
-            case "gb":
-                currency_type = pound;
-                break;
-            default:
-                console.log("Currency sign not available yet!");
-        }
-
-        return currency_type;
+    switch (currency) {
+      case "naira":
+      case "NGN":
+      case "ng":
+        currency_type = naira;
+        break;
+      case "dollar":
+      case "USD":
+      case "us":
+        currency_type = dollar;
+        break;
+      case "pound":
+      case "GBP":
+      case "gb":
+        currency_type = pound;
+        break;
+      default:
+        console.log("Currency sign not available yet!");
     }
 
-    getCode(currency) {
-        let currency_type = "",
-            naira = "NGN",
-            dollar = "USD",
-            pound = "GBP";
+    return currency_type;
+  }
 
-        switch (currency) {
-            case "naira":
-            case "NGN":
-            case "ng":
-                currency_type = naira;
-                break;
-            case "dollar":
-            case "USD":
-            case "us":
-                currency_type = dollar;
-                break;
-            case "pound":
-            case "GBP":
-            case "gb":
-                currency_type = pound;
-                break;
-            default:
-                console.log("Currency code not available yet!");
-        }
+  getCode(currency, dialing_code = null) {
+    let currency_type = "",
+      naira = "NGN",
+      dollar = "USD",
+      pound = "GBP";
 
-        return currency_type;
+    switch (currency) {
+      case "naira":
+      case "NGN":
+      case "ng":
+        currency_type = naira;
+        break;
+      case "dollar":
+      case "USD":
+      case "us":
+        currency_type = dollar;
+        break;
+      case "pound":
+      case "GBP":
+      case "gb":
+        currency_type = pound;
+        break;
+      default:
+        currency_type = dialing_code;
     }
 
-    // ===================================
-    // FORMAT CURRENCY COMMA SEPARATOR
-    // ===================================
-    addComma(currency) {
-        return new Intl.NumberFormat().format(currency);
-    }
+    return currency_type;
+  }
+
+  // ===================================
+  // FORMAT CURRENCY COMMA SEPARATOR
+  // ===================================
+  addComma(currency) {
+    return new Intl.NumberFormat().format(currency);
+  }
 }
 
 export const $serviceCurrency = new serviceCurrency();

@@ -114,7 +114,7 @@
 
           <div class="tertiary-2-text grey-900">
             I agree to
-            <a href="https://vesicash.com/legal">Terms and Conditions</a>
+            <a href="https://vesicash.com/terms">Terms and Conditions</a>
           </div>
         </div>
       </div>
@@ -125,7 +125,9 @@
           class="btn btn-primary btn-md w-100"
           ref="registerBtn"
           :disabled="isValidState"
-        >Register</button>
+        >
+          Register
+        </button>
       </div>
 
       <!-- HELP BLOCK TEXT -->

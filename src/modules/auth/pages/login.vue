@@ -42,7 +42,8 @@
         <router-link
           :to="{ name: 'VesicashForgotPassword' }"
           class="tertiary-2-text"
-        >Forgot Password?</router-link>
+          >Forgot Password?</router-link
+        >
       </div>
 
       <!-- BUTTON AREA -->
@@ -51,13 +52,17 @@
           class="btn btn-primary btn-md w-100"
           ref="loginBtn"
           :disabled="isValidState"
-        >Login to account</button>
+        >
+          Login to account
+        </button>
       </div>
 
       <!-- HELP BLOCK TEXT -->
       <div class="help-block text-center">
         Don’t have an account?
-        <router-link to="/register-lander" class="fw-medium">Register</router-link>
+        <router-link to="/register-lander" class="fw-medium"
+          >Register</router-link
+        >
       </div>
     </form>
   </AuthWrapper>
@@ -129,7 +134,7 @@ export default {
             setTimeout(() => (location.href = "/dashboard"), 2000);
           }
 
-          // HANDE NON 200 RESPONSE
+          // HANDLE NON 200 RESPONSE
           else this.handleLoginError(response.message);
         })
         .catch(() => {

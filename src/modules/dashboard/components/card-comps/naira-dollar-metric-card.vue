@@ -1,5 +1,8 @@
 <template>
-  <div class="naira-dollar-metric-card rounded-12 teal-900-bg">
+  <div
+    class="naira-dollar-metric-card rounded-12 teal-900-bg"
+    :class="ongoingTour ? 'tour-index' : null"
+  >
     <!-- TOP ROW -->
     <div class="top-row mgb-16">
       <!-- WALLET COLUMN SECTION -->
@@ -114,6 +117,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import MoneyIcon from "@/shared/components/icon-comps/money-icon";
 import ExchangeIcon from "@/shared/components/icon-comps/exchange-icon";
 
@@ -163,6 +167,17 @@ export default {
     loading_wallet: {
       type: Boolean,
       default: true,
+    },
+  },
+
+  computed: {
+    ...mapGetters({ getTourData: "general/getTourData" }),
+
+    ongoingTour() {
+      const { count, ongoing } = this.getTourData;
+
+      if (ongoing) return [1, 2, 3].includes(count) ? true : false;
+      else return false;
     },
   },
 
@@ -364,5 +379,10 @@ export default {
       }
     }
   }
+}
+
+.tour-index {
+  @include transition(0.7s);
+  z-index: 1099;
 }
 </style>

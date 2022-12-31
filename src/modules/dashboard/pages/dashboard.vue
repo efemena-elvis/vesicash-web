@@ -17,6 +17,7 @@
       <router-link
         :to="{ name: 'TransactionSetup' }"
         class="btn btn-primary btn-md"
+        :class="show_escrow_btn ? 'tour-index' : null"
         >Create Escrow</router-link
       >
     </div>
@@ -58,6 +59,43 @@
         <DashboardTransactions />
       </div>
     </template>
+
+    <!-- MODALS -->
+    <portal to="vesicash-modals">
+      <transition name="fade" v-if="show_start_walkthrough_modal">
+        <startWalkthroughModal @closeTriggered="toggleStartWalkthrough" />
+      </transition>
+
+      <transition name="fade" v-if="show_end_walkthrough_modal">
+        <endWalkthroughModal @endTour="closeTourAndVerifyUser" />
+      </transition>
+
+      <transition name="fade" v-if="show_phone_entry">
+        <verifyPhoneModal @verifyUserPhone="closeAndVerifyOTP" />
+      </transition>
+
+      <transition name="fade" v-if="show_phone_otp_entry">
+        <verifyOTPModal @verifyUserOTP="closeAndShowSuccess" />
+      </transition>
+
+      <transition name="fade" v-if="show_success">
+        <successModal
+          message="Your phone number has been verified successfully"
+          main_cta_title="Back to home"
+          @done="closeModal"
+        />
+      </transition>
+
+      <transition name="fade" v-if="getTourData.ongoing">
+        <tourCover />
+      </transition>
+
+      <transition name="fade" v-if="show_walkthrough_card">
+        <walkthroughModal
+          :tour="tour_data[getTourData.count === 8 ? 4 : getTourData.count - 1]"
+        />
+      </transition>
+    </portal>
   </div>
 </template>
 
@@ -93,10 +131,41 @@ export default {
       import(
         /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/card-comps/upgrade-alert-card"
       ),
+    startWalkthroughModal: () =>
+      import(
+        /* webpackChunkName: "shared-module" */ "@/shared/modals/app-walkthrough/start-walkthrough-modal"
+      ),
+    endWalkthroughModal: () =>
+      import(
+        /* webpackChunkName: "shared-module" */ "@/shared/modals/app-walkthrough/end-walkthrough-modal"
+      ),
+    walkthroughModal: () =>
+      import(
+        /* webpackChunkName: "shared-module" */ "@/shared/modals/app-walkthrough/walkthrough-modal"
+      ),
+    verifyPhoneModal: () =>
+      import(
+        /* webpackChunkName: "shared-module" */ "@/modules/dashboard/modals/verify-phone-modal"
+      ),
+    verifyOTPModal: () =>
+      import(
+        /* webpackChunkName: "shared-module" */ "@/modules/dashboard/modals/verify-otp-modal"
+      ),
+    successModal: () =>
+      import(
+        /* webpackChunkName: "shared-module" */ "@/shared/modals/success-modal"
+      ),
+    tourCover: () =>
+      import(
+        /* webpackChunkName: "shared-module" */ "@/shared/components/tour-cover"
+      ),
   },
 
   computed: {
-    ...mapGetters({ getUserVerifications: "settings/getUserVerifications" }),
+    ...mapGetters({
+      getUserVerifications: "settings/getUserVerifications",
+      getTourData: "general/getTourData",
+    }),
 
     displayUserFirstname() {
       return this.getUser?.fullname?.split(" ")[0] ?? this.getUser.email;
@@ -111,8 +180,95 @@ export default {
     },
   },
 
+  watch: {
+    getTourData: {
+      handler(value) {
+        if (!value.ongoing) {
+          // SCROLL TO TOP
+          window.scrollTo(0, 0);
+
+          if (this.getTourData.count === 0) {
+            if (window.innerWidth > 1024)
+              this.show_start_walkthrough_modal = true;
+            else this.show_phone_entry = true;
+          } else if (this.getTourData.count === this.getTourData.total + 1)
+            this.show_end_walkthrough_modal = true;
+        }
+      },
+      immediate: true,
+      deep: true,
+    },
+
+    "getTourData.count": {
+      handler(value) {
+        this.show_walkthrough_card = false;
+        this.show_escrow_btn = false;
+
+        if (this.getTourData.ongoing) {
+          if (value > 0 && value < this.getTourData.total + 1) {
+            setTimeout(() => (this.show_walkthrough_card = true), 300);
+
+            if (value === 4) {
+              this.show_escrow_btn = true;
+            }
+          }
+        }
+      },
+      immediate: true,
+    },
+  },
+
   data() {
     return {
+      show_start_walkthrough_modal: false,
+      show_end_walkthrough_modal: false,
+      show_walkthrough_card: false,
+      show_escrow_btn: false,
+
+      show_phone_entry: false,
+      show_phone_otp_entry: false,
+      show_success: false,
+
+      tour_data: [
+        {
+          title: "Your dashboard",
+          description:
+            "Your dashboard shows your Wallet balances at a glance. Any funds currently being held in Escrow are also displayed here.",
+          marker: "center-top",
+          position: "tour-one-position",
+        },
+        {
+          title: "Funding",
+          description:
+            "Easily add funds to your Wallet(s) here. Funding can be made via Bank or Wire transfer to any of your selected wallet",
+          marker: "center-top",
+          position: "tour-two-position",
+        },
+
+        {
+          title: "Withdrawals",
+          description:
+            "You can initiate wallet withdrawals here. The entered amount would settle in your designated bank account(s) immediately.",
+          marker: "center-top",
+          position: "tour-three-position",
+        },
+        {
+          title: "Create Escrow",
+          description:
+            "Initiate One–to-one or Multi-party Escrow transactions and specify either a one time or milestone disbursement payment type.",
+          marker: "center-left",
+          position: "tour-four-position",
+        },
+
+        {
+          title: "Business ID",
+          description:
+            "Your Business ID is unique to your account. Access and copy it here to receive payments from other businesses on the Vesicash platform.",
+          marker: "center-bottom",
+          position: "tour-eight-position",
+        },
+      ],
+
       naira_dollar_wallet: [
         {
           title: "NGN",
@@ -174,6 +330,34 @@ export default {
       RESET_TRANSACTION: "transactions/RESET_TRANSACTION",
     }),
 
+    // RELOAD PAGE ON COMPLETE VERIFICATION
+    closeModal() {
+      location.reload();
+    },
+
+    closeTourAndVerifyUser() {
+      this.show_end_walkthrough_modal = false;
+      this.show_phone_entry = true;
+    },
+
+    closeAndVerifyOTP() {
+      this.show_phone_entry = false;
+      this.show_phone_otp_entry = true;
+    },
+
+    closeAndShowSuccess() {
+      this.show_phone_otp_entry = false;
+      this.show_success = true;
+    },
+
+    toggleStartWalkthrough() {
+      this.show_start_walkthrough_modal = !this.show_start_walkthrough_modal;
+    },
+
+    toggleEndWalkthrough() {
+      this.show_end_walkthrough_modal = !this.show_end_walkthrough_modal;
+    },
+
     async fetchVerifications() {
       await this.fetchUserVerifications({ account_id: this.getAccountId });
     },
@@ -228,6 +412,8 @@ export default {
 
 <style lang="scss" scoped>
 .dashboard-view {
+  position: relative;
+
   .alert-wrapper {
     width: 680px;
     max-width: 99%;
@@ -294,5 +480,55 @@ export default {
       margin-bottom: toRem(40);
     }
   }
+}
+
+.tour-index {
+  @include transition(0.3s);
+  z-index: 1099;
+}
+
+.tour-one-position {
+  top: 46.5%;
+  left: 47%;
+
+  @include breakpoint-down(xl) {
+    top: 48%;
+    left: 58%;
+  }
+}
+
+.tour-two-position {
+  top: 45%;
+  left: 15%;
+
+  @include breakpoint-down(xl) {
+    top: 47%;
+    left: 18%;
+  }
+}
+
+.tour-three-position {
+  top: 45%;
+  left: 26%;
+
+  @include breakpoint-down(xl) {
+    top: 47%;
+    left: 31%;
+  }
+}
+
+.tour-four-position {
+  top: 5%;
+  left: 64.75%;
+
+  @include breakpoint-down(xl) {
+    top: 6.5%;
+    left: 56.5%;
+  }
+}
+
+.tour-eight-position {
+  top: 59.25%;
+  left: 4%;
 }
 </style>

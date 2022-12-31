@@ -3,6 +3,8 @@
     :show_close_btn="false"
     @closeModal="$emit('closeTriggered')"
     :modal_style="{ size: 'modal-xs' }"
+    :trigger_self_close="false"
+    :place_center="true"
   >
     <!-- MODAL COVER BODY -->
     <template slot="modal-cover-body">
@@ -12,21 +14,27 @@
         </div>
 
         <div class="h4-text grey-900 text-center mgb-8">Congratulations</div>
-        <div class="tertiary-1-text grey-900 text-center mgb-16">{{message}}</div>
+        <div class="tertiary-1-text grey-900 text-center mgb-16">
+          {{ message }}
+        </div>
       </div>
     </template>
 
     <!-- MODAL COVER FOOTER -->
     <template slot="modal-cover-footer">
       <div class="modal-cover-footer footer-wrapper">
-        <button class="btn btn-primary btn-md wt-100" @click="$emit('done')">{{ main_cta_title }}</button>
+        <button class="btn btn-primary btn-md wt-100" @click="$emit('done')">
+          {{ main_cta_title }}
+        </button>
 
         <button
-          v-for="(actionOption,index) in actions"
+          v-for="(actionOption, index) in actions"
           :key="index"
           class="btn btn-secondary btn-md wt-100"
           @click="actionOption.action"
-        >{{actionOption.title}}</button>
+        >
+          {{ actionOption.title }}
+        </button>
       </div>
     </template>
   </ModalCover>
@@ -36,6 +44,15 @@
 import ModalCover from "@/shared/components/modal-cover";
 export default {
   name: "SuccesModal",
+
+  components: {
+    ModalCover,
+
+    CheckIcon: () =>
+      import(
+        /* webpackChunkName: 'shared-module' */ "@/shared/components/icon-comps/check-icon"
+      ),
+  },
 
   props: {
     message: {
@@ -52,15 +69,6 @@ export default {
       type: Array,
       default: () => [],
     },
-  },
-
-  components: {
-    ModalCover,
-
-    CheckIcon: () =>
-      import(
-        /* webpackChunkName: 'shared-module' */ "@/shared/components/icon-comps/check-icon"
-      ),
   },
 };
 </script>
