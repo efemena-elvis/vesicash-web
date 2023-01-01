@@ -13,10 +13,8 @@
           <PageBackBtn custom_mode @clicked="$emit('goBackWalletSelection')" />
           <template>
             Fund
-            <template v-if="$route.name !== 'VesicashDashboard'"
-              >escrow
-            </template>
-            <span class="text-capitalize">{{ wallet_type }}</span> wallet
+            <template v-if="$route.name !== 'VesicashDashboard'">Escrow</template>
+            <span class="text-capitalize">{{ " "+wallet_type}}</span> Wallet
           </template>
         </div>
 
@@ -26,7 +24,8 @@
               Please send the amount you wish to fund to the Bank account
               details listed below.
               <br />
-              <br />Minimum wallet funding amount is <b>₦1,000</b>.
+              <br />Minimum wallet funding amount is
+              <b>₦1,000</b>.
             </template>
 
             <template v-else>
@@ -35,20 +34,17 @@
             </template>
           </template>
 
-          <template v-else
-            >Please enter the amount you wish to fund on your dollar
-            wallet</template
-          >
+          <template v-else>
+            Please enter the amount you wish to fund on your dollar
+            wallet
+          </template>
         </div>
       </div>
     </template>
 
     <!-- MODAL COVER BODY -->
     <template slot="modal-cover-body">
-      <div
-        class="modal-cover-body"
-        :class="wallet_type === 'naira' ? 'mgb--10' : 'mgb--40'"
-      >
+      <div class="modal-cover-body" :class="wallet_type === 'naira' ? 'mgb--10' : 'mgb--40'">
         <!-- MODAL ITEMS WRAPPER -->
         <div
           class="modal-items-wrapper green-10-bg rounded-12 mgb-24"
@@ -56,11 +52,7 @@
         >
           <!-- NAIRA WALLET TYPE -->
           <template v-if="naira_wallet_loading">
-            <ModalListItem
-              :loading="naira_wallet_loading"
-              v-for="(_, index) in 3"
-              :key="index"
-            />
+            <ModalListItem :loading="naira_wallet_loading" v-for="(_, index) in 3" :key="index" />
           </template>
 
           <template v-else>
@@ -102,12 +94,7 @@
     <template slot="modal-cover-footer">
       <div class="modal-cover-footer">
         <template v-if="wallet_type === 'naira'">
-          <button
-            class="btn btn-primary btn-md wt-100"
-            @click="handleFundSuccess"
-          >
-            I have funded
-          </button>
+          <button class="btn btn-primary btn-md wt-100" @click="handleFundSuccess">I have funded</button>
         </template>
 
         <template v-else>
@@ -116,9 +103,7 @@
             @click="handleDollarFunding"
             ref="fundBtn"
             :disabled="isValidState"
-          >
-            Make payment
-          </button>
+          >Make payment</button>
         </template>
       </div>
     </template>
@@ -198,6 +183,8 @@ export default {
     handleFetchingNairaDetails() {
       let request_payload = {
         account_id: this.getAccountId,
+        transaction_id:
+          this.$route?.query?.transaction_id ?? this.$route?.params?.id,
       };
 
       this.fetchNairaWalletBankDetails(request_payload)
