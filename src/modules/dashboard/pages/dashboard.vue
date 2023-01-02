@@ -18,8 +18,7 @@
         :to="{ name: 'TransactionSetup' }"
         class="btn btn-primary btn-md"
         :class="show_escrow_btn ? 'tour-index' : null"
-        >Create Escrow</router-link
-      >
+      >Create Escrow</router-link>
     </div>
 
     <!-- METRICS SECTION -->
@@ -31,10 +30,7 @@
       />
 
       <!-- ESCROW SECTION -->
-      <EscrowMetricCard
-        :escrow_balance="escrow_wallet"
-        :loading_wallet="loading_wallet"
-      />
+      <EscrowMetricCard :escrow_balance="escrow_wallet" :loading_wallet="loading_wallet" />
 
       <!-- DISBURSE MONEY BUTTON -->
       <!-- <router-link :to="{ name: 'TransactionSetup' }" class="btn btn-primary btn-md">Create Escrow</router-link> -->
@@ -70,12 +66,20 @@
         <endWalkthroughModal @endTour="closeTourAndVerifyUser" />
       </transition>
 
-      <transition name="fade" v-if="show_phone_entry">
-        <verifyPhoneModal @verifyUserPhone="closeAndVerifyOTP" />
+      <transition name="fade" v-if="show_phone_entry && !isPhoneVerified">
+        <VerifyInputModal
+          @continue="updateVerificationPhone"
+          :input="getUserPhone"
+          @closeTriggered="show_phone_entry=false"
+        />
       </transition>
 
       <transition name="fade" v-if="show_phone_otp_entry">
-        <verifyOTPModal @verifyUserOTP="closeAndShowSuccess" />
+        <VerifyOTPModal
+          :input="verify_phone_number"
+          @done="closeAndShowSuccess"
+          @closeTriggered="show_phone_otp_entry=false"
+        />
       </transition>
 
       <transition name="fade" v-if="show_success">
@@ -91,9 +95,7 @@
       </transition>
 
       <transition name="fade" v-if="show_walkthrough_card">
-        <walkthroughModal
-          :tour="tour_data[getTourData.count === 8 ? 4 : getTourData.count - 1]"
-        />
+        <walkthroughModal :tour="tour_data[getTourData.count === 8 ? 4 : getTourData.count - 1]" />
       </transition>
     </portal>
   </div>
@@ -143,13 +145,13 @@ export default {
       import(
         /* webpackChunkName: "shared-module" */ "@/shared/modals/app-walkthrough/walkthrough-modal"
       ),
-    verifyPhoneModal: () =>
+    VerifyInputModal: () =>
       import(
-        /* webpackChunkName: "shared-module" */ "@/modules/dashboard/modals/verify-phone-modal"
+        /* webpackChunkName: "shared-module" */ "@/modules/settings/modals/verify-input-modal"
       ),
-    verifyOTPModal: () =>
+    VerifyOTPModal: () =>
       import(
-        /* webpackChunkName: "shared-module" */ "@/modules/dashboard/modals/verify-otp-modal"
+        /* webpackChunkName: "shared-module" */ "@/modules/settings/modals/verify-otp-modal"
       ),
     successModal: () =>
       import(
@@ -177,6 +179,18 @@ export default {
         (type) => type.verification_type === "cac"
       );
       return doc_verification ? doc_verification?.is_verified : false;
+    },
+
+    isPhoneVerified() {
+      if (!this.getUserVerifications) return false;
+      const phone_verification = this.getUserVerifications.find(
+        (type) => type.verification_type === "phone"
+      );
+      return phone_verification ? phone_verification?.is_verified : false;
+    },
+
+    getUserPhone() {
+      return this.getUser?.phone;
     },
   },
 
@@ -228,6 +242,7 @@ export default {
       show_phone_entry: false,
       show_phone_otp_entry: false,
       show_success: false,
+      verify_phone_number: this.getUserPhone,
 
       tour_data: [
         {
@@ -325,6 +340,11 @@ export default {
       clearAttachedFile: "general/clearAttachedFile",
       fetchUserVerifications: "settings/fetchUserVerifications",
     }),
+
+    updateVerificationPhone(phone) {
+      this.verify_phone_number = phone;
+      this.closeAndVerifyOTP();
+    },
 
     ...mapMutations({
       RESET_TRANSACTION: "transactions/RESET_TRANSACTION",
