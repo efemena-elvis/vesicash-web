@@ -58,7 +58,7 @@
 
     <!-- MODALS -->
     <portal to="vesicash-modals">
-      <transition name="fade" v-if="show_start_walkthrough_modal">
+      <transition name="fade" v-if="show_start_walkthrough_modal && !hasUserSeenTour">
         <startWalkthroughModal @closeTriggered="toggleStartWalkthrough" />
       </transition>
 
@@ -66,7 +66,7 @@
         <endWalkthroughModal @endTour="closeTourAndVerifyUser" />
       </transition>
 
-      <transition name="fade" v-if="show_phone_entry && !isPhoneVerified">
+      <transition name="fade" v-if="show_phone_entry && !isPhoneVerified && !hasUserSeenTour">
         <VerifyInputModal
           @continue="updateVerificationPhone"
           :input="getUserPhone"
@@ -95,7 +95,10 @@
       </transition>
 
       <transition name="fade" v-if="show_walkthrough_card">
-        <walkthroughModal :tour="tour_data[getTourData.count === 8 ? 4 : getTourData.count - 1]" />
+        <walkthroughModal
+          @skipTour="skipTour"
+          :tour="tour_data[getTourData.count === 8 ? 4 : getTourData.count - 1]"
+        />
       </transition>
     </portal>
   </div>
@@ -167,6 +170,7 @@ export default {
     ...mapGetters({
       getUserVerifications: "settings/getUserVerifications",
       getTourData: "general/getTourData",
+      hasUserSeenTour: "auth/hasUserSeenTour",
     }),
 
     displayUserFirstname() {
@@ -339,16 +343,42 @@ export default {
       getWalletBalance: "dashboard/getWalletBalance",
       clearAttachedFile: "general/clearAttachedFile",
       fetchUserVerifications: "settings/fetchUserVerifications",
+      updateUserTourStatus: "auth/updateUserTourStatus",
     }),
+
+    updateProfile() {
+      const updatedUser = {
+        ...this.getUser,
+        has_seen_tour: true,
+      };
+
+      this.UPDATE_AUTH_USER(updatedUser);
+    },
 
     updateVerificationPhone(phone) {
       this.verify_phone_number = phone;
       this.closeAndVerifyOTP();
     },
 
+    async upateTourStatus() {
+      const payload = {
+        account_id: this.getAccountId,
+        status: true,
+      };
+      await this.updateUserTourStatus(payload);
+    },
+
     ...mapMutations({
       RESET_TRANSACTION: "transactions/RESET_TRANSACTION",
+      END_TOUR_FLOW: "general/END_TOUR_FLOW",
+      UPDATE_AUTH_USER: "auth/UPDATE_AUTH_USER",
     }),
+
+    skipTour() {
+      this.show_walkthrough_card = false;
+      this.END_TOUR_FLOW();
+      this.updateProfile();
+    },
 
     // RELOAD PAGE ON COMPLETE VERIFICATION
     closeModal() {
@@ -358,6 +388,7 @@ export default {
     closeTourAndVerifyUser() {
       this.show_end_walkthrough_modal = false;
       this.show_phone_entry = true;
+      this.upateTourStatus();
     },
 
     closeAndVerifyOTP() {

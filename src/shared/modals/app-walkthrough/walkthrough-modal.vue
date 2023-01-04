@@ -1,14 +1,10 @@
 <template>
   <div class="wrapper position-absolute w-auto h-auto" :class="tour.position">
-    <div
-      class="walkthrough-modal position-relative rounded-8 neutral-10-bg h-auto"
-    >
+    <div class="walkthrough-modal position-relative rounded-8 neutral-10-bg h-auto">
       <!-- TOP AREA -->
       <div class="top-area">
         <!-- TITLE TEXT -->
-        <div class="title-text primary-1-text text-center grey-900 mgb-8">
-          {{ tour.title }}
-        </div>
+        <div class="title-text primary-1-text text-center grey-900 mgb-8">{{ tour.title }}</div>
 
         <!-- DESCRIPTION TEXT -->
         <div
@@ -19,12 +15,12 @@
 
       <!-- BOTTOM AREA -->
       <div class="bottom-area">
-        <button class="btn btn-secondary btn-md" @click="skipTour">Skip</button>
+        <button class="btn btn-secondary btn-md" @click="skipTour" ref="skip">Skip</button>
 
         <!-- PAGING OPTIONS -->
-        <div class="paging-option tertiary-2-text grey-700">
-          {{ getTourData.count }} of {{ getTourData.total }}
-        </div>
+        <div
+          class="paging-option tertiary-2-text grey-700"
+        >{{ getTourData.count }} of {{ getTourData.total }}</div>
 
         <button class="btn btn-primary btn-md" @click="nextTour">Next</button>
       </div>
@@ -36,7 +32,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from "vuex";
+import { mapGetters, mapMutations, mapActions } from "vuex";
 
 export default {
   name: "walkthroughModal",
@@ -59,7 +55,24 @@ export default {
   },
 
   methods: {
+    ...mapActions({ updateUserTourStatus: "auth/updateUserTourStatus" }),
+
     ...mapMutations({ UPDATE_TOUR_FLOW: "general/UPDATE_TOUR_FLOW" }),
+
+    async upateTourStatus() {
+      const payload = {
+        account_id: this.getAccountId,
+        status: true,
+      };
+
+      this.handleClick("skip");
+
+      const response = await this.updateUserTourStatus(payload);
+
+      this.handleClick("skip", "Skip", false);
+
+      if (response.code === 200) this.$emit("skipTour");
+    },
 
     // MOVE TO NEXT TOUR SCREEN
     nextTour() {
@@ -79,7 +92,9 @@ export default {
     },
 
     // END TOUR SCREEN FLOW
-    skipTour() {},
+    async skipTour() {
+      await this.upateTourStatus();
+    },
   },
 };
 </script>
