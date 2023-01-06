@@ -24,6 +24,7 @@ export default {
     userData.currency = response_payload.profile.user.currency ?? "NGN";
     userData.meta = response_payload.user.meta;
     userData.bio = response_payload.profile.user.bio;
+    userData.has_seen_tour = response_payload.user.has_seen_tour;
 
     // BUSINESS ACCOUNT DATA
     userData.business_name =
