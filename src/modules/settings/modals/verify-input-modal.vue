@@ -2,15 +2,22 @@
   <ModalCover
     @closeModal="$emit('closeTriggered')"
     :modal_style="{ size: 'modal-xs' }"
+    :show_close_btn="false"
+    :trigger_self_close="false"
+    :place_center="true"
     class="verify-input-modal"
   >
     <!-- MODAL COVER HEADER -->
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
-        <div class="modal-cover-title">Verify {{ email ? 'email address':'phone number' }}</div>
-        <div
-          class="tertiary-2-text w-75 grey-600 mgt-5"
-        >An OTP code will be sent to the {{ email ? 'email address':'phone number' }} you have provided</div>
+        <div class="modal-cover-title">
+          Verify {{ email ? "email address" : "phone number" }}
+        </div>
+
+        <div class="tertiary-2-text grey-600 mgt-10">
+          An OTP code will be sent to the
+          {{ email ? "email address" : "phone number" }} you have provided
+        </div>
       </div>
     </template>
 
@@ -26,9 +33,9 @@
             :input_value="form.email_address"
             @getInputState="updateFormState($event, 'email_address')"
             :error_handler="{
-            type: 'email',
-            message: 'Email address is not valid',
-          }"
+              type: 'email',
+              message: 'Email address is not valid',
+            }"
           />
 
           <BasicInput
@@ -41,9 +48,9 @@
             :custom_style="{ input_wrapper_style: 'form-prefix' }"
             @getInputState="updateFormState($event, 'phone_number')"
             :error_handler="{
-            type: 'phone',
-            message: 'Phone number is not valid',
-          }"
+              type: 'phone',
+              message: 'Phone number is not valid',
+            }"
           />
         </div>
       </div>
@@ -57,7 +64,9 @@
           class="btn btn-primary btn-md wt-100"
           @click="requestOTP"
           :disabled="isDisabled"
-        >Continue</button>
+        >
+          Continue
+        </button>
       </div>
     </template>
   </ModalCover>
@@ -182,7 +191,7 @@ export default {
 <style lang="scss">
 .verify-input-modal {
   .modal-cover-body {
-    min-height: 14vh;
+    min-height: 12vh;
   }
 }
 </style>

@@ -18,7 +18,8 @@
         :to="{ name: 'TransactionSetup' }"
         class="btn btn-primary btn-md"
         :class="show_escrow_btn ? 'tour-index' : null"
-      >Create Escrow</router-link>
+        >Create Escrow</router-link
+      >
     </div>
 
     <!-- METRICS SECTION -->
@@ -30,7 +31,10 @@
       />
 
       <!-- ESCROW SECTION -->
-      <EscrowMetricCard :escrow_balance="escrow_wallet" :loading_wallet="loading_wallet" />
+      <EscrowMetricCard
+        :escrow_balance="escrow_wallet"
+        :loading_wallet="loading_wallet"
+      />
 
       <!-- DISBURSE MONEY BUTTON -->
       <!-- <router-link :to="{ name: 'TransactionSetup' }" class="btn btn-primary btn-md">Create Escrow</router-link> -->
@@ -70,7 +74,7 @@
         <VerifyInputModal
           @continue="updateVerificationPhone"
           :input="getUserPhone"
-          @closeTriggered="show_phone_entry=false"
+          @closeTriggered="show_phone_entry = false"
         />
       </transition>
 
@@ -78,7 +82,7 @@
         <VerifyOTPModal
           :input="verify_phone_number"
           @done="closeAndShowSuccess"
-          @closeTriggered="show_phone_otp_entry=false"
+          @closeTriggered="show_phone_otp_entry = false"
         />
       </transition>
 
@@ -95,7 +99,9 @@
       </transition>
 
       <transition name="fade" v-if="show_walkthrough_card">
-        <walkthroughModal :tour="tour_data[getTourData.count === 8 ? 4 : getTourData.count - 1]" />
+        <walkthroughModal
+          :tour="tour_data[getTourData.count === 8 ? 4 : getTourData.count - 1]"
+        />
       </transition>
     </portal>
   </div>
@@ -350,7 +356,7 @@ export default {
       RESET_TRANSACTION: "transactions/RESET_TRANSACTION",
     }),
 
-    // RELOAD PAGE ON COMPLETE VERIFICATION
+    // ! RELOAD PAGE ON COMPLETE VERIFICATION
     closeModal() {
       location.reload();
     },
