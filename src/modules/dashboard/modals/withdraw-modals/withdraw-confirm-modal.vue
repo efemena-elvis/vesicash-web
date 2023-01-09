@@ -38,48 +38,21 @@
         />
 
         <template v-if="getWalletType === 'naira'">
-          <ModalListItem
-            title="Bank name"
-            :value="getWithdrawalMeta.bank_name"
-          />
-          <ModalListItem
-            title="Account number"
-            :value="getWithdrawalMeta.account_no"
-          />
+          <ModalListItem title="Bank name" :value="getWithdrawalMeta.bank_name" />
+          <ModalListItem title="Account number" :value="getWithdrawalMeta.account_no" />
           <ModalListItem title="Account name" :value="getWithdrawalMeta.name" />
         </template>
 
         <template v-if="getWalletType === 'dollar'">
           <ModalListItem title="Country" :value="getWithdrawalMeta.country" />
           <!-- <ModalListItem title="Phone number" :value="getWithdrawalMeta.phone" /> -->
-          <ModalListItem
-            title="First name"
-            :value="getWithdrawalMeta.first_name"
-          />
-          <ModalListItem
-            title="Last name"
-            :value="getWithdrawalMeta.last_name"
-          />
-          <ModalListItem
-            title="Bank name"
-            :value="getWithdrawalMeta.bank_name"
-          />
-          <ModalListItem
-            title="Iban/Account no."
-            :value="getWithdrawalMeta.iban"
-          />
-          <ModalListItem
-            title="Swift code"
-            :value="getWithdrawalMeta.swift_code"
-          />
-          <ModalListItem
-            title="Sort code"
-            :value="getWithdrawalMeta.sort_code"
-          />
-          <ModalListItem
-            title="Bank Address"
-            :value="getWithdrawalMeta.bank_address"
-          />
+          <ModalListItem title="First name" :value="getWithdrawalMeta.first_name" />
+          <ModalListItem title="Last name" :value="getWithdrawalMeta.last_name" />
+          <ModalListItem title="Bank name" :value="getWithdrawalMeta.bank_name" />
+          <ModalListItem title="Iban/Account no." :value="getWithdrawalMeta.iban" />
+          <ModalListItem title="Swift code" :value="getWithdrawalMeta.swift_code" />
+          <ModalListItem title="Sort code" :value="getWithdrawalMeta.sort_code" />
+          <ModalListItem title="Bank Address" :value="getWithdrawalMeta.bank_address" />
         </template>
       </div>
     </template>
@@ -90,10 +63,8 @@
         <button
           class="btn btn-primary btn-md wt-100"
           ref="continue"
-          @click="makeWithdrawal"
-        >
-          Continue
-        </button>
+          @click="sendOutOTPVerificationCode"
+        >Continue</button>
       </div>
     </template>
   </ModalCover>
@@ -123,13 +94,6 @@ export default {
       ),
   },
 
-  props: {
-    escrow: {
-      type: Boolean,
-      default: false,
-    },
-  },
-
   computed: {
     ...mapGetters({
       getWalletType: "dashboard/getWalletType",
@@ -154,7 +118,35 @@ export default {
   methods: {
     ...mapActions({
       withdrawWalletFund: "dashboard/withdrawWalletFund",
+      sendUserOTP: "settings/requestOTP",
     }),
+
+    // ===================================
+    // SEND OUT OTP VERIFICATION CODE
+    // ===================================
+    sendOutOTPVerificationCode() {
+      let payload = {
+        account_id: this.getAccountId,
+        phone_number: "09045477819",
+      };
+      this.handleClick("continue");
+
+      this.sendUserOTP(payload)
+        .then((response) => {
+          this.handleClick("continue", "Continue", false);
+          if (response.code === 200) this.$emit("next");
+          else
+            this.pushToast(
+              response.message ||
+                "Failed to generate OTP for this withdarwal. Try again.",
+              "warning"
+            );
+        })
+        .catch(() => {
+          this.handleClick("continue", "Continue", false);
+          this.pushToast("Unable to generate an OTP code", "error");
+        });
+    },
 
     async makeWithdrawal() {
       try {

@@ -9,7 +9,8 @@
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
         <div class="modal-cover-title text-center">Enter OTP code</div>
-        <div class="tertiary-2-text text-center grey-600">
+        <div class="tertiary-2-text text-center grey-600" v-html="title" v-if="title"></div>
+        <div class="tertiary-2-text text-center grey-600" v-else>
           Please enter the OTP code that was sent to
           <b>{{input}}</b> for verification
         </div>
@@ -112,6 +113,11 @@ export default {
     },
 
     input: {
+      type: String,
+      default: "",
+    },
+
+    title: {
       type: String,
       default: "",
     },

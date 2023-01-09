@@ -157,7 +157,7 @@ export default {
 
       const response = await this.verifyBankAccount(payload);
 
-      if (response.status === "ok") {
+      if (response?.status === "ok") {
         this.verification_message = "Account Name";
         this.account_details = response.data;
 
@@ -165,7 +165,7 @@ export default {
         this.$emit("nairaBankUpdated", this.getNairaBankDetails);
       } else {
         this.verification_message =
-          response.message || "Account number is invalid";
+          response?.message || "Account number is invalid";
         this.invalid_account = true;
       }
     },
