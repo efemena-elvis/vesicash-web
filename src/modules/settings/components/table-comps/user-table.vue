@@ -125,7 +125,7 @@ export default {
 
       const payload = {
         page,
-        business_id: this.getBusinessId,
+        business_id: this.getAccountId,
       };
 
       this.fetchConnectedUsers(payload)
