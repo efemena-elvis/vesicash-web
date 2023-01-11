@@ -107,9 +107,9 @@
 
       <transition name="fade" v-if="show_success_modal">
         <SuccessModal
-          message="Your phone number has been verified successfully"
-          main_cta_title="Back to home"
-          @done="closeModal"
+          :message="`Your withdrawal of ${withdrawn_amount} has been sent to your bank account, Please check your bank account for details`"
+          main_cta_title="Done"
+          @done="show_success_modal=false"
         />
       </transition>
     </portal>
@@ -154,12 +154,11 @@ export default {
 
     VerifyOtpModal: () =>
       import(
-        /* webpackChunkName: "dashboard-module" */ "@/modules/settings/modals/verify-otp-modal"
+        /* webpackChunkName: "dashboard-module" */ "@/modules/transactions/modals/withdrawal-otp-modal"
       ),
-
     SuccessModal: () =>
       import(
-        /* webpackChunkName: "dashboard-module" */ "@/modules/settings/modals/verify-input-modal"
+        /* webpackChunkName: "dashboard-module" */ "@/shared/modals/success-modal"
       ),
   },
 
@@ -203,6 +202,7 @@ export default {
     show_success_modal: false,
 
     default_wallet: "naira",
+    withdrawn_amount: "",
   }),
 
   watch: {
@@ -228,8 +228,9 @@ export default {
       this.show_wallet_confirm_modal = false;
     },
 
-    toggleSuccessModal() {
-      this.show_success_modal = !this.show_success_modal;
+    toggleSuccessModal(amount) {
+      this.withdrawn_amount = amount;
+      this.show_success_modal = true;
       this.show_otp_modal = false;
     },
 

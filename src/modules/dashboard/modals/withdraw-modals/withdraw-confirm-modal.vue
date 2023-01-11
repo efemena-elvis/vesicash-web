@@ -118,7 +118,7 @@ export default {
   methods: {
     ...mapActions({
       withdrawWalletFund: "dashboard/withdrawWalletFund",
-      sendUserOTP: "settings/requestOTP",
+      sendUserOTP: "auth/sendUserOTP",
     }),
 
     // ===================================
@@ -127,8 +127,8 @@ export default {
     sendOutOTPVerificationCode() {
       let payload = {
         account_id: this.getAccountId,
-        phone_number: "09045477819",
       };
+
       this.handleClick("continue");
 
       this.sendUserOTP(payload)
