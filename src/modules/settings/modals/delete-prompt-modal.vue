@@ -59,7 +59,7 @@ export default {
     }),
 
     async fetchUsers(message, type) {
-      await this.fetchConnectedUsers({ business_id: this.getBusinessId });
+      await this.fetchConnectedUsers({ business_id: this.getAccountId });
       this.pushToast(message, type);
       this.$emit("closeTriggered");
     },
