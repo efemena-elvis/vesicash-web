@@ -33,4 +33,8 @@ export default {
     state.tour.count = count;
     state.tour.ongoing = count > 0 && count <= state.tour.total ? true : false;
   },
+
+  END_TOUR_FLOW: (state) => {
+    state.tour.ongoing = false;
+  },
 };

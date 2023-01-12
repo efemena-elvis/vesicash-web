@@ -23,12 +23,7 @@
     <!-- MODAL COVER FOOTER -->
     <template slot="modal-cover-footer">
       <div class="modal-cover-footer">
-        <button
-          class="btn btn-primary btn-md mx-auto"
-          @click="$emit('endTour')"
-        >
-          Get started
-        </button>
+        <button class="btn btn-primary btn-md mx-auto" @click="$emit('endTour')">Get started</button>
       </div>
     </template>
   </ModalCover>
