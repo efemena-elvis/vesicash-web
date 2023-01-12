@@ -9,15 +9,11 @@
       <template v-for="(wallet, index) in wallet_balance">
         <div class="column" :key="index">
           <!-- TITLE TEXT -->
-          <div class="title-text tertiary-3-text teal-100 mgb-10">
-            {{ wallet.title }}
-          </div>
+          <div class="title-text tertiary-3-text teal-100 mgb-10">{{ wallet.title }}</div>
 
           <!-- LOADING AMOUNT VALUE -->
           <template v-if="loading_wallet">
-            <div
-              class="loading-amount-value rounded-3 skeleton-loader mgb-5"
-            ></div>
+            <div class="loading-amount-value rounded-3 skeleton-loader mgb-5"></div>
           </template>
 
           <template v-else>
@@ -32,43 +28,34 @@
             >
               <span>
                 {{ $money.getSign(wallet.sign)
-                }}{{ $money.addComma(wallet.value.split(".")[0]) }}</span
-              ><span class="amount-zero"
-                >.{{ wallet.value.split(".")[1] || "00" }}</span
-              >
+                }}{{ $money.addComma(wallet.value.split(".")[0]) }}
+              </span>
+              <span class="amount-zero">.{{ wallet.value.split(".")[1] || "00" }}</span>
             </div>
           </template>
 
           <!-- TITLE DESCRIPTION -->
-          <div class="title-description secondary-3-text text-white mgt-5">
-            Wallet balance
-          </div>
+          <div class="title-description secondary-3-text text-white mgt-5">Wallet balance</div>
         </div>
       </template>
     </div>
 
     <!-- BOTTOM ROW -->
     <div class="bottom-row" v-if="show_actions">
-      <button
-        class="btn btn-tertiary btn-md"
-        @click="toggleFundWalletSelectModal"
-      >
-        <div class="icon-plus mgr-6 teal-700 f-size-17"></div>
-        Fund Wallet
+      <button class="btn btn-tertiary btn-md" @click="toggleFundWalletSelectModal">
+        <div class="icon-plus mgr-6 teal-700 f-size-17"></div>Fund Wallet
       </button>
 
       <button class="btn btn-tertiary btn-md" @click="toggleWalletModal">
         <div class="mgr-8 position-relative" style="top: -1px">
           <MoneyIcon />
-        </div>
-        Withdraw
+        </div>Withdraw
       </button>
 
       <router-link class="btn btn-tertiary btn-md" to="/exchange/setup">
         <div class="mgr-8 position-relative" style="top: -1px">
           <ExchangeIcon small />
-        </div>
-        Exchange money
+        </div>Exchange money
       </router-link>
       <!-- closeWalletOpenAccount will be replaced with toggleWalletModal when dollar withdrawal is ready -->
     </div>
@@ -110,6 +97,19 @@
         <WithdrawConfirmModal
           @closeTriggered="toggleWalletConfirmModal"
           @goBackAccountSelection="closeConfimWithdrawOpenAccount"
+          @next="toggleOTPModal"
+        />
+      </transition>
+
+      <transition name="fade" v-if="show_otp_modal">
+        <VerifyOtpModal @done="toggleSuccessModal" />
+      </transition>
+
+      <transition name="fade" v-if="show_success_modal">
+        <SuccessModal
+          :message="`Your withdrawal of ${withdrawn_amount} has been sent to your bank account, Please check your bank account for details`"
+          main_cta_title="Done"
+          @done="show_success_modal=false"
         />
       </transition>
     </portal>
@@ -151,6 +151,15 @@ export default {
       import(
         /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/modals/withdraw-modals/withdraw-confirm-modal"
       ),
+
+    VerifyOtpModal: () =>
+      import(
+        /* webpackChunkName: "dashboard-module" */ "@/modules/transactions/modals/withdrawal-otp-modal"
+      ),
+    SuccessModal: () =>
+      import(
+        /* webpackChunkName: "dashboard-module" */ "@/shared/modals/success-modal"
+      ),
   },
 
   props: {
@@ -189,7 +198,11 @@ export default {
     show_fund_wallet_select_modal: false,
     show_fund_wallet_info_modal: false,
 
+    show_otp_modal: false,
+    show_success_modal: false,
+
     default_wallet: "naira",
+    withdrawn_amount: "",
   }),
 
   watch: {
@@ -210,6 +223,17 @@ export default {
   },
 
   methods: {
+    toggleOTPModal() {
+      this.show_otp_modal = !this.show_otp_modal;
+      this.show_wallet_confirm_modal = false;
+    },
+
+    toggleSuccessModal(amount) {
+      this.withdrawn_amount = amount;
+      this.show_success_modal = true;
+      this.show_otp_modal = false;
+    },
+
     toggleWalletModal() {
       this.show_wallet_modal = !this.show_wallet_modal;
     },

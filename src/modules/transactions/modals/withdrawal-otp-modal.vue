@@ -9,10 +9,17 @@
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
         <div class="modal-cover-title text-center">Enter OTP code</div>
-        <div class="tertiary-2-text text-center grey-600" v-html="title" v-if="title"></div>
-        <div class="tertiary-2-text text-center grey-600" v-else>
-          Please enter the OTP code that was sent to
-          <b>{{input}}</b> for verification
+
+        <div class="tertiary-2-text text-center grey-600 mgt-12">
+          Enter the OTP code we sent to
+          <b>{{getUserEmail}}</b> and
+          <b>{{getUserPhone}}</b>
+          to withdraw
+          <b>
+            {{`${$money.getSign(getWalletType)}${$money.addComma(
+            getWithdrawalMeta.total
+            )}`}}
+          </b>
         </div>
       </div>
     </template>
@@ -74,6 +81,7 @@
             class="btn btn-primary btn-md w-100"
             :disabled="getOTPToken.length === 6 ? false : true"
             @click="handleUserOTPVerification"
+            ref="continue"
           >Verify OTP code</button>
         </div>
 
@@ -96,11 +104,11 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import ModalCover from "@/shared/components/modal-cover";
 
 export default {
-  name: "VerifyOTPModal",
+  name: "WithdrawalOTPModal",
 
   components: {
     ModalCover,
@@ -124,6 +132,43 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      getWalletType: "dashboard/getWalletType",
+      getWithdrawalMeta: "dashboard/getWithdrawalMeta",
+    }),
+
+    getUserPhone() {
+      return this.$string.getAsterickedText(this.getUser?.phone, [3, 4, 5]);
+    },
+
+    getUserEmail() {
+      const email_name = this.getUser?.email
+        ? this.getUser?.email?.split("@")[0]
+        : "";
+      const domain = this.getUser?.email
+        ? this.getUser?.email?.split("@")[1]
+        : "";
+      const astericed_protion = this.$string.getAsterickedText(
+        email_name,
+        [3, 4, 5]
+      );
+      return `${astericed_protion}@${domain}`;
+    },
+
+    getWithdrawalPayload() {
+      return {
+        account_id: this.getAccountId,
+        beneficiary_name: this.getWithdrawalMeta.name,
+        bank_account_number: this.getWithdrawalMeta.account_no.toString(),
+        bank_code: this.getWithdrawalMeta.bank_code?.toString(),
+        amount: this.getWithdrawalMeta.amount,
+        currency: this.getWalletType === "naira" ? "NGN" : "USD",
+        debit_currency: this.getWalletType === "naira" ? "NGN" : "USD",
+        gateway: "monnify",
+        escrow_wallet: this.escrow ? "yes" : "no",
+      };
+    },
+
     checkOTPOne() {
       return this.otp_one.length === 1 ? false : true;
     },
@@ -221,13 +266,11 @@ export default {
 
   methods: {
     ...mapActions({
-      sendUserOTP: "settings/requestOTP",
-      verifyUserOTP: "settings/verifyOTP",
-      verifyEmailOTP: "settings/verifyEmailOTP",
-      // sendEmailOTP: "auth/sendUserOTP",
-      sendEmailOTP: "settings/requestEmailOTP",
-      // verifyEmailOTP: "auth/verifyUserOTP",
+      sendUserOTP: "auth/requestOTP",
+      verifyUserOTP: "auth/verifyUserOTP",
+      withdrawWalletFund: "dashboard/withdrawWalletFund",
     }),
+
     // ===============================
     // CLEAR OUT ALL OTP INPUTS
     // ===============================
@@ -260,31 +303,21 @@ export default {
     // VERIFY USER ACCOUNT OTP ENTRY
     // ===================================
     handleUserOTPVerification() {
-      let request_payload = {
+      let payload = {
         account_id: this.getAccountId,
-        code: this.getOTPToken,
+        otp_token: this.getOTPToken,
       };
 
-      let request_email_payload = {
-        account_id: this.getAccountId,
-        code: this.getOTPToken,
-        // otp_token: this.getOTPToken,
-      };
-
-      const payload = this.email ? request_email_payload : request_payload;
-      const action = this.email ? "verifyEmailOTP" : "verifyUserOTP";
-
-      this[action](payload)
-        .then((response) => {
+      this.verifyUserOTP(payload)
+        .then(async (response) => {
           if (response.code === 200) {
-            this.pushToast("OTP was verified successfully", "success");
-            this.$emit("closeTriggered");
-            this.$emit("done");
+            await this.makeWithdrawal();
+            // this.$emit("closeTriggered");
           }
 
           // HANDLE NON 200 RESPONSE
           else {
-            this.pushToast("You entered an invalid OTP token", "error");
+            this.pushToast("You entered an invalid OTP", "error");
             this.clearOutInput();
           }
         })
@@ -298,27 +331,13 @@ export default {
     // SEND OUT OTP VERIFICATION CODE
     // ===================================
     sendOutOTPVerificationCode() {
-      let request_payload = {
+      let payload = {
         account_id: this.getAccountId,
-        phone_number: this.input,
       };
 
-      let request_email_otp_payload = {
-        account_id: this.getAccountId,
-        email: this.email,
-        email_address: this.email,
-      };
-
-      const payload = this.email ? request_email_otp_payload : request_payload;
-      const action = this.email ? "sendEmailOTP" : "sendUserOTP";
-
-      this[action](payload)
+      this.sendUserOTP(payload)
         .then((response) => {
-          if (response.code === 200)
-            this.pushToast(
-              `An OTP code has been sent to ${this.input}`,
-              "success"
-            );
+          if (response.code === 200) this.pushToast(`OTP sent`, "success");
         })
         .catch(() => this.pushToast("Unable to generate an OTP code", "error"));
     },
@@ -341,6 +360,38 @@ export default {
 
         if (this.resend_countdown === 0) clearInterval(intervalCall);
       }, 1000);
+    },
+
+    async makeWithdrawal() {
+      this.$bus.$emit("show-page-loader", "Processing your withdrawal");
+      try {
+        const amount = `${this.$money.getSign(
+          this.getWalletType
+        )}${this.$money.addComma(
+          this.getWithdrawalMeta.amount - this.getWithdrawalMeta.fee
+        )}`;
+
+        this.handleClick("continue");
+
+        const response = await this.withdrawWalletFund(
+          this.getWithdrawalPayload
+        );
+
+        this.$bus.$emit("hide-page-loader");
+
+        this.handleClick("continue", "Continue", false);
+
+        response.code == 200
+          ? this.$emit("done", amount)
+          : this.pushToast(
+              response.message || "Withdrawal failed. Please try again",
+              "warning"
+            );
+      } catch (error) {
+        console.log(error);
+        this.handleClick("continue", "Continue", false);
+        this.pushToast("Withdrawal failed. Please try again", "error");
+      }
     },
   },
 };
