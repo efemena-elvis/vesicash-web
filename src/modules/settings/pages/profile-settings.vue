@@ -316,7 +316,7 @@ export default {
     },
 
     userProfileUpdate() {
-      return {
+      let profile_updates = {
         account_id: this.getAccountId,
         updates: {
           account_type: this.getAccountType,
@@ -330,6 +330,9 @@ export default {
           bio: this.bio,
         },
       };
+
+      if (!this.isBusiness) delete profile_updates.updates.username;
+      return profile_updates;
     },
   },
 
@@ -479,8 +482,16 @@ export default {
         const response = await this.saveUserProfile(this.userProfileUpdate);
         this.handleClick("save", "Save profile", false);
         const type = response.code === 200 ? "success" : "error";
-        const message =
+        let message =
           response.code === 200 ? "Profile saved" : response.message;
+
+        if (
+          response.code === 400 &&
+          response?.data["updates[username]"] &&
+          response?.data["updates[username]"][0]
+        ) {
+          message = response.data["updates[username]"][0];
+        }
         this.pushToast(message, type);
 
         if (response.code === 200) this.updateProfile();
