@@ -84,7 +84,7 @@ export default {
 
         if (![201, 200].includes(response.code))
           this.pushToast(
-            response.message || "Failed to generate API keys.",
+            response?.message || "Failed to generate API keys.",
             "error"
           );
       } catch (err) {

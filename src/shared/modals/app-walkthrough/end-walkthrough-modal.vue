@@ -23,14 +23,18 @@
     <!-- MODAL COVER FOOTER -->
     <template slot="modal-cover-footer">
       <div class="modal-cover-footer">
-        <button class="btn btn-primary btn-md mx-auto" @click="$emit('endTour')">Get started</button>
+        <button
+          class="btn btn-primary btn-md mx-auto"
+          ref="end"
+          @click="upateTourStatus"
+        >Get started</button>
       </div>
     </template>
   </ModalCover>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import ModalCover from "@/shared/components/modal-cover";
 
 export default {
@@ -46,7 +50,24 @@ export default {
 
   data: () => ({}),
 
-  methods: {},
+  methods: {
+    ...mapActions({ updateUserTourStatus: "auth/updateUserTourStatus" }),
+
+    async upateTourStatus() {
+      const payload = {
+        account_id: this.getAccountId,
+        status: true,
+      };
+
+      this.handleClick("end");
+
+      const response = await this.updateUserTourStatus(payload);
+
+      this.handleClick("end", "Get started", false);
+
+      if (response.code === 200) this.$emit("endTour");
+    },
+  },
 };
 </script>
 

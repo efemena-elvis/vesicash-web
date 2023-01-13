@@ -112,7 +112,7 @@ export default {
   computed: {
     userPayload() {
       return {
-        business_id: this.getBusinessId,
+        business_id: this.getAccountId,
         // account_type: "business",
         firstname: this.form.first_name,
         lastname: this.form.last_name,
@@ -160,7 +160,14 @@ export default {
         const type = response.code === 200 ? "success" : "error";
 
         if (response.code === 200) {
-          await this.fetchConnectedUsers({ business_id: this.getBusinessId });
+          if (response?.data?.existing) {
+            this.pushToast(
+              `User with the ${response?.data?.existing} already exists`
+            );
+            this.handleClick("save", "Add user", false);
+            return;
+          }
+          await this.fetchConnectedUsers({ business_id: this.getAccountId });
           this.handleClick("save", "Add user", false);
           this.$emit("saved");
         } else {

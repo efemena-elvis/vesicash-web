@@ -75,7 +75,13 @@
 
       <transition
         name="fade"
-        v-if="show_phone_entry && !isPhoneVerified && !hasUserSeenTour"
+        v-if="
+          show_phone_entry &&
+          !isPhoneVerified &&
+          !getTourData.ongoing &&
+          !show_start_walkthrough_modal &&
+          !show_end_walkthrough_modal
+        "
       >
         <VerifyInputModal
           @continue="updateVerificationPhone"
@@ -398,7 +404,10 @@ export default {
     closeTourAndVerifyUser() {
       this.show_end_walkthrough_modal = false;
       this.show_phone_entry = true;
-      this.upateTourStatus();
+      this.END_TOUR_FLOW();
+      this.updateProfile();
+
+      // this.upateTourStatus();
     },
 
     closeAndVerifyOTP() {
