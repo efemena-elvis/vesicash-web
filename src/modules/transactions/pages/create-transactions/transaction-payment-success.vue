@@ -75,6 +75,7 @@ export default {
     return {
       show_failed_modal: false,
       payment_confirmed: false,
+      retried: false,
     };
   },
 
@@ -83,8 +84,9 @@ export default {
       confirmPaymentStatus: "transactions/confirmPaymentStatus",
     }),
 
-    retryConfrimation() {
-      this.confirmPayment();
+    async retryConfirmation() {
+      await this.confirmPayment();
+      this.retried = true;
     },
 
     async confirmPayment() {
@@ -103,10 +105,15 @@ export default {
         else {
           // this.pushToast(response.message || "Payment failed", "error");
 
-          this.show_failed_modal = true;
+          this.retried
+            ? (this.show_failed_modal = true)
+            : this.retryConfirmation();
         }
       } catch (error) {
         this.hidePageLoader();
+        this.retried
+          ? (this.show_failed_modal = true)
+          : this.retryConfirmation();
         console.log("FAILED TO CONFIRM PAYMENT", error);
         // this.show_failed_modal = true;
 
