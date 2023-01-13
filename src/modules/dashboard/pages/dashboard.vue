@@ -347,6 +347,7 @@ export default {
       clearAttachedFile: "general/clearAttachedFile",
       fetchUserVerifications: "settings/fetchUserVerifications",
       updateUserTourStatus: "auth/updateUserTourStatus",
+      saveUserProfile: "settings/saveUserProfile",
     }),
 
     updateProfile() {
@@ -356,6 +357,22 @@ export default {
       };
 
       this.UPDATE_AUTH_USER(updatedUser);
+    },
+
+    updateUserPhone() {
+      const updatedUser = {
+        ...this.getUser,
+        phone: this.verify_phone_number,
+      };
+
+      this.UPDATE_AUTH_USER(updatedUser);
+
+      this.saveUserProfile({
+        account_id: this.getAccountId,
+        updates: {
+          phone_number: this.verify_phone_number,
+        },
+      });
     },
 
     updateVerificationPhone(phone) {
@@ -405,6 +422,7 @@ export default {
     closeAndShowSuccess() {
       this.show_phone_otp_entry = false;
       this.show_success = true;
+      this.updateUserPhone();
     },
 
     toggleStartWalkthrough() {
