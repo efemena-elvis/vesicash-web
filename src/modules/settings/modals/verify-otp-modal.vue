@@ -10,7 +10,7 @@
     <!-- MODAL COVER HEADER -->
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
-        <div class="modal-cover-title text-center mt-5">Enter OTP code</div>
+        <div class="modal-cover-title text-center mt-3">Enter OTP code</div>
 
         <div
           class="tertiary-2-text text-center grey-600"

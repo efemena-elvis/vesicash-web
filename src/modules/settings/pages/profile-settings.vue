@@ -4,24 +4,33 @@
     <div class="page-title primary-1-text grey-900 mgb-4">Profile</div>
 
     <!-- PAGE META -->
-    <div class="page-meta tertiary-2-text grey-600">Update your profile and personal info here.</div>
+    <div class="page-meta tertiary-2-text grey-600">
+      Update your profile and personal info here.
+    </div>
 
     <!-- FORM AREA -->
     <div class="settings-form-area mgt-20">
       <!-- BUSINESS LOGO BLOCK -->
       <div class="page-input-block row">
         <div class="col-12 col-sm-4">
-          <label
-            for="logo"
-            class="form-label fw-bold"
-          >{{ isBusiness ? 'Business logo':'Profile picture' }}</label>
+          <label for="logo" class="form-label fw-bold">{{
+            isBusiness ? "Business logo" : "Profile picture"
+          }}</label>
         </div>
 
         <div class="col-12 col-sm-8 logo-block">
           <div class="profile-avatar position-relative">
-            <div class="icon-spinner f-size-19 animate position-absolute" v-if="uploading_file"></div>
+            <div
+              class="icon-spinner f-size-19 animate position-absolute"
+              v-if="uploading_file"
+            ></div>
 
-            <img :src="uploaded_pic" alt="logo" ref="logoImage" v-if="uploaded_pic" />
+            <img
+              :src="uploaded_pic"
+              alt="logo"
+              ref="logoImage"
+              v-if="uploaded_pic"
+            />
             <ProfileAvatarIcon v-else />
           </div>
 
@@ -37,8 +46,15 @@
           <label
             class="btn btn-secondary btn-sm fw-semibold"
             disabled
-            :for="uploading_file ? '': 'fileUpload'"
-          >{{ uploading_file ? 'Uploading...': isBusiness ? 'Upload business logo':'Upload profile pic' }}</label>
+            :for="uploading_file ? '' : 'fileUpload'"
+            >{{
+              uploading_file
+                ? "Uploading..."
+                : isBusiness
+                ? "Upload business logo"
+                : "Upload profile pic"
+            }}</label
+          >
         </div>
       </div>
 
@@ -144,7 +160,9 @@
             v-else
             :disabled="validity.email"
             @click="toggleInputModal('email')"
-          >Verify</button>
+          >
+            Verify
+          </button>
         </div>
       </div>
 
@@ -155,7 +173,12 @@
         </div>
 
         <div
-          class="col-12 col-sm-8 two-columns-row two-columns-row--tight two-columns-row--phone-variant"
+          class="
+            col-12 col-sm-8
+            two-columns-row
+            two-columns-row--tight
+            two-columns-row--phone-variant
+          "
         >
           <div class="position-relative">
             <BasicInput
@@ -168,13 +191,16 @@
               :custom_style="{ input_wrapper_style: 'form-prefix' }"
               @getInputState="updateFormState($event, 'phone_number')"
               :error_handler="{
-            type: 'phone',
-            message: 'Phone number is not valid',
-          }"
+                type: 'phone',
+                message: 'Phone number is not valid',
+              }"
             />
           </div>
 
-          <div class="verify-skeleton skeleton-loader" v-if="loading_verification"></div>
+          <div
+            class="verify-skeleton skeleton-loader"
+            v-if="loading_verification"
+          ></div>
 
           <TagCard
             card_text="Phone verified"
@@ -188,7 +214,9 @@
             v-else
             :disabled="validity.phone_number"
             @click="toggleInputModal('phone_number')"
-          >Verify</button>
+          >
+            Verify
+          </button>
         </div>
       </div>
 
@@ -202,7 +230,9 @@
             @click="saveProfile"
             :disabled="isDisabled"
             ref="save"
-          >Save profile</button>
+          >
+            Save profile
+          </button>
         </div>
       </div>
     </div>
@@ -214,7 +244,7 @@
           @continue="initiateOTPRequest"
           :input="form[input_type]"
           @closeTriggered="toggleInputModal"
-          :email="input_type==='email'"
+          :email="input_type === 'email'"
         />
       </transition>
 
@@ -222,7 +252,7 @@
         <VerifyOtpModal
           @closeTriggered="toggleOtpModal"
           :input="form[input_type]"
-          :email="input_type==='email'"
+          :email="input_type === 'email'"
           @done="fetchVerifications"
         />
       </transition>
