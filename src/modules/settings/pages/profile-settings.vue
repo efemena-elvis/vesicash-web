@@ -223,7 +223,7 @@
           @closeTriggered="toggleOtpModal"
           :input="form[input_type]"
           :email="input_type==='email'"
-          @done="fetchVerifications"
+          @done="updateUserPhone"
         />
       </transition>
     </portal>
@@ -458,6 +458,24 @@ export default {
         this.handleClick("save", "Save profile", false);
         console.log("Failed to save profile", err);
       }
+    },
+
+    updateUserPhone() {
+      const updatedUser = {
+        ...this.getUser,
+        phone: this.form.phone_number,
+      };
+
+      this.UPDATE_AUTH_USER(updatedUser);
+
+      this.fetchVerifications();
+
+      this.saveUserProfile({
+        account_id: this.getAccountId,
+        updates: {
+          phone_number: this.form.phone_number,
+        },
+      });
     },
   },
 };
