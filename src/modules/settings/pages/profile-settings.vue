@@ -93,6 +93,26 @@
         </div>
       </div>
 
+      <!-- FLUTTERWAVE MERCHANT ID BLOCK -->
+      <div class="page-input-block row" v-if="isBusiness">
+        <div class="col-12 col-sm-4">
+          <label for="logo" class="form-label fw-bold">Merchant ID</label>
+        </div>
+
+        <div class="col-12 col-sm-8">
+          <BasicInput
+            is_required
+            placeholder="Enter your flutterwave merchant id"
+            :input_value="form.flutterwave_merchant_id"
+            @getInputState="updateFormState($event, 'flutterwave_merchant_id')"
+            :error_handler="{
+              type: 'required',
+              message: 'Enter a valid flutterwave merchant id',
+            }"
+          />
+        </div>
+      </div>
+
       <!-- BIO BLOCK -->
       <div class="page-input-block row" v-if="isBusiness">
         <div class="col-12 col-sm-4">
@@ -237,6 +257,7 @@ import TagCard from "@/shared/components/card-comps/tag-card";
 import ProfileAvatarIcon from "@/shared/components/icon-comps/profile-avatar-icon";
 import VerifyInputModal from "@/modules/settings/modals/verify-input-modal";
 import VerifyOtpModal from "@/modules/settings/modals/verify-otp-modal";
+
 export default {
   name: "ProfileSettings",
 
@@ -298,10 +319,13 @@ export default {
           username: this.form.username,
           meta: this.uploaded_pic,
           bio: this.bio,
+          flutterwave_merchant_id: this.form.flutterwave_merchant_id,
         },
       };
 
       if (!this.isBusiness) delete profile_updates.updates.username;
+      if (!this.isBusiness || !profile_updates.updates?.flutterwave_merchant_id)
+        delete profile_updates.updates?.flutterwave_merchant_id;
       return profile_updates;
     },
   },
@@ -322,6 +346,7 @@ export default {
         first_name: "",
         email: "",
         phone_number: "",
+        flutterwave_merchant_id: "",
       },
 
       validity: {
@@ -330,6 +355,7 @@ export default {
         first_name: true,
         email: true,
         phone_number: true,
+        flutterwave_merchant_id: true,
       },
     };
   },
@@ -410,6 +436,7 @@ export default {
       const email = user?.email;
       const username = user?.username;
       const phone_number = user?.phone;
+      const flutterwave_merchant_id = user?.flutterwave_merchant_id;
       this.bio = user?.bio;
       this.uploaded_pic = user?.meta;
 
@@ -420,6 +447,7 @@ export default {
         username,
         email,
         phone_number,
+        flutterwave_merchant_id,
       };
 
       this.validity = {
@@ -429,6 +457,7 @@ export default {
         first_name: !first_name,
         email: !email,
         phone_number: !phone_number,
+        flutterwave_merchant_id: !flutterwave_merchant_id,
       };
     },
 
@@ -440,7 +469,8 @@ export default {
         bio: this.bio,
         meta: this.uploaded_pic,
         fullname: `${this.form.last_name} ${this.form.first_name}`,
-        username: this.form.username,
+        username: this.form?.username,
+        flutterwave_merchant_id: this.form?.flutterwave_merchant_id,
       };
 
       this.UPDATE_AUTH_USER(updatedUser);

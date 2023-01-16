@@ -20,6 +20,7 @@ export default {
     userData.email = response_payload.user.email_address;
     userData.phone = response_payload.user.phone_number;
     userData.username = response_payload.user.username;
+    userData.flutterwave_merchant_id = response_payload.profile.business.flutterwave_merchant_id;
     userData.country = response_payload.profile.user.country ?? "NG";
     userData.currency = response_payload.profile.user.currency ?? "NGN";
     userData.meta = response_payload.user.meta;
