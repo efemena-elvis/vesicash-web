@@ -149,7 +149,7 @@ export default {
       if (index === 0) this.$emit("initiateCardPayment");
       if (index === 1) this.toggleWireTransferModal();
       // if (index === 2) this.toggleFWBizModal();
-      if (index === 2) this.$emit("initiateWalletTransfer");
+      if (index === 3) this.$emit("initiateWalletTransfer");
       //this will updated later when flutterwave business api is ready
     },
 
