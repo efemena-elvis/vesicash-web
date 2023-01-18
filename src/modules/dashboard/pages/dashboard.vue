@@ -224,7 +224,7 @@ export default {
           if (this.getTourData.count === 0) {
             if (window.innerWidth > 1024)
               this.show_start_walkthrough_modal = true;
-            else this.show_phone_entry = true;
+            // else this.show_phone_entry = true;
           } else if (this.getTourData.count === this.getTourData.total + 1)
             this.show_end_walkthrough_modal = true;
         }
