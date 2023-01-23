@@ -18,7 +18,7 @@
             :currency_type="initial_currency"
             is_currency_type
             :currency_options="initialCurrencyOptions"
-            @currencyUpdated="initial_currency=$event"
+            @currencyUpdated="initial_currency = $event"
             class="form-prefix-right"
             @getInputState="updateFormState($event, 'initial_currency')"
             :validity="!validity.initial_currency"
@@ -30,7 +30,10 @@
         </div>
       </div>
 
-      <div class="swap-wrapper mgt--12 index-9 position-relative pointer" @click="swapCurrency">
+      <div
+        class="swap-wrapper mgt--12 index-9 position-relative pointer"
+        @click="swapCurrency"
+      >
         <SwapIcon />
       </div>
 
@@ -47,20 +50,23 @@
             is_currency_type
             :currency_type="final_currency"
             :currency_options="finalCurrencyOptions"
-            @currencyUpdated="final_currency=$event"
+            @currencyUpdated="final_currency = $event"
             class="form-prefix-right"
             @getInputState="updateFormState($event, 'final_currency')"
             :validity="!validity.final_currency"
             :error_handler="{
-        type: 'required',
-        message: 'Enter an amount',
-        }"
+              type: 'required',
+              message: 'Enter an amount',
+            }"
           />
         </div>
       </div>
     </div>
 
-    <div class="skeleton-loader fx-rate-skeleton" v-if="loading_rates_skeleton"></div>
+    <div
+      class="skeleton-loader fx-rate-skeleton"
+      v-if="loading_rates_skeleton"
+    ></div>
 
     <SumTotalDisplayCard
       v-else
@@ -74,14 +80,16 @@
       :disabled="isDisabled || loading_rates_skeleton"
       ref="swap"
       @click="toggleSummaryModal"
-    >Continue</button>
+    >
+      Continue
+    </button>
 
     <!-- MODALS -->
     <portal to="vesicash-modals">
       <transition name="fade" v-if="show_success_modal">
         <SuccessModal
           @closeTriggered="toggleSuccessModal"
-          @done="$router.push({name:'VesicashDashboard'})"
+          @done="$router.push({ name: 'VesicashDashboard' })"
           :message="successMessage"
           main_cta_title="Back to dashboard"
           :actions="successActions"
@@ -338,7 +346,7 @@ export default {
       show_failed_modal: false,
       exchange_rate: 0.00125,
 
-      message: "Transaction failed..Please try again",
+      message: "Transaction failed. Please try again",
 
       currency_options: [
         {

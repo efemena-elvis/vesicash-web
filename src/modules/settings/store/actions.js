@@ -35,6 +35,7 @@ export default {
         );
 
         if (response.code === 200) commit("SET_BANK_ACCOUNTS", response.data);
+        if (response.code === 404) commit("SET_BANK_ACCOUNTS", []);
 
         return response;
     },

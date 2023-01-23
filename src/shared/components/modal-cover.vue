@@ -1,6 +1,9 @@
 <template>
   <div class="modal-overlay" @click.self="selfCloseModal">
-    <div class="modal-outer-container">
+    <div
+      class="modal-outer-container"
+      :class="place_center && 'modal-center-placement'"
+    >
       <div
         :class="getModalWrapperStyle"
         class="modal-cover box-shadow-effect px-0 mx-auto"
@@ -57,6 +60,11 @@ export default {
     trigger_self_close: {
       type: Boolean,
       default: true,
+    },
+
+    place_center: {
+      type: Boolean,
+      default: false,
     },
   },
 

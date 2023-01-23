@@ -1,5 +1,8 @@
 <template>
-  <div class="profile-menu-wrapper">
+  <div
+    class="profile-menu-wrapper"
+    :class="show_profile_menu ? 'tour-index' : null"
+  >
     <div class="user-icon-wrapper">
       <UserIcon profileMenu />
     </div>
@@ -38,6 +41,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import UserIcon from "@/shared/components/icon-comps/user-icon";
 import ExitIcon from "@/shared/components/icon-comps/exit-icon";
 import CopyIcon from "@/shared/components/icon-comps/copy-icon";
@@ -51,8 +55,26 @@ export default {
     ExitIcon,
   },
 
+  computed: {
+    ...mapGetters({ getTourData: "general/getTourData" }),
+  },
+
+  watch: {
+    "getTourData.count": {
+      handler(value) {
+        this.show_profile_menu = false;
+
+        if (value === 8) {
+          setTimeout(() => (this.show_profile_menu = true), 300);
+        }
+      },
+      immediate: true,
+    },
+  },
+
   data() {
     return {
+      show_profile_menu: false,
       show_menu: false,
       copied: false,
     };
@@ -81,7 +103,7 @@ export default {
   padding: toRem(8);
   border-radius: toRem(8);
   cursor: pointer;
-  z-index: 1000;
+  z-index: 999;
 
   .user-icon-wrapper {
     @include draw-shape(40);
@@ -139,5 +161,10 @@ export default {
       }
     }
   }
+}
+
+.tour-index {
+  @include transition(0.3s);
+  z-index: 1099;
 }
 </style>

@@ -1,19 +1,26 @@
 <template>
   <router-link :to="nav.link" class="d-block mgb-14">
     <div
-      class="sidebar-item smooth-transition rounded-8"
-      :class="isActive && 'sidebar-item-active'"
+      class="sidebar-item smooth-transition rounded-8 position-relative"
+      :class="[
+        isActive && 'sidebar-item-active',
+        ongoingTour && nav.tour_id.includes(getTourData.count) && 'tour-index',
+      ]"
     >
       <!-- ICON COMPONENT -->
       <component :is="nav.icon" />
 
       <!-- NAV TEXT -->
-      <div class="nav-text secondary-2-text grey-600 smooth-transition">{{ nav.title }}</div>
+      <div class="nav-text secondary-2-text grey-600 smooth-transition">
+        {{ nav.title }}
+      </div>
     </div>
   </router-link>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   name: "SidebarItem",
 
@@ -52,8 +59,17 @@ export default {
   },
 
   computed: {
+    ...mapGetters({ getTourData: "general/getTourData" }),
+
     isActive() {
       return this.path_list.includes(this.nav.slug) ? true : false;
+    },
+
+    ongoingTour() {
+      const { count, ongoing } = this.getTourData;
+
+      if (ongoing) return [1, 5, 6, 7].includes(count) ? true : false;
+      else return false;
     },
   },
 
@@ -120,5 +136,10 @@ export default {
   &-active {
     @extend %active-side-bar-state;
   }
+}
+
+.tour-index {
+  @include transition(0.7s);
+  z-index: 1099;
 }
 </style>

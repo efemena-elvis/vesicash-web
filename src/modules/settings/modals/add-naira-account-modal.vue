@@ -223,13 +223,15 @@ export default {
 
       const response = await this.verifyBankAccount(payload);
 
-      if (response.status === "ok") {
+      if (response && response?.status === "ok") {
         this.verification_message = "Account Name";
         this.account_details = response.data;
         // this.$emit("nairaBankUpdated", this.getNairaBankDetails);
       } else {
         this.verification_message =
-          response.message || "Account number is invalid";
+          response?.message || response?.status
+            ? "Account number is invalid"
+            : "Failed to verify account";
         this.invalid_account = true;
       }
     },

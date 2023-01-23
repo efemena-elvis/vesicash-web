@@ -120,6 +120,7 @@
               class="btn btn-secondary btn-md"
               ref="rejectBtn"
               @click="closeAllMilestoneTransaction"
+              v-if="false"
             >
               Reject
             </button>

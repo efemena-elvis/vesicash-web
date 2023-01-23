@@ -4,24 +4,33 @@
     <div class="page-title primary-1-text grey-900 mgb-4">Profile</div>
 
     <!-- PAGE META -->
-    <div class="page-meta tertiary-2-text grey-600">Update your profile and personal info here.</div>
+    <div class="page-meta tertiary-2-text grey-600">
+      Update your profile and personal info here.
+    </div>
 
     <!-- FORM AREA -->
     <div class="settings-form-area mgt-20">
       <!-- BUSINESS LOGO BLOCK -->
       <div class="page-input-block row">
         <div class="col-12 col-sm-4">
-          <label
-            for="logo"
-            class="form-label fw-bold"
-          >{{ isBusiness ? 'Business logo':'Profile picture' }}</label>
+          <label for="logo" class="form-label fw-bold">{{
+            isBusiness ? "Business logo" : "Profile picture"
+          }}</label>
         </div>
 
         <div class="col-12 col-sm-8 logo-block">
           <div class="profile-avatar position-relative">
-            <div class="icon-spinner f-size-19 animate position-absolute" v-if="uploading_file"></div>
+            <div
+              class="icon-spinner f-size-19 animate position-absolute"
+              v-if="uploading_file"
+            ></div>
 
-            <img :src="uploaded_pic" alt="logo" ref="logoImage" v-if="uploaded_pic" />
+            <img
+              :src="uploaded_pic"
+              alt="logo"
+              ref="logoImage"
+              v-if="uploaded_pic"
+            />
             <ProfileAvatarIcon v-else />
           </div>
 
@@ -37,8 +46,15 @@
           <label
             class="btn btn-secondary btn-sm fw-semibold"
             disabled
-            :for="uploading_file ? '': 'fileUpload'"
-          >{{ uploading_file ? 'Uploading...': isBusiness ? 'Upload business logo':'Upload profile pic' }}</label>
+            :for="uploading_file ? '' : 'fileUpload'"
+            >{{
+              uploading_file
+                ? "Uploading..."
+                : isBusiness
+                ? "Upload business logo"
+                : "Upload profile pic"
+            }}</label
+          >
         </div>
       </div>
 
@@ -88,6 +104,26 @@
             :error_handler="{
               type: 'required',
               message: 'Enter a username',
+            }"
+          />
+        </div>
+      </div>
+
+      <!-- FLUTTERWAVE MERCHANT ID BLOCK -->
+      <div class="page-input-block row" v-if="isBusiness">
+        <div class="col-12 col-sm-4">
+          <label for="logo" class="form-label fw-bold">Merchant ID</label>
+        </div>
+
+        <div class="col-12 col-sm-8">
+          <BasicInput
+            is_required
+            placeholder="Enter your flutterwave merchant id"
+            :input_value="form.flutterwave_merchant_id"
+            @getInputState="updateFormState($event, 'flutterwave_merchant_id')"
+            :error_handler="{
+              type: 'required',
+              message: 'Enter a valid flutterwave merchant id',
             }"
           />
         </div>
@@ -144,7 +180,9 @@
             v-else
             :disabled="validity.email"
             @click="toggleInputModal('email')"
-          >Verify</button>
+          >
+            Verify
+          </button>
         </div>
       </div>
 
@@ -155,7 +193,12 @@
         </div>
 
         <div
-          class="col-12 col-sm-8 two-columns-row two-columns-row--tight two-columns-row--phone-variant"
+          class="
+            col-12 col-sm-8
+            two-columns-row
+            two-columns-row--tight
+            two-columns-row--phone-variant
+          "
         >
           <div class="position-relative">
             <BasicInput
@@ -168,13 +211,16 @@
               :custom_style="{ input_wrapper_style: 'form-prefix' }"
               @getInputState="updateFormState($event, 'phone_number')"
               :error_handler="{
-            type: 'phone',
-            message: 'Phone number is not valid',
-          }"
+                type: 'phone',
+                message: 'Phone number is not valid',
+              }"
             />
           </div>
 
-          <div class="verify-skeleton skeleton-loader" v-if="loading_verification"></div>
+          <div
+            class="verify-skeleton skeleton-loader"
+            v-if="loading_verification"
+          ></div>
 
           <TagCard
             card_text="Phone verified"
@@ -188,7 +234,9 @@
             v-else
             :disabled="validity.phone_number"
             @click="toggleInputModal('phone_number')"
-          >Verify</button>
+          >
+            Verify
+          </button>
         </div>
       </div>
 
@@ -202,7 +250,9 @@
             @click="saveProfile"
             :disabled="isDisabled"
             ref="save"
-          >Save profile</button>
+          >
+            Save profile
+          </button>
         </div>
       </div>
     </div>
@@ -214,7 +264,7 @@
           @continue="initiateOTPRequest"
           :input="form[input_type]"
           @closeTriggered="toggleInputModal"
-          :email="input_type==='email'"
+          :email="input_type === 'email'"
         />
       </transition>
 
@@ -222,8 +272,8 @@
         <VerifyOtpModal
           @closeTriggered="toggleOtpModal"
           :input="form[input_type]"
-          :email="input_type==='email'"
-          @done="fetchVerifications"
+          :email="input_type === 'email'"
+          @done="updateUserPhone"
         />
       </transition>
     </portal>
@@ -237,6 +287,7 @@ import TagCard from "@/shared/components/card-comps/tag-card";
 import ProfileAvatarIcon from "@/shared/components/icon-comps/profile-avatar-icon";
 import VerifyInputModal from "@/modules/settings/modals/verify-input-modal";
 import VerifyOtpModal from "@/modules/settings/modals/verify-otp-modal";
+
 export default {
   name: "ProfileSettings",
 
@@ -286,7 +337,7 @@ export default {
     },
 
     userProfileUpdate() {
-      return {
+      let profile_updates = {
         account_id: this.getAccountId,
         updates: {
           account_type: this.getAccountType,
@@ -298,8 +349,14 @@ export default {
           username: this.form.username,
           meta: this.uploaded_pic,
           bio: this.bio,
+          flutterwave_merchant_id: this.form.flutterwave_merchant_id,
         },
       };
+
+      if (!this.isBusiness) delete profile_updates.updates.username;
+      if (!this.isBusiness || !profile_updates.updates?.flutterwave_merchant_id)
+        delete profile_updates.updates?.flutterwave_merchant_id;
+      return profile_updates;
     },
   },
 
@@ -319,6 +376,7 @@ export default {
         first_name: "",
         email: "",
         phone_number: "",
+        flutterwave_merchant_id: "",
       },
 
       validity: {
@@ -327,6 +385,7 @@ export default {
         first_name: true,
         email: true,
         phone_number: true,
+        flutterwave_merchant_id: true,
       },
     };
   },
@@ -407,6 +466,7 @@ export default {
       const email = user?.email;
       const username = user?.username;
       const phone_number = user?.phone;
+      const flutterwave_merchant_id = user?.flutterwave_merchant_id;
       this.bio = user?.bio;
       this.uploaded_pic = user?.meta;
 
@@ -417,6 +477,7 @@ export default {
         username,
         email,
         phone_number,
+        flutterwave_merchant_id,
       };
 
       this.validity = {
@@ -426,6 +487,7 @@ export default {
         first_name: !first_name,
         email: !email,
         phone_number: !phone_number,
+        flutterwave_merchant_id: !flutterwave_merchant_id,
       };
     },
 
@@ -437,7 +499,8 @@ export default {
         bio: this.bio,
         meta: this.uploaded_pic,
         fullname: `${this.form.last_name} ${this.form.first_name}`,
-        username: this.form.username,
+        username: this.form?.username,
+        flutterwave_merchant_id: this.form?.flutterwave_merchant_id,
       };
 
       this.UPDATE_AUTH_USER(updatedUser);
@@ -449,8 +512,16 @@ export default {
         const response = await this.saveUserProfile(this.userProfileUpdate);
         this.handleClick("save", "Save profile", false);
         const type = response.code === 200 ? "success" : "error";
-        const message =
+        let message =
           response.code === 200 ? "Profile saved" : response.message;
+
+        if (
+          response.code === 400 &&
+          response?.data["updates[username]"] &&
+          response?.data["updates[username]"][0]
+        ) {
+          message = response.data["updates[username]"][0];
+        }
         this.pushToast(message, type);
 
         if (response.code === 200) this.updateProfile();
@@ -458,6 +529,24 @@ export default {
         this.handleClick("save", "Save profile", false);
         console.log("Failed to save profile", err);
       }
+    },
+
+    updateUserPhone() {
+      const updatedUser = {
+        ...this.getUser,
+        phone: this.form.phone_number,
+      };
+
+      this.UPDATE_AUTH_USER(updatedUser);
+
+      this.fetchVerifications();
+
+      this.saveUserProfile({
+        account_id: this.getAccountId,
+        updates: {
+          phone_number: this.form.phone_number,
+        },
+      });
     },
   },
 };

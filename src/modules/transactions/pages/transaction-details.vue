@@ -4,9 +4,9 @@
     <PageBackBtn />
 
     <!-- PAGE TITILE -->
-    <div
-      class="page-title grey-900 h4-text mgb-25"
-    >{{ getTransaction.title || "Transaction title.." }}</div>
+    <div class="page-title grey-900 h4-text mgb-25">
+      {{ getTransaction.title || "Transaction title.." }}
+    </div>
 
     <!-- FUND DETAILS SECTION -->
     <template name="fund-details-section">
@@ -442,7 +442,7 @@ export default {
 
     // CHECK IF EVERY PARTY MEMBERS HAS ACCEPTED
     checkIfTransactionCanStart() {
-      let { members, title, amount_paid, totalAmount, amount } =
+      let { members, title, amount_paid, escrow_charge, totalAmount, amount } =
         this.getTransaction;
 
       let current_user = members?.find(
@@ -464,15 +464,20 @@ export default {
             this.togglePaymentModal();
           } else if (current_user.status?.toLowerCase() === "accepted") {
             // CHECK PAYMENT
-            if (Number(amount_paid) < Number(totalAmount ?? amount)) {
-              this.togglePaymentModal();
-            } else {
-              if (!all_accepted)
-                this.pushToast(
-                  "Please wait for other parties to accept transaction",
-                  "success"
-                );
-            }
+            if (Number(amount_paid > 0)) {
+              if (
+                Number(amount_paid) + Number(escrow_charge) <
+                Number(totalAmount ?? amount)
+              ) {
+                this.togglePaymentModal();
+              } else {
+                if (!all_accepted)
+                  this.pushToast(
+                    "Please wait for other parties to accept transaction",
+                    "success"
+                  );
+              }
+            } else this.togglePaymentModal();
           } else this.pushToast(`${title} transacion has closed`, "error");
         }
 
@@ -485,7 +490,9 @@ export default {
             if (all_accepted) {
               // CHECK IF FUNDS HAS BEEN PAID
               let payment_complete =
-                Number(amount_paid) >= totalAmount ? true : false;
+                Number(amount_paid) + Number(escrow_charge) >= totalAmount
+                  ? true
+                  : false;
 
               if (!payment_complete) {
                 this.pushToast(
@@ -538,8 +545,14 @@ export default {
 
     // INITIATE ESCROW TRANSACTION
     initiateTransaction() {
-      let { members, type, milestones, amount_paid, totalAmount } =
-        this.getTransaction;
+      let {
+        members,
+        type,
+        milestones,
+        amount_paid,
+        escrow_charge,
+        totalAmount,
+      } = this.getTransaction;
 
       // GET FIRST MILESTONE STATUS
       let milestone_status = milestones[0]?.status.toLowerCase();
@@ -555,7 +568,10 @@ export default {
       );
 
       // CHECK IF PAYMENT HAS BEEN MADE
-      let payment_complete = Number(amount_paid) >= totalAmount ? true : false;
+      let payment_complete =
+        Number(amount_paid) + Number(escrow_charge) >= totalAmount
+          ? true
+          : false;
 
       // FOR ALL ACCEPTED AND COMPLETE PAYMENT
       if (

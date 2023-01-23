@@ -72,7 +72,7 @@
       </transition>
 
       <transition name="fade" v-if="show_otp_modal">
-        <VerifyOtpModal @closeTriggered="toggleOtpModal" />
+        <VerifyOtpModal @done="updateUserProfile" />
       </transition>
 
       <transition name="fade" v-if="show_business_info_modal">
@@ -108,7 +108,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters, mapMutations } from "vuex";
 import VerificationCard from "@/modules/settings/components/card-comps/verification-card";
 import VerifyInputModal from "@/modules/settings/modals/verify-input-modal";
 import VerifyOtpModal from "@/modules/settings/modals/verify-otp-modal";
@@ -220,13 +220,17 @@ export default {
       bvn_verified: false,
       response_message: "",
       loading_verification: false,
+      updated_phone: "",
     };
   },
 
   methods: {
     ...mapActions({
       fetchUserVerifications: "settings/fetchUserVerifications",
+      saveUserProfile: "settings/saveUserProfile",
     }),
+
+    ...mapMutations({ UPDATE_AUTH_USER: "auth/UPDATE_AUTH_USER" }),
 
     async fetchVerifications() {
       this.loading_verification = true;
@@ -242,7 +246,8 @@ export default {
       this.show_otp_modal = !this.show_otp_modal;
     },
 
-    initiateOTPRequest() {
+    initiateOTPRequest(phone) {
+      this.updated_phone = phone;
       this.toggleInputModal();
       this.toggleOtpModal();
     },
@@ -269,6 +274,34 @@ export default {
       this[verified] = true;
       this.response_message = message;
       this.show_success_modal = true;
+    },
+
+    updateProfile() {
+      const updatedUser = {
+        ...this.getUser,
+        phone: this.updated_phone,
+      };
+
+      this.UPDATE_AUTH_USER(updatedUser);
+
+      this.saveUserProfile({
+        account_id: this.getAccountId,
+        updates: {
+          phone_number: this.updated_phone,
+        },
+      });
+    },
+
+    updateUserProfile() {
+      const phone_verification_message =
+        "Your phone number has been verified successfully";
+      this.showSuccessModal(
+        "show_otp_modal",
+        "phone_verified",
+        phone_verification_message
+      );
+
+      this.updateProfile();
     },
   },
 };
