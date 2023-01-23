@@ -207,8 +207,6 @@ export default {
         (user) => !user.account_id
       );
 
-      // console.log(users);
-
       users.map((user) => {
         signup_payload.push({
           account_type: "individual",
@@ -221,8 +219,6 @@ export default {
       if (signup_payload.length) {
         this.registerBulkUsers({ bulk: signup_payload })
           .then((response) => {
-            // console.log("RESPONSE", response);
-
             // RETRY BULK UPLOAD IF IT RETURNS 500 RESPONSE
             if (response.code === 500) {
               this.signupBulkUsers();
@@ -241,6 +237,7 @@ export default {
               user_payload.push({
                 account_id: user.account_id,
                 email_address: user.email_address ?? user.email,
+                phone_number: user.phone_number ?? user.phone,
               });
             });
 
@@ -259,7 +256,7 @@ export default {
             this.UPDATE_TRANSACTION_BENEFICIARIES(updated_beneficiaries);
             this.UPDATE_MILESTONE_RECIPIENT(updated_recipients);
 
-            setTimeout(() => this.setupAndCreateTransaction(), 300);
+            setTimeout(() => this.setupAndCreateTransaction(), 500);
             return true;
           })
           .catch(() => {
@@ -267,7 +264,7 @@ export default {
             return false;
           });
       } else {
-        setTimeout(() => this.setupAndCreateTransaction(), 300);
+        setTimeout(() => this.setupAndCreateTransaction(), 500);
       }
     },
 
@@ -277,7 +274,9 @@ export default {
     updateUserData(list, store, user_payload) {
       list.map((user) => {
         let user_index = user_payload.findIndex(
-          (u) => u.email_address === user.email_address
+          (u) =>
+            u.email_address == user.email_address ||
+            u.phone_number == user.phone_number
         );
 
         if (user_index !== -1)

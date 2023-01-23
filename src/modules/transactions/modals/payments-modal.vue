@@ -97,7 +97,7 @@ export default {
         {
           id: 3,
           icon: "BusinessIcon",
-          title: "Pay With flutterwave business account",
+          title: "Pay with flutterwave business account",
           description:
             "Make a transfer from your flutterwave business account.",
           action_type: "modal",

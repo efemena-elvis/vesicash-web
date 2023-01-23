@@ -3,6 +3,9 @@
     class="pay-type-card rounded-12 border-grey-100 pointer smooth-transition"
     @click="handleCardSelection"
   >
+    <!-- DISABLED OVERLAY -->
+    <div class="disabled-pay-card" v-if="payment.id === 3"></div>
+
     <!-- LEFT SECTION -->
     <div class="left-section">
       <!-- ICON CARD -->
@@ -13,22 +16,28 @@
       <!-- CARD INFO -->
       <div class="card-info">
         <!-- CARD TITLE -->
-        <div class="card-title primary-1-text grey-900 mgb-4">{{ payment.title }}</div>
+        <div class="card-title primary-1-text grey-900 mgb-4">
+          {{ payment.title }}
+        </div>
 
         <!-- CARD DESCRIPTION -->
-        <div class="card-description tertiary-2-text grey-600">{{ payment.description }}</div>
+        <div class="card-description tertiary-2-text grey-600">
+          {{ payment.description }}
+        </div>
       </div>
 
-      <template v-if="payment.id===3">
+      <!-- v-if="payment.id===3" -->
+      <template v-if="false">
         <div class="coming-soon-wrapper">
           <div class="icon icon-question-circle teal-300"></div>
         </div>
 
         <!-- BOTTOM TOOLTIP -->
         <div class="tooltip-wrapper wt-100 position-absolute">
-          <div
-            class="tooltip-data wt-100 grey-10-bg rounded-8 grey-900"
-          >This feature is still under development and will be added as part of the payment options soon</div>
+          <div class="tooltip-data wt-100 grey-10-bg rounded-8 grey-900">
+            This feature is still under development and will be added as part of
+            the payment options soon
+          </div>
         </div>
       </template>
     </div>
@@ -184,9 +193,16 @@ export default {
     }
   }
 }
-</style>
 
-<style lang="scss">
+.disabled-pay-card {
+  background: rgba(getColor("grey-10"), 0.5);
+  @include stretch-area();
+  @include set-full-bg();
+  pointer-events: none;
+  cursor: not-allowed;
+  z-index: 1;
+}
+
 .coming-soon-wrapper {
   .chip-text {
     font-size: 0.7rem;
