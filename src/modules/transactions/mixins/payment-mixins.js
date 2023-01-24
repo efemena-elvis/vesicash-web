@@ -24,6 +24,11 @@ const paymentHelper = {
         /* webpackChunkName: "transactions-modal-module" */ "@/modules/dashboard/modals/wallet-modals/wallet-details-modal"
       ),
 
+    FlutterwaveBusinessPaymentModal: () =>
+      import(
+        /* webpackChunkName: "transactions-modal-module" */ "@/modules/dashboard/modals/wallet-modals/flutterwave-business-payment-modal"
+      ),
+
     FWBizModal: () =>
       import(
         /* webpackChunkName: "transactions-modal-module" */ "@/modules/transactions/modals/fw-business-modal"
@@ -126,6 +131,7 @@ const paymentHelper = {
 
       transfer_amount: "",
       message: "",
+      gateway: "",
     };
   },
 
@@ -167,8 +173,9 @@ const paymentHelper = {
       // this.togglePaymentOptionModal();
     },
 
-    closePaymentOpenWire(currency) {
+    closePaymentOpenWire({ currency, gateway }) {
       this.show_payment_option_modal = false;
+      this.gateway = gateway;
       currency === "naira"
         ? this.toggleNairaTransferModal()
         : this.toggleWireTransferModal();

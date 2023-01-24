@@ -4,9 +4,9 @@
     <PageBackBtn />
 
     <!-- PAGE TITILE -->
-    <div class="page-title grey-900 h4-text mgb-25">
-      {{ getTransaction.title || "Transaction title.." }}
-    </div>
+    <div
+      class="page-title grey-900 h4-text mgb-25"
+    >{{ getTransaction.title || "Transaction title.." }}</div>
 
     <!-- FUND DETAILS SECTION -->
     <template name="fund-details-section">
@@ -153,7 +153,6 @@
           @paid="closeWireAndOpenSuccess"
         />
       </transition>
-
       <transition name="fade" v-if="show_naira_transfer_modal">
         <WalletDetailsModal
           @closeTriggered="toggleNairaTransferModal"
@@ -163,11 +162,21 @@
       </transition>
 
       <transition name="fade" v-if="show_fw_biz_modal">
+        <FlutterwaveBusinessPaymentModal
+          @closeTriggered="toggleFWBizModal"
+          @goBackWalletSelection="closeFWBizOpenPayment"
+          @walletFunded="closeFundDetailsAndOpenSuccess"
+          :gateway="gateway"
+          :amount="getTransaction.totalAmount ? getTransaction.totalAmount : '0'"
+        />
+      </transition>
+
+      <!-- <transition name="fade" v-if="show_fw_biz_modal">
         <FWBizModal
           @closeTriggered="toggleFWBizModal"
           @goBackPaymentSelection="closeFWBizOpenPayment"
         />
-      </transition>
+      </transition>-->
 
       <transition name="fade" v-if="show_failed_wallet_transfer">
         <FailedWalletTransferModal
