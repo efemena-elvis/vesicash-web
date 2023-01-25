@@ -135,6 +135,11 @@ export default {
       type: String,
       default: "naira",
     },
+
+    gateway: {
+      type: String,
+      default: "",
+    },
   },
 
   computed: {
@@ -185,7 +190,10 @@ export default {
         account_id: this.getAccountId,
         transaction_id:
           this.$route?.query?.transaction_id ?? this.$route?.params?.id,
+        gateway: this.gateway,
       };
+
+      if (!this.gateway) delete request_payload?.gateway;
 
       this.fetchNairaWalletBankDetails(request_payload)
         .then((response) => {

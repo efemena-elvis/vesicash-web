@@ -4,7 +4,7 @@
     @click="handleCardSelection"
   >
     <!-- DISABLED OVERLAY -->
-    <div class="disabled-pay-card" v-if="payment.id === 3"></div>
+    <!-- <div class="disabled-pay-card" v-if="payment.id === 3"></div> -->
 
     <!-- LEFT SECTION -->
     <div class="left-section">
@@ -16,14 +16,10 @@
       <!-- CARD INFO -->
       <div class="card-info">
         <!-- CARD TITLE -->
-        <div class="card-title primary-1-text grey-900 mgb-4">
-          {{ payment.title }}
-        </div>
+        <div class="card-title primary-1-text grey-900 mgb-4">{{ payment.title }}</div>
 
         <!-- CARD DESCRIPTION -->
-        <div class="card-description tertiary-2-text grey-600">
-          {{ payment.description }}
-        </div>
+        <div class="card-description tertiary-2-text grey-600">{{ payment.description }}</div>
       </div>
 
       <!-- v-if="payment.id===3" -->

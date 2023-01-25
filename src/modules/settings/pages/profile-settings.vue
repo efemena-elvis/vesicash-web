@@ -4,33 +4,25 @@
     <div class="page-title primary-1-text grey-900 mgb-4">Profile</div>
 
     <!-- PAGE META -->
-    <div class="page-meta tertiary-2-text grey-600">
-      Update your profile and personal info here.
-    </div>
+    <div class="page-meta tertiary-2-text grey-600">Update your profile and personal info here.</div>
 
     <!-- FORM AREA -->
     <div class="settings-form-area mgt-20">
       <!-- BUSINESS LOGO BLOCK -->
       <div class="page-input-block row">
         <div class="col-12 col-sm-4">
-          <label for="logo" class="form-label fw-bold">{{
+          <label for="logo" class="form-label fw-bold">
+            {{
             isBusiness ? "Business logo" : "Profile picture"
-          }}</label>
+            }}
+          </label>
         </div>
 
         <div class="col-12 col-sm-8 logo-block">
           <div class="profile-avatar position-relative">
-            <div
-              class="icon-spinner f-size-19 animate position-absolute"
-              v-if="uploading_file"
-            ></div>
+            <div class="icon-spinner f-size-19 animate position-absolute" v-if="uploading_file"></div>
 
-            <img
-              :src="uploaded_pic"
-              alt="logo"
-              ref="logoImage"
-              v-if="uploaded_pic"
-            />
+            <img :src="uploaded_pic" alt="logo" ref="logoImage" v-if="uploaded_pic" />
             <ProfileAvatarIcon v-else />
           </div>
 
@@ -47,14 +39,15 @@
             class="btn btn-secondary btn-sm fw-semibold"
             disabled
             :for="uploading_file ? '' : 'fileUpload'"
-            >{{
-              uploading_file
-                ? "Uploading..."
-                : isBusiness
-                ? "Upload business logo"
-                : "Upload profile pic"
-            }}</label
           >
+            {{
+            uploading_file
+            ? "Uploading..."
+            : isBusiness
+            ? "Upload business logo"
+            : "Upload profile pic"
+            }}
+          </label>
         </div>
       </div>
 
@@ -115,11 +108,13 @@
           <label for="logo" class="form-label fw-bold">Merchant ID</label>
         </div>
 
-        <div class="col-12 col-sm-8">
+        <div class="col-12 col-sm-8 position-relative">
+          <div ref="show" class="show-input">-------.</div>
           <BasicInput
             is_required
             placeholder="Enter your flutterwave merchant id"
             :input_value="form.flutterwave_merchant_id"
+            :custom_style="{input_style:'profile_merchant_id_field'}"
             @getInputState="updateFormState($event, 'flutterwave_merchant_id')"
             :error_handler="{
               type: 'required',
@@ -180,9 +175,7 @@
             v-else
             :disabled="validity.email"
             @click="toggleInputModal('email')"
-          >
-            Verify
-          </button>
+          >Verify</button>
         </div>
       </div>
 
@@ -193,12 +186,7 @@
         </div>
 
         <div
-          class="
-            col-12 col-sm-8
-            two-columns-row
-            two-columns-row--tight
-            two-columns-row--phone-variant
-          "
+          class="col-12 col-sm-8 two-columns-row two-columns-row--tight two-columns-row--phone-variant"
         >
           <div class="position-relative">
             <BasicInput
@@ -217,10 +205,7 @@
             />
           </div>
 
-          <div
-            class="verify-skeleton skeleton-loader"
-            v-if="loading_verification"
-          ></div>
+          <div class="verify-skeleton skeleton-loader" v-if="loading_verification"></div>
 
           <TagCard
             card_text="Phone verified"
@@ -234,9 +219,7 @@
             v-else
             :disabled="validity.phone_number"
             @click="toggleInputModal('phone_number')"
-          >
-            Verify
-          </button>
+          >Verify</button>
         </div>
       </div>
 
@@ -250,9 +233,7 @@
             @click="saveProfile"
             :disabled="isDisabled"
             ref="save"
-          >
-            Save profile
-          </button>
+          >Save profile</button>
         </div>
       </div>
     </div>
@@ -302,6 +283,15 @@ export default {
   mounted() {
     this.updateSavedProfile();
     if (!this.getUserVerifications) this.fetchVerifications();
+  },
+
+  updated() {
+    const merchantInput = document.querySelector(".profile_merchant_id_field");
+    if (merchantInput && this.$route?.query?.focus_merchant) {
+      merchantInput.focus();
+      this.$refs?.show?.scrollIntoView();
+      this.$router.replace({ name: this.$route.name });
+    }
   },
 
   computed: {
@@ -522,6 +512,13 @@ export default {
         ) {
           message = response.data["updates[username]"][0];
         }
+        if (
+          response.code === 400 &&
+          response?.data["updates[username]"] &&
+          response?.data["updates[username]"][0]
+        ) {
+          message = response.data["updates[username]"][0];
+        }
         this.pushToast(message, type);
 
         if (response.code === 200) this.updateProfile();
@@ -625,5 +622,11 @@ export default {
 .verify-skeleton {
   width: toRem(80);
   height: toRem(30);
+}
+
+.show-input {
+  position: absolute;
+  transform: translateY(-150px);
+  opacity: 0;
 }
 </style>
