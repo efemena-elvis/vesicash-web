@@ -188,11 +188,11 @@ export default {
     },
 
     toggelWalletTransfer() {
-      this.$emit("initiateCardPayment");
+      this.$emit("initiateWalletTransfer");
     },
 
     toggleCardPayment() {
-      this.$emit("initiateWalletTransfer");
+      this.$emit("initiateCardPayment");
     },
 
     toggleWireTransferModal() {
