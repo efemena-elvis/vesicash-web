@@ -96,7 +96,10 @@
     <!-- SUMMATION TOTAL -->
     <div class="wrapper mgb-40">
       <div class="col-xl-9">
-        <SummationCard :milestones="getTransactionMilestones" :amount_data="getTransactionAmount" />
+        <SummationCard
+          :milestones="getTransactionMilestones"
+          :amount_data="getTransactionAmount"
+        />
       </div>
     </div>
 
@@ -106,7 +109,9 @@
         class="btn btn-primary btn-md"
         ref="createEscrowBtn"
         @click="createTransaction"
-      >Create escrow</button>
+      >
+        Create escrow
+      </button>
     </div>
   </div>
 </template>
@@ -425,27 +430,9 @@ export default {
           }, 1000);
         })
         .catch(() => {
-          // this.handleEscrowError(
-          //   "An error occured while inviting users to escrow"
-          // );
-          this.togglePageLoader("");
-          this.pushToast("Escrow created successfully", "success");
-          setTimeout(() => {
-            if (this.$route.query.pay) {
-              this.$router.push({
-                name: "TransactionPayment",
-                query: {
-                  type: this.$route.query.type,
-                  party: this.$route.query.party,
-                  transaction_id,
-                  name: this.$route.query.name,
-                  parties: this.$route.query.parties,
-                  fee: this.$route.query.fee,
-                },
-              });
-            } else this.$router.push({ name: "VesicashDashboard" });
-          }, 1000);
-          return false;
+          this.handleEscrowError(
+            "An error occured while inviting users to escrow"
+          );
         });
     },
 
