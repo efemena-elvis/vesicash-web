@@ -119,7 +119,7 @@ export default {
     withdrawalCurrency() {
       // const currency = this.getWalletType === "naira" ? "NGN" : "USD";
       const currency = this.isNaira ? "NGN" : "USD";
-      return `${currency} (${this.$money.getSign(this.getWalletType)})`;
+      return `${currency} (${this.$money.getSign(currency)})`;
     },
 
     getBalanceTitle() {
@@ -132,9 +132,9 @@ export default {
         ? this.getNairaBalance
         : this.getDollarBalance;
 
-      return `${this.$money.getSign(this.getWalletType)}${this.$money.addComma(
-        balance
-      )}`;
+      const currency = this.isNaira ? "NGN" : "USD";
+
+      return `${this.$money.getSign(currency)}${this.$money.addComma(balance)}`;
     },
 
     continueDisabled() {
