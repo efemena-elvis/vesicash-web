@@ -196,7 +196,7 @@ export default {
           status = MS[index]?.status;
           break;
         } else {
-          status = MS[index]?.status;
+          status = MS[index + 1]?.status;
           break;
         }
       }
