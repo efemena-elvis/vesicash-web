@@ -18,7 +18,7 @@
           v-for="(data, index) in getPaymentOptions"
           :key="index"
           :payment="data"
-          @payTypeClicked="handleModalClick(index)"
+          @payTypeClicked="handleModalClick(data.action)"
         />
       </div>
     </template>
@@ -52,6 +52,10 @@ export default {
   },
 
   computed: {
+    isBusiness() {
+      return this.getAccountType === "business" ? true : false;
+    },
+
     getPaymentOptions() {
       const currency = this.paymentDetails?.currency?.slug;
 
@@ -77,41 +81,70 @@ export default {
         wallet_description = "Make payment from your pound wallet";
       }
 
-      return [
-        {
-          id: 1,
-          icon: "CreditCardIcon",
-          title: card_title,
-          description: card_description,
-          action_type: "modal",
-          action: "SuccessfulPayment",
-        },
-        {
-          id: 2,
-          icon: "ArrowRightIcon",
-          title: transfer_title,
-          description: transfer_description,
-          action_type: "modal",
-          action: "toggleWireTransferModal",
-        },
-        {
-          id: 3,
-          icon: "BusinessIcon",
-          title: "Pay with flutterwave business account",
-          description:
-            "Make a transfer from your flutterwave business account.",
-          action_type: "modal",
-          action: "toggleFWBizModal",
-        },
-        {
-          id: 4,
-          icon: "WalletIcon",
-          title: "Pay from your wallet",
-          description: wallet_description,
-          action_type: "modal",
-          action: "toggleWireTransferModal",
-        },
-      ];
+      return this.isBusiness
+        ? [
+            {
+              id: 1,
+              icon: "CreditCardIcon",
+              title: card_title,
+              description: card_description,
+              action_type: "modal",
+              // action: "SuccessfulPayment",
+              action: "toggleCardPayment",
+            },
+            {
+              id: 2,
+              icon: "ArrowRightIcon",
+              title: transfer_title,
+              description: transfer_description,
+              action_type: "modal",
+              action: "toggleWireTransferModal",
+            },
+            {
+              id: 3,
+              icon: "BusinessIcon",
+              title: "Pay with flutterwave business account",
+              description:
+                "Make a transfer from your flutterwave business account.",
+              action_type: "modal",
+              action: "toggleFWBizModal",
+            },
+            {
+              id: 4,
+              icon: "WalletIcon",
+              title: "Pay from your wallet",
+              description: wallet_description,
+              action_type: "modal",
+              action: "toggelWalletTransfer",
+            },
+          ]
+        : [
+            {
+              id: 1,
+              icon: "CreditCardIcon",
+              title: card_title,
+              description: card_description,
+              action_type: "modal",
+              // action: "SuccessfulPayment",
+              action: "toggleCardPayment",
+            },
+            {
+              id: 2,
+              icon: "ArrowRightIcon",
+              title: transfer_title,
+              description: transfer_description,
+              action_type: "modal",
+              action: "toggleWireTransferModal",
+            },
+            {
+              id: 4,
+              icon: "WalletIcon",
+              title: "Pay from your wallet",
+              description: wallet_description,
+              action_type: "modal",
+              action: "toggelWalletTransfer",
+            },
+          ];
     },
   },
 
@@ -145,22 +178,32 @@ export default {
   }),
 
   methods: {
-    handleModalClick(index) {
-      if (index === 0) this.$emit("initiateCardPayment");
-      if (index === 1) this.toggleWireTransferModal();
+    handleModalClick(action) {
+      this[action]();
+      // if (index === 0) this.$emit("initiateCardPayment");
+      // if (index === 1) this.toggleWireTransferModal();
       // if (index === 2) this.toggleFWBizModal();
-      if (index === 3) this.$emit("initiateWalletTransfer");
+      // if (index === 3) this.$emit("initiateWalletTransfer");
       //this will updated later when flutterwave business api is ready
+    },
+
+    toggelWalletTransfer() {
+      this.$emit("initiateWalletTransfer");
+    },
+
+    toggleCardPayment() {
+      this.$emit("initiateCardPayment");
     },
 
     toggleWireTransferModal() {
       const currency = this.paymentDetails?.currency?.slug;
-      this.$emit("initiateWireTransfer", currency);
+      this.$emit("initiateWireTransfer", { currency });
     },
 
     toggleFWBizModal() {
       const currency = this.paymentDetails?.currency?.slug;
-      this.$emit("initiateFWBizPayment", currency);
+      const gateway = "rave";
+      this.$emit("initiateFWBizPayment", { currency, gateway });
     },
   },
 };

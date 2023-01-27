@@ -153,7 +153,6 @@
           @paid="closeWireAndOpenSuccess"
         />
       </transition>
-
       <transition name="fade" v-if="show_naira_transfer_modal">
         <WalletDetailsModal
           @closeTriggered="toggleNairaTransferModal"
@@ -163,11 +162,23 @@
       </transition>
 
       <transition name="fade" v-if="show_fw_biz_modal">
+        <FlutterwaveBusinessPaymentModal
+          @closeTriggered="toggleFWBizModal"
+          @goBackWalletSelection="closeFWBizOpenPayment"
+          @walletFunded="closeFundDetailsAndOpenSuccess"
+          :gateway="gateway"
+          :amount="
+            getTransaction.totalAmount ? getTransaction.totalAmount : '0'
+          "
+        />
+      </transition>
+
+      <!-- <transition name="fade" v-if="show_fw_biz_modal">
         <FWBizModal
           @closeTriggered="toggleFWBizModal"
           @goBackPaymentSelection="closeFWBizOpenPayment"
         />
-      </transition>
+      </transition>-->
 
       <transition name="fade" v-if="show_failed_wallet_transfer">
         <FailedWalletTransferModal
@@ -442,8 +453,15 @@ export default {
 
     // CHECK IF EVERY PARTY MEMBERS HAS ACCEPTED
     checkIfTransactionCanStart() {
-      let { members, title, amount_paid, escrow_charge, totalAmount, amount } =
-        this.getTransaction;
+      let {
+        members,
+        title,
+        amount_paid,
+        escrow_charge,
+        totalAmount,
+        amount,
+        type,
+      } = this.getTransaction;
 
       let current_user = members?.find(
         (party) => party.account_id === this.getAccountId
@@ -539,7 +557,50 @@ export default {
 
       // ALERT IF MILESTONE HAS CLOSED
       else if (first_milestone_status?.toLowerCase().includes("closed")) {
-        this.pushToast(`${title} transacion has closed`, "success");
+        if (type === "oneoff") {
+          this.pushToast(`${title} transacion has closed`, "success");
+        }
+
+        // CHECK OTHER MILESTONES
+        else {
+          let MS = this.getSortedMilestones;
+
+          if (MS.at(-1).status?.toLowerCase().includes("closed")) {
+            this.pushToast(`${title} transacion has closed`, "success");
+          }
+
+          // CHECK FOR AN NGGOING MILESTONE TRANSACTION
+          else if (
+            MS.map((milestone) => milestone.status).lastIndexOf(
+              "In Progress"
+            ) !== -1
+          ) {
+            let ongoing_milestone_index = MS.map(
+              (milestone) => milestone.status
+            ).lastIndexOf("In Progress");
+
+            this.pushToast(
+              `${MS[ongoing_milestone_index].title} transaction is in progress`,
+              "success"
+            );
+          }
+
+          // CHECK TRANSACTION THAT IS NOT CLOSED
+          else {
+            let closed_milestone_index = MS.map(
+              (milestone) => milestone.status
+            ).lastIndexOf("Closed - Disbursement Complete");
+
+            let next_milestone_status = MS[closed_milestone_index + 1].status;
+
+            if (next_milestone_status.toLowerCase() === "accepted funded") {
+              this.updateSingleMilestoneStatus(
+                this.ms_key["in-progress"],
+                MS[closed_milestone_index + 1]
+              );
+            }
+          }
+        }
       }
     },
 
@@ -621,6 +682,28 @@ export default {
           this.getSortedMilestones
         );
       }
+    },
+
+    // UPDATE SINGLE MILESTONE STATUS DATA
+    updateSingleMilestoneStatus(status, milestone) {
+      this.updateMilestoneTransaction({
+        transaction_id: this.$route.params.id,
+        milestone_id: milestone.milestone_id,
+        account_id: this.getAccountId,
+        status,
+      })
+        .then((response) => {
+          if (response.code === 200) {
+            console.log(response);
+
+            this.pushToast(
+              `${milestone.title} milestone is now in progress`,
+              "success"
+            );
+            setTimeout(() => this.fetchSingleTransaction(), 2000);
+          }
+        })
+        .catch((err) => console.log(err));
     },
 
     // UPDATE MILESTONE STATUS DATA

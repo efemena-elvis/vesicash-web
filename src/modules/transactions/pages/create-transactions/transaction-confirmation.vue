@@ -409,34 +409,30 @@ export default {
       let request_payload = { transaction_id };
 
       this.sendUserTransaction(request_payload)
-        .then((response) => {
-          if (response.code === 200) {
-            this.togglePageLoader("");
-            this.pushToast("Escrow created successfully", "success");
+        .then(() => {
+          this.togglePageLoader("");
+          this.pushToast("Escrow created successfully", "success");
 
-            setTimeout(() => {
-              if (this.$route.query.pay) {
-                this.$router.push({
-                  name: "TransactionPayment",
-                  query: {
-                    type: this.$route.query.type,
-                    party: this.$route.query.party,
-                    transaction_id,
-                    name: this.$route.query.name,
-                    parties: this.$route.query.parties,
-                    fee: this.$route.query.fee,
-                  },
-                });
-              } else this.$router.push({ name: "VesicashDashboard" });
-            }, 2000);
-          }
+          setTimeout(() => {
+            if (this.$route.query.pay) {
+              this.$router.push({
+                name: "TransactionPayment",
+                query: {
+                  type: this.$route.query.type,
+                  party: this.$route.query.party,
+                  transaction_id,
+                  name: this.$route.query.name,
+                  parties: this.$route.query.parties,
+                  fee: this.$route.query.fee,
+                },
+              });
+            } else this.$router.push({ name: "VesicashDashboard" });
+          }, 1000);
         })
         .catch(() => {
           this.handleEscrowError(
             "An error occured while inviting users to escrow"
           );
-          this.togglePageLoader("");
-          return false;
         });
     },
 

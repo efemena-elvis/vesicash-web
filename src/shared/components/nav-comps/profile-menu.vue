@@ -1,16 +1,11 @@
 <template>
-  <div
-    class="profile-menu-wrapper"
-    :class="show_profile_menu ? 'tour-index' : null"
-  >
+  <div class="profile-menu-wrapper" :class="show_profile_menu ? 'tour-index' : null">
     <div class="user-icon-wrapper">
       <UserIcon profileMenu />
     </div>
 
     <div>
-      <div class="grey-900 primary-2-text mgb-4">
-        {{ getUser.fullname || getUser.email }}
-      </div>
+      <div class="grey-900 primary-2-text mgb-4">{{ getUser.fullname || getUser.email }}</div>
       <div class="tertiary-3-text green-500">ID: {{ getAccountId }}</div>
     </div>
 
@@ -22,13 +17,10 @@
         v-if="show_menu"
         v-on-clickaway="toggleMenu"
       >
-        <div
-          class="profile-menu-item border-bottom-grey-100"
-          @click="copyMerchantID"
-        >
+        <div class="profile-menu-item border-bottom-grey-100" @click="copyMerchantID">
           <CopyIcon />
           <span class="tertiary-2-text grey-900" v-if="copied">ID Copied!</span>
-          <span class="tertiary-2-text grey-900" v-else>Copy Merchant ID</span>
+          <span class="tertiary-2-text grey-900" v-else>Copy Account ID</span>
         </div>
 
         <div class="profile-menu-item" @click="$emit('exit')">
@@ -86,7 +78,7 @@ export default {
     },
 
     async copyMerchantID() {
-      await navigator.clipboard.writeText(this.id);
+      await navigator.clipboard.writeText(this.getAccountId);
       this.copied = true;
       setTimeout(() => (this.copied = false), 2000);
     },

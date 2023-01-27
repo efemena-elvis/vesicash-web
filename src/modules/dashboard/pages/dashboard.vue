@@ -61,11 +61,9 @@
     </template>
 
     <!-- MODALS -->
+    <!-- v-if="show_start_walkthrough_modal && !hasUserSeenTour" -->
     <portal to="vesicash-modals">
-      <transition
-        name="fade"
-        v-if="show_start_walkthrough_modal && !hasUserSeenTour"
-      >
+      <transition name="fade" v-if="false">
         <startWalkthroughModal @closeTriggered="toggleStartWalkthrough" />
       </transition>
 
