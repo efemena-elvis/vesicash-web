@@ -604,7 +604,6 @@ export default {
 
           // CHECK TRANSACTION THAT IS NOT CLOSED
           else {
-            console.log("hit 2");
             let closed_milestone_index = MS.map(
               (milestone) => milestone.status
             ).lastIndexOf("Closed - Disbursement Complete");
