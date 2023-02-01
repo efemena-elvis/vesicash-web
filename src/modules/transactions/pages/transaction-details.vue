@@ -297,15 +297,23 @@ export default {
       let transaction_owner = this.getTransaction?.members[0]?.email ?? "Owner";
       let transaction_title = this.getTransaction.title;
       let transaction_amount =
-        this.getTransaction?.totalAmount ?? this.getTransaction?.amount ?? 0;
+        this.getTransaction?.totalAmount ??
+        Number(this.getTransaction?.amount) ??
+        0;
       let transaction_amount_paid =
         Number(this.getTransaction?.amount_paid) ?? 0;
       let transaction_currency = this.getTransaction?.currency ?? "NGN";
+      let escrow_charge = Number(this.getTransaction?.escrow_charge);
 
       return {
         owner: transaction_owner,
         title: transaction_title,
-        amount_paid: transaction_amount_paid,
+        amount_paid:
+          transaction_amount_paid > 0
+            ? transaction_amount_paid + escrow_charge
+            : transaction_amount_paid,
+        currency: this.$money.getSign(transaction_currency),
+        currency_value: transaction_currency,
         total_amount: `${this.$money.getSign(
           transaction_currency
         )}${this.$money.addComma(transaction_amount)}`,
@@ -336,6 +344,15 @@ export default {
     getTransaction: {
       handler(value) {
         value?.milestones.length && this.checkIfTransactionCanStart();
+
+        // CHECK IF EXCESS FUNDS WAS PAID
+        if (
+          Number(value.amount_paid) + Number(value.escrow_charge) >
+            value.totalAmount ??
+          Number(value.amount)
+        ) {
+          this.togglePaymentModal();
+        }
       },
       immediate: true,
     },
