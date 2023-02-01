@@ -1,4 +1,6 @@
 export default {
+  getTransactions: (state) => state.transaction,
+
   getTransactionSetup: (state) => {
     return {
       name: state.transaction.name,

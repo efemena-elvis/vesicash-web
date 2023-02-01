@@ -9,7 +9,9 @@
       <div class="modal-cover-header">
         <div class="modal-cover-title">Select wallet to withdraw</div>
 
-        <div class="modal-cover-meta">Please select the wallet you wish to withdraw</div>
+        <div class="modal-cover-meta">
+          Please select the wallet you wish to withdraw
+        </div>
       </div>
     </template>
 
@@ -42,14 +44,15 @@
     </template>
 
     <!-- MODAL COVER FOOTER -->
-    <!-- The class .raise-40 will be removed when dollar withdrawal is back -->
     <template slot="modal-cover-footer">
       <div class="modal-cover-footer">
         <button
           class="btn btn-primary btn-md wt-100"
           @click="handleWalletSelection"
           :disabled="!wallet_type"
-        >Continue</button>
+        >
+          Continue
+        </button>
       </div>
     </template>
   </ModalCover>
@@ -117,19 +120,9 @@ export default {
   },
 };
 </script>
-<style  lang="scss" scoped>
-.raise-40 {
-  margin-top: -40px;
-}
 
+<style  lang="scss" scoped>
 .mgb-hack {
   margin-bottom: toRem(-80) !important;
 }
 </style>
-
-// <style lang="scss">
-// .withdraw-select-modal {
-//   .modal-cover-body {
-//     overflow-y: visible;
-//   }
-// }

@@ -121,7 +121,7 @@ export default {
   computed: {
     getUpdatePayload() {
       return {
-        business_id: this.getBusinessId,
+        business_id: this.getAccountId,
         updates: {
           business_name: this.form.business_name,
           business_address: this.form.business_address,

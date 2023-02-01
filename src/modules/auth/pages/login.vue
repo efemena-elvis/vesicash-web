@@ -129,7 +129,7 @@ export default {
             setTimeout(() => (location.href = "/dashboard"), 2000);
           }
 
-          // HANDE NON 200 RESPONSE
+          // HANDLE NON 200 RESPONSE
           else this.handleLoginError(response.message);
         })
         .catch(() => {

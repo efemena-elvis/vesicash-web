@@ -25,7 +25,7 @@
       </div>
       <div class="meta tertiary-3-text grey-600">
         {{ $money.getSign(data.currency)
-        }}{{ $money.addComma(data.amount_paid || 0) }} paid
+        }}{{ $money.addComma(getTotalAmountPaid || 0) }} paid
       </div>
     </td>
 
@@ -139,6 +139,12 @@ export default {
         }
       }
     },
+
+    getTotalAmountPaid() {
+      let amount_paid = Number(this.data?.amount_paid);
+      let escrow_charge = Number(this.data?.escrow_charge);
+      return amount_paid > 0 ? amount_paid + escrow_charge : amount_paid;
+    },
   },
 
   filters: {
@@ -190,7 +196,7 @@ export default {
           status = MS[index]?.status;
           break;
         } else {
-          status = MS[index]?.status;
+          status = MS[index + 1]?.status;
           break;
         }
       }

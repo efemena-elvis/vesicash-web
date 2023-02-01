@@ -15,7 +15,7 @@
       <MobileTopbar />
 
       <!-- CONTENT BUILD -->
-      <div class="content-build position-relative index-1">
+      <div class="content-build position-relative">
         <transition name="fade" mode="out-in">
           <router-view />
         </transition>
@@ -42,6 +42,10 @@ export default {
 
   created() {
     this.$bus.$on("show-sidebar", () => (this.show_mobile_sidebar = true));
+
+    this.$bus.$on("close-sidebar", () => {
+      if (this.show_mobile_sidebar) this.show_mobile_sidebar = false;
+    });
   },
 
   mounted() {
@@ -63,14 +67,17 @@ export default {
   align-items: flex-start;
 
   .sidebar-build {
-    @include fixed-display-area;
     width: 19%;
+    height: 100vh;
+    top: 0;
+    left: 0;
 
     @include breakpoint-down(xl) {
       width: 22%;
     }
 
     @include breakpoint-down(lg) {
+      @include fixed-display-area;
       transition: left 0.3s ease-in;
       left: -100%;
       width: 0;
@@ -92,17 +99,17 @@ export default {
   }
 
   .body-build {
+    @include stretch-area;
+    height: 100vh;
     width: 81%;
-    left: 19%;
+    overflow: auto;
 
     @include breakpoint-down(xl) {
       width: 78%;
-      left: 22%;
     }
 
     @include breakpoint-down(lg) {
       width: 100%;
-      left: 0;
     }
 
     .content-build {

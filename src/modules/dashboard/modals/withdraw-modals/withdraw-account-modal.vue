@@ -341,7 +341,7 @@ export default {
           response.code === 200
             ? response.data.map((account, index) => ({
                 ...account,
-                bank_id: account.bank.code,
+                bank_id: account.bank?.code ?? "-",
                 index,
                 selected: false,
               }))
