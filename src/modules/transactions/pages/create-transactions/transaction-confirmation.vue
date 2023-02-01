@@ -47,7 +47,7 @@
               {
                 title: 'Attached Document(s)',
                 value: 'No file attached',
-                file: getTransactionSetup.files.length
+                file: getFiles
                   ? {
                       name: getTransactionSetup.files[0].name,
                       url: getTransactionSetup.files[0].url,
@@ -172,6 +172,13 @@ export default {
     // =============================================
     userCanMakePayment() {
       return this.$route.query.pay ? true : false;
+    },
+
+    // =============================================
+    // GET THE TRANSACTION PAYMENT FILES
+    // =============================================
+    getFiles() {
+      return this.getTransactionSetup.files?.length ?? 0;
     },
   },
 

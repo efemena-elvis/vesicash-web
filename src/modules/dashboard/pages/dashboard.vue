@@ -182,6 +182,7 @@ export default {
 
   computed: {
     ...mapGetters({
+      getTransactions: "transactions/getTransactions",
       getUserVerifications: "settings/getUserVerifications",
       getTourData: "general/getTourData",
       hasUserSeenTour: "auth/hasUserSeenTour",
@@ -347,9 +348,11 @@ export default {
 
     if (!this.getUserVerifications) this.fetchVerifications();
 
-    // CLEAR OUT TRANSAACTION STORE
-    this.RESET_TRANSACTION();
-    this.clearAttachedFile();
+    // CLEAR OUT TRANSACTION STORE
+    if (this.getTransactions?.name?.length) {
+      this.RESET_TRANSACTION();
+      this.clearAttachedFile();
+    }
   },
 
   methods: {

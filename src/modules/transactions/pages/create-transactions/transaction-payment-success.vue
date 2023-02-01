@@ -4,28 +4,32 @@
       <!-- AUTH PAGE -->
       <div class="auth-page auth-payment-success">
         <!-- TITLE TEXT -->
-        <div class="title-text text-center teal-900 h4-text mgb-38 mgt--15">Congratulations</div>
+        <div class="title-text text-center teal-900 h4-text mgb-38 mgt--15">
+          Congratulations
+        </div>
 
         <!-- BODY DATA -->
         <div class="body-data">
           <SuccessItemCard
             :info="{
-            icon: 'SuccessIcon',
-            title: 'Payment made successfully',
-            description: `Your payment of <b>${$route.query.fee}</b> has been made sucessfully, Please check your escrow account on your dashboard for the payment.`,
-          }"
+              icon: 'SuccessIcon',
+              title: 'Payment made successfully',
+              description: `Your payment of <b>${$money.addComma(
+                $route.query.fee
+              )}</b> has been made sucessfully, Please check your escrow account on your dashboard for the payment.`,
+            }"
           />
 
           <SuccessItemCard
             :info="{
-            icon: 'SuccessIcon',
-            title: 'Users invited successfully',
-            description: `${$route.query.parties} ${
-              $route.query.parties === 'All' ? 'parties have' : 'has'
-            } been invited sucessfully into transaction for ${
-              $route.query.name
-            }.`,
-          }"
+              icon: 'SuccessIcon',
+              title: 'Users invited successfully',
+              description: `${$route.query.parties} ${
+                $route.query.parties === 'All' ? 'parties have' : 'has'
+              } been invited sucessfully into transaction for ${
+                $route.query.name
+              }.`,
+            }"
           />
         </div>
 
@@ -37,9 +41,12 @@
             class="btn btn-primary btn-md"
             :href="$route.query.redirect"
             v-if="$route.query.redirect"
-          >Continue transaction</a>
+            >Continue transaction</a
+          >
 
-          <router-link v-else to="/dashboard" class="btn btn-primary btn-md">Go to Dashboard</router-link>
+          <router-link v-else to="/dashboard" class="btn btn-primary btn-md"
+            >Go to Dashboard</router-link
+          >
         </div>
       </div>
     </AuthWrapper>

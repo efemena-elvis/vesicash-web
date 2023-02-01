@@ -17,7 +17,7 @@
 
         <!-- TITLE TEXT -->
         <div class="title-text fw-600 grey-900 text-center h5-text mgb-8 w-100">
-          Make Payment
+          {{ isExcessAmountPaid.status ? "Fund Reversal" : "Make Payment" }}
         </div>
 
         <!-- DESCRIPTION TEXT -->
@@ -25,7 +25,7 @@
           <!-- IF AMOUNT PAID IS 0 -->
           <template v-if="transaction.amount_paid === 0">
             <!-- IF OWNER OF TRANSACTION -->
-            <template v-if="getTransactionInfo.is_owner">
+            <template v-if="isTransactionOwner">
               A payment of
               {{ transaction.total_amount }} for
               {{ transaction.title }}
@@ -40,14 +40,25 @@
             </template>
           </template>
 
+          <!-- CHECK IF PAYMENT IS COMPLETE -->
           <template v-else>
-            A complete payment for
-            {{ transaction.title }} transaction of
+            <template v-if="isLessAmountPaid.status">
+              A complete payment for
+              {{ transaction.title }} transaction of
 
-            {{ transaction.total_amount.slice(0, 1)
-            }}{{ $money.addComma(getTransactionInfo.balance_amount) }}
+              {{ transaction.currency
+              }}{{ $money.addComma(isLessAmountPaid.amount) }}
 
-            is currently pending.
+              is currently pending.
+            </template>
+
+            <template v-else>
+              An excess amount of {{ transaction.currency
+              }}{{ $money.addComma(isExcessAmountPaid.amount) }} was paid for
+              {{ transaction.title }} transaction.
+              <br />
+              Initiate an immediate reversal of excess fund to your wallet.
+            </template>
           </template>
         </div>
       </div>
@@ -56,19 +67,31 @@
     <!-- MODAL COVER FOOTER -->
     <template slot="modal-cover-footer">
       <div class="modal-cover-footer">
-        <button
-          class="btn btn-primary btn-md wt-100 mgb-4"
-          @click="makePaymentForTransaction"
-        >
-          Make Payment
-        </button>
+        <template v-if="isExcessAmountPaid.status">
+          <button
+            class="btn btn-primary btn-md wt-100 mgb-4"
+            ref="refundBtn"
+            @click="reverseExcessFund"
+          >
+            Initiate Reversal
+          </button>
+        </template>
 
-        <button
-          class="btn btn-secondary btn-md wt-100 mgt-18"
-          v-if="!getTransactionInfo.is_owner"
-        >
-          Reject
-        </button>
+        <template v-else>
+          <button
+            class="btn btn-primary btn-md wt-100 mgb-4"
+            @click="makePaymentForTransaction"
+          >
+            Make Payment
+          </button>
+
+          <button
+            class="btn btn-secondary btn-md wt-100 mgt-18"
+            v-if="!isTransactionOwner"
+          >
+            Reject
+          </button>
+        </template>
       </div>
     </template>
   </ModalCover>
@@ -114,13 +137,74 @@ export default {
         balance_amount,
       };
     },
+
+    isTransactionOwner() {
+      return this.getUser.email === this.transaction.owner;
+    },
+
+    getTotalAmount() {
+      return Number(
+        this.transaction.total_amount.slice(1)?.split(",").join("")
+      );
+    },
+
+    isExcessAmountPaid() {
+      let excess_amount = this.transaction.amount_paid - this.getTotalAmount;
+
+      return {
+        status: excess_amount > 0 ? true : false,
+        amount: excess_amount,
+      };
+    },
+
+    isLessAmountPaid() {
+      let less_amount = this.getTotalAmount - this.transaction.amount_paid;
+
+      return {
+        status: less_amount > 0 ? true : false,
+        amount: less_amount,
+      };
+    },
   },
 
   methods: {
+    ...mapActions({
+      walletToWalletTransfer: "transactions/walletToWalletTransfer",
+    }),
+
     makePaymentForTransaction() {
       // CHECK IF USER HAS ALREADY ACCEPTED TRANSACTION
       // TOGGLE MAKE PAYMENT OPTIONS
       this.$emit("togglePaymentOptions");
+    },
+
+    reverseExcessFund() {
+      this.handleClick("refundBtn");
+
+      let request_payload = {
+        sender_account_id: this.getAccountId,
+        recipient_account_id: this.getAccountId,
+        final_amount: this.isExcessAmountPaid.amount,
+        sender_currency: `ESCROW_${this.transaction.currency_value}`,
+        recipient_currency: this.transaction.currency_value,
+        transaction_id: this.$route.params.id,
+        refund: "yes",
+      };
+
+      this.walletToWalletTransfer(request_payload)
+        .then((response) => {
+          this.handleClick("refundBtn", "Initiate Reversal", false);
+
+          if (response.code === 200) {
+            this.pushToast(
+              "Excess funds has been reversed to your wallet.",
+              "success"
+            );
+
+            setTimeout(() => location.reload(), 3000);
+          }
+        })
+        .catch((err) => console.log(err));
     },
   },
 };
