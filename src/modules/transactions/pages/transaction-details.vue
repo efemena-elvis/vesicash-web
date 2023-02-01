@@ -604,13 +604,14 @@ export default {
 
           // CHECK TRANSACTION THAT IS NOT CLOSED
           else {
+            console.log("hit 2");
             let closed_milestone_index = MS.map(
               (milestone) => milestone.status
             ).lastIndexOf("Closed - Disbursement Complete");
 
             let next_milestone_status = MS[closed_milestone_index + 1].status;
 
-            if (next_milestone_status.toLowerCase() === "accepted funded") {
+            if (next_milestone_status.toLowerCase() === "accepted - funded") {
               this.updateSingleMilestoneStatus(
                 this.ms_key["in-progress"],
                 MS[closed_milestone_index + 1]
