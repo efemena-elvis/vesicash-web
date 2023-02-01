@@ -63,7 +63,7 @@
     <!-- MODALS -->
     <!-- v-if="show_start_walkthrough_modal && !hasUserSeenTour" -->
     <portal to="vesicash-modals">
-      <transition name="fade" v-if="false">
+      <transition name="fade" v-if="show_start_walkthrough_modal">
         <startWalkthroughModal @closeTriggered="toggleStartWalkthrough" />
       </transition>
 
@@ -220,7 +220,7 @@ export default {
           // SCROLL TO TOP
           window.scrollTo(0, 0);
 
-          if (this.getTourData.count === 0) {
+          if (this.getTourData.count === 0 && !this.getUser.has_seen_tour) {
             if (window.innerWidth > 1024)
               this.show_start_walkthrough_modal = true;
             // else this.show_phone_entry = true;
