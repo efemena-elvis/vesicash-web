@@ -15,7 +15,9 @@
 
         <!-- COPY SECTION -->
         <div class="copy-section col-12 col-md-6 mb-5 mb-md-0">
-          <div class="title-text h2-text roobert-700 grey-900 mgb-16">Transfer funds worldwide</div>
+          <div class="title-text h2-text roobert-700 grey-900 mgb-16">
+            Transfer funds worldwide
+          </div>
 
           <div class="description-text h7-text roobert-400 grey-600 mgb-40">
             Withdraw money from a linked bank account or send money to over 50
@@ -27,7 +29,8 @@
             to="/register-lander"
             class="btn btn-primary btn-md roobert-500"
             style="width: max-content"
-          >Create an account</router-link>
+            >Create an account</router-link
+          >
         </div>
       </div>
     </div>
