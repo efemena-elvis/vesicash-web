@@ -4,7 +4,9 @@
     :class="use_custom_style && 'custom-text-style'"
   >
     <!-- TOTAL TEXT VALUE -->
-    <div class="title grey-600 tertiary-1-text">{{ total_text }}</div>
+    <div class="title grey-600 tertiary-1-text text-capitalize">
+      {{ total_text }}
+    </div>
 
     <!-- TOTAL AMOUNT VALUE -->
     <div class="value grey-900 primary-1-text" v-html="total_value"></div>

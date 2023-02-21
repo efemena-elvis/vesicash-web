@@ -61,7 +61,7 @@
         <div class="mgr-8 position-relative" style="top: -1px">
           <MoneyIcon />
         </div>
-        Withdraw
+        Transfer fund
       </button>
 
       <router-link class="btn btn-tertiary btn-md" to="/exchange/setup">
@@ -93,13 +93,14 @@
 
       <transition name="fade" v-if="show_wallet_modal">
         <WithdrawSelectModal
+          @accountTypeSelected="closeWalletOpenAccount"
           @closeTriggered="toggleWalletModal"
-          @walletSelected="closeWalletOpenAccount"
         />
       </transition>
 
       <transition name="fade" v-if="show_wallet_account_modal">
         <WithdrawAccountModal
+          :account_type="selected_withdraw_account"
           @closeTriggered="toggleWalletAccountModal"
           @goBackWalletSelection="closeAccountOpenWallet"
           @accountSelected="closeAccountOpenConfirm"
@@ -110,12 +111,12 @@
         <WithdrawConfirmModal
           @closeTriggered="toggleWalletConfirmModal"
           @goBackAccountSelection="closeConfimWithdrawOpenAccount"
-          @next="toggleOTPModal"
+          @openOTPDialog="toggleOTPModal"
         />
       </transition>
 
       <transition name="fade" v-if="show_otp_modal">
-        <VerifyOtpModal @done="toggleSuccessModal" />
+        <WithdrawalOtpModal @done="toggleSuccessModal" />
       </transition>
 
       <transition name="fade" v-if="show_success_modal">
@@ -165,7 +166,7 @@ export default {
         /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/modals/withdraw-modals/withdraw-confirm-modal"
       ),
 
-    VerifyOtpModal: () =>
+    WithdrawalOtpModal: () =>
       import(
         /* webpackChunkName: "dashboard-module" */ "@/modules/transactions/modals/withdrawal-otp-modal"
       ),
@@ -216,6 +217,8 @@ export default {
 
     default_wallet: "naira",
     withdrawn_amount: "",
+
+    selected_withdraw_account: "",
   }),
 
   watch: {
@@ -286,8 +289,9 @@ export default {
       });
     },
 
-    closeWalletOpenAccount() {
+    closeWalletOpenAccount($event) {
       this.show_wallet_modal = false;
+      this.selected_withdraw_account = $event;
       this.toggleWalletAccountModal();
     },
 

@@ -42,7 +42,9 @@
 
     <!-- TRANSACTION SECTION -->
     <template>
-      <div class="section-title mgb-18 h5-text grey-900">Transactions</div>
+      <div class="section-title mgb-18 h5-text grey-900">
+        Escrow Transactions
+      </div>
 
       <!-- TRANSACTION TABLE DATA -->
       <div class="disbursement-table-wrapper">

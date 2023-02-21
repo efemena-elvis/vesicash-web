@@ -17,8 +17,10 @@ export default {
   // ==================================
   async getWalletBalance({ commit }, payload) {
     const response = await $api.push(routes.wallet_balance, { payload });
+
     if (response.code === 200)
       commit("SET_WALLET_BALANCES", response.data.wallets);
+
     return response;
   },
 

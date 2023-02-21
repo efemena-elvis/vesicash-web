@@ -47,7 +47,7 @@
 import TagCard from "@/shared/components/card-comps/tag-card";
 
 export default {
-  name: "TransactionWalletTableRow",
+  name: "TransactionWalletFundingTableRow",
 
   components: {
     TagCard,
@@ -119,7 +119,7 @@ export default {
         },
         {
           title: "Account email",
-          value:  this.data?.user_details?.email || this.getUser.email,
+          value: this.data?.user_details?.email || this.getUser.email,
         },
         {
           title: "Business id",

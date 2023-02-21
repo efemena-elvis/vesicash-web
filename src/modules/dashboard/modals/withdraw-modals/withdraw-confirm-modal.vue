@@ -134,7 +134,7 @@ export default {
       this.sendUserOTP(payload)
         .then((response) => {
           this.handleClick("continue", "Continue", false);
-          if (response.code === 200) this.$emit("next");
+          if (response.code === 200) this.$emit("openOTPDialog");
           else
             this.pushToast(
               response.message ||

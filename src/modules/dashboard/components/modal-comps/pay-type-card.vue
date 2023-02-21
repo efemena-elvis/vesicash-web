@@ -16,10 +16,14 @@
       <!-- CARD INFO -->
       <div class="card-info">
         <!-- CARD TITLE -->
-        <div class="card-title primary-1-text grey-900 mgb-4">{{ payment.title }}</div>
+        <div class="card-title primary-1-text grey-900 mgb-4">
+          {{ payment.title }}
+        </div>
 
         <!-- CARD DESCRIPTION -->
-        <div class="card-description tertiary-2-text grey-600">{{ payment.description }}</div>
+        <div class="card-description tertiary-2-text grey-600">
+          {{ payment.description }}
+        </div>
       </div>
 
       <!-- v-if="payment.id===3" -->
@@ -68,9 +72,8 @@ export default {
         id: 1,
         icon: "CreditCardIcon",
         title: "Pay with card",
-        description:
-          "Lorem ipsum, dolor sit amet consectetur adipisicing elit consectetur.",
-        action_type: "route",
+        description: "",
+        action_type: "",
         action: "",
       }),
     },
@@ -98,8 +101,7 @@ export default {
   }
 
   &:hover {
-    background: rgba(getColor("grey-10"), 0.85);
-    transform: scale(1.02);
+    background: rgba(getColor("grey-10"), 0.95);
   }
 
   .left-section {

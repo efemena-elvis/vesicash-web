@@ -52,7 +52,7 @@ export default {
   },
 
   computed: {
-    isBusiness() {
+    isBusinessAccount() {
       return this.getAccountType === "business" ? true : false;
     },
 
@@ -81,7 +81,7 @@ export default {
         wallet_description = "Make payment from your pound wallet";
       }
 
-      return this.isBusiness
+      return this.isBusinessAccount
         ? [
             {
               id: 1,
@@ -89,7 +89,6 @@ export default {
               title: card_title,
               description: card_description,
               action_type: "modal",
-              // action: "SuccessfulPayment",
               action: "toggleCardPayment",
             },
             {

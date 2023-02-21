@@ -288,6 +288,7 @@ export default {
       };
 
       const payload = this.email ? request_email_payload : request_payload;
+
       const action = this.email ? "verifyEmailOTP" : "verifyUserOTP";
 
       this[action](payload)

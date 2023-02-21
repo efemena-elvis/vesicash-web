@@ -32,10 +32,16 @@
     </div>
 
     <!-- ACCOUNT CONFIRM CARD -->
-    <div class="account-confirm-card grey-10-bg rounded-12 mgt--10">
-      <div class="name tertiary-2-text" :class="invalid_account ? 'red-600' : 'grey-900'">
+    <div
+      class="account-confirm-card grey-10-bg rounded-12 mgt--10"
+      v-if="account_details?.name || verification_message"
+    >
+      <div
+        class="name tertiary-2-text"
+        :class="invalid_account ? 'red-600' : 'grey-900'"
+      >
         {{
-        account_details ? account_details.account_name : verification_message
+          account_details ? account_details.account_name : verification_message
         }}
       </div>
     </div>
@@ -113,7 +119,7 @@ export default {
       account_number: true,
     },
     account_details: null,
-    verification_message: "Account Name",
+    verification_message: "",
     invalid_account: false,
   }),
 
@@ -158,7 +164,7 @@ export default {
       const response = await this.verifyBankAccount(payload);
 
       if (response?.status === "ok") {
-        this.verification_message = "Account Name";
+        this.verification_message = "";
         this.account_details = response.data;
 
         // console.log("DETAILS", this.getNairaBankDetails);

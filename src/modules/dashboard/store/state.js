@@ -1,8 +1,8 @@
 export default () => ({
-    wallet: {
-        balances: [],
-        type: 'naira'
-    },
+  wallet: {
+    balances: [],
+    type: "",
+  },
 
-    withdrawal_meta: null
-})
+  withdrawal_meta: null,
+});
