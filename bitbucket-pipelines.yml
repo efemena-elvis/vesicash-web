@@ -65,7 +65,6 @@ pipelines:
     staging:
       - step:
           name: Build for Staging
-          trigger: manual
           script:
             - npm install
             - npm run build:staging
