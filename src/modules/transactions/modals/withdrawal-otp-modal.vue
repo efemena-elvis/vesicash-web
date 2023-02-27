@@ -17,8 +17,9 @@
           to withdraw
           <b>
             {{
-              `${$money.getSign(getWalletType)}${$money.addComma(
-                getWithdrawalMeta.total
+              `${$money.getSign(getWalletType.slug)}${$money.addComma(
+                Number(getWithdrawalMeta.amount) -
+                  getWithdrawalMeta.withdrawal_charge
               )}`
             }}
           </b>
@@ -169,14 +170,16 @@ export default {
     getWithdrawalPayload() {
       return {
         account_id: this.getAccountId,
-        beneficiary_name: this.getWithdrawalMeta.name,
-        bank_account_number: this.getWithdrawalMeta.account_no.toString(),
-        bank_code: this.getWithdrawalMeta.bank_code?.toString(),
+        beneficiary_name:
+          this.getWithdrawalMeta.selected_beneficiary.account_name,
+        bank_account_number:
+          this.getWithdrawalMeta.selected_beneficiary.account_no.toString(),
+        bank_code: this.getWithdrawalMeta.selected_beneficiary.bank_code,
         amount: this.getWithdrawalMeta.amount,
-        currency: this.getWalletType === "naira" ? "NGN" : "USD",
-        debit_currency: this.getWalletType === "naira" ? "NGN" : "USD",
+        currency: this.getWalletType.short,
+        debit_currency: this.getWalletType.short,
         gateway: "monnify",
-        escrow_wallet: this.escrow ? "yes" : "no",
+        escrow_wallet: "no",
       };
     },
 
@@ -390,7 +393,6 @@ export default {
         );
 
         this.$bus.$emit("hide-page-loader");
-
         this.handleClick("continue", "Continue", false);
 
         response.code == 200
@@ -401,6 +403,7 @@ export default {
             );
       } catch (error) {
         console.log(error);
+        this.$bus.$emit("hide-page-loader");
         this.handleClick("continue", "Continue", false);
         this.pushToast("Withdrawal failed. Please try again", "error");
       }

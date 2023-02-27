@@ -9,10 +9,10 @@
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
         <!-- BACK BUTTON -->
-        <PageBackBtn custom_mode @clicked="$emit('goBackWalletSelection')" />
+        <PageBackBtn custom_mode @clicked="processBackButtonClicks" />
 
         <div class="modal-cover-title h5-text mgt--4">
-          <span class="text-capitalize">{{ account_type }}</span> account
+          {{ account_type.title }}
         </div>
       </div>
     </template>
@@ -22,12 +22,12 @@
       <div class="modal-cover-body">
         <!-- CURRENCY SELECTION -->
         <div class="mgb-24">
-          <div class="form-label">Select currency</div>
+          <div class="form-label">Select wallet type</div>
 
           <DropSelectInput
-            placeholder="Select currency"
+            placeholder="Select wallet"
             :options="currency_options"
-            @selectedOption="selectDropdownOption('currency', $event)"
+            @selectedOption="selectDropdownOption('wallet', $event)"
           />
         </div>
 
@@ -65,39 +65,47 @@
             />
           </div>
 
-          <template v-if="!initiate_new_account">
+          <template v-if="!create_new_account">
             <!--ACCOUNT DISPLAY DETAILS -->
             <div class="form-group mgb-20">
-              <div class="form-label">Select beneficiary account</div>
+              <div class="form-label">
+                {{ getBeneficiaryLabel }}
+              </div>
 
               <DropSelectInput
-                placeholder="Select beneficiary account"
+                :placeholder="getBeneficiaryLabel"
                 :options="beneficiary_account_options"
                 :allow_search="true"
                 :pre_select="account_pre_select"
                 @selectedOption="selectDropdownOption('account', $event)"
               />
+
+              <div
+                class="account-display-area mgt-10"
+                v-if="form.selected_beneficiary.selected"
+              >
+                <AccountDisplayCard :card_detail="form.selected_beneficiary" />
+              </div>
             </div>
 
-            <!-- RADIO SELECT -->
-            <div v-if="account_type !== 'settlement'">
+            <!-- ADD NEW BANK BENEFICIARY -->
+            <div v-if="account_type.slug !== 'settlement'">
               <RadioSelectCard
                 label_id="account1"
-                label_text="Add new bank details"
+                label_text="Add new account details"
                 card_name="account"
                 :single_type="true"
-                @clicked="createNewAccount"
+                @clicked="addNewAccountBeneficiary"
               />
             </div>
           </template>
 
           <!-- NEW ACCOUNT VIEW -->
-          <template v-if="initiate_new_account">
+          <template v-if="create_new_account">
             <transition name="fade" mode="out-in">
               <component
-                :is="getAccountType"
-                @nairaBankUpdated="new_naira_account = $event"
-                @dollarBankUpdated="updateDollarAccount"
+                :is="getNewAccountCreateView"
+                @bankDetailsUpdated="validateNewBankAccountPayload"
               />
             </transition>
           </template>
@@ -111,7 +119,7 @@
         <button
           class="btn btn-primary btn-md wt-100"
           @click="handleAccountSelection"
-          :disabled="continueDisabled"
+          :disabled="isFormFieldsValid"
           ref="continue"
         >
           Continue
@@ -137,6 +145,12 @@ export default {
     ModalCover,
     PageBackBtn,
     DropSelectInput,
+    AccountDisplayCard: () =>
+      import(
+        /* webpackChunkName: "dashboard-module" */
+        "@/modules/dashboard/components/modal-comps/account-display-card"
+      ),
+
     RadioSelectCard: () =>
       import(
         /* webpackChunkName: "shared-module" */ "@/shared/components/card-comps/radio-select-card"
@@ -157,10 +171,16 @@ export default {
         /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/modal-comps/new-naira-account"
       ),
 
-    NewDollarAccount: () =>
+    NewWalletAccount: () =>
       import(
-        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/modal-comps/new-dollar-account"
+        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/modal-comps/new-wallet-account"
       ),
+
+    NewForeignAccount: () =>
+      import(
+        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/modal-comps/new-foreign-account"
+      ),
+
     BasicInput: () =>
       import(
         /* webpackChunkName: 'shared-module' */ "@/shared/components/form-comps/basic-input"
@@ -174,8 +194,7 @@ export default {
     },
 
     account_type: {
-      type: String,
-      default: "settlement",
+      type: Object,
     },
   },
 
@@ -185,98 +204,59 @@ export default {
       getWalletBalances: "dashboard/getWalletBalances",
     }),
 
-    getAccountType() {
-      return this.getWalletType === "naira"
-        ? "NewNairaAccount"
-        : "NewDollarAccount";
+    // GET ACCOUNT BENEFICIARY INPUT FILED LABEL
+    getBeneficiaryLabel() {
+      return `Select ${
+        this.account_type.slug === "wallet" ? "wallet" : "beneficiary"
+      } account`;
     },
 
-    getSelectedAccount() {
-      return this.accounts.find((account) => account.selected);
+    // GET DISPLAY COMPONENTS VIEW
+    getNewAccountCreateView() {
+      if (this.account_type.slug === "wallet") return "NewWalletAccount";
+      else
+        return this.getWalletType?.slug === "naira"
+          ? "NewNairaAccount"
+          : "NewForeignAccount";
     },
 
-    getNewAccount() {
-      if (!this.initiate_new_account) return this.getSelectedAccount;
-      return this.getWalletType === "naira"
-        ? this.new_naira_account
-        : this.new_dollar_account;
-    },
+    // dollarWithdrawalDetails() {
+    //   return {
+    //     amount: Number(Number(this.form.amount)),
+    //     fee: this.withdrawal_charge,
+    //     total: Number(this.form.amount),
+    //     country: "United States",
+    //     phone: this.phone,
+    //     first_name: this.getFirstName,
+    //     last_name: this.getLastName,
+    //     name: this.getNewAccount?.account_name || "",
+    //     bank_name: this.getNewAccount?.bank_name || "",
+    //     iban: this.getNewAccount?.account_no || "",
+    //     account_no: this.getNewAccount?.account_no || "",
+    //     swift_code: this.getNewAccount?.swift_code || "",
+    //     sort_code: this.getNewAccount?.sort_code || "",
+    //     bank_address: this.getNewAccount?.bank_address || "",
+    //     bank_code:
+    //       this.getNewAccount?.bank.code || this.getNewAccount?.bank_code,
+    //   };
+    // },
 
-    getFirstName() {
-      if (!this.getNewAccount) return "";
-      return this.getNewAccount?.account_name?.trim().split(/\s+/)[1];
-    },
-
-    getLastName() {
-      if (!this.getNewAccount) return "";
-      return this.getNewAccount?.account_name?.trim().split(/\s+/)[0];
-    },
-
-    nairaWithdrawalDetails() {
-      return {
-        amount: Number(this.form.amount),
-        fee: this.withdrawal_charge,
-        total: Number(this.form.amount),
-        country: "Nigeria",
-        phone: this.phone,
-        first_name: this.getFirstName,
-        last_name: this.getLastName,
-        name: this.getNewAccount?.account_name || "",
-        bank_name: this.getNewAccount?.bank_name || "",
-        account_no: this.getNewAccount?.account_no || "",
-        bank_code:
-          this.getNewAccount?.bank?.code || this.getNewAccount?.bank_code,
-      };
-    },
-
-    dollarWithdrawalDetails() {
-      return {
-        amount: Number(Number(this.form.amount)),
-        fee: this.withdrawal_charge,
-        total: Number(this.form.amount),
-        country: "United States",
-        phone: this.phone,
-        first_name: this.getFirstName,
-        last_name: this.getLastName,
-        name: this.getNewAccount?.account_name || "",
-        bank_name: this.getNewAccount?.bank_name || "",
-        iban: this.getNewAccount?.account_no || "",
-        account_no: this.getNewAccount?.account_no || "",
-        swift_code: this.getNewAccount?.swift_code || "",
-        sort_code: this.getNewAccount?.sort_code || "",
-        bank_address: this.getNewAccount?.bank_address || "",
-        bank_code:
-          this.getNewAccount?.bank.code || this.getNewAccount?.bank_code,
-      };
-    },
-
-    continueDisabled() {
-      if (!this.form.amount) return true;
-      if (this.initiate_new_account) {
-        return this.getAccountType === "NewNairaAccount"
-          ? !this.new_naira_account
-          : !this.new_dollar_account;
-      } else {
-        return this.getSelectedAccount ? false : true;
-      }
-    },
-  },
-
-  watch: {
-    getWalletType: {
-      handler(currency) {},
-      deep: true,
+    // CHECK AMOUNT AND BANK ACCOUNT SELECTED
+    isFormFieldsValid() {
+      return this.form.amount && this.form.selected_beneficiary.selected
+        ? false
+        : true;
     },
   },
 
   async mounted() {
-    await this.fetchUserSavedBankList();
+    await this.fetchUserSavedAccountList();
   },
 
   data: () => ({
     currency_options: [
-      { id: 1, name: "NGN (₦)", slug: "naira", short: "NGN" },
-      { id: 2, name: "USD ($)", slug: "dollar", short: "USD" },
+      { id: 1, name: "Naira wallet (NGN)", slug: "naira", short: "NGN" },
+      { id: 2, name: "Dollar wallet (USD)", slug: "dollar", short: "USD" },
       // { id: 3, name: "GBP (£)", slug: "pound", short: "GPB" },
     ],
     selected_currency: {
@@ -291,15 +271,16 @@ export default {
 
     form: {
       amount: "",
-      selected_beneficiary: {},
+      selected_beneficiary: {
+        selected: false,
+      },
     },
 
-    initiate_new_account: false,
-    new_account_type: "NewDollarAccount",
-    new_naira_account: null,
-    new_dollar_account: null,
-    phone: "",
-    amount: "",
+    validity: {
+      amount: true,
+    },
+
+    create_new_account: false,
   }),
 
   methods: {
@@ -313,14 +294,34 @@ export default {
       setWithrawalMeta: "dashboard/SET_WITHDRAWAL_META",
     }),
 
+    // CHECK STATE OF CREATE NEW ACCOUNT
+    // IF STATE IS TRUE TOGGLE ELSE GO BACK
+    processBackButtonClicks() {
+      if (this.create_new_account) {
+        this.create_new_account = false;
+        return true;
+      } else {
+        this.$emit("goBackWalletSelection");
+      }
+    },
+
+    // RESET PREVIOUS FORM STATE VALUE
+    resetPreviousFormState() {
+      this.form.amount = "";
+      this.form.selected_beneficiary = { selected: false };
+      this.account_pre_select = {};
+    },
+
     // SELECT OPTION FROM OPTION LIST
     selectDropdownOption(type, value) {
-      if (type === "currency") {
+      if (type === "wallet") {
+        this.resetPreviousFormState();
+
         let currency = this.currency_options.find(
           (option) => option.id === value
         );
 
-        this.setWalletType(currency.slug);
+        this.setWalletType(currency);
         this.selected_currency = currency;
 
         this.selected_currency_balance = this.getSelectedCurrencyBalance(
@@ -329,12 +330,16 @@ export default {
       }
 
       if (type === "account") {
+        this.account_pre_select = {};
+
         let beneficiary = this.beneficiary_account_options.find(
           (option) => option.id === value
         );
 
-        this.form.selected_beneficiary = beneficiary?.options;
-        console.log(this.form.selected_beneficiary);
+        this.form.selected_beneficiary = {
+          ...beneficiary?.options,
+          selected: true,
+        };
       }
     },
 
@@ -346,20 +351,53 @@ export default {
       );
     },
 
-    // FETCH ALL SAVED USER BENEFICIARY BANK ACCOUNTS
-    async fetchUserSavedBankList() {
+    // RESET ANY PREVIOUS SELECTED ACOUNT DATA
+    // AND CHANGE NEW ACCOUNT VIEW
+    addNewAccountBeneficiary() {
+      this.form.selected_beneficiary = { selected: false };
+      this.create_new_account = true;
+    },
+
+    // VALIDATES NEW ACCOUNT PAYLOAD
+    validateNewBankAccountPayload(payload) {
+      if (payload?.account_name) {
+        this.form.selected_beneficiary = {
+          ...payload,
+          selected: true,
+        };
+
+        // SWAP BACK TO INITIAL VIEW
+        this.create_new_account = false;
+      }
+    },
+
+    // CHECK ACCOUNT BALANCE BEFORE PROCEEDING ON WITHDRAWAL
+    accountBalanceNotSufficient() {
+      let account_balance = Number(this.selected_currency_balance);
+      let withdrawal_amount = Number(this.form.amount);
+
+      return withdrawal_amount > Number(account_balance) ? true : false;
+    },
+
+    // FETCH ALL SAVED USER BENEFICIARY ACCOUNTS
+    async fetchUserSavedAccountList() {
       this.beneficiary_account_options = [];
 
       try {
         const response = await this.fetchBankDetails(this.getAccountId);
         let accounts =
           response.code === 200
-            ? response.data.map((account, index) => ({
-                ...account,
-                bank_id: account.bank?.code ?? "-",
-                index,
-                selected: false,
-              }))
+            ? response.data.map((account) => {
+                // FORMAT BANK CODE
+                let bank_code = account.bank?.id.toString();
+                let formatted_bank_code =
+                  bank_code.length < 3 ? `0${bank_code}` : bank_code;
+
+                return {
+                  ...account,
+                  bank_code: formatted_bank_code,
+                };
+              })
             : [];
 
         // ! Filter accounts base on currency and account type
@@ -380,47 +418,42 @@ export default {
       }
     },
 
-    updateDollarAccount(account) {
-      this.phone = account?.phone;
-      const dollar_account = account;
-      delete dollar_account?.phone;
-      this.new_dollar_account = dollar_account;
-    },
-
-    toggleSelection(index) {
-      this.accounts.map((account) => (account.selected = false));
-      this.accounts[index].selected = true;
-    },
-
-    createNewAccount() {
-      this.initiate_new_account = true;
-    },
-
     async handleAccountSelection() {
-      const withdrawalMeta =
-        this.getAccountType === "NewNairaAccount"
-          ? this.nairaWithdrawalDetails
-          : this.dollarWithdrawalDetails;
+      // CHECK ACCOUNT BALANCE
+      if (this.accountBalanceNotSufficient()) {
+        this.form.amount = "";
+        this.pushToast(
+          "Your wallet account balance is not sufficient",
+          "error"
+        );
+        return true;
+      }
 
-      if (this.initiate_new_account) {
+      // SETUP WITHDRAWAL CHARGE
+      let withdrawal_details = {
+        ...this.form,
+        withdrawal_charge: this.withdrawal_charge,
+      };
+
+      if (this.create_new_account) {
         this.handleClick("continue", "Adding new account");
+
+        // REMOVE THE SELECTED KEY FROM SELECTED BENEFICIARY
+        delete this.form.selected_beneficiary.selected;
 
         const response = await this.addNewBank({
           account_id: this.getAccountId,
-          updates:
-            this.getAccountType === "NewNairaAccount"
-              ? this.new_naira_account
-              : this.new_dollar_account,
+          updates: this.form.selected_beneficiary,
         });
 
         this.handleClick("continue", "Continue", false);
 
         if (response.code === 200) {
-          this.setWithrawalMeta(withdrawalMeta);
+          this.setWithrawalMeta(withdrawal_details);
           this.$emit("accountSelected");
         }
       } else {
-        this.setWithrawalMeta(withdrawalMeta);
+        this.setWithrawalMeta(withdrawal_details);
         this.$emit("accountSelected");
       }
     },

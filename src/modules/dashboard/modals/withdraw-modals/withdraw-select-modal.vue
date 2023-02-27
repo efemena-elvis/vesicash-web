@@ -9,9 +9,7 @@
       <div class="modal-cover-header">
         <div class="modal-cover-title">Transfer funds</div>
 
-        <div class="modal-cover-meta">
-          Please select a payment withdrawal option
-        </div>
+        <div class="modal-cover-meta">Please select a fund transfer option</div>
       </div>
     </template>
 
@@ -22,7 +20,7 @@
           v-for="(data, index) in withdraw_options"
           :key="index"
           :payment="data"
-          @payTypeClicked="$emit('accountTypeSelected', data.slug)"
+          @payTypeClicked="$emit('accountTypeSelected', data)"
         />
       </div>
     </template>
@@ -67,22 +65,22 @@ export default {
           title: "Settlement account",
           slug: "settlement",
           description: this.isBusinessAccount
-            ? "Transfer to your business accounts."
-            : "Transfer to your personal accounts.",
+            ? "Transfer funds to your business accounts."
+            : "Transfer funds to your personal accounts.",
         },
         {
           id: 2,
           icon: "ArrowRightIcon",
           title: "3rd party account",
           slug: "3rd party",
-          description: "Transfer to a 3rd party account.",
+          description: "Transfer funds to a 3rd party account.",
         },
         {
           id: 3,
           icon: "WalletIcon",
-          title: "Wallet account",
+          title: "Vesicash wallet",
           slug: "wallet",
-          description: "Transfer to a Vesicash user wallet.",
+          description: "Transfer funds to a Vesicash user wallet.",
         },
       ],
     };

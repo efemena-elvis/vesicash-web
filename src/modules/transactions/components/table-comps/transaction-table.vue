@@ -66,9 +66,9 @@ export default {
     return {
       table_header: [
         "Transaction name",
-        "Transacting parties",
-        "Payment due date",
-        "Amount to be paid",
+        "Parties type",
+        "Due date",
+        "Amount",
         "Status",
         "Actions",
       ],
@@ -184,15 +184,14 @@ export default {
 
   &-3 {
     min-width: toRem(150);
-    vertical-align: top;
   }
 
   &-4 {
-    min-width: toRem(120);
+    min-width: toRem(110);
   }
 
   &-5 {
-    min-width: toRem(100);
+    min-width: toRem(80);
   }
 
   &-6 {

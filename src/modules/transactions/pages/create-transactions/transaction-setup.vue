@@ -72,7 +72,7 @@
       </div>
 
       <div class="col-12 col-lg-10 col-xl-8 mgb-40">
-        <ContractUploadCard />
+        <ContractUploadCard @contractUploaded="updateTransactionFile" />
       </div>
     </template>
 
@@ -112,7 +112,9 @@ export default {
     ...mapGetters({ getTransactionSetup: "transactions/getTransactionSetup" }),
 
     isDisabled() {
-      return Object.values(this.form).every((valid) => valid?.length)
+      return this.form.transaction_name &&
+        this.form.transaction_party &&
+        this.form.transaction_type
         ? false
         : true;
     },
@@ -188,6 +190,7 @@ export default {
         transaction_name: "",
         transaction_party: "",
         transaction_type: "",
+        transaction_files: [],
       },
 
       validity: {
@@ -202,6 +205,10 @@ export default {
     ...mapMutations({
       UPDATE_TRANSACTION_SETUP: "transactions/UPDATE_TRANSACTION_SETUP",
     }),
+
+    updateTransactionFile(file) {
+      this.form.transaction_files = file;
+    },
 
     nextProgressFlow() {
       this.UPDATE_TRANSACTION_SETUP(this.form);

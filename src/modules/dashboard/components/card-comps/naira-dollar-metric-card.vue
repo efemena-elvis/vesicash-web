@@ -78,13 +78,13 @@
       <transition name="fade" v-if="show_fund_wallet_select_modal">
         <FundWalletSelectModal
           @closeTriggered="toggleFundWalletSelectModal"
-          @walletSelected="closeWalletOpenWalletDetails"
+          @fundingOptionSelected="closeWalletOpenWalletDetails"
         />
       </transition>
 
       <transition name="fade" v-if="show_fund_wallet_info_modal">
-        <FundWalletDetailsModal
-          :wallet_type="default_wallet"
+        <FundWalletEntryModal
+          :payment_type="selected_payment_option"
           @closeTriggered="toggleFundWalletDetailsModal"
           @goBackWalletSelection="closeWalletDetailsOpenWalletSelect"
           @walletFunded="closeFundDetailsAndOpenSuccess"
@@ -143,12 +143,12 @@ export default {
     MoneyIcon,
     FundWalletSelectModal: () =>
       import(
-        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/modals/wallet-modals/wallet-select-modal"
+        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/modals/fund-wallet-modals/fund-wallet-select-modal"
       ),
 
-    FundWalletDetailsModal: () =>
+    FundWalletEntryModal: () =>
       import(
-        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/modals/wallet-modals/wallet-details-modal"
+        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/modals/fund-wallet-modals/fund-wallet-entry-modal"
       ),
 
     WithdrawSelectModal: () =>
@@ -215,7 +215,7 @@ export default {
     show_otp_modal: false,
     show_success_modal: false,
 
-    default_wallet: "naira",
+    selected_payment_option: "card",
     withdrawn_amount: "",
 
     selected_withdraw_account: "",
@@ -271,7 +271,7 @@ export default {
     },
 
     closeWalletOpenWalletDetails($event) {
-      this.default_wallet = $event;
+      this.selected_payment_option = $event;
       this.show_fund_wallet_select_modal = false;
       this.toggleFundWalletDetailsModal();
     },
