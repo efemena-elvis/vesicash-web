@@ -225,7 +225,7 @@ export default {
 
       user_data.access = USER_ACCESS_OPTIONS[0];
       user_data.recipient = USER_PAYOUT_OPTIONS[0];
-      user_data.amount = 0;
+      user_data.amount = "";
       user_data.status = "Accepted";
 
       this.UPDATE_TRANSACTION_BENEFICIARIES([user_data]);

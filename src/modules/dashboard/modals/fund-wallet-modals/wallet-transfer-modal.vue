@@ -54,10 +54,12 @@
       <div class="modal-cover-footer">
         <button
           class="btn btn-primary btn-md wt-100"
-          @click="$emit('transfer',form.amount)"
+          @click="$emit('transfer', form.amount)"
           :disabled="continueDisabled"
           ref="continue"
-        >Continue</button>
+        >
+          Continue
+        </button>
       </div>
     </template>
   </ModalCover>
@@ -103,6 +105,9 @@ export default {
 
   mounted() {
     this.fetchUserWalletBalance();
+
+    // CHECK IF FEE IS IN ROUTE
+    if (this.$route.query.fee) this.form.amount = this.$route.query.fee;
   },
 
   computed: {

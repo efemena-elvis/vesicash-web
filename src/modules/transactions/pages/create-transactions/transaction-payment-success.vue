@@ -14,9 +14,7 @@
             :info="{
               icon: 'SuccessIcon',
               title: 'Payment made successfully',
-              description: `Your payment of <b>${$money.addComma(
-                $route.query.fee
-              )}</b> has been made sucessfully, Please check your escrow account on your dashboard for the payment.`,
+              description: `Your payment of <b>${getTransactionAmount}</b> has been made sucessfully, Please check your escrow account on your dashboard for the payment.`,
             }"
           />
 
@@ -73,9 +71,29 @@ export default {
     titleTemplate: "%s - Vesicash",
   },
 
-  mounted() {
-    if (this.$route.query.reference) this.confirmPayment();
-    else this.payment_confirmed = true;
+  components: {
+    FailedPaymentModal,
+    AuthWrapper,
+    SuccessItemCard: () =>
+      import(
+        /* webpackChunkName: 'shared-module' */ "@/shared/components/card-comps/success-item-card"
+      ),
+  },
+
+  computed: {
+    getTransactionAmount() {
+      let currencies = ["NGN", "USD", "GPB"];
+      let amount_data = this.$route.query.fee;
+      let sliced_currency = amount_data.slice(0, 3);
+
+      if (currencies.includes(sliced_currency)) {
+        return `${this.$money.getSign(sliced_currency)}${this.$money.addComma(
+          amount_data.slice(3)
+        )}`;
+      } else {
+        return `${this.$money.addComma(amount_data.slice(3))}`;
+      }
+    },
   },
 
   data() {
@@ -84,6 +102,11 @@ export default {
       payment_confirmed: false,
       retried: false,
     };
+  },
+
+  mounted() {
+    if (this.$route.query.reference) this.confirmPayment();
+    else this.payment_confirmed = true;
   },
 
   methods: {
@@ -121,7 +144,6 @@ export default {
         this.retried
           ? (this.show_failed_modal = true)
           : this.retryConfirmation();
-        console.log("FAILED TO CONFIRM PAYMENT", error);
         // this.show_failed_modal = true;
 
         // this.pushToast(
@@ -135,15 +157,6 @@ export default {
       this.show_failed_modal = false;
       this.payment_confirmed = true;
     },
-  },
-
-  components: {
-    FailedPaymentModal,
-    AuthWrapper,
-    SuccessItemCard: () =>
-      import(
-        /* webpackChunkName: 'shared-module' */ "@/shared/components/card-comps/success-item-card"
-      ),
   },
 };
 </script>
