@@ -14,6 +14,14 @@
 <script>
 export default {
   name: "mobileTopbar",
+  
+  watch: {
+    $route: {
+      handler() {
+        this.$bus.$emit("close-sidebar");
+      }
+    }
+  },
 
   methods: {
     toggleSidebar() {

@@ -1,5 +1,14 @@
 <template>
-  <div class="escrow-metric-card rounded-12 border-green-100 green-10-bg">
+  <div
+    class="
+      escrow-metric-card
+      position-relative
+      rounded-12
+      border-green-100
+      green-10-bg
+    "
+    :class="ongoingTour ? 'tour-index' : null"
+  >
     <!-- TITLE TEXT -->
     <div class="title-text tertiary-2-text grey-700 mgb-2">In Escrow</div>
 
@@ -103,6 +112,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   name: "EscrowMetricCard",
 
@@ -119,6 +130,15 @@ export default {
   },
 
   computed: {
+    ...mapGetters({ getTourData: "general/getTourData" }),
+
+    ongoingTour() {
+      const { count, ongoing } = this.getTourData;
+
+      if (ongoing) return [1].includes(count) ? true : false;
+      else return false;
+    },
+
     getEscrowNaira() {
       return this.escrow_balance[0].value;
     },
@@ -206,5 +226,10 @@ export default {
     @include draw-shape(120, 32);
     margin-top: toRem(5);
   }
+}
+
+.tour-index {
+  @include transition(0.7s);
+  z-index: 1099;
 }
 </style>

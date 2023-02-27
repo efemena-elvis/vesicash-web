@@ -120,6 +120,7 @@
               class="btn btn-secondary btn-md"
               ref="rejectBtn"
               @click="closeAllMilestoneTransaction"
+              v-if="false"
             >
               Reject
             </button>
@@ -308,9 +309,9 @@ export default {
       // GET ROLE
       let user_role = this.parties.find(
         (party) => party.account_id === this.getAccountId
-      ).role;
+      )?.role;
 
-      if (user_role.toLowerCase() === "buyer") {
+      if (user_role?.toLowerCase() === "buyer") {
         if (
           ["in progress", "delivered", "delivered rejected"].includes(
             this.milestone.status.toLowerCase()

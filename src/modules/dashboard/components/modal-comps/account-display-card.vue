@@ -17,8 +17,10 @@
         <div class="dot" v-if="card_detail.bank_name"></div>
         <div class="item">{{ card_detail.bank_name }}</div>
 
-        <div class="dot" v-if="card_detail.bank_id"></div>
-        <div class="item">{{ card_detail.bank_id }}</div>
+        <template v-if="false">
+          <div class="dot" v-if="card_detail.bank_id"></div>
+          <div class="item">{{ card_detail.bank_id }}</div>
+        </template>
       </div>
     </div>
 

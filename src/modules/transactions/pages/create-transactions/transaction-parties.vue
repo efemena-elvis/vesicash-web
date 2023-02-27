@@ -107,7 +107,10 @@ export default {
     }),
 
     nextProgressFlow() {
-      if (this.checkValidPartyState())
+      if (this.checkValidPartyState()) {
+        if (this.$route.query.party === "single")
+          this.validatePartiesReceipient();
+
         this.$router.push({
           name: "TransactionPayoutRules",
           query: {
@@ -121,6 +124,17 @@ export default {
                 : false,
           },
         });
+      }
+    },
+
+    // ===========================================================
+    // VALIDATE THE PARTY MEMBER RECEIVING PAYOUT FOR ONE ON ONE
+    // ===========================================================
+    validatePartiesReceipient() {
+      this.getTransactionBeneficiaries.map((beneficiary) => {
+        beneficiary.recipient =
+          USER_PAYOUT_OPTIONS[beneficiary.role.id === 1 ? 0 : 1];
+      });
     },
 
     // ======================================================
@@ -211,7 +225,7 @@ export default {
 
       user_data.access = USER_ACCESS_OPTIONS[0];
       user_data.recipient = USER_PAYOUT_OPTIONS[0];
-      user_data.amount = 0;
+      user_data.amount = "";
       user_data.status = "Accepted";
 
       this.UPDATE_TRANSACTION_BENEFICIARIES([user_data]);

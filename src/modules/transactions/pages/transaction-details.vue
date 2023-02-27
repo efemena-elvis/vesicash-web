@@ -4,9 +4,9 @@
     <PageBackBtn />
 
     <!-- PAGE TITILE -->
-    <div
-      class="page-title grey-900 h4-text mgb-25"
-    >{{ getTransaction.title || "Transaction title.." }}</div>
+    <div class="page-title grey-900 h4-text mgb-25">
+      {{ getTransaction.title || "Transaction title.." }}
+    </div>
 
     <!-- FUND DETAILS SECTION -->
     <template name="fund-details-section">
@@ -153,7 +153,6 @@
           @paid="closeWireAndOpenSuccess"
         />
       </transition>
-
       <transition name="fade" v-if="show_naira_transfer_modal">
         <WalletDetailsModal
           @closeTriggered="toggleNairaTransferModal"
@@ -163,11 +162,23 @@
       </transition>
 
       <transition name="fade" v-if="show_fw_biz_modal">
+        <FlutterwaveBusinessPaymentModal
+          @closeTriggered="toggleFWBizModal"
+          @goBackWalletSelection="closeFWBizOpenPayment"
+          @walletFunded="closeFundDetailsAndOpenSuccess"
+          :gateway="gateway"
+          :amount="
+            getTransaction.totalAmount ? getTransaction.totalAmount : '0'
+          "
+        />
+      </transition>
+
+      <!-- <transition name="fade" v-if="show_fw_biz_modal">
         <FWBizModal
           @closeTriggered="toggleFWBizModal"
           @goBackPaymentSelection="closeFWBizOpenPayment"
         />
-      </transition>
+      </transition>-->
 
       <transition name="fade" v-if="show_failed_wallet_transfer">
         <FailedWalletTransferModal
@@ -286,15 +297,23 @@ export default {
       let transaction_owner = this.getTransaction?.members[0]?.email ?? "Owner";
       let transaction_title = this.getTransaction.title;
       let transaction_amount =
-        this.getTransaction?.totalAmount ?? this.getTransaction?.amount ?? 0;
+        this.getTransaction?.totalAmount ??
+        Number(this.getTransaction?.amount) ??
+        0;
       let transaction_amount_paid =
         Number(this.getTransaction?.amount_paid) ?? 0;
       let transaction_currency = this.getTransaction?.currency ?? "NGN";
+      let escrow_charge = Number(this.getTransaction?.escrow_charge);
 
       return {
         owner: transaction_owner,
         title: transaction_title,
-        amount_paid: transaction_amount_paid,
+        amount_paid:
+          transaction_amount_paid > 0
+            ? transaction_amount_paid + escrow_charge
+            : transaction_amount_paid,
+        currency: this.$money.getSign(transaction_currency),
+        currency_value: transaction_currency,
         total_amount: `${this.$money.getSign(
           transaction_currency
         )}${this.$money.addComma(transaction_amount)}`,
@@ -325,6 +344,15 @@ export default {
     getTransaction: {
       handler(value) {
         value?.milestones.length && this.checkIfTransactionCanStart();
+
+        // CHECK IF EXCESS FUNDS WAS PAID
+        if (
+          Number(value.amount_paid) + Number(value.escrow_charge) >
+            value.totalAmount ??
+          Number(value.amount)
+        ) {
+          this.togglePaymentModal();
+        }
       },
       immediate: true,
     },
@@ -442,8 +470,15 @@ export default {
 
     // CHECK IF EVERY PARTY MEMBERS HAS ACCEPTED
     checkIfTransactionCanStart() {
-      let { members, title, amount_paid, totalAmount, amount } =
-        this.getTransaction;
+      let {
+        members,
+        title,
+        amount_paid,
+        escrow_charge,
+        totalAmount,
+        amount,
+        type,
+      } = this.getTransaction;
 
       let current_user = members?.find(
         (party) => party.account_id === this.getAccountId
@@ -464,15 +499,20 @@ export default {
             this.togglePaymentModal();
           } else if (current_user.status?.toLowerCase() === "accepted") {
             // CHECK PAYMENT
-            if (Number(amount_paid) < Number(totalAmount ?? amount)) {
-              this.togglePaymentModal();
-            } else {
-              if (!all_accepted)
-                this.pushToast(
-                  "Please wait for other parties to accept transaction",
-                  "success"
-                );
-            }
+            if (Number(amount_paid > 0)) {
+              if (
+                Number(amount_paid) + Number(escrow_charge) <
+                Number(totalAmount ?? amount)
+              ) {
+                this.togglePaymentModal();
+              } else {
+                if (!all_accepted)
+                  this.pushToast(
+                    "Please wait for other parties to accept transaction",
+                    "success"
+                  );
+              }
+            } else this.togglePaymentModal();
           } else this.pushToast(`${title} transacion has closed`, "error");
         }
 
@@ -485,7 +525,9 @@ export default {
             if (all_accepted) {
               // CHECK IF FUNDS HAS BEEN PAID
               let payment_complete =
-                Number(amount_paid) >= totalAmount ? true : false;
+                Number(amount_paid) + Number(escrow_charge) >= totalAmount
+                  ? true
+                  : false;
 
               if (!payment_complete) {
                 this.pushToast(
@@ -532,14 +574,63 @@ export default {
 
       // ALERT IF MILESTONE HAS CLOSED
       else if (first_milestone_status?.toLowerCase().includes("closed")) {
-        this.pushToast(`${title} transacion has closed`, "success");
+        if (type === "oneoff") {
+          this.pushToast(`${title} transacion has closed`, "success");
+        }
+
+        // CHECK OTHER MILESTONES
+        else {
+          let MS = this.getSortedMilestones;
+
+          if (MS.at(-1).status?.toLowerCase().includes("closed")) {
+            this.pushToast(`${title} transacion has closed`, "success");
+          }
+
+          // CHECK FOR AN NGGOING MILESTONE TRANSACTION
+          else if (
+            MS.map((milestone) => milestone.status).lastIndexOf(
+              "In Progress"
+            ) !== -1
+          ) {
+            let ongoing_milestone_index = MS.map(
+              (milestone) => milestone.status
+            ).lastIndexOf("In Progress");
+
+            this.pushToast(
+              `${MS[ongoing_milestone_index].title} transaction is in progress`,
+              "success"
+            );
+          }
+
+          // CHECK TRANSACTION THAT IS NOT CLOSED
+          else {
+            let closed_milestone_index = MS.map(
+              (milestone) => milestone.status
+            ).lastIndexOf("Closed - Disbursement Complete");
+
+            let next_milestone_status = MS[closed_milestone_index + 1].status;
+
+            if (next_milestone_status.toLowerCase() === "accepted - funded") {
+              this.updateSingleMilestoneStatus(
+                this.ms_key["in-progress"],
+                MS[closed_milestone_index + 1]
+              );
+            }
+          }
+        }
       }
     },
 
     // INITIATE ESCROW TRANSACTION
     initiateTransaction() {
-      let { members, type, milestones, amount_paid, totalAmount } =
-        this.getTransaction;
+      let {
+        members,
+        type,
+        milestones,
+        amount_paid,
+        escrow_charge,
+        totalAmount,
+      } = this.getTransaction;
 
       // GET FIRST MILESTONE STATUS
       let milestone_status = milestones[0]?.status.toLowerCase();
@@ -555,7 +646,10 @@ export default {
       );
 
       // CHECK IF PAYMENT HAS BEEN MADE
-      let payment_complete = Number(amount_paid) >= totalAmount ? true : false;
+      let payment_complete =
+        Number(amount_paid) + Number(escrow_charge) >= totalAmount
+          ? true
+          : false;
 
       // FOR ALL ACCEPTED AND COMPLETE PAYMENT
       if (
@@ -605,6 +699,28 @@ export default {
           this.getSortedMilestones
         );
       }
+    },
+
+    // UPDATE SINGLE MILESTONE STATUS DATA
+    updateSingleMilestoneStatus(status, milestone) {
+      this.updateMilestoneTransaction({
+        transaction_id: this.$route.params.id,
+        milestone_id: milestone.milestone_id,
+        account_id: this.getAccountId,
+        status,
+      })
+        .then((response) => {
+          if (response.code === 200) {
+            console.log(response);
+
+            this.pushToast(
+              `${milestone.title} milestone is now in progress`,
+              "success"
+            );
+            setTimeout(() => this.fetchSingleTransaction(), 2000);
+          }
+        })
+        .catch((err) => console.log(err));
     },
 
     // UPDATE MILESTONE STATUS DATA

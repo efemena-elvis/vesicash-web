@@ -22,9 +22,9 @@ export const USER_PAYOUT_OPTIONS = [
 ];
 
 export const CURRENCY_OPTIONS = [
-  { id: 1, name: "NGN (₦)", slug: "naira" },
-  { id: 2, name: "USD ($)", slug: "dollar" },
-  { id: 3, name: "GBP (£)", slug: "pound" },
+  { id: 1, name: "NGN (₦)", slug: "naira", short: "NGN" },
+  { id: 2, name: "USD ($)", slug: "dollar", short: "USD" },
+  // { id: 3, name: "GBP (£)", slug: "pound", short: "GPB" },
 ];
 
 export const INSPECTION_OPTIONS = [

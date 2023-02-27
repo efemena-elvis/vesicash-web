@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapMutations } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 import { getStorage, setStorage, removeStorage } from "@/utilities/auth-utils";
 import PageBackBtn from "@/shared/components/page-back-btn";
 import ProgressFlowCard from "@/shared/components/card-comps/progress-flow-card";
@@ -27,8 +27,8 @@ export default {
   },
 
   computed: {
-    ...mapState({ transaction: "transactions/transaction" }),
     ...mapGetters({
+      getTransactions: "transactions/getTransactions",
       getTransactionBeneficiaries: "transactions/getTransactionBeneficiaries",
     }),
 
@@ -92,16 +92,16 @@ export default {
     ],
   }),
 
-  // created() {
-  //   this.getSnapshots();
-  // },
+  created() {
+    this.getSnapshots();
+  },
 
-  // beforeMount() {
-  //   window.addEventListener("beforeunload", this.takeSnapshots);
-  //   this.$once("hook:beforeDestroy", () => {
-  //     window.removeEventListener("beforeunload", this.takeSnapshots);
-  //   });
-  // },
+  beforeMount() {
+    window.addEventListener("beforeunload", this.takeSnapshots);
+    this.$once("hook:beforeDestroy", () => {
+      window.removeEventListener("beforeunload", this.takeSnapshots);
+    });
+  },
 
   methods: {
     ...mapMutations({
@@ -109,17 +109,19 @@ export default {
     }),
 
     takeSnapshots() {
-      setStorage("transaction", transaction, "object");
+      setStorage("transaction", this.getTransactions, "object");
     },
 
     getSnapshots() {
-      let cached_transaction = getStorage("transaction", "object");
+      if (getStorage("transaction")) {
+        let cached_transaction = getStorage("transaction", "object");
 
-      // UPDATE CACHED DATA BACK TO STORE
-      this.UPDATE_CACHED_TRANSACTION(cached_transaction);
+        // UPDATE CACHED DATA BACK TO STORE
+        this.UPDATE_CACHED_TRANSACTION(cached_transaction);
 
-      // REMOVED CACHED TRANSACTION DATA FROM LOCAL STORAGE
-      removeStorage("transaction");
+        // REMOVED CACHED TRANSACTION DATA FROM LOCAL STORAGE
+        removeStorage("transaction");
+      }
     },
   },
 };

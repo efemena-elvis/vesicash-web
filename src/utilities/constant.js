@@ -8,7 +8,8 @@ const PUBLIC_KEY = process.env.VUE_APP_VESICASH_PUBLIC_KEY;
 export const VESICASH_AUTH_USER = "VESICASH_AUTH_USER";
 export const VESICASH_AUTH_TOKEN = "VESICASH_AUTH_TOKEN";
 
-export const VESICASH_APP_URL = APP_URL;
+// export const VESICASH_APP_URL = APP_URL;
+export const VESICASH_APP_URL = "http://localhost:8060";
 export const VESICASH_API_URL = `${API_BASE_URL}/${API_VERSION}`;
 export const VESICASH_PRIVATE_KEY_TOKEN = PRIVATE_KEY;
 export const VESICASH_PUBLIC_KEY_TOKEN = PUBLIC_KEY;

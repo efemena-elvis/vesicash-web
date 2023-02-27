@@ -10,7 +10,7 @@
 
     <!-- PAYOUT INPUTS -->
     <div class="payout-inputs">
-      <div class="row">
+      <div class="row" style="align-items: flex-start">
         <!-- PAYMENT CURRENCY -->
         <div class="col-12 col-sm-6" v-if="index === 0">
           <div class="form-group">

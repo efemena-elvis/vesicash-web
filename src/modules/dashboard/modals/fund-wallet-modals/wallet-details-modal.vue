@@ -14,9 +14,9 @@
           <template>
             Fund
             <template v-if="$route.name !== 'VesicashDashboard'"
-              >escrow
-            </template>
-            <span class="text-capitalize">{{ wallet_type }}</span> wallet
+              >Escrow</template
+            >
+            <span class="text-capitalize">{{ " " + wallet_type }}</span> Wallet
           </template>
         </div>
 
@@ -35,10 +35,9 @@
             </template>
           </template>
 
-          <template v-else
-            >Please enter the amount you wish to fund on your dollar
-            wallet</template
-          >
+          <template v-else>
+            Please enter the amount you wish to fund on your dollar wallet
+          </template>
         </div>
       </div>
     </template>
@@ -150,6 +149,11 @@ export default {
       type: String,
       default: "naira",
     },
+
+    gateway: {
+      type: String,
+      default: "",
+    },
   },
 
   computed: {
@@ -189,7 +193,8 @@ export default {
     ...mapActions({
       initiateDollarFunds: "dashboard/initiateDollarFunds",
       verifyPaymentAccount: "dashboard/verifyPaymentAccount",
-      fetchNairaWalletBankDetails: "dashboard/fetchNairaWalletBankDetails",
+      fetchTransferAccountBankDetails:
+        "dashboard/fetchTransferAccountBankDetails",
     }),
 
     // ========================================
@@ -198,9 +203,14 @@ export default {
     handleFetchingNairaDetails() {
       let request_payload = {
         account_id: this.getAccountId,
+        transaction_id:
+          this.$route?.query?.transaction_id ?? this.$route?.params?.id,
+        gateway: this.gateway,
       };
 
-      this.fetchNairaWalletBankDetails(request_payload)
+      if (!this.gateway) delete request_payload?.gateway;
+
+      this.fetchTransferAccountBankDetails(request_payload)
         .then((response) => {
           if (response.code === 200) {
             let account = response?.data?.payment_account ?? {};

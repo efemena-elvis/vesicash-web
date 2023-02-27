@@ -62,15 +62,26 @@
           @closeTriggered="toggleNairaTransferModal"
           @goBackWalletSelection="closeNairaPaymentOpenPayment"
           @walletFunded="closeFundDetailsAndOpenSuccess"
+          :gateway="gateway"
         />
       </transition>
 
       <transition name="fade" v-if="show_fw_biz_modal">
+        <FlutterwaveBusinessPaymentModal
+          @closeTriggered="toggleFWBizModal"
+          @goBackWalletSelection="closeFWBizOpenPayment"
+          @walletFunded="closeFundDetailsAndOpenSuccess"
+          :gateway="gateway"
+          :amount="getTransactionAmount || '0'"
+        />
+      </transition>
+
+      <!-- <transition name="fade" v-if="show_fw_biz_modal">
         <FWBizModal
           @closeTriggered="toggleFWBizModal"
           @goBackPaymentSelection="closeFWBizOpenPayment"
         />
-      </transition>
+      </transition>-->
 
       <transition name="fade" v-if="show_failed_wallet_transfer">
         <FailedWalletTransferModal

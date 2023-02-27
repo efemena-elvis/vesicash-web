@@ -47,7 +47,7 @@
               {
                 title: 'Attached Document(s)',
                 value: 'No file attached',
-                file: getTransactionSetup.files.length
+                file: getFiles
                   ? {
                       name: getTransactionSetup.files[0].name,
                       url: getTransactionSetup.files[0].url,
@@ -173,6 +173,13 @@ export default {
     userCanMakePayment() {
       return this.$route.query.pay ? true : false;
     },
+
+    // =============================================
+    // GET THE TRANSACTION PAYMENT FILES
+    // =============================================
+    getFiles() {
+      return this.getTransactionSetup.files?.length ?? 0;
+    },
   },
 
   mounted() {
@@ -207,8 +214,6 @@ export default {
         (user) => !user.account_id
       );
 
-      // console.log(users);
-
       users.map((user) => {
         signup_payload.push({
           account_type: "individual",
@@ -221,8 +226,6 @@ export default {
       if (signup_payload.length) {
         this.registerBulkUsers({ bulk: signup_payload })
           .then((response) => {
-            // console.log("RESPONSE", response);
-
             // RETRY BULK UPLOAD IF IT RETURNS 500 RESPONSE
             if (response.code === 500) {
               this.signupBulkUsers();
@@ -241,6 +244,7 @@ export default {
               user_payload.push({
                 account_id: user.account_id,
                 email_address: user.email_address ?? user.email,
+                phone_number: user.phone_number ?? user.phone,
               });
             });
 
@@ -259,7 +263,7 @@ export default {
             this.UPDATE_TRANSACTION_BENEFICIARIES(updated_beneficiaries);
             this.UPDATE_MILESTONE_RECIPIENT(updated_recipients);
 
-            setTimeout(() => this.setupAndCreateTransaction(), 300);
+            setTimeout(() => this.setupAndCreateTransaction(), 500);
             return true;
           })
           .catch(() => {
@@ -267,7 +271,7 @@ export default {
             return false;
           });
       } else {
-        setTimeout(() => this.setupAndCreateTransaction(), 300);
+        setTimeout(() => this.setupAndCreateTransaction(), 500);
       }
     },
 
@@ -277,7 +281,9 @@ export default {
     updateUserData(list, store, user_payload) {
       list.map((user) => {
         let user_index = user_payload.findIndex(
-          (u) => u.email_address === user.email_address
+          (u) =>
+            u.email_address == user.email_address ||
+            u.phone_number == user.phone_number
         );
 
         if (user_index !== -1)
@@ -410,34 +416,30 @@ export default {
       let request_payload = { transaction_id };
 
       this.sendUserTransaction(request_payload)
-        .then((response) => {
-          if (response.code === 200) {
-            this.togglePageLoader("");
-            this.pushToast("Escrow created successfully", "success");
+        .then(() => {
+          this.togglePageLoader("");
+          this.pushToast("Escrow created successfully", "success");
 
-            setTimeout(() => {
-              if (this.$route.query.pay) {
-                this.$router.push({
-                  name: "TransactionPayment",
-                  query: {
-                    type: this.$route.query.type,
-                    party: this.$route.query.party,
-                    transaction_id,
-                    name: this.$route.query.name,
-                    parties: this.$route.query.parties,
-                    fee: this.$route.query.fee,
-                  },
-                });
-              } else this.$router.push({ name: "VesicashDashboard" });
-            }, 2000);
-          }
+          setTimeout(() => {
+            if (this.$route.query.pay) {
+              this.$router.push({
+                name: "TransactionPayment",
+                query: {
+                  type: this.$route.query.type,
+                  party: this.$route.query.party,
+                  transaction_id,
+                  name: this.$route.query.name,
+                  parties: this.$route.query.parties,
+                  fee: this.$route.query.fee,
+                },
+              });
+            } else this.$router.push({ name: "VesicashDashboard" });
+          }, 1000);
         })
         .catch(() => {
           this.handleEscrowError(
             "An error occured while inviting users to escrow"
           );
-          this.togglePageLoader("");
-          return false;
         });
     },
 

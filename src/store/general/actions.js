@@ -37,10 +37,10 @@ export default {
   // ======================================
   // UPLOAD FILE TO DIGITAL SPACE
   // ======================================
-  async uploadToSpace({ commit }, { file, formatted_size }) {
+  async uploadToSpace({ commit }, { file, formatted_size, type = null }) {
     const authUserToken = getStorage(VESICASH_AUTH_TOKEN) || null;
-
     formData.append("files[0]", file);
+    let file_payload = [];
 
     try {
       const response = await axios.post(
@@ -71,18 +71,18 @@ export default {
       );
 
       // UPDATE FILE STATE
-
       if (response.data.code === 200) {
-        commit(
-          "transactions/UPDATE_TRANSACTION_ATTACHMENT",
-          [
-            {
-              name: file.name,
-              url: response?.data?.data?.urls[0],
-            },
-          ],
-          { root: true }
-        );
+        file_payload = [
+          {
+            name: file.name,
+            url: response?.data?.data?.urls[0],
+          },
+        ];
+
+        type !== "escrow" &&
+          commit("transactions/UPDATE_TRANSACTION_ATTACHMENT", file_payload, {
+            root: true,
+          });
 
         commit("UPDATE_FILE_PROGRESS", {
           name: file.name,
@@ -99,7 +99,12 @@ export default {
         });
       }
 
-      return response.data;
+      let response_payload = {
+        code: 200,
+        data: file_payload,
+      };
+
+      return type === "escrow" ? response_payload : response.data;
     } catch (error) {
       return error;
     }
@@ -156,7 +161,6 @@ export default {
       // UPDATE FILE STATE
 
       if (response.data.code === 200) {
-       
         const updated_files_state = files.map((file, index) => {
           const formatted_file = {
             name: file.name,

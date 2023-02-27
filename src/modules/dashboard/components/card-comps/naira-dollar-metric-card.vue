@@ -1,5 +1,8 @@
 <template>
-  <div class="naira-dollar-metric-card rounded-12 teal-900-bg">
+  <div
+    class="naira-dollar-metric-card rounded-12 teal-900-bg"
+    :class="ongoingTour ? 'tour-index' : null"
+  >
     <!-- TOP ROW -->
     <div class="top-row mgb-16">
       <!-- WALLET COLUMN SECTION -->
@@ -58,7 +61,7 @@
         <div class="mgr-8 position-relative" style="top: -1px">
           <MoneyIcon />
         </div>
-        Withdraw
+        Transfer fund
       </button>
 
       <router-link class="btn btn-tertiary btn-md" to="/exchange/setup">
@@ -75,13 +78,13 @@
       <transition name="fade" v-if="show_fund_wallet_select_modal">
         <FundWalletSelectModal
           @closeTriggered="toggleFundWalletSelectModal"
-          @walletSelected="closeWalletOpenWalletDetails"
+          @fundingOptionSelected="closeWalletOpenWalletDetails"
         />
       </transition>
 
       <transition name="fade" v-if="show_fund_wallet_info_modal">
-        <FundWalletDetailsModal
-          :wallet_type="default_wallet"
+        <FundWalletEntryModal
+          :payment_type="selected_payment_option"
           @closeTriggered="toggleFundWalletDetailsModal"
           @goBackWalletSelection="closeWalletDetailsOpenWalletSelect"
           @walletFunded="closeFundDetailsAndOpenSuccess"
@@ -90,13 +93,14 @@
 
       <transition name="fade" v-if="show_wallet_modal">
         <WithdrawSelectModal
+          @accountTypeSelected="closeWalletOpenAccount"
           @closeTriggered="toggleWalletModal"
-          @walletSelected="closeWalletOpenAccount"
         />
       </transition>
 
       <transition name="fade" v-if="show_wallet_account_modal">
         <WithdrawAccountModal
+          :account_type="selected_withdraw_account"
           @closeTriggered="toggleWalletAccountModal"
           @goBackWalletSelection="closeAccountOpenWallet"
           @accountSelected="closeAccountOpenConfirm"
@@ -107,6 +111,19 @@
         <WithdrawConfirmModal
           @closeTriggered="toggleWalletConfirmModal"
           @goBackAccountSelection="closeConfimWithdrawOpenAccount"
+          @openOTPDialog="toggleOTPModal"
+        />
+      </transition>
+
+      <transition name="fade" v-if="show_otp_modal">
+        <WithdrawalOtpModal @done="toggleSuccessModal" />
+      </transition>
+
+      <transition name="fade" v-if="show_success_modal">
+        <SuccessModal
+          :message="`Your withdrawal of ${withdrawn_amount} has been sent to your bank account, Please check your bank account for details`"
+          main_cta_title="Done"
+          @done="show_success_modal = false"
         />
       </transition>
     </portal>
@@ -114,6 +131,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import MoneyIcon from "@/shared/components/icon-comps/money-icon";
 import ExchangeIcon from "@/shared/components/icon-comps/exchange-icon";
 
@@ -125,12 +143,12 @@ export default {
     MoneyIcon,
     FundWalletSelectModal: () =>
       import(
-        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/modals/wallet-modals/wallet-select-modal"
+        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/modals/fund-wallet-modals/fund-wallet-select-modal"
       ),
 
-    FundWalletDetailsModal: () =>
+    FundWalletEntryModal: () =>
       import(
-        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/modals/wallet-modals/wallet-details-modal"
+        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/modals/fund-wallet-modals/fund-wallet-entry-modal"
       ),
 
     WithdrawSelectModal: () =>
@@ -146,6 +164,15 @@ export default {
     WithdrawConfirmModal: () =>
       import(
         /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/modals/withdraw-modals/withdraw-confirm-modal"
+      ),
+
+    WithdrawalOtpModal: () =>
+      import(
+        /* webpackChunkName: "dashboard-module" */ "@/modules/transactions/modals/withdrawal-otp-modal"
+      ),
+    SuccessModal: () =>
+      import(
+        /* webpackChunkName: "dashboard-module" */ "@/shared/modals/success-modal"
       ),
   },
 
@@ -166,6 +193,17 @@ export default {
     },
   },
 
+  computed: {
+    ...mapGetters({ getTourData: "general/getTourData" }),
+
+    ongoingTour() {
+      const { count, ongoing } = this.getTourData;
+
+      if (ongoing) return [1, 2, 3].includes(count) ? true : false;
+      else return false;
+    },
+  },
+
   data: () => ({
     show_wallet_modal: false,
     show_wallet_account_modal: false,
@@ -174,7 +212,13 @@ export default {
     show_fund_wallet_select_modal: false,
     show_fund_wallet_info_modal: false,
 
-    default_wallet: "naira",
+    show_otp_modal: false,
+    show_success_modal: false,
+
+    selected_payment_option: "card",
+    withdrawn_amount: "",
+
+    selected_withdraw_account: "",
   }),
 
   watch: {
@@ -195,6 +239,17 @@ export default {
   },
 
   methods: {
+    toggleOTPModal() {
+      this.show_otp_modal = !this.show_otp_modal;
+      this.show_wallet_confirm_modal = false;
+    },
+
+    toggleSuccessModal(amount) {
+      this.withdrawn_amount = amount;
+      this.show_success_modal = true;
+      this.show_otp_modal = false;
+    },
+
     toggleWalletModal() {
       this.show_wallet_modal = !this.show_wallet_modal;
     },
@@ -216,7 +271,7 @@ export default {
     },
 
     closeWalletOpenWalletDetails($event) {
-      this.default_wallet = $event;
+      this.selected_payment_option = $event;
       this.show_fund_wallet_select_modal = false;
       this.toggleFundWalletDetailsModal();
     },
@@ -234,8 +289,9 @@ export default {
       });
     },
 
-    closeWalletOpenAccount() {
+    closeWalletOpenAccount($event) {
       this.show_wallet_modal = false;
+      this.selected_withdraw_account = $event;
       this.toggleWalletAccountModal();
     },
 
@@ -364,5 +420,10 @@ export default {
       }
     }
   }
+}
+
+.tour-index {
+  @include transition(0.7s);
+  z-index: 1099;
 }
 </style>

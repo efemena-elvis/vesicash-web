@@ -1,5 +1,5 @@
 <template>
-  <div class="sidebar teal-50-bg index-99">
+  <div class="sidebar teal-50-bg">
     <!-- BRAND LOGO -->
     <router-link
       :to="{ name: 'VesicashDashboard' }"
@@ -9,7 +9,7 @@
     </router-link>
 
     <!-- SIDE NAV ITEMS -->
-    <div class="sidebar-item-list index-99">
+    <div class="sidebar-item-list">
       <SidebarItem
         v-for="(nav, index) in sidebar_routes"
         :key="index"

@@ -1,17 +1,25 @@
 <template>
   <ModalCover
-    :show_close_btn="false"
+    :show_close_btn="true"
     @closeModal="$emit('closeTriggered')"
     :modal_style="{ size: 'modal-xs' }"
+    :trigger_self_close="false"
+    :place_center="true"
     class="verify-otp-modal"
   >
     <!-- MODAL COVER HEADER -->
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
-        <div class="modal-cover-title text-center">Enter OTP code</div>
-        <div class="tertiary-2-text text-center grey-600">
+        <div class="modal-cover-title text-center mt-3">Enter OTP code</div>
+
+        <div
+          class="tertiary-2-text text-center grey-600"
+          v-html="title"
+          v-if="title"
+        ></div>
+        <div class="tertiary-2-text text-center grey-600" v-else>
           Please enter the OTP code that was sent to
-          <b>{{input}}</b> for verification
+          <b>{{ input }}</b> for verification
         </div>
       </div>
     </template>
@@ -23,7 +31,12 @@
         <div class="auth-page">
           <!-- OTP ENTRY INPUTS -->
           <div class="form-group">
-            <input type="number" class="form-control" v-model="otp_one" ref="otpOne" />
+            <input
+              type="number"
+              class="form-control"
+              v-model="otp_one"
+              ref="otpOne"
+            />
             <input
               type="number"
               class="form-control"
@@ -73,7 +86,9 @@
             class="btn btn-primary btn-md w-100"
             :disabled="getOTPToken.length === 6 ? false : true"
             @click="handleUserOTPVerification"
-          >Verify OTP code</button>
+          >
+            Verify OTP code
+          </button>
         </div>
 
         <!-- HELP BLOCK TEXT -->
@@ -81,13 +96,15 @@
           <div
             class="help-block text-center grey-600 pointer"
             @click="resendOTPCode"
-          >Resend OTP code</div>
+          >
+            Resend OTP code
+          </div>
         </template>
 
         <template v-else>
-          <div
-            class="help-block text-center grey-600 pointer"
-          >Resending in.. 0.{{ resend_countdown }}s</div>
+          <div class="help-block text-center grey-600 pointer">
+            Resending in.. 0.{{ resend_countdown }}s
+          </div>
         </template>
       </div>
     </template>
@@ -112,6 +129,11 @@ export default {
     },
 
     input: {
+      type: String,
+      default: "",
+    },
+
+    title: {
       type: String,
       default: "",
     },
@@ -266,6 +288,7 @@ export default {
       };
 
       const payload = this.email ? request_email_payload : request_payload;
+
       const action = this.email ? "verifyEmailOTP" : "verifyUserOTP";
 
       this[action](payload)

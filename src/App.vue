@@ -5,7 +5,11 @@
     </transition>
 
     <!-- ALERT BANNER -->
-    <AlertBanner v-if="show_alert" :message="alert.message" :status="alert.status" />
+    <AlertBanner
+      v-if="show_alert"
+      :message="alert.message"
+      :status="alert.status"
+    />
 
     <!-- FEATHER PAGE LOADER -->
     <transition name="fade" v-if="show_feather_loader">

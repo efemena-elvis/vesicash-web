@@ -20,36 +20,40 @@
       <div class="modal-cover-body mgb-24">
         <ModalListItem
           title="Total Amount"
-          :value="`${$money.getSign(getWalletType)}${$money.addComma(
-            getWithdrawalMeta.total
+          :value="`${$money.getSign(getWalletType.slug)}${$money.addComma(
+            getWithdrawalMeta.amount
           )}`"
         />
         <ModalListItem
           title="Withdrawal fee"
-          :value="`${$money.getSign(getWalletType)}${$money.addComma(
-            getWithdrawalMeta.fee
+          :value="`${$money.getSign(getWalletType.slug)}${$money.addComma(
+            getWithdrawalMeta.withdrawal_charge
           )}`"
         />
         <ModalListItem
           title="Amount to receive"
-          :value="`${$money.getSign(getWalletType)}${$money.addComma(
-            getWithdrawalMeta.amount - getWithdrawalMeta.fee
+          :value="`${$money.getSign(getWalletType.slug)}${$money.addComma(
+            Number(getWithdrawalMeta.amount) -
+              getWithdrawalMeta.withdrawal_charge
           )}`"
         />
 
-        <template v-if="getWalletType === 'naira'">
+        <template v-if="getWalletType.slug === 'naira'">
           <ModalListItem
             title="Bank name"
-            :value="getWithdrawalMeta.bank_name"
+            :value="getWithdrawalMeta.selected_beneficiary.bank_name"
           />
           <ModalListItem
             title="Account number"
-            :value="getWithdrawalMeta.account_no"
+            :value="getWithdrawalMeta.selected_beneficiary.account_no"
           />
-          <ModalListItem title="Account name" :value="getWithdrawalMeta.name" />
+          <ModalListItem
+            title="Account name"
+            :value="getWithdrawalMeta.selected_beneficiary.account_name"
+          />
         </template>
 
-        <template v-if="getWalletType === 'dollar'">
+        <template v-else>
           <ModalListItem title="Country" :value="getWithdrawalMeta.country" />
           <!-- <ModalListItem title="Phone number" :value="getWithdrawalMeta.phone" /> -->
           <ModalListItem
@@ -90,7 +94,7 @@
         <button
           class="btn btn-primary btn-md wt-100"
           ref="continue"
-          @click="makeWithdrawal"
+          @click="sendOutOTPVerificationCode"
         >
           Continue
         </button>
@@ -107,13 +111,6 @@ import PageBackBtn from "@/shared/components/page-back-btn";
 export default {
   name: "WithdrawConfirmModal",
 
-  props: {
-    escrow: {
-      type: Boolean,
-      default: false,
-    },
-  },
-
   components: {
     ModalCover,
     PageBackBtn,
@@ -123,69 +120,43 @@ export default {
       ),
   },
 
-  props: {
-    escrow: {
-      type: Boolean,
-      default: false,
-    },
-  },
-
   computed: {
     ...mapGetters({
       getWalletType: "dashboard/getWalletType",
       getWithdrawalMeta: "dashboard/getWithdrawalMeta",
     }),
-
-    getWithdrawalPayload() {
-      return {
-        account_id: this.getAccountId,
-        beneficiary_name: this.getWithdrawalMeta.name,
-        bank_account_number: this.getWithdrawalMeta.account_no.toString(),
-        bank_code: this.getWithdrawalMeta.bank_code?.toString(),
-        amount: this.getWithdrawalMeta.amount,
-        currency: this.getWalletType === "naira" ? "NGN" : "USD",
-        debit_currency: this.getWalletType === "naira" ? "NGN" : "USD",
-        gateway: "monnify",
-        escrow_wallet: this.escrow ? "yes" : "no",
-      };
-    },
   },
 
   methods: {
     ...mapActions({
-      withdrawWalletFund: "dashboard/withdrawWalletFund",
+      sendUserOTP: "auth/sendUserOTP",
     }),
 
-    async makeWithdrawal() {
-      try {
-        const amount = `${this.$money.getSign(
-          this.getWalletType
-        )}${this.$money.addComma(
-          this.getWithdrawalMeta.amount - this.getWithdrawalMeta.fee
-        )}`;
+    // ===================================
+    // SEND OUT OTP VERIFICATION CODE
+    // ===================================
+    sendOutOTPVerificationCode() {
+      let payload = {
+        account_id: this.getAccountId,
+      };
 
-        this.handleClick("continue");
+      this.handleClick("continue");
 
-        const response = await this.withdrawWalletFund(
-          this.getWithdrawalPayload
-        );
-
-        this.handleClick("continue", "Continue", false);
-
-        response.code == 200
-          ? this.$router.push({
-              name: "SuccessfulWithdrawal",
-              query: { amount },
-            })
-          : this.pushToast(
-              response.message || "Withdrawal failed. Please try again",
+      this.sendUserOTP(payload)
+        .then((response) => {
+          this.handleClick("continue", "Continue", false);
+          if (response.code === 200) this.$emit("openOTPDialog");
+          else
+            this.pushToast(
+              response.message ||
+                "Failed to generate OTP for this withdarwal. Try again.",
               "warning"
             );
-      } catch (error) {
-        console.log(error);
-        this.handleClick("continue", "Continue", false);
-        this.pushToast("Withdrawal failed. Please try again", "error");
-      }
+        })
+        .catch(() => {
+          this.handleClick("continue", "Continue", false);
+          this.pushToast("Unable to generate an OTP code", "error");
+        });
     },
   },
 };

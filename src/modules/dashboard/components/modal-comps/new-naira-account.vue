@@ -32,10 +32,16 @@
     </div>
 
     <!-- ACCOUNT CONFIRM CARD -->
-    <div class="account-confirm-card grey-10-bg rounded-12 mgt--10">
-      <div class="name tertiary-2-text" :class="invalid_account ? 'red-600' : 'grey-900'">
+    <div
+      class="account-confirm-card grey-10-bg rounded-12 mgt--10"
+      v-if="account_details?.account_name || verification_message"
+    >
+      <div
+        class="name tertiary-2-text"
+        :class="invalid_account ? 'red-600' : 'grey-900'"
+      >
         {{
-        account_details ? account_details.account_name : verification_message
+          account_details ? account_details.account_name : verification_message
         }}
       </div>
     </div>
@@ -62,10 +68,6 @@ export default {
       ),
   },
 
-  async mounted() {
-    await this.fetchNigeriaBanks();
-  },
-
   computed: {
     getNairaBankDetails() {
       return {
@@ -84,7 +86,6 @@ export default {
       async handler(state) {
         this.account_details = null;
 
-        this.$emit("nairaBankUpdated", null);
         if (state && this.form.account_number.length >= 10)
           await this.verifyAccount(this.form.account_number, state.code);
       },
@@ -93,7 +94,7 @@ export default {
     "form.account_number": {
       async handler(state) {
         this.account_details = null;
-        this.$emit("nairaBankUpdated", null);
+
         if (state.length >= 10 && this.bank)
           await this.verifyAccount(state, this.bank.code);
       },
@@ -103,8 +104,8 @@ export default {
   data: () => ({
     bank_name_options_repo: [],
     bank_name_options: [],
-
     bank: null,
+
     form: {
       account_number: "",
     },
@@ -112,10 +113,15 @@ export default {
     validity: {
       account_number: true,
     },
+
     account_details: null,
-    verification_message: "Account Name",
+    verification_message: "",
     invalid_account: false,
   }),
+
+  async mounted() {
+    await this.fetchNigeriaBanks();
+  },
 
   methods: {
     ...mapActions({
@@ -157,15 +163,14 @@ export default {
 
       const response = await this.verifyBankAccount(payload);
 
-      if (response.status === "ok") {
-        this.verification_message = "Account Name";
+      if (response?.status === "ok") {
+        this.verification_message = "";
         this.account_details = response.data;
 
-        // console.log("DETAILS", this.getNairaBankDetails);
-        this.$emit("nairaBankUpdated", this.getNairaBankDetails);
+        this.$emit("bankDetailsUpdated", this.getNairaBankDetails);
       } else {
         this.verification_message =
-          response.message || "Account number is invalid";
+          response?.message || "Please check account details";
         this.invalid_account = true;
       }
     },

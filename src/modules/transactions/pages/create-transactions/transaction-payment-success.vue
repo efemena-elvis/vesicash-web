@@ -4,28 +4,30 @@
       <!-- AUTH PAGE -->
       <div class="auth-page auth-payment-success">
         <!-- TITLE TEXT -->
-        <div class="title-text text-center teal-900 h4-text mgb-38 mgt--15">Congratulations</div>
+        <div class="title-text text-center teal-900 h4-text mgb-38 mgt--15">
+          Congratulations
+        </div>
 
         <!-- BODY DATA -->
         <div class="body-data">
           <SuccessItemCard
             :info="{
-            icon: 'SuccessIcon',
-            title: 'Payment made successfully',
-            description: `Your payment of <b>${$route.query.fee}</b> has been made sucessfully, Please check your escrow account on your dashboard for the payment.`,
-          }"
+              icon: 'SuccessIcon',
+              title: 'Payment made successfully',
+              description: `Your payment of <b>${getTransactionAmount}</b> has been made sucessfully, Please check your escrow account on your dashboard for the payment.`,
+            }"
           />
 
           <SuccessItemCard
             :info="{
-            icon: 'SuccessIcon',
-            title: 'Users invited successfully',
-            description: `${$route.query.parties} ${
-              $route.query.parties === 'All' ? 'parties have' : 'has'
-            } been invited sucessfully into transaction for ${
-              $route.query.name
-            }.`,
-          }"
+              icon: 'SuccessIcon',
+              title: 'Users invited successfully',
+              description: `${$route.query.parties} ${
+                $route.query.parties === 'All' ? 'parties have' : 'has'
+              } been invited sucessfully into transaction for ${
+                $route.query.name
+              }.`,
+            }"
           />
         </div>
 
@@ -37,9 +39,12 @@
             class="btn btn-primary btn-md"
             :href="$route.query.redirect"
             v-if="$route.query.redirect"
-          >Continue transaction</a>
+            >Continue transaction</a
+          >
 
-          <router-link v-else to="/dashboard" class="btn btn-primary btn-md">Go to Dashboard</router-link>
+          <router-link v-else to="/dashboard" class="btn btn-primary btn-md"
+            >Go to Dashboard</router-link
+          >
         </div>
       </div>
     </AuthWrapper>
@@ -66,16 +71,42 @@ export default {
     titleTemplate: "%s - Vesicash",
   },
 
-  mounted() {
-    if (this.$route.query.reference) this.confirmPayment();
-    else this.payment_confirmed = true;
+  components: {
+    FailedPaymentModal,
+    AuthWrapper,
+    SuccessItemCard: () =>
+      import(
+        /* webpackChunkName: 'shared-module' */ "@/shared/components/card-comps/success-item-card"
+      ),
+  },
+
+  computed: {
+    getTransactionAmount() {
+      let currencies = ["NGN", "USD", "GPB"];
+      let amount_data = this.$route.query.fee;
+      let sliced_currency = amount_data.slice(0, 3);
+
+      if (currencies.includes(sliced_currency)) {
+        return `${this.$money.getSign(sliced_currency)}${this.$money.addComma(
+          amount_data.slice(3)
+        )}`;
+      } else {
+        return `${this.$money.addComma(amount_data.slice(3))}`;
+      }
+    },
   },
 
   data() {
     return {
       show_failed_modal: false,
       payment_confirmed: false,
+      retried: false,
     };
+  },
+
+  mounted() {
+    if (this.$route.query.reference) this.confirmPayment();
+    else this.payment_confirmed = true;
   },
 
   methods: {
@@ -83,8 +114,9 @@ export default {
       confirmPaymentStatus: "transactions/confirmPaymentStatus",
     }),
 
-    retryConfrimation() {
-      this.confirmPayment();
+    async retryConfirmation() {
+      await this.confirmPayment();
+      this.retried = true;
     },
 
     async confirmPayment() {
@@ -103,11 +135,15 @@ export default {
         else {
           // this.pushToast(response.message || "Payment failed", "error");
 
-          this.show_failed_modal = true;
+          this.retried
+            ? (this.show_failed_modal = true)
+            : this.retryConfirmation();
         }
       } catch (error) {
         this.hidePageLoader();
-        console.log("FAILED TO CONFIRM PAYMENT", error);
+        this.retried
+          ? (this.show_failed_modal = true)
+          : this.retryConfirmation();
         // this.show_failed_modal = true;
 
         // this.pushToast(
@@ -121,15 +157,6 @@ export default {
       this.show_failed_modal = false;
       this.payment_confirmed = true;
     },
-  },
-
-  components: {
-    FailedPaymentModal,
-    AuthWrapper,
-    SuccessItemCard: () =>
-      import(
-        /* webpackChunkName: 'shared-module' */ "@/shared/components/card-comps/success-item-card"
-      ),
   },
 };
 </script>

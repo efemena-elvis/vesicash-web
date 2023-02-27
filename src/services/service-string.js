@@ -87,6 +87,19 @@ class serviceString {
     else if (items === 0) return false;
     else return items % 2 ? true : false;
   }
+
+  getAsterickedText(text, positions) {
+    if (!text) return "";
+    let formatted_text = "";
+    formatted_text = positions
+      .reduce((acc, val) => {
+        acc[val] = "*";
+        return acc;
+      }, text.split(""))
+      .join("");
+
+    return formatted_text;
+  }
 }
 
 export const $serviceString = new serviceString();

@@ -4,23 +4,29 @@
     <div class="page-title primary-1-text grey-900 mgb-4">Account</div>
 
     <!-- PAGE META -->
-    <div class="page-meta tertiary-2-text grey-600">Update or add new naira or dollar account</div>
+    <div class="page-meta tertiary-2-text grey-600">
+      Update or add new naira or dollar account
+    </div>
 
-    <TabSwitcher :tabs="tab_options" @tabSelected="account_type=$event" />
+    <TabSwitcher :tabs="tab_options" @tabSelected="account_type = $event" />
 
     <div class="accounts-container">
       <template v-if="loading_accounts">
-        <div class="skeleton-loader account-skeleton" v-for="i in 4" :key="i"></div>
+        <div
+          class="skeleton-loader account-skeleton"
+          v-for="i in 4"
+          :key="i"
+        ></div>
       </template>
 
       <template v-else>
-        <div class="add-account-button" @click="toggleNewAccountModal">
+        <div class="add-account-button" @click="toggleAccountCurrencySelection">
           <span class="icon icon-plus h5 green-600"></span>
           <div class="green-600 secondary-2-text">Add new account details</div>
         </div>
 
         <UserAccountCard
-          v-for="(account,index) in getSelectedAccount"
+          v-for="(account, index) in getSelectedAccount"
           :key="index"
           :account="account"
           @click="showAccountDetails"
@@ -32,14 +38,21 @@
       <transition name="fade" v-if="show_new_naira_modal">
         <AddNairaAccountModal
           @closeTriggered="toggleNewNairaModal"
-          @saved="showSuccessModal('show_new_naira_modal',$event)"
+          @saved="showSuccessModal('show_new_naira_modal', $event)"
+        />
+      </transition>
+
+      <transition name="fade" v-if="show_select_account_modal">
+        <SelectAccountCurrencyModal
+          @closeTriggered="toggleAccountCurrencySelection"
+          @selectCurrency="toggleNewAccountModal"
         />
       </transition>
 
       <transition name="fade" v-if="show_new_dollar_modal">
         <AddDollarAccountModal
           @closeTriggered="toggleNewDollarModal"
-          @saved="showSuccessModal('show_new_dollar_modal',$event)"
+          @saved="showSuccessModal('show_new_dollar_modal', $event)"
         />
       </transition>
 
@@ -47,7 +60,7 @@
         <UpdateDollarAccountModal
           @closeTriggered="toggleUpdateDollarModal"
           :savedDetails="selected_account"
-          @saved="showSuccessModal('show_update_dollar_modal',$event)"
+          @saved="showSuccessModal('show_update_dollar_modal', $event)"
         />
       </transition>
 
@@ -75,10 +88,12 @@ import { mapActions, mapGetters } from "vuex";
 import TabSwitcher from "@/shared/components/tab-switcher";
 import AddNairaAccountModal from "@/modules/settings/modals/add-naira-account-modal";
 import AddDollarAccountModal from "@/modules/settings/modals/add-dollar-account-modal";
+import SelectAccountCurrencyModal from "@/modules/settings/modals/select-account-currency-modal";
 import UpdateDollarAccountModal from "@/modules/settings/modals/update-dollar-account-modal";
 import UserAccountCard from "@/shared/components/card-comps/user-account-card";
 import AccountDetailsModal from "@/modules/settings/modals/account-details-modal";
 import SuccessModal from "@/shared/modals/success-modal";
+
 export default {
   name: "AccountSettings",
 
@@ -87,6 +102,7 @@ export default {
     AddNairaAccountModal,
     AddDollarAccountModal,
     UpdateDollarAccountModal,
+    SelectAccountCurrencyModal,
     UserAccountCard,
     AccountDetailsModal,
     SuccessModal,
@@ -104,10 +120,12 @@ export default {
     ...mapGetters({ getAccounts: "settings/getAccounts" }),
 
     getSelectedAccount() {
-      const currency = this.account_type === "naira" ? "NGN" : "USD";
-      return this.getAccounts.filter(
-        (account) => account.currency === currency
-      );
+      // const currency = this.account_type === "naira" ? "NGN" : "USD";
+      // return this.getAccounts.filter(
+      //   (account) => account.currency === currency
+      // );
+
+      return this.getAccounts;
     },
   },
 
@@ -115,21 +133,27 @@ export default {
     return {
       tab_options: [
         {
-          name: "USD Accounts",
-          value: "dollar",
+          name: "Settlement accounts",
+          value: "settlement",
+          active: true,
+        },
+        {
+          name: "3rd Party accounts",
+          value: "3rd_party",
           active: false,
         },
         {
-          name: "NGN Accounts",
-          value: "naira",
-          active: true,
+          name: "Vesicash wallet Ids",
+          value: "wallet",
+          active: false,
         },
       ],
 
-      account_type: "naira",
+      account_type: "settlement",
       selected_account: null,
 
       show_success_modal: false,
+      show_select_account_modal: false,
       show_new_naira_modal: false,
       show_new_dollar_modal: false,
       show_naira_details_modal: false,
@@ -147,6 +171,10 @@ export default {
       await this.fetchAllBanks(this.getAccountId);
     },
 
+    toggleAccountCurrencySelection() {
+      this.show_select_account_modal = !this.show_select_account_modal;
+    },
+
     toggleNewNairaModal() {
       this.show_new_naira_modal = !this.show_new_naira_modal;
     },
@@ -159,8 +187,11 @@ export default {
       this.show_update_dollar_modal = !this.show_update_dollar_modal;
     },
 
-    toggleNewAccountModal() {
-      if (this.account_type === "dollar") this.toggleNewDollarModal();
+    toggleNewAccountModal(currency) {
+      this.toggleAccountCurrencySelection();
+
+      if (currency === "NGN") this.toggleNewNairaModal();
+      else if (currency === "USD") this.toggleNewDollarModal();
       else this.toggleNewNairaModal();
     },
 

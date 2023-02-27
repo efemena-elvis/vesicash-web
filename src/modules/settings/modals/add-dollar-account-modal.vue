@@ -2,13 +2,14 @@
   <ModalCover
     @closeModal="$emit('closeTriggered')"
     :modal_style="{ size: 'modal-sm' }"
-    class="add-dollar-account-modal"
   >
     <!-- MODAL COVER HEADER -->
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
         <div class="modal-cover-title">Add dollar account</div>
-        <div class="tertiary-2-text grey-600 wt-75">Add a new dollar account</div>
+        <div class="tertiary-2-text grey-600 wt-75">
+          Add a new dollar account
+        </div>
       </div>
     </template>
 
@@ -36,10 +37,10 @@
             placeholder="Enter account first name"
             @getInputState="updateFormState($event, 'account_first_name')"
             :error_handler="{
-            type: 'minimum',
-            message: 'Name should be at least two characters long',
-            minimum:2
-          }"
+              type: 'minimum',
+              message: 'Name should be at least two characters long',
+              minimum: 2,
+            }"
           />
 
           <BasicInput
@@ -51,10 +52,10 @@
             placeholder="Enter account last name"
             @getInputState="updateFormState($event, 'account_last_name')"
             :error_handler="{
-            type: 'minimum',
-            message: 'Name should be at least two characters long',
-            minimum:2
-          }"
+              type: 'minimum',
+              message: 'Name should be at least two characters long',
+              minimum: 2,
+            }"
           />
         </div>
 
@@ -76,9 +77,9 @@
             placeholder="Enter bank name"
             @getInputState="updateFormState($event, 'bank_name')"
             :error_handler="{
-            type: 'required',
-            message: 'Bank name is required'
-          }"
+              type: 'required',
+              message: 'Bank name is required',
+            }"
           />
         </div>
 
@@ -91,9 +92,9 @@
             placeholder="Enter Iban/Account number"
             @getInputState="updateFormState($event, 'account_number')"
             :error_handler="{
-            type: 'required',
-            message: 'Enter Iban/Account number'
-          }"
+              type: 'required',
+              message: 'Enter Iban/Account number',
+            }"
           />
         </div>
 
@@ -107,9 +108,9 @@
             placeholder="Enter account swift code"
             @getInputState="updateFormState($event, 'account_swift_code')"
             :error_handler="{
-            type: 'required',
-            message: 'Enter account swift code'
-          }"
+              type: 'required',
+              message: 'Enter account swift code',
+            }"
           />
 
           <BasicInput
@@ -121,9 +122,9 @@
             placeholder="Enter account routing/sort code"
             @getInputState="updateFormState($event, 'account_sort_code')"
             :error_handler="{
-            type: 'required',
-            message: 'Enter account sort code'
-          }"
+              type: 'required',
+              message: 'Enter account sort code',
+            }"
           />
         </div>
 
@@ -136,9 +137,9 @@
             placeholder="Enter bank address"
             @getInputState="updateFormState($event, 'account_bank_address')"
             :error_handler="{
-            type: 'required',
-            message: 'Enter bank address'
-          }"
+              type: 'required',
+              message: 'Enter bank address',
+            }"
           />
         </div>
       </div>
@@ -152,7 +153,9 @@
           class="btn btn-primary btn-md wt-100"
           :disabled="isDisabled"
           @click="addNewDollarAccount"
-        >Add account</button>
+        >
+          Add account
+        </button>
       </div>
     </template>
   </ModalCover>
@@ -280,15 +283,6 @@ export default {
 
   @include breakpoint-custom-down(776) {
     @include flex-row-start-wrap;
-  }
-}
-</style>
-
-<style lang="scss">
-.add-dollar-account-modal.modal-overlay {
-  .modal-outer-container {
-    top: toRem(10);
-    margin-bottom: toRem(20);
   }
 }
 </style>
