@@ -15,8 +15,10 @@
         </div>
 
         <div class="modal-cover-meta">
-          Make the payment from your flutterwave business account (with merchant ID:
-          <b>{{ getMerchantID }}</b>) to the vesicash merchant ID below
+          Make the payment from your flutterwave business account (with merchant
+          ID:
+          <b>{{ getMerchantID }}</b
+          >) to the vesicash merchant ID below
         </div>
       </div>
     </template>
@@ -28,7 +30,11 @@
         <div class="modal-items-wrapper green-10-bg rounded-12 mgb-24">
           <!-- NAIRA WALLET TYPE -->
           <template v-if="naira_wallet_loading">
-            <ModalListItem :loading="naira_wallet_loading" v-for="(_, index) in 3" :key="index" />
+            <ModalListItem
+              :loading="naira_wallet_loading"
+              v-for="(_, index) in 3"
+              :key="index"
+            />
           </template>
 
           <template v-else>
@@ -46,10 +52,10 @@
     <!-- MODAL COVER FOOTER -->
     <template slot="modal-cover-footer">
       <div class="modal-cover-footer">
-        <div
-          v-if="!getMerchantID"
-          class="tertiary-2-text mgb-15 red-text-400"
-        >Your account does not have a merchant ID. Add a merchant ID to continue.</div>
+        <div v-if="!getMerchantID" class="tertiary-2-text mgb-15 red-text-400">
+          Your account does not have a merchant ID. Add a merchant ID to
+          continue.
+        </div>
 
         <template>
           <button
@@ -57,13 +63,16 @@
             class="btn btn-primary btn-md wt-100"
             @click="handleFundSuccess"
             ref="done"
-          >I have funded</button>
+          >
+            I have funded
+          </button>
 
           <router-link
             v-else
             class="btn btn-primary btn-md wt-100"
             to="/settings/profile?focus_merchant=true"
-          >Add merchant ID</router-link>
+            >Add merchant ID</router-link
+          >
         </template>
       </div>
     </template>
@@ -148,7 +157,8 @@ export default {
   methods: {
     ...mapActions({
       verifyPaymentAccount: "dashboard/verifyPaymentAccount",
-      fetchNairaWalletBankDetails: "dashboard/fetchNairaWalletBankDetails",
+      fetchTransferAccountBankDetails:
+        "dashboard/fetchTransferAccountBankDetails",
     }),
 
     // ========================================
@@ -163,7 +173,7 @@ export default {
       };
 
       try {
-        const response = await this.fetchNairaWalletBankDetails(
+        const response = await this.fetchTransferAccountBankDetails(
           request_payload
         );
         this.naira_wallet_loading = false;

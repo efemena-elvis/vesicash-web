@@ -14,7 +14,11 @@
       :pagination="pagination"
     >
       <template v-for="(data, index) in table_data">
-        <TransactionWalletTableRow :key="index" table_name="transaction-wallet-tb" :data="data" />
+        <TransactionWalletFundingTableRow
+          :key="index"
+          table_name="transaction-wallet-tb"
+          :data="data"
+        />
       </template>
 
       <template slot="emptyIconSlot">
@@ -30,14 +34,14 @@ import TableContainer from "@/shared/components/table-comps/table-container";
 import EmptyWalletIcon from "@/shared/components/icon-comps/empty-wallet-icon";
 
 export default {
-  name: "TransactionWalletTable",
+  name: "TransactionWalletFundingTable",
 
   components: {
     TableContainer,
     EmptyWalletIcon,
-    TransactionWalletTableRow: () =>
+    TransactionWalletFundingTableRow: () =>
       import(
-        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/table-comps/transaction-wallet-table-row"
+        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/table-comps/transaction-wallet-funding-table-row"
       ),
   },
 

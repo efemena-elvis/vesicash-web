@@ -11,7 +11,7 @@ const paymentHelper = {
 
     WalletTransferModal: () =>
       import(
-        /* webpackChunkName: "transactions-modal-module" */ "@/modules/dashboard/modals/wallet-modals/wallet-transfer-modal"
+        /* webpackChunkName: "transactions-modal-module" */ "@/modules/dashboard/modals/fund-wallet-modals/wallet-transfer-modal"
       ),
 
     WireTransferModal: () =>
@@ -21,12 +21,12 @@ const paymentHelper = {
 
     WalletDetailsModal: () =>
       import(
-        /* webpackChunkName: "transactions-modal-module" */ "@/modules/dashboard/modals/wallet-modals/wallet-details-modal"
+        /* webpackChunkName: "transactions-modal-module" */ "@/modules/dashboard/modals/fund-wallet-modals/wallet-details-modal"
       ),
 
     FlutterwaveBusinessPaymentModal: () =>
       import(
-        /* webpackChunkName: "transactions-modal-module" */ "@/modules/dashboard/modals/wallet-modals/flutterwave-business-payment-modal"
+        /* webpackChunkName: "transactions-modal-module" */ "@/modules/dashboard/modals/fund-wallet-modals/flutterwave-business-payment-modal"
       ),
 
     FWBizModal: () =>

@@ -1,5 +1,7 @@
 <template>
-  <div class="contract-upload-card rounded-12 border-grey-100 smooth-transition">
+  <div
+    class="contract-upload-card rounded-12 border-grey-100 smooth-transition"
+  >
     <!-- CONTENT STATE -->
     <template name="content-state" v-if="getFileName">
       <div class="content-state wt-100">
@@ -17,7 +19,8 @@
               <span
                 class="tertiary-2-text green-500"
                 v-if="getFileData.uploading"
-              >({{ getFileData.progress }}%)</span>
+                >({{ getFileData.progress }}%)</span
+              >
             </div>
 
             <!-- FILE PROGRESS -->
@@ -32,7 +35,9 @@
 
             <!-- FILE SIZE -->
             <template v-else>
-              <div class="file-size tertiary-2-text grey-600">{{ getFileData.size }}</div>
+              <div class="file-size tertiary-2-text grey-600">
+                {{ getFileData.size }}
+              </div>
             </template>
           </div>
         </div>
@@ -57,12 +62,14 @@
         </div>
 
         <!-- TITLE TEXT -->
-        <div class="title-text grey-900 primary-1-text text-center mgb-4">{{ titleText }}</div>
+        <div class="title-text grey-900 primary-1-text text-center mgb-4">
+          {{ titleText }}
+        </div>
 
         <!-- DESCRIPTION TEXT -->
-        <div
-          class="description-text tertiary-2-text grey-600 text-center"
-        >You can upload a doc or a PDF file</div>
+        <div class="description-text tertiary-2-text grey-600 text-center">
+          You can upload a doc or a PDF file
+        </div>
       </label>
 
       <!-- FILE INPUT FIELD -->
@@ -104,7 +111,9 @@ export default {
     },
   },
 
-  data: () => ({}),
+  data: () => ({
+    acceptable_filetypes: ["doc", "docx", "pdf"],
+  }),
 
   methods: {
     ...mapActions({
@@ -116,8 +125,14 @@ export default {
     ...mapMutations({ UPDATE_FILE_PROGRESS: "general/UPDATE_FILE_PROGRESS" }),
 
     handleFileUpload($event) {
+      $event.preventDefault();
       let uploaded_file = [...$event.target.files][0];
       this.$refs.fileUpload.value = ""; // CLEAR OUT FILE CACHE
+
+      if (!this.processFileType(uploaded_file.name)) {
+        this.pushToast("Upload an agreement file of type doc or pdf", "error");
+        return false;
+      }
 
       if (!this.processFileSize(uploaded_file.size)) {
         this.pushToast("Upload a maximum file size of 1mb", "error");
@@ -127,11 +142,18 @@ export default {
       this.uploadToSpace({
         file: uploaded_file,
         formatted_size: this.processFileSize(uploaded_file.size),
+        type: "escrow",
       })
         .then((response) => {
-          if (response.code) this.$emit("uploaded", response.data);
+          if (response.code === 200)
+            this.$emit("contractUploaded", response.data);
         })
         .catch((err) => console.log(err));
+    },
+
+    processFileType(name) {
+      let file_type = name.split(".").at(-1);
+      return this.acceptable_filetypes.includes(file_type) ? true : false;
     },
 
     processFileSize(size) {

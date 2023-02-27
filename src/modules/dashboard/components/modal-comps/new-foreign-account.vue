@@ -25,9 +25,9 @@
         :custom_style="{ input_wrapper_style: 'form-prefix' }"
         @getInputState="updateFormState($event, 'phone')"
         :error_handler="{
-            type: 'phone',
-            message: 'Enter a valid phone number.',
-          }"
+          type: 'phone',
+          message: 'Enter a valid phone number.',
+        }"
       />
     </div>
 
@@ -43,9 +43,9 @@
             placeholder="Your first name"
             @getInputState="updateFormState($event, 'first_name')"
             :error_handler="{
-            type: 'required',
-            message: 'Enter your first name',
-          }"
+              type: 'required',
+              message: 'Enter your first name',
+            }"
           />
         </div>
       </div>
@@ -60,9 +60,9 @@
             placeholder="Your last name"
             @getInputState="updateFormState($event, 'last_name')"
             :error_handler="{
-            type: 'required',
-            message: 'Enter your last name',
-          }"
+              type: 'required',
+              message: 'Enter your last name',
+            }"
           />
         </div>
       </div>
@@ -91,9 +91,9 @@
         placeholder="Your IBAN/Account number"
         @getInputState="updateFormState($event, 'account_number')"
         :error_handler="{
-            type: 'required',
-            message: 'Enter your IBAN/Account number',
-          }"
+          type: 'required',
+          message: 'Enter your IBAN/Account number',
+        }"
       />
     </div>
 
@@ -109,9 +109,9 @@
             placeholder="Your swift code"
             @getInputState="updateFormState($event, 'swift_code')"
             :error_handler="{
-            type: 'required',
-            message: 'Enter your bank swift code',
-          }"
+              type: 'required',
+              message: 'Enter your bank swift code',
+            }"
           />
         </div>
       </div>
@@ -126,9 +126,9 @@
             placeholder="Your sort code"
             @getInputState="updateFormState($event, 'sort_code')"
             :error_handler="{
-            type: 'required',
-            message: 'Enter your bank sort code',
-          }"
+              type: 'required',
+              message: 'Enter your bank sort code',
+            }"
           />
         </div>
       </div>
@@ -144,9 +144,9 @@
         placeholder="Your bank address"
         @getInputState="updateFormState($event, 'bank_address')"
         :error_handler="{
-            type: 'required',
-            message: 'Enter your bank address',
-          }"
+          type: 'required',
+          message: 'Enter your bank address',
+        }"
       />
     </div>
   </div>
@@ -156,7 +156,7 @@
 import FormHelper from "@/modules/auth/mixins/auth-helper";
 
 export default {
-  name: "NewDollarAccount",
+  name: "NewForeignAccount",
 
   mixins: [FormHelper],
 
@@ -199,15 +199,15 @@ export default {
     getBankDetails: {
       handler(bank) {
         if (!this.isValidState) {
-          this.$emit("dollarBankUpdated", null);
+          this.$emit("bankDetailsUpdated", null);
           return;
         }
         if (!this.bank) {
-          this.$emit("dollarBankUpdated", null);
+          this.$emit("bankDetailsUpdated", null);
           return;
         }
 
-        this.$emit("dollarBankUpdated", bank);
+        this.$emit("bankDetailsUpdated", bank);
       },
     },
   },

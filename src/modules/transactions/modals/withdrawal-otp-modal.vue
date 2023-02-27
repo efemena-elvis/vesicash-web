@@ -12,13 +12,16 @@
 
         <div class="tertiary-2-text text-center grey-600 mgt-12">
           Enter the OTP code we sent to
-          <b>{{getUserEmail}}</b> and
-          <b>{{getUserPhone}}</b>
+          <b>{{ getUserEmail }}</b> and
+          <b>{{ getUserPhone }}</b>
           to withdraw
           <b>
-            {{`${$money.getSign(getWalletType)}${$money.addComma(
-            getWithdrawalMeta.total
-            )}`}}
+            {{
+              `${$money.getSign(getWalletType.slug)}${$money.addComma(
+                Number(getWithdrawalMeta.amount) -
+                  getWithdrawalMeta.withdrawal_charge
+              )}`
+            }}
           </b>
         </div>
       </div>
@@ -31,7 +34,12 @@
         <div class="auth-page">
           <!-- OTP ENTRY INPUTS -->
           <div class="form-group">
-            <input type="number" class="form-control" v-model="otp_one" ref="otpOne" />
+            <input
+              type="number"
+              class="form-control"
+              v-model="otp_one"
+              ref="otpOne"
+            />
             <input
               type="number"
               class="form-control"
@@ -82,7 +90,9 @@
             :disabled="getOTPToken.length === 6 ? false : true"
             @click="handleUserOTPVerification"
             ref="continue"
-          >Verify OTP code</button>
+          >
+            Verify OTP code
+          </button>
         </div>
 
         <!-- HELP BLOCK TEXT -->
@@ -90,13 +100,15 @@
           <div
             class="help-block text-center grey-600 pointer"
             @click="resendOTPCode"
-          >Resend OTP code</div>
+          >
+            Resend OTP code
+          </div>
         </template>
 
         <template v-else>
-          <div
-            class="help-block text-center grey-600 pointer"
-          >Resending in.. 0.{{ resend_countdown }}s</div>
+          <div class="help-block text-center grey-600 pointer">
+            Resending in.. 0.{{ resend_countdown }}s
+          </div>
         </template>
       </div>
     </template>
@@ -158,14 +170,16 @@ export default {
     getWithdrawalPayload() {
       return {
         account_id: this.getAccountId,
-        beneficiary_name: this.getWithdrawalMeta.name,
-        bank_account_number: this.getWithdrawalMeta.account_no.toString(),
-        bank_code: this.getWithdrawalMeta.bank_code?.toString(),
+        beneficiary_name:
+          this.getWithdrawalMeta.selected_beneficiary.account_name,
+        bank_account_number:
+          this.getWithdrawalMeta.selected_beneficiary.account_no.toString(),
+        bank_code: this.getWithdrawalMeta.selected_beneficiary.bank_code,
         amount: this.getWithdrawalMeta.amount,
-        currency: this.getWalletType === "naira" ? "NGN" : "USD",
-        debit_currency: this.getWalletType === "naira" ? "NGN" : "USD",
+        currency: this.getWalletType.short,
+        debit_currency: this.getWalletType.short,
         gateway: "monnify",
-        escrow_wallet: this.escrow ? "yes" : "no",
+        escrow_wallet: "no",
       };
     },
 
@@ -364,6 +378,7 @@ export default {
 
     async makeWithdrawal() {
       this.$bus.$emit("show-page-loader", "Processing your withdrawal");
+
       try {
         const amount = `${this.$money.getSign(
           this.getWalletType
@@ -378,7 +393,6 @@ export default {
         );
 
         this.$bus.$emit("hide-page-loader");
-
         this.handleClick("continue", "Continue", false);
 
         response.code == 200
@@ -389,6 +403,7 @@ export default {
             );
       } catch (error) {
         console.log(error);
+        this.$bus.$emit("hide-page-loader");
         this.handleClick("continue", "Continue", false);
         this.pushToast("Withdrawal failed. Please try again", "error");
       }
