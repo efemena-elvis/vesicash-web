@@ -3,7 +3,7 @@
     class="contract-upload-card rounded-12 border-grey-100 smooth-transition"
   >
     <!-- CONTENT STATE -->
-    <template name="content-state" v-if="getFileName">
+    <template v-if="getFileName">
       <div class="content-state wt-100">
         <!-- LEFT SECTION -->
         <div class="left-section wt-100">
@@ -54,7 +54,7 @@
     </template>
 
     <!-- NO CONTENT STATE -->
-    <template name="no-content-state" v-else>
+    <template v-else>
       <label class="no-content-state pointer" for="fileUpload">
         <!-- ICON HOLDER -->
         <div class="icon-holder mgb-8">
@@ -122,7 +122,9 @@ export default {
       clearAttachedFile: "general/clearAttachedFile",
     }),
 
-    ...mapMutations({ UPDATE_FILE_PROGRESS: "general/UPDATE_FILE_PROGRESS" }),
+    ...mapMutations({
+      UPDATE_FILE_PROGRESS: "general/UPDATE_FILE_PROGRESS",
+    }),
 
     handleFileUpload($event) {
       $event.preventDefault();
@@ -166,6 +168,7 @@ export default {
 
     removeAttachedFile() {
       this.clearAttachedFile();
+      this.$emit("clearTransactionFile");
     },
   },
 };

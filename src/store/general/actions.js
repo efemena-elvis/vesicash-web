@@ -187,7 +187,7 @@ export default {
   // CLEAR OUT UPLOAADED  FILE ATTACHMENT
   // =======================================
   clearAttachedFile({ commit }) {
-    commit("transactions/UPDATE_TRANSACTION_ATTACHMENT", [], { root: true });
+    // commit("transactions/UPDATE_TRANSACTION_ATTACHMENT", [], { root: true });
     commit("UPDATE_FILE_PROGRESS", {
       name: "",
       size: "",
