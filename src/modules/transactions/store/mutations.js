@@ -9,9 +9,7 @@ export default {
     state.transaction.name = payload.transaction_name;
     state.transaction.type = payload.transaction_type;
     state.transaction.parties = payload.transaction_party;
-
-    if (payload.transaction_files.length)
-      state.transaction.files = payload.transaction_files;
+    state.transaction.files = payload?.transaction_files ?? [];
   },
 
   UPDATE_TRANSACTION_ATTACHMENT: (state, payload) => {

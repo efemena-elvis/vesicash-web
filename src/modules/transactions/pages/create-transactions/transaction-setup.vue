@@ -72,7 +72,10 @@
       </div>
 
       <div class="col-12 col-lg-10 col-xl-8 mgb-40">
-        <ContractUploadCard @contractUploaded="updateTransactionFile" />
+        <ContractUploadCard
+          @contractUploaded="updateTransactionFile"
+          @clearTransactionFile="removeUploadedFile"
+        />
       </div>
     </template>
 
@@ -208,6 +211,11 @@ export default {
 
     updateTransactionFile(file) {
       this.form.transaction_files = file;
+    },
+
+    removeUploadedFile() {
+      this.form.transaction_files = [];
+      this.UPDATE_TRANSACTION_SETUP(this.form);
     },
 
     nextProgressFlow() {
