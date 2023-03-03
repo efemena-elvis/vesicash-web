@@ -72,7 +72,7 @@ export default {
           id: 2,
           icon: "ArrowRightIcon",
           title: "3rd party account",
-          slug: "3rd party",
+          slug: "third_party",
           description: "Transfer funds to a 3rd party account.",
         },
         {

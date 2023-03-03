@@ -1,6 +1,6 @@
 <template>
   <ModalCover
-    :show_close_btn="false"
+    show_close_btn
     @closeModal="$emit('closeTriggered')"
     :modal_style="{ size: 'modal-xs' }"
     class="verify-otp-modal"
@@ -8,7 +8,7 @@
     <!-- MODAL COVER HEADER -->
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
-        <div class="modal-cover-title text-center">Enter OTP code</div>
+        <div class="modal-cover-title text-center mgt-20">Enter OTP code</div>
 
         <div class="tertiary-2-text text-center grey-600 mgt-12">
           Enter the OTP code we sent to
@@ -183,6 +183,18 @@ export default {
       };
     },
 
+    getWalletTransferDetails() {
+      return {
+        sender_account_id: this.getAccountId,
+        recipient_account_id:
+          this.getWithdrawalMeta.selected_beneficiary.account_no,
+        amount: this.getWithdrawalMeta.amount,
+        final_amount: this.getWithdrawalMeta.amount,
+        sender_currency: this.getWalletType.short,
+        recipient_currency: this.getWalletType.short,
+      };
+    },
+
     checkOTPOne() {
       return this.otp_one.length === 1 ? false : true;
     },
@@ -280,8 +292,9 @@ export default {
 
   methods: {
     ...mapActions({
-      sendUserOTP: "auth/requestOTP",
+      sendUserOTP: "auth/sendUserOTP",
       verifyUserOTP: "auth/verifyUserOTP",
+      walletToWalletTransfer: "transactions/walletToWalletTransfer",
       withdrawWalletFund: "dashboard/withdrawWalletFund",
     }),
 
@@ -377,20 +390,22 @@ export default {
     },
 
     async makeWithdrawal() {
-      this.$bus.$emit("show-page-loader", "Processing your withdrawal");
+      this.$bus.$emit("show-page-loader", "Processing your transfer");
 
       try {
         const amount = `${this.$money.getSign(
-          this.getWalletType
+          this.getWalletType.slug
         )}${this.$money.addComma(
-          this.getWithdrawalMeta.amount - this.getWithdrawalMeta.fee
+          this.getWithdrawalMeta.amount -
+            this.getWithdrawalMeta.withdrawal_charge
         )}`;
 
         this.handleClick("continue");
 
-        const response = await this.withdrawWalletFund(
-          this.getWithdrawalPayload
-        );
+        const response =
+          this.getWithdrawalMeta.selected_beneficiary.category === "wallet"
+            ? await this.walletToWalletTransfer(this.getWalletTransferDetails)
+            : await this.withdrawWalletFund(this.getWithdrawalPayload);
 
         this.$bus.$emit("hide-page-loader");
         this.handleClick("continue", "Continue", false);

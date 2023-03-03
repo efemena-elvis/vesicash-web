@@ -10,6 +10,27 @@
 
     <TabSwitcher :tabs="tab_options" @tabSelected="account_type = $event" />
 
+    <!-- FILTER ROW SECTION -->
+    <div class="filter-row-section mgt-32">
+      <div class="form-group">
+        <BasicInput
+          label_title=""
+          label_id="search"
+          :input_value="form.search_filter"
+          placeholder="Search account or bank name"
+          @getInputState="updateFormState($event, 'search_filter')"
+        />
+      </div>
+
+      <div class="form-group">
+        <DropSelectInput
+          placeholder="Filter by currency"
+          :options="currency_options"
+          @selectedOption="selectDropdownOption('currency', $event)"
+        />
+      </div>
+    </div>
+
     <div class="accounts-container">
       <template v-if="loading_accounts">
         <div
@@ -37,8 +58,17 @@
     <portal to="vesicash-modals">
       <transition name="fade" v-if="show_new_naira_modal">
         <AddNairaAccountModal
+          :account_type="account_type"
           @closeTriggered="toggleNewNairaModal"
           @saved="showSuccessModal('show_new_naira_modal', $event)"
+        />
+      </transition>
+
+      <transition name="fade" v-if="show_new_wallet_modal">
+        <AddWalletAccountModal
+          :account_type="account_type"
+          @closeTriggered="toggleNewWalletModal"
+          @saved="showSuccessModal('show_new_wallet_modal', $event)"
         />
       </transition>
 
@@ -85,8 +115,10 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import DropSelectInput from "@/shared/components/drop-select-input";
 import TabSwitcher from "@/shared/components/tab-switcher";
 import AddNairaAccountModal from "@/modules/settings/modals/add-naira-account-modal";
+import AddWalletAccountModal from "@/modules/settings/modals/add-wallet-account-modal";
 import AddDollarAccountModal from "@/modules/settings/modals/add-dollar-account-modal";
 import SelectAccountCurrencyModal from "@/modules/settings/modals/select-account-currency-modal";
 import UpdateDollarAccountModal from "@/modules/settings/modals/update-dollar-account-modal";
@@ -99,6 +131,8 @@ export default {
 
   components: {
     TabSwitcher,
+    DropSelectInput,
+    AddWalletAccountModal,
     AddNairaAccountModal,
     AddDollarAccountModal,
     UpdateDollarAccountModal,
@@ -106,6 +140,10 @@ export default {
     UserAccountCard,
     AccountDetailsModal,
     SuccessModal,
+    BasicInput: () =>
+      import(
+        /* webpackChunkName: 'shared-module' */ "@/shared/components/form-comps/basic-input"
+      ),
   },
 
   async mounted() {
@@ -120,12 +158,9 @@ export default {
     ...mapGetters({ getAccounts: "settings/getAccounts" }),
 
     getSelectedAccount() {
-      // const currency = this.account_type === "naira" ? "NGN" : "USD";
-      // return this.getAccounts.filter(
-      //   (account) => account.currency === currency
-      // );
-
-      return this.getAccounts;
+      return this.getAccounts.filter(
+        (account) => account.category === this.account_type
+      );
     },
   },
 
@@ -138,16 +173,40 @@ export default {
           active: true,
         },
         {
-          name: "3rd Party accounts",
-          value: "3rd_party",
+          name: "3rd party accounts",
+          value: "third_party",
           active: false,
         },
         {
-          name: "Vesicash wallet Ids",
+          name: "Vesicash account Ids",
           value: "wallet",
           active: false,
         },
       ],
+
+      currency_options: [
+        {
+          id: 1,
+          name: "Naira account (NGN)",
+          slug: "naira",
+          short: "NGN",
+        },
+        {
+          id: 2,
+          name: "Dollar account (USD)",
+          slug: "dollar",
+          short: "USD",
+        },
+        // { id: 3, name: "GBP (£)", slug: "pound", short: "GPB" },
+      ],
+
+      form: {
+        search_filter: "",
+      },
+
+      validity: {
+        search_filter: "",
+      },
 
       account_type: "settlement",
       selected_account: null,
@@ -155,6 +214,7 @@ export default {
       show_success_modal: false,
       show_select_account_modal: false,
       show_new_naira_modal: false,
+      show_new_wallet_modal: false,
       show_new_dollar_modal: false,
       show_naira_details_modal: false,
       show_update_dollar_modal: false,
@@ -171,12 +231,22 @@ export default {
       await this.fetchAllBanks(this.getAccountId);
     },
 
+    // SELECT OPTION FROM OPTION LIST
+    selectDropdownOption(type, value) {
+      console.log(type, value);
+    },
+
     toggleAccountCurrencySelection() {
-      this.show_select_account_modal = !this.show_select_account_modal;
+      if (this.account_type === "wallet") this.toggleNewWalletModal();
+      else this.show_select_account_modal = !this.show_select_account_modal;
     },
 
     toggleNewNairaModal() {
       this.show_new_naira_modal = !this.show_new_naira_modal;
+    },
+
+    toggleNewWalletModal() {
+      this.show_new_wallet_modal = !this.show_new_wallet_modal;
     },
 
     toggleNewDollarModal() {
@@ -249,7 +319,7 @@ export default {
   @include flex-row-start-wrap;
   gap: toRem(32);
   align-items: flex-end;
-  margin-top: toRem(32);
+  margin-top: toRem(12);
   padding-bottom: toRem(150);
 
   @include breakpoint-down(lg) {
@@ -278,6 +348,18 @@ export default {
     border-radius: toRem(12);
     @include card-size;
     height: toRem(65);
+  }
+}
+
+.filter-row-section {
+  @include flex-row-between-wrap;
+
+  .form-group {
+    width: toRem(340);
+
+    @include breakpoint-down(xs) {
+      width: 100%;
+    }
   }
 }
 </style>

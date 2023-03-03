@@ -97,7 +97,7 @@
     </template>
 
     <!-- TRANSACTIONS SECTION -->
-    <template name="transactions-section" v-if="false">
+    <template v-if="false">
       <div class="section-wrapper">
         <div class="section-title">Transactions</div>
 
@@ -107,7 +107,7 @@
     </template>
 
     <!-- ACTIVITY SECTION -->
-    <template name="activity-section" v-if="getTransactionActivities.length">
+    <template v-if="getTransactionActivities.length">
       <div class="section-wrapper">
         <div class="section-title">Activity</div>
 

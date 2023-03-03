@@ -152,6 +152,7 @@ export default {
       UPDATE_MILESTONE_RECIPIENT: "transactions/UPDATE_MILESTONE_RECIPIENT",
       UPDATE_TRANSACTION_DISPUTE_MGT:
         "transactions/UPDATE_TRANSACTION_DISPUTE_MGT",
+      EVALUATE_TRANSACTION_FEES: "transactions/EVALUATE_TRANSACTION_FEES",
     }),
 
     nextProgressFlow() {
@@ -329,24 +330,91 @@ export default {
     loadMileStoneData() {
       let milestone_data = {};
 
-      milestone_data.id = this.$string.getRandomString(12);
+      let id_one = this.$string.getRandomString(12);
+      let id_two = this.$string.getRandomString(12);
+
+      // milestone_data.id = this.$string.getRandomString(12);
       milestone_data.name = "";
       milestone_data.due_date = "";
       milestone_data.inspection_period = {};
       milestone_data.status = "Sent - Awaiting Confirmation";
 
-      this.UPDATE_TRANSACTION_MILESTONE([milestone_data]);
-      this.UPDATE_MILESTONE_RECIPIENT([
-        ...this.getBeneficiariesReceivingPay(milestone_data.id),
-      ]);
+      this.UPDATE_TRANSACTION_MILESTONE(
+        this.getTransactionType === "oneoff"
+          ? [{ ...milestone_data, id: id_one }]
+          : [
+              { ...milestone_data, id: id_one },
+              { ...milestone_data, id: id_two },
+            ]
+      );
+
+      this.UPDATE_MILESTONE_RECIPIENT(
+        ...[
+          this.getTransactionType === "oneoff"
+            ? [...this.getBeneficiariesReceivingPay(id_one)]
+            : [
+                ...this.getBeneficiariesReceivingPay(id_one),
+                ...this.getBeneficiariesReceivingPay(id_two),
+              ],
+        ]
+      );
     },
 
     // ==============================
     // LOAD ALL CURRENT MILESTONES
     // ==============================
     loadAllCurrentMilestones() {
+      // GET NON RECIPIENTS
+      let non_recipients = this.getTransactionBeneficiaries.filter(
+        (user) => user.recipient.name === "No"
+      );
+
+      // GET NEWLY ADDED RECIPIENTS
+      let recipients = this.getTransactionBeneficiaries.filter(
+        (user) => user.recipient.name === "Yes"
+      );
+
+      // FILTER OUT RECIPIENT THAT ALREADY EXIST IN MILESTONE RECIPENT LIST
+      let evaluated_recipient = recipients.filter((obj1) => {
+        return !this.getMilestoneRecipients.find((obj2) => obj2.id === obj1.id);
+      });
+
+      // REMOVE RECIPIENT THAT CAN NO LONGER RECEIVE FUND
+      if (non_recipients.length) {
+        let lean_recipient = this.getMilestoneRecipients.filter((obj1) => {
+          return !non_recipients.find((obj2) => obj2.id === obj1.id);
+        });
+
+        this.UPDATE_MILESTONE_RECIPIENT([...lean_recipient]);
+      }
+
+      if (evaluated_recipient.length) {
+        let bulk_recipient = [];
+        this.getTransactionMilestones.map((milestone) => {
+          evaluated_recipient.map((user) => {
+            bulk_recipient.push({
+              ...user,
+              milestone_id: milestone.id,
+              update_id: this.$string.getRandomString(12),
+            });
+          });
+        });
+
+        let padded_recipient = [
+          ...this.getMilestoneRecipients,
+          ...bulk_recipient,
+        ];
+
+        this.UPDATE_MILESTONE_RECIPIENT([...padded_recipient]);
+      }
+
       this.UPDATE_TRANSACTION_MILESTONE([...this.getTransactionMilestones]);
-      this.UPDATE_MILESTONE_RECIPIENT([...this.getMilestoneRecipients]);
+
+      if (!non_recipients.length && !evaluated_recipient.lenght) {
+        this.UPDATE_MILESTONE_RECIPIENT([...this.getMilestoneRecipients]);
+      }
+
+      this.EVALUATE_TRANSACTION_FEES();
     },
 
     // ==============================

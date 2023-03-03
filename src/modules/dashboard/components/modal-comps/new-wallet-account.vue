@@ -55,7 +55,7 @@ export default {
       async handler(state) {
         this.account_details = null;
 
-        if (state.length >= 10) await this.verifyAccount(state);
+        if (state.length >= 10) await this.verifyWalletID(state);
       },
     },
   },
@@ -76,25 +76,30 @@ export default {
 
   methods: {
     ...mapActions({
-      verifyBankAccount: "general/verifyBankAccount",
+      verifyWalletAccountID: "general/verifyWalletAccountID",
     }),
 
-    async verifyAccount(account_number, bank_code) {
+    async verifyWalletID(account_id) {
       this.invalid_account = false;
       this.verification_message = "Verifying account...";
 
-      const payload = {
-        bank_code,
-        account_number,
-      };
-
-      const response = await this.verifyBankAccount(payload);
+      const response = await this.verifyWalletAccountID(account_id);
 
       if (response?.status === "ok") {
         this.verification_message = "";
-        this.account_details = response.data;
 
-        this.$emit("bankDetailsUpdated", this.getNairaBankDetails);
+        let response_payload = {
+          account_name: response.data.firstname
+            ? `${response.data.firstname} ${response.data.lastname}`
+            : response.data.email_address,
+          account_no: response.data.account_id,
+          category: "wallet",
+          bank_name: "Vesicash",
+        };
+
+        this.account_details = response_payload;
+
+        this.$emit("bankDetailsUpdated", response_payload);
       } else {
         this.verification_message =
           response?.message || "Please check account details";

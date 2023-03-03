@@ -40,11 +40,16 @@
 
         <template v-if="getWalletType.slug === 'naira'">
           <ModalListItem
+            v-if="getWithdrawalMeta.selected_beneficiary.category !== 'wallet'"
             title="Bank name"
             :value="getWithdrawalMeta.selected_beneficiary.bank_name"
           />
           <ModalListItem
-            title="Account number"
+            :title="
+              getWithdrawalMeta.selected_beneficiary.category === 'wallet'
+                ? 'Account ID'
+                : 'Account number'
+            "
             :value="getWithdrawalMeta.selected_beneficiary.account_no"
           />
           <ModalListItem

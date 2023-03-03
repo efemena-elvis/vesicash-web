@@ -244,9 +244,7 @@ const paymentHelper = {
         this.hidePageLoader();
 
         console.log("ERROR STARTING CARD PAYMENT", err);
-
         // this.handleClick("pay", "Make Payment", false);
-
         this.pushToast("Failed to initiate card payment", "error");
       }
     },

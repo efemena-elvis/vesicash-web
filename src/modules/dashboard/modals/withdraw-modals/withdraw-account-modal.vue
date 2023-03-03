@@ -63,6 +63,25 @@
                 message: 'Enter an amount',
               }"
             />
+
+            <!-- AMOUNT DATA -->
+            <div class="amount-meta mgt-8 tertiary-2-text grey-600">
+              <div>
+                Minimum amount:
+                <span class="fw-bold"
+                  >{{ $money.getSign(selected_currency.slug)
+                  }}{{ $money.addComma(selected_currency.min_amount) }}</span
+                >
+              </div>
+
+              <div class="green-500">
+                Charges:
+                <span class="fw-bold"
+                  >{{ $money.getSign(selected_currency.slug)
+                  }}{{ $money.addComma(getWithdrawalCharge) }}</span
+                >
+              </div>
+            </div>
           </div>
 
           <template v-if="!create_new_account">
@@ -75,8 +94,11 @@
               <DropSelectInput
                 :placeholder="getBeneficiaryLabel"
                 :options="beneficiary_account_options"
-                :allow_search="true"
+                :allow_search="
+                  beneficiary_account_options.length > 5 ? true : false
+                "
                 :pre_select="account_pre_select"
+                empty_text="No beneficiary account available"
                 @selectedOption="selectDropdownOption('account', $event)"
               />
 
@@ -220,6 +242,11 @@ export default {
           : "NewForeignAccount";
     },
 
+    getWithdrawalCharge() {
+      let account_type = this.account_type.slug;
+      return account_type === "wallet" ? 0 : 50;
+    },
+
     // dollarWithdrawalDetails() {
     //   return {
     //     amount: Number(Number(this.form.amount)),
@@ -250,22 +277,34 @@ export default {
   },
 
   async mounted() {
-    await this.fetchUserSavedAccountList();
+    await this.fetchUserSavedAccountList(this.account_type.slug);
   },
 
   data: () => ({
     currency_options: [
-      { id: 1, name: "Naira wallet (NGN)", slug: "naira", short: "NGN" },
-      { id: 2, name: "Dollar wallet (USD)", slug: "dollar", short: "USD" },
+      {
+        id: 1,
+        name: "Naira wallet (NGN)",
+        slug: "naira",
+        short: "NGN",
+        min_amount: 500,
+      },
+      {
+        id: 2,
+        name: "Dollar wallet (USD)",
+        slug: "dollar",
+        short: "USD",
+        min_amount: 100,
+      },
       // { id: 3, name: "GBP (£)", slug: "pound", short: "GPB" },
     ],
     selected_currency: {
       slug: "", // naira
       short: "", // NGN
     },
+
     selected_currency_balance: "0.00",
     beneficiary_account_options: [],
-    withdrawal_charge: 50,
 
     account_pre_select: null,
 
@@ -380,18 +419,19 @@ export default {
     },
 
     // FETCH ALL SAVED USER BENEFICIARY ACCOUNTS
-    async fetchUserSavedAccountList() {
+    async fetchUserSavedAccountList(filter_type) {
       this.beneficiary_account_options = [];
 
       try {
         const response = await this.fetchBankDetails(this.getAccountId);
+
         let accounts =
           response.code === 200
             ? response.data.map((account) => {
                 // FORMAT BANK CODE
-                let bank_code = account.bank?.id.toString();
+                let bank_code = account?.bank?.id.toString();
                 let formatted_bank_code =
-                  bank_code.length < 3 ? `0${bank_code}` : bank_code;
+                  bank_code?.length < 3 ? `0${bank_code}` : bank_code;
 
                 return {
                   ...account,
@@ -401,14 +441,18 @@ export default {
             : [];
 
         // ! Filter accounts base on currency and account type
-        console.log(accounts);
+        accounts = accounts.filter(
+          (account) => account.category === filter_type
+        );
 
         // CHECK IF ACCOUNT HAS LENGTH AND POPULATE BENEFICIARY LIST
         if (accounts.length) {
           accounts.map((account) =>
             this.beneficiary_account_options.push({
               id: account.id,
-              name: `${account.account_name} &bull; ${account.bank_name} &bull; ${account.account_no}`,
+              name: `${account.account_name} ${
+                account.bank_name !== null ? "&bull;" + account.bank_name : ""
+              } &bull; ${account.account_no}`,
               options: account,
             })
           );
@@ -432,7 +476,7 @@ export default {
       // SETUP WITHDRAWAL CHARGE
       let withdrawal_details = {
         ...this.form,
-        withdrawal_charge: this.withdrawal_charge,
+        withdrawal_charge: this.getWithdrawalCharge,
       };
 
       if (this.create_new_account) {
@@ -465,5 +509,9 @@ export default {
 .modal-cover-body {
   min-height: toRem(110);
   height: auto;
+
+  .amount-meta {
+    @include flex-row-between-nowrap;
+  }
 }
 </style>

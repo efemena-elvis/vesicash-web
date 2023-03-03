@@ -58,7 +58,7 @@ export default {
 
       state.transaction.milestone_recipients.map((user) => {
         if (user.milestone_id === milestone.id)
-          amount.push(Number(user.amount));
+          amount.push(Number(user?.amount ?? 0));
       });
 
       // REDUCE AMOUNT

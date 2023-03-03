@@ -100,6 +100,27 @@ export default {
     DropSelectInput,
   },
 
+  props: {
+    account_type: {
+      type: String,
+    },
+  },
+
+  computed: {
+    ...mapGetters({ getNigerianBanks: "settings/getNigerianBanks" }),
+
+    getNairaBankDetails() {
+      return {
+        account_name: this.account_details?.account_name,
+        account_no: this.account_details?.account_number,
+        bank_id: this.bank.code,
+        bank_name: this.bank.name,
+        country: this.bank.country,
+        currency: "NGN",
+      };
+    },
+  },
+
   watch: {
     bank: {
       async handler(state) {
@@ -122,21 +143,6 @@ export default {
 
   async mounted() {
     await this.fetchNigeriaBanks();
-  },
-
-  computed: {
-    ...mapGetters({ getNigerianBanks: "settings/getNigerianBanks" }),
-
-    getNairaBankDetails() {
-      return {
-        account_name: this.account_details?.account_name,
-        account_no: this.account_details?.account_number,
-        bank_id: this.bank.id,
-        bank_name: this.bank.name,
-        country: "NG",
-        currency: "NGN",
-      };
-    },
   },
 
   data: () => ({
@@ -173,6 +179,7 @@ export default {
 
     async addAccountDetails() {
       this.handleClick("save", "Adding account...");
+
       const response = await this.addNewBank({
         account_id: this.getAccountId,
         updates: this.getNairaBankDetails,

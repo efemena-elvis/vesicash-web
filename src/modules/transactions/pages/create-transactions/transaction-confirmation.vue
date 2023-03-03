@@ -110,7 +110,7 @@
         ref="createEscrowBtn"
         @click="createTransaction"
       >
-        Create escrow
+        {{ userCanMakePayment ? "Continue" : "Confirm and create escrow" }}
       </button>
     </div>
   </div>
