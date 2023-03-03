@@ -1,7 +1,7 @@
 <template>
   <div
     class="payment-rule-card rounded-16 teal-10-bg border-grey-100"
-    :class="!has_actions && 'pb-4'"
+    :class="!showBottomPaddingSpace && 'pb-0'"
   >
     <!-- CARD TITLE -->
     <div
@@ -36,7 +36,7 @@
       :class="addBottomMargin ? 'mgb-24' : null"
     >
       <div
-        class="wrapper"
+        class="wrapper border"
         v-for="(user, index) in loadCurrentMilestoneRecipients"
         :key="index"
       >
@@ -58,7 +58,12 @@
     <template v-if="has_actions">
       <div
         class="actions-row"
-        :class="$string.isOddNumber(user_details.length) && 'mgt-24'"
+        :class="[
+          $string.isOddNumber(user_details.length) && 'mgt-24',
+          !['in progress', 'delivered', 'delivered - rejected'].includes(
+            getMilestoneStatus
+          ) && 'pdb--24',
+        ]"
       >
         <!-- APPROVAL ROLE -->
         <template v-if="userAccess.approve">
@@ -193,6 +198,20 @@ export default {
       getMilestoneRecipients: "transactions/getMilestoneRecipients",
     }),
 
+    showBottomPaddingSpace() {
+      if (this.$route.name !== "TransactionDetails") {
+        return false;
+      } else if (
+        ["in progress", "delivered", "delivered - rejected"].includes(
+          this.getMilestoneStatus
+        )
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
     // =============================================
     // GET THE TRANSACTION PARTY TYPE FROM ROUTE
     // =============================================
@@ -212,7 +231,9 @@ export default {
     // ===================================================
     getMilestoneName() {
       return this.milestone.name || this.milestone.title
-        ? this.milestone.name || this.milestone.title
+        ? `Milestone ${this.index + 1} : ${
+            this.milestone.name || this.milestone.title
+          }`
         : `Milestone ${this.index + 1}`;
     },
 

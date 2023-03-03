@@ -13,6 +13,7 @@ const routes = {
   upload_file: "/upload/file",
   country_bank_list: "/admin/banks/country",
   verify_account: "/payment/banks/account_verification",
+  verify_wallet: "/auth/user/bank-details",
 };
 
 let formData = new FormData();
@@ -184,7 +185,7 @@ export default {
   },
 
   // ======================================
-  // CLEAR OUT UPLOAADED  FILE ATTACHMENT
+  // CLEAR OUT UPLOAADED FILE ATTACHMENT
   // =======================================
   clearAttachedFile({ commit }) {
     // commit("transactions/UPDATE_TRANSACTION_ATTACHMENT", [], { root: true });
@@ -224,5 +225,12 @@ export default {
     return await $api.fetch(
       `${routes.verify_account}?bank_code=${bank_code}&account_number=${account_number}`
     );
+  },
+
+  // ==============================
+  // VERIFY WALLET ACCOUNT ID
+  // ==============================
+  async verifyWalletAccountID(_, account_id) {
+    return await $api.fetch(`${routes.verify_wallet}/${account_id}`);
   },
 };

@@ -60,7 +60,9 @@
         </template>
 
         <template v-else>
-          <div class="no-options text-center">No options available</div>
+          <div class="no-options text-center pdt-12 pdb-12 grey-700">
+            {{ empty_text }}
+          </div>
         </template>
       </div>
 
@@ -90,6 +92,10 @@ export default {
     placeholder: {
       type: String,
       default: "Select One",
+    },
+    empty_text: {
+      type: String,
+      default: " No options available",
     },
     allow_search: {
       type: Boolean,

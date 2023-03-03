@@ -107,7 +107,12 @@
     <template slot="modal-cover-footer">
       <div class="modal-cover-footer">
         <template v-if="payment_type.slug === 'card'">
-          <button class="btn btn-primary btn-md wt-100">Fund Wallet</button>
+          <button
+            class="btn btn-primary btn-md wt-100"
+            @click="handleCardFunding"
+          >
+            Fund Wallet
+          </button>
         </template>
 
         <template v-else>
@@ -293,13 +298,16 @@ export default {
     handleCardFunding() {
       let request_payload = {
         currency: this.selected_currency.short,
-        transaction_id: "",
+        amount: this.form.amount,
+        account_id: this.getAccountId,
         payment_gateway: "rave",
-        success_page: "",
+        success_page: `${VESICASH_APP_URL}/dashboard`,
       };
 
       this.startCardPayment(request_payload)
-        .then()
+        .then((response) => {
+          if (response?.code === 200) location.href = response?.data?.link;
+        })
         .catch((err) => {});
     },
 

@@ -1,7 +1,7 @@
 <template>
   <div class="alert-wrapper">
     <span class="icon icon-info green-600 tertiary-1-text"></span>
-    <div class="tertiary-2-text grey-900">{{info}}</div>
+    <div class="tertiary-2-text grey-900">{{ info }}</div>
   </div>
 </template>
 
@@ -13,7 +13,7 @@ export default {
     info: {
       tyep: String,
       default:
-        "Please ensure the date of birth you are providing is equal to the date of birth on your BVN(Bank verification number)",
+        "Please ensure the date of birth you are providing matches the date of birth on your BVN (Bank verification number)",
     },
   },
 };

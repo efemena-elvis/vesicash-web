@@ -1,22 +1,24 @@
 <template>
-  <div class="user-account-card" @click="$emit('click',account)">
+  <div class="user-account-card" @click="$emit('click', account)">
     <div>
-      <div class="mgb-4 secondary-1-text text-white">{{account.account_name}}</div>
+      <div class="mgb-4 secondary-1-text text-white">
+        {{ account.account_name }}
+      </div>
 
       <div class="meta-wrapper">
         <div class="account-meta tertiary-3-text">
           <span class="dot"></span>
-          <span>{{account.account_no}}</span>
+          <span>{{ account.account_no }}</span>
         </div>
 
-        <div class="account-meta tertiary-3-text">
+        <div class="account-meta tertiary-3-text" v-if="account.bank_name">
           <span class="dot"></span>
-          <span>{{account.bank_name}}</span>
+          <span>{{ account.bank_name }}</span>
         </div>
 
         <div class="account-meta tertiary-3-text" v-if="account.sort_code">
           <span class="dot"></span>
-          <span>{{account.sort_code}}</span>
+          <span>{{ account.sort_code }}</span>
         </div>
       </div>
     </div>
