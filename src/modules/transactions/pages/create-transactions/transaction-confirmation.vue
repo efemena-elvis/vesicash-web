@@ -118,6 +118,7 @@
 
 <script>
 import { mapGetters, mapMutations, mapActions } from "vuex";
+import { VESICASH_APP_URL } from "@/utilities/constant";
 
 export default {
   name: "ConfirmFundPayoutRules",
@@ -433,7 +434,12 @@ export default {
                   fee: this.$route.query.fee,
                 },
               });
-            } else this.$router.push({ name: "VesicashDashboard" });
+            } else {
+              // FOR A SELLER CREATING ESCROW
+              let success_url = `${VESICASH_APP_URL}/transaction/payment-successful?type=seller_escrow&party=${this.$route.query.party}&transaction_id=${transaction_id}&name=${this.$route.query.name}&parties=${this.$route.query.parties}&fee=${this.$route.query.fee}`;
+
+              location.href = success_url;
+            }
           }, 1000);
         })
         .catch(() => {

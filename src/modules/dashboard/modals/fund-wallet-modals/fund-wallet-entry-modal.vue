@@ -183,6 +183,10 @@ export default {
       else if (amount > 1000000) return 2000;
       else return 0;
     },
+
+    getFundingSuccessRoute() {
+      return `${VESICASH_APP_URL}/transaction/payment-successful?type=funding&fee=${this.selected_currency.short}${this.form.amount}`;
+    },
   },
 
   data() {
@@ -301,7 +305,7 @@ export default {
         amount: this.form.amount,
         account_id: this.getAccountId,
         payment_gateway: "rave",
-        success_page: `${VESICASH_APP_URL}/dashboard`,
+        success_page: this.getFundingSuccessRoute,
       };
 
       this.startCardPayment(request_payload)
