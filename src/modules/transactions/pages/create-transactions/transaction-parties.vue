@@ -187,6 +187,9 @@ export default {
             "error"
           );
           return false;
+        } else if (buyers[0].recipient.name === "Yes") {
+          this.pushToast("A buyer cannot be a recipient party", "error");
+          return false;
         } else if (sellers.length > 1) {
           this.pushToast(
             "Transaction should contain a single seller party",

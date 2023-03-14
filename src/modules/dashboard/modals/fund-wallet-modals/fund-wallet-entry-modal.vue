@@ -26,7 +26,7 @@
 
           <DropSelectInput
             placeholder="Select wallet"
-            :options="currency_options"
+            :options="getCurrencyOptions"
             @selectedOption="selectDropdownOption($event)"
           />
         </div>
@@ -172,6 +172,12 @@ export default {
       return Object.values(this.validity).every((valid) => !valid)
         ? false
         : true;
+    },
+
+    getCurrencyOptions() {
+      return this.payment_type.slug === "transfer"
+        ? this.currency_options.slice(0, 1)
+        : this.currency_options;
     },
 
     getFundingCharge() {
