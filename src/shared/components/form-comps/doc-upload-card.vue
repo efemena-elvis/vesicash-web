@@ -1,11 +1,13 @@
 <template>
-  <div class="contract-upload-card rounded-12 border-grey-100 smooth-transition">
+  <div
+    class="contract-upload-card rounded-12 border-grey-100 smooth-transition"
+  >
     <!-- CONTENT STATE -->
-    <template name="content-state" v-if="fileExist">
+    <template v-if="fileExist">
       <div
         class="content-state wt-100"
-        v-for="(file,index) in getFileData.files"
-        :key="index+file.name"
+        v-for="(file, index) in getFileData.files"
+        :key="index + file.name"
       >
         <!-- LEFT SECTION -->
         <div class="left-section wt-100">
@@ -18,22 +20,26 @@
             <!-- FILE TITLE -->
             <div class="file-title primary-1-text grey-900">
               {{ file.name }} &nbsp;
-              <span
-                class="tertiary-2-text green-500"
-                v-if="file.uploading"
-              >({{ file.progress }}%)</span>
+              <span class="tertiary-2-text green-500" v-if="file.uploading"
+                >({{ file.progress }}%)</span
+              >
             </div>
 
             <!-- FILE PROGRESS -->
             <template v-if="file.uploading">
               <div class="file-progress green-50-bg rounded-8">
-                <div class="progress-stat green-500-bg" :style="'width:' + file.progress + '%'"></div>
+                <div
+                  class="progress-stat green-500-bg"
+                  :style="'width:' + file.progress + '%'"
+                ></div>
               </div>
             </template>
 
             <!-- FILE SIZE -->
             <template v-else>
-              <div class="file-size tertiary-2-text grey-600">{{ file.size }}</div>
+              <div class="file-size tertiary-2-text grey-600">
+                {{ file.size }}
+              </div>
             </template>
           </div>
         </div>
@@ -42,7 +48,7 @@
         <div
           class="right-section rounded-circle pointer smooth-transition"
           title="Delete file"
-          @click="removeAttachedFile(index,docID)"
+          @click="removeAttachedFile(index, docID)"
         >
           <div class="icon-trash"></div>
         </div>
@@ -50,11 +56,11 @@
     </template>
 
     <!-- NO CONTENT STATE -->
-    <template name="no-content-state" v-else>
+    <template v-else>
       <label
         class="no-content-state pointer"
         :for="docID"
-        @click="controlCount ? $emit('upload',''):null"
+        @click="controlCount ? $emit('upload', '') : null"
       >
         <!-- ICON HOLDER -->
         <div class="icon-holder mgb-8">
@@ -62,12 +68,14 @@
         </div>
 
         <!-- TITLE TEXT -->
-        <div class="title-text grey-900 primary-1-text text-center mgb-4">{{ titleText }}</div>
+        <div class="title-text grey-900 primary-1-text text-center mgb-4">
+          {{ titleText }}
+        </div>
 
         <!-- DESCRIPTION TEXT -->
-        <div
-          class="description-text tertiary-2-text grey-600 text-center"
-        >You can upload a doc or a PDF file</div>
+        <div class="description-text tertiary-2-text grey-600 text-center">
+          You can upload a doc or a PDF file
+        </div>
       </label>
 
       <!-- FILE INPUT FIELD -->
@@ -77,8 +85,8 @@
         ref="fileUpload"
         @change="handleFileUpload"
         class="position-absolute invisible"
-        accept=".doc, .docx, .pdf"
-        :multiple="fileCount>1"
+        accept=".jpg, .jpeg, .png, .pdf"
+        :multiple="fileCount > 1"
         :disabled="isDisabled"
       />
     </template>

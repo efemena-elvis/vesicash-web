@@ -8,7 +8,9 @@
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
         <div class="modal-cover-title">Verification document</div>
-        <div class="tertiary-2-text grey-600">Choose the document type you wish to upload</div>
+        <div class="tertiary-2-text grey-600">
+          Choose the document type you wish to upload
+        </div>
       </div>
     </template>
 
@@ -35,14 +37,14 @@
             placeholder="Enter verification number"
             @getInputState="updateFormState($event, 'doc_number')"
             :error_handler="{
-            type: 'required',
-            message: 'Enter document verification number',
-          }"
+              type: 'required',
+              message: 'Enter document verification number',
+            }"
           />
         </div>
 
         <DocUploadCard
-          @uploaded="uploaded_doc=$event"
+          @uploaded="uploaded_doc = $event"
           titleText="Select document(s) to upload"
           docID="verification_documents"
           @upload="handleAlert"
@@ -80,7 +82,9 @@
           class="btn btn-primary btn-md wt-100 mgt-17"
           :disabled="isDisabled"
           @click="save"
-        >Submit</button>
+        >
+          Submit
+        </button>
       </div>
     </template>
   </ModalCover>
@@ -88,7 +92,6 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-
 import ModalCover from "@/shared/components/modal-cover";
 import DocUploadCard from "@/shared/components/form-comps/doc-upload-card";
 import DropSelectInput from "@/shared/components/drop-select-input";
