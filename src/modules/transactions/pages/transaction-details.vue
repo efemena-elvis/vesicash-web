@@ -346,12 +346,18 @@ export default {
         value?.milestones.length && this.checkIfTransactionCanStart();
 
         // CHECK IF EXCESS FUNDS WAS PAID
-        if (
-          Number(value.amount_paid) + Number(value.escrow_charge) >
-            value.totalAmount ??
-          Number(value.amount)
-        ) {
-          this.togglePaymentModal();
+        let current_user = value.members?.find(
+          (party) => party.account_id === this.getAccountId
+        );
+
+        if (current_user.role?.toLowerCase() === "buyer") {
+          if (
+            Number(value.amount_paid) + Number(value.escrow_charge) >
+              value.totalAmount ??
+            Number(value.amount)
+          ) {
+            this.togglePaymentModal();
+          }
         }
       },
       immediate: true,

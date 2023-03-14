@@ -1,5 +1,8 @@
 <template>
-  <ModalCover @closeModal="$emit('closeTriggered')" :modal_style="{ size: 'modal-sm' }">
+  <ModalCover
+    @closeModal="$emit('closeTriggered')"
+    :modal_style="{ size: 'modal-sm' }"
+  >
     <!-- MODAL COVER HEADER -->
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
@@ -95,7 +98,9 @@
     <!-- MODAL COVER FOOTER -->
     <template slot="modal-cover-footer">
       <div class="modal-cover-footer">
-        <button class="btn btn-primary btn-md wt-100" @click="saveUserChanges">Save changes</button>
+        <button class="btn btn-primary btn-md wt-100" @click="saveUserChanges">
+          Save changes
+        </button>
       </div>
     </template>
   </ModalCover>
@@ -141,6 +146,7 @@ export default {
   computed: {
     ...mapGetters({
       getTransactionBeneficiaries: "transactions/getTransactionBeneficiaries",
+      getMilestoneRecipients: "transactions/getMilestoneRecipients",
     }),
   },
 
@@ -165,6 +171,7 @@ export default {
     ...mapMutations({
       UPDATE_TRANSACTION_BENEFICIARIES:
         "transactions/UPDATE_TRANSACTION_BENEFICIARIES",
+      UPDATE_MILESTONE_RECIPIENT: "transactions/UPDATE_MILESTONE_RECIPIENT",
     }),
 
     // ======================================
@@ -199,6 +206,11 @@ export default {
         (user) => user.id === this.user_data.id
       );
 
+      let user_recipient_index = this.getMilestoneRecipients.findIndex(
+        (user) => user.id === this.user_data.id
+      );
+
+      // BENEFICIARIES
       this.getTransactionBeneficiaries[user_index].email_address =
         this.form.email_address;
 
@@ -216,6 +228,21 @@ export default {
       this.UPDATE_TRANSACTION_BENEFICIARIES([
         ...this.getTransactionBeneficiaries,
       ]);
+
+      // RECIPENTS
+      this.getMilestoneRecipients[user_recipient_index].email_address =
+        this.form.email_address;
+
+      this.getMilestoneRecipients[user_recipient_index].phone_number =
+        this.form.phone_number;
+
+      this.getMilestoneRecipients[user_recipient_index].role =
+        this.form.user_role;
+
+      this.getMilestoneRecipients[user_recipient_index].access =
+        this.form.user_access;
+
+      this.UPDATE_MILESTONE_RECIPIENT([...this.getMilestoneRecipients]);
 
       this.$emit("closeTriggered");
     },
