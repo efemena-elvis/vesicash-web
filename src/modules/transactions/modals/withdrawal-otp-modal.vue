@@ -12,13 +12,15 @@
 
         <div class="tertiary-2-text text-center grey-600 mgt-12">
           Enter the OTP code we sent to
-          <b>{{getUserEmail}}</b> and
-          <b>{{getUserPhone}}</b>
+          <b>{{ getUserEmail }}</b> and
+          <b>{{ getUserPhone }}</b>
           to withdraw
           <b>
-            {{`${$money.getSign(getWalletType)}${$money.addComma(
-            getWithdrawalMeta.total
-            )}`}}
+            {{
+              `${$money.getSign(getWalletType)}${$money.addComma(
+                getWithdrawalMeta.total
+              )}`
+            }}
           </b>
         </div>
       </div>
@@ -31,7 +33,12 @@
         <div class="auth-page">
           <!-- OTP ENTRY INPUTS -->
           <div class="form-group">
-            <input type="number" class="form-control" v-model="otp_one" ref="otpOne" />
+            <input
+              type="number"
+              class="form-control"
+              v-model="otp_one"
+              ref="otpOne"
+            />
             <input
               type="number"
               class="form-control"
@@ -82,7 +89,9 @@
             :disabled="getOTPToken.length === 6 ? false : true"
             @click="handleUserOTPVerification"
             ref="continue"
-          >Verify OTP code</button>
+          >
+            Verify OTP code
+          </button>
         </div>
 
         <!-- HELP BLOCK TEXT -->
@@ -90,13 +99,15 @@
           <div
             class="help-block text-center grey-600 pointer"
             @click="resendOTPCode"
-          >Resend OTP code</div>
+          >
+            Resend OTP code
+          </div>
         </template>
 
         <template v-else>
-          <div
-            class="help-block text-center grey-600 pointer"
-          >Resending in.. 0.{{ resend_countdown }}s</div>
+          <div class="help-block text-center grey-600 pointer">
+            Resending in.. 0.{{ resend_countdown }}s
+          </div>
         </template>
       </div>
     </template>
@@ -233,7 +244,7 @@ export default {
       handler(value) {
         if (value.length === 1) {
           this.$nextTick(() => this.$refs.otpSix.blur());
-          this.handleUserOTPVerification();
+          // this.handleUserOTPVerification();
         }
       },
     },
