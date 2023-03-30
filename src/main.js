@@ -11,6 +11,7 @@ Vue.config.productionTip = false;
 // =========================================
 import "bootstrap/dist/css/bootstrap.css";
 import "../public/css/global-styles.css";
+import "@/shared/assets/scss/style.scss";
 
 // =========================================
 // IMPORT APPLICATION PLUGINS

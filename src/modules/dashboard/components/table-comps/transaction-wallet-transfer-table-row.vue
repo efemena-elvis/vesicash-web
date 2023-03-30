@@ -43,7 +43,7 @@
 import TagCard from "@/shared/components/card-comps/tag-card";
 
 export default {
-  name: "TransactionWalletWthdrawalTableRow",
+  name: "TransactionWalletTransferTableRow",
 
   components: {
     TagCard,

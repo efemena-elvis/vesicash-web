@@ -60,12 +60,14 @@ button {
   max-width: 100%;
   cursor: pointer;
   border: none;
+
   &:hover,
   &:focus {
     text-decoration: none !important;
     box-shadow: unset;
     outline: none;
     border: none;
+
     .no-touch & {
       box-shadow: unset;
       outline: none;

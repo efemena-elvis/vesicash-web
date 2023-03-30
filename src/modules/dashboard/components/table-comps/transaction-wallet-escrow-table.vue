@@ -2,21 +2,25 @@
   <div>
     <!-- TABLE CONTAINER -->
     <TableContainer
-      table_name="transaction-payment-tb"
+      table_name="transaction-disbursement-tb"
       :table_data="table_data"
       :table_header="table_header"
       :is_loading="table_loading"
       :empty_message="empty_message"
       :show_paging="showPagination"
-      @goToPage="getUserPaymentTransactions($event)"
+      @goToPage="getUserDisbursementTransactions($event)"
       :pagination="pagination"
     >
       <template v-for="(data, index) in table_data">
-        <TransactionPaymentTableRow :key="index" table_name="transaction-payment-tb" :data="data" />
+        <TransactionWalletEscrowTableRow
+          :key="index"
+          table_name="transaction-disbursement-tb"
+          :data="data"
+        />
       </template>
 
       <template slot="emptyIconSlot">
-        <EmptyPaymentIcon />
+        <EmptyDisbursementIcon />
       </template>
     </TableContainer>
   </div>
@@ -25,57 +29,53 @@
 <script>
 import { mapActions } from "vuex";
 import TableContainer from "@/shared/components/table-comps/table-container";
-import EmptyPaymentIcon from "@/shared/components/icon-comps/empty-payment-icon";
+import EmptyDisbursementIcon from "@/shared/components/icon-comps/empty-disbursement-icon";
 
 export default {
-  name: "TransactionPaymentTable",
+  name: "TransactionWalletEscrowTable",
 
   components: {
     TableContainer,
-    EmptyPaymentIcon,
-    TransactionPaymentTableRow: () =>
+    EmptyDisbursementIcon,
+    TransactionWalletEscrowTableRow: () =>
       import(
-        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/table-comps/transaction-payment-table-row"
+        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/table-comps/transaction-wallet-escrow-table-row"
       ),
   },
 
   props: {
-    dataset: {
+    table_data: {
       type: Array,
       default: () => [],
     },
-  },
 
-  mounted() {
-    this.getUserPaymentTransactions(1);
+    table_loading: {
+      type: Boolean,
+      default: false,
+    },
+
+    pagination: {
+      type: Object,
+      default: () => ({
+        current_page: 1,
+        per_page: 10,
+        last_page: 3,
+        from: 1,
+        to: 20,
+        total: 50,
+      }),
+    },
+
+    empty_message: {
+      type: String,
+      default:
+        "You have not made any transaction payment selections yet. You can fund your wallet to get started",
+    },
   },
 
   computed: {
     showPagination() {
       return this.$route?.name === "PaymentsPage" ? true : false;
-    },
-
-    dummyData() {
-      return [
-        // {
-        //   created_at: "2022-08-30 07:45:28",
-        //   name: "Badge printing payment",
-        //   method: "Wire Transfer",
-        //   amount: "8065",
-        //   currency: "NGN",
-        //   status: "completed",
-        //   shit: "biscuit",
-        // },
-        // {
-        //   created_at: "2022-07-14 21:45:28",
-        //   name: "Payment for Mac",
-        //   method: "USSD",
-        //   amount: "1145",
-        //   currency: "USD",
-        //   status: "completed",
-        //   shit: "yoghurt",
-        // },
-      ];
     },
   },
 
@@ -83,27 +83,13 @@ export default {
     return {
       table_header: [
         "Date",
-        "Disbursment name",
-        "Payment method",
-        "Amount to be paid",
+        "Transaction id",
+        "Transaction type",
+        "Payment type",
+        "Amount paid",
         "Status",
         "Actions",
       ],
-
-      table_data: [],
-      table_loading: true,
-      pagination: {
-        current_page: 1,
-        per_page: 10,
-        last_page: 3,
-        from: 1,
-        to: 20,
-        total: 50,
-      },
-      paginatedData: {},
-      paginationPages: {},
-      empty_message:
-        "You have not done any payment transaction. Click the 'Create Escrow' button to get started",
     };
   },
 
@@ -112,7 +98,7 @@ export default {
       fetchWalletTransactions: "dashboard/fetchWalletWithdrawals",
     }),
 
-    getUserPaymentTransactions(page) {
+    getUserDisbursementTransactions(page) {
       // USE PREVIOUSLY SAVED DATA FOR THAT PAGE NUMBER (AVOID UNNECESSARY API CALLS)
       if (this.paginatedData[page] && this.paginationPages[page]) {
         this.table_data = this.paginatedData[page];
@@ -174,24 +160,39 @@ export default {
 </script>
 
 <style lang="scss">
-.transaction-payment-tb {
+.transaction-disbursement-tb {
   &-1 {
+    max-width: toRem(210);
   }
 
   &-2 {
-    max-width: toRem(205);
+    max-width: toRem(200);
   }
 
   &-3 {
+    max-width: toRem(180);
   }
 
   &-4 {
+    max-width: toRem(140);
   }
 
   &-5 {
+    max-width: toRem(140);
   }
 
-  &-6 {
+  // &-6 {
+  // }
+
+  // &-7 {
+  // }
+
+  .head-data {
+    padding: toRem(8) toRem(24) !important;
+  }
+
+  .body-data {
+    padding: toRem(16) toRem(24) !important;
   }
 }
 </style>

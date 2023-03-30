@@ -1,13 +1,13 @@
 <template>
   <div>
     <!-- TABLE CONTAINER -->
+    <!-- empty_action_name="Fund wallet" -->
     <TableContainer
       table_name="transaction-wallet-tb"
       :table_data="table_data"
       :table_header="table_header"
       :is_loading="table_loading"
       :empty_message="empty_message"
-      empty_action_name="Fund wallet"
       @emptyAction="initiateWalletFunding"
       :show_paging="showPagination"
       @goToPage="getUserWalletTransactions($event)"
@@ -45,6 +45,36 @@ export default {
       ),
   },
 
+  props: {
+    table_data: {
+      type: Array,
+      default: () => [],
+    },
+
+    table_loading: {
+      type: Boolean,
+      default: false,
+    },
+
+    pagination: {
+      type: Object,
+      default: () => ({
+        current_page: 1,
+        per_page: 10,
+        last_page: 3,
+        from: 1,
+        to: 20,
+        total: 50,
+      }),
+    },
+
+    empty_message: {
+      type: String,
+      default:
+        "You have not made any transaction payment selections yet. You can fund your wallet to get started",
+    },
+  },
+
   computed: {
     showPagination() {
       return this.$route?.name === "PaymentsPage" ? true : false;
@@ -61,26 +91,12 @@ export default {
         "Status",
         "Actions",
       ],
-
-      table_data: [],
-      table_loading: true,
-      pagination: {
-        current_page: 1,
-        per_page: 10,
-        last_page: 3,
-        from: 1,
-        to: 20,
-        total: 50,
-      },
-      paginatedData: {},
-      paginationPages: {},
-      empty_message:
-        "You have not done any wallet funding transaction. You can fund your wallet to get started",
     };
   },
 
   mounted() {
-    this.getUserWalletTransactions(1);
+    // this.getUserWalletTransactions(1);
+    // this.table_loading = false;
   },
 
   methods: {

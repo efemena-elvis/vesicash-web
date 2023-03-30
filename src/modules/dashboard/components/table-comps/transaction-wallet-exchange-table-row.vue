@@ -2,19 +2,37 @@
   <tr @click="toggleTransactionSummaryModal">
     <td class="body-data" :class="`${table_name}-1`">{{ getCreatedDate }}</td>
 
-    <td class="body-data text-no-wrap" :class="`${table_name}-2`">{{ data.name }}</td>
+    <td class="body-data text-no-wrap" :class="`${table_name}-2`">
+      {{ data.user.email_address }}
+    </td>
 
-    <td class="body-data" :class="`${table_name}-3`">{{ data.method }}</td>
+    <td class="body-data" :class="`${table_name}-3`">
+      {{ data.rate.from_currency }} to {{ data.rate.to_currency }}
+    </td>
 
     <td class="body-data" :class="`${table_name}-5`">
-      <span v-html="$money.getSign(data.currency)"></span>
-      {{$money.addComma(data.amount)}}
+      <span
+        v-html="
+          $money.getSign(
+            $route.query.transaction === 'inflow'
+              ? data.rate.to_currency
+              : data.rate.from_currency
+          )
+        "
+      ></span>
+      {{
+        $money.addComma(
+          $route.query.transaction === "inflow"
+            ? data.final_amount
+            : data.initial_amount
+        )
+      }}
     </td>
 
     <td class="body-data" :class="`${table_name}-6`">
       <TagCard
         :card_text="data.status === 'failed' ? 'Failed' : 'Completed'"
-        :card_type="data.status === 'failed'? 'error' : 'success'"
+        :card_type="data.status === 'failed' ? 'error' : 'success'"
       />
     </td>
 
@@ -40,7 +58,7 @@
 import TagCard from "@/shared/components/card-comps/tag-card";
 
 export default {
-  name: "TransactionPaymentTableRow",
+  name: "TransactionWalletExchangeTableRow",
 
   components: {
     TagCard,

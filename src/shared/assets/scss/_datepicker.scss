@@ -1,0 +1,110 @@
+@import "~vue2-datepicker/scss/index.scss";
+
+$default-color: getColor("green-100") !default;
+$primary-color: getColor("green-400") !default;
+
+.#{$namespace}-datepicker-range {
+  background-color: getColor("neutral-10");
+  width: 100% !important;
+  position: relative;
+}
+
+.mx-icon-calendar {
+  color: getColor("grey-800");
+  font-size: toRem(14);
+  right: 12px !important;
+}
+
+.my-picker-class {
+  border: toRem(1) solid getColor("grey-200");
+  background-color: getColor("grey-10");
+  color: getColor("grey-900");
+  padding: toRem(9) toRem(16);
+  color: getColor("grey-900");
+  box-shadow: unset;
+  cursor: pointer;
+  height: 100%;
+  max-height: auto;
+  box-sizing: border-box;
+  vertical-align: middle;
+  position: relative;
+  border-radius: toRem(8);
+  @include transition(0.3s);
+  width: 100% !important;
+  font-size: toRem(12.75);
+
+  @include breakpoint-down(lg) {
+    padding: toRem(9) toRem(10);
+  }
+
+  &::placeholder {
+    @include generate-font-type("tertiary-2");
+    color: getColor("grey-500") !important;
+    font-size: toRem(13.5);
+  }
+
+  &:hover {
+    border-color: getColor("grey-400");
+  }
+
+  &:focus {
+    border-color: getColor("green-500");
+    box-shadow: unset;
+    outline: 0;
+  }
+}
+
+.#{$namespace}-btn-shortcut {
+  color: getColor("grey-500") !important;
+  padding: toRem(5) toRem(6);
+}
+
+.#{$namespace}-calendar-header {
+  .#{$namespace}-btn {
+    &:hover {
+      color: getColor("green-600") !important;
+    }
+
+    &-current-month,
+    &-current-year {
+      color: getColor("grey-500") !important;
+    }
+  }
+}
+
+.#{$namespace}-calendar-content {
+  color: getColor("grey-500") !important;
+
+  .cell {
+    &:hover {
+      color: $calendar-hover-color;
+      background-color: getColor("green-50") !important;
+    }
+    &.active {
+      color: $calendar-active-color;
+      background-color: getColor("green-400") !important;
+    }
+    &.in-range,
+    &.hover-in-range {
+      color: $calendar-in-range-color;
+      background-color: lighten(getColor("green-100"), 5%) !important;
+    }
+    &.disabled {
+      cursor: not-allowed;
+      color: $disabled-color;
+      background-color: $disabled-background-color;
+    }
+  }
+}
+
+.#{$namespace}-table-date {
+  .today {
+    color: getColor("neutral-10") !important;
+    background-color: darken(getColor("green-500"), 4%) !important;
+
+    &:hover {
+      color: getColor("neutral-10") !important;
+      background-color: darken(getColor("green-500"), 4%) !important;
+    }
+  }
+}

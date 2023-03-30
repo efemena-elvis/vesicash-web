@@ -61,9 +61,9 @@
       <div class="section-row mgb-16">
         <div class="section-title h5-text grey-900">Payments</div>
 
-        <router-link to="/payments" class="btn btn-secondary btn-sm"
+        <!-- <router-link to="/payments" class="btn btn-secondary btn-sm"
           >View all</router-link
-        >
+        > -->
       </div>
 
       <!-- DASHBOARD TRANSACTIONS -->

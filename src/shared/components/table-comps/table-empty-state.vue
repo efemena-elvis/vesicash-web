@@ -5,7 +5,9 @@
     </slot>
 
     <!-- MESSAGE TEXT -->
-    <div class="message-text grey-600 tertiary-2-text text-center mgt-16">{{ empty_message }}</div>
+    <div class="message-text grey-600 tertiary-2-text text-center mgt-16">
+      {{ empty_message }}
+    </div>
 
     <!-- EMPTY BUTTON -->
     <!-- emits event, for parent to listen to and take action -->
@@ -14,7 +16,9 @@
       class="btn btn-primary btn-md mgt-20"
       v-if="empty_action_name"
       @click="$emit('emptyAction')"
-    >{{ empty_action_name}}</button>
+    >
+      {{ empty_action_name }}
+    </button>
   </div>
 </template>
 
@@ -48,10 +52,10 @@ export default {
   padding: toRem(30) 0;
 
   .message-text {
-    width: 26%;
+    width: 30%;
 
     @include breakpoint-down(lg) {
-      width: 32%;
+      width: 35%;
     }
 
     @include breakpoint-down(md) {

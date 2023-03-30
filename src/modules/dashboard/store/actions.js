@@ -9,6 +9,7 @@ const routes = {
   wallet_withdrawals: "/payment/list/wallet_withdrawals",
   bank_details: "/admin/user/fetch/bank",
   withdraw_fund: "/payment/disbursement/wallet/withdraw",
+  transaction_payments: "/admin/transactions/list",
 };
 
 export default {
@@ -80,5 +81,12 @@ export default {
   // =====================================
   async withdrawWalletFund(_, payload) {
     return await $api.push(routes.withdraw_fund, { payload });
+  },
+
+  // ========================================================
+  // GET ALL POSSIBLE TRANSACTIN PAYMENTS TYPE AND SOURCES
+  // ========================================================
+  async getTransactionPayments(_, payload) {
+    return await $api.push(routes.transaction_payments, { payload });
   },
 };

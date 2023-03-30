@@ -1,14 +1,24 @@
 <template>
   <tr @click="toggleTransactionSummaryModal">
-    <td class="body-data" :class="`${table_name}-1`">{{ getFormattedData.date }}</td>
+    <td class="body-data" :class="`${table_name}-1`">
+      {{ getFormattedData.date }}
+    </td>
 
-    <td class="body-data text-no-wrap" :class="`${table_name}-2`">{{ getFormattedData.name }}</td>
+    <td class="body-data text-no-wrap" :class="`${table_name}-2`">
+      {{ getFormattedData.name }}
+    </td>
 
-    <td class="body-data" :class="`${table_name}-3`">{{ getFormattedData.initial_currency }}</td>
+    <td class="body-data" :class="`${table_name}-3`">
+      {{ getFormattedData.initial_amount }}
+    </td>
 
-    <td class="body-data" :class="`${table_name}-4`">{{ getFormattedData.final_currency }}</td>
+    <td class="body-data" :class="`${table_name}-4`">
+      {{ getFormattedData.final_amount }}
+    </td>
 
-    <td class="body-data" :class="`${table_name}-5`">{{ getFormattedData.rate }}</td>
+    <td class="body-data" :class="`${table_name}-5`">
+      {{ getFormattedData.rate }}
+    </td>
 
     <td class="body-data" :class="`${table_name}-6`">
       <TagCard
@@ -66,8 +76,8 @@ export default {
       return {
         date: this.data.date,
         name: `${this.data.rate.initial_currency}${this.data.transaction_name}${this.data.rate.final_currency}`,
-        initial_currency: this.data.rate.initial_currency,
-        final_currency: this.data.rate.final_currency,
+        initial_amount: this.data.rate.initial_amount,
+        final_amount: this.data.rate.final_amount,
         rate: `${this.$money.getSign(
           this.data.rate.initial_currency
         )}1/${this.$money.getSign(this.data.rate.final_currency)}${

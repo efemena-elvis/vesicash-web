@@ -1,5 +1,5 @@
 <template>
-  <div class="drop-select-input w-100 h-auto">
+  <div class="drop-select-input w-100 h-auto" :class="class_name">
     <!-- SELECT INPUT  -->
     <div
       class="select-input form-control"
@@ -105,6 +105,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    class_name: {
+      type: String,
+      default: "",
+    },
   },
 
   data() {
@@ -175,6 +179,10 @@ export default {
     cursor: pointer;
     height: auto;
     max-height: auto;
+
+    @include breakpoint-down(lg) {
+      padding: toRem(8) toRem(10);
+    }
 
     .placeholder-text {
       @include generate-font-type("tertiary-2");

@@ -2,27 +2,25 @@
   <div>
     <!-- TABLE CONTAINER -->
     <TableContainer
-      table_name="transaction-wallet-tb"
+      table_name="transaction-payment-tb"
       :table_data="table_data"
       :table_header="table_header"
       :is_loading="table_loading"
       :empty_message="empty_message"
-      empty_action_name="Withdraw"
-      @emptyAction="initiateWalletWithdrwal"
       :show_paging="showPagination"
-      @goToPage="getUserWalletTransactions($event)"
+      @goToPage="getUserPaymentTransactions($event)"
       :pagination="pagination"
     >
       <template v-for="(data, index) in table_data">
-        <TransactionWalletWithdrawalTableRow
+        <TransactionWalletExchangeTableRow
           :key="index"
-          table_name="transaction-wallet-tb"
+          table_name="transaction-payment-tb"
           :data="data"
         />
       </template>
 
       <template slot="emptyIconSlot">
-        <EmptyWalletIcon />
+        <EmptyPaymentIcon />
       </template>
     </TableContainer>
   </div>
@@ -31,18 +29,52 @@
 <script>
 import { mapActions } from "vuex";
 import TableContainer from "@/shared/components/table-comps/table-container";
-import EmptyWalletIcon from "@/shared/components/icon-comps/empty-wallet-icon";
+import EmptyPaymentIcon from "@/shared/components/icon-comps/empty-payment-icon";
 
 export default {
-  name: "TransactionWalletWithdrawalTable",
+  name: "TransactionWalletExchangeTable",
 
   components: {
     TableContainer,
-    EmptyWalletIcon,
-    TransactionWalletWithdrawalTableRow: () =>
+    EmptyPaymentIcon,
+    TransactionWalletExchangeTableRow: () =>
       import(
-        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/table-comps/transaction-wallet-withdrawal-table-row"
+        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/table-comps/transaction-wallet-exchange-table-row"
       ),
+  },
+
+  props: {
+    table_data: {
+      type: Array,
+      default: () => [],
+    },
+
+    table_loading: {
+      type: Boolean,
+      default: false,
+    },
+
+    pagination: {
+      type: Object,
+      default: () => ({
+        current_page: 1,
+        per_page: 10,
+        last_page: 3,
+        from: 1,
+        to: 20,
+        total: 50,
+      }),
+    },
+
+    empty_message: {
+      type: String,
+      default:
+        "You have not made any transaction payment selections yet. You can fund your wallet to get started",
+    },
+  },
+
+  mounted() {
+    // this.getUserPaymentTransactions(1);
   },
 
   computed: {
@@ -55,32 +87,13 @@ export default {
     return {
       table_header: [
         "Date",
-        "Reference id",
-        "Beneficiary name",
+        "Account Email",
+        "Currency Exchange",
         "Amount",
         "Status",
         "Actions",
       ],
-
-      table_data: [],
-      table_loading: true,
-      pagination: {
-        current_page: 1,
-        per_page: 10,
-        last_page: 3,
-        from: 1,
-        to: 20,
-        total: 50,
-      },
-      paginatedData: {},
-      paginationPages: {},
-      empty_message:
-        "You have not done any wallet withdrawal transaction. Withdraw from your wallet to get started",
     };
-  },
-
-  mounted() {
-    this.getUserWalletTransactions(1);
   },
 
   methods: {
@@ -88,7 +101,7 @@ export default {
       fetchWalletTransactions: "dashboard/fetchWalletWithdrawals",
     }),
 
-    getUserWalletTransactions(page) {
+    getUserPaymentTransactions(page) {
       // USE PREVIOUSLY SAVED DATA FOR THAT PAGE NUMBER (AVOID UNNECESSARY API CALLS)
       if (this.paginatedData[page] && this.paginationPages[page]) {
         this.table_data = this.paginatedData[page];
@@ -110,18 +123,18 @@ export default {
             // SHOW ALL DATA ROWS OR THREE ROWS BASED ON ROUTE
             this.table_data =
               this.$route?.name === "PaymentsPage"
-                ? response?.data?.data
-                : response?.data?.data?.slice(0, 3);
+                ? this.dummyData
+                : this.dummyData.slice(0, 3);
             this.table_loading = false;
 
             //SET PAGINATION DATA
             this.pagination = {
-              current_page: response?.data?.current_page,
-              per_page: response?.data?.per_page,
-              last_page: response?.data?.last_page,
-              from: response?.data?.from,
-              to: response?.data?.to,
-              total: response?.data?.total,
+              current_page: 1 || response?.data?.current_page,
+              per_page: 30 || response?.data?.per_page,
+              last_page: 1 || response?.data?.last_page,
+              from: 1 || response?.data?.from,
+              to: 20 || response?.data?.to,
+              total: 5 || response?.data?.total,
             };
 
             this.paginationPages[page] = this.pagination;
@@ -145,52 +158,29 @@ export default {
       this.table_loading = false;
       this.table_data = [];
     },
-
-    initiateWalletWithdrwal() {
-      this.$router.push({
-        name: "VesicashDashboard",
-        query: { withdraw_money: true },
-      });
-    },
   },
 };
 </script>
 
 <style lang="scss">
-.transaction-wallet-tb {
+.transaction-payment-tb {
   &-1 {
-    max-width: toRem(170);
   }
 
   &-2 {
-    @include text-truncate();
-    max-width: toRem(160);
+    max-width: toRem(205);
   }
 
   &-3 {
-    max-width: toRem(210);
   }
 
   &-4 {
-    max-width: toRem(140);
   }
 
   &-5 {
-    max-width: toRem(140);
   }
 
-  //   &-6 {
-  //   }
-
-  //   &-7 {
-  //   }
-
-  .head-data {
-    padding: toRem(8) toRem(24) !important;
-  }
-
-  .body-data {
-    padding: toRem(16) toRem(24) !important;
+  &-6 {
   }
 }
 </style>

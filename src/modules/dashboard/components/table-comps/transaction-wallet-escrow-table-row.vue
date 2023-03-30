@@ -2,21 +2,31 @@
   <tr @click="toggleTransactionSummaryModal">
     <td class="body-data" :class="`${table_name}-1`">{{ getCreatedDate }}</td>
 
-    <td class="body-data text-no-wrap" :class="`${table_name}-2`">{{ data.name }}</td>
+    <td
+      class="body-data text-no-wrap"
+      :class="`${table_name}-2`"
+      :title="data.transaction.transaction_id"
+    >
+      {{ data.transaction.transaction_id }}
+    </td>
 
-    <td class="body-data" :class="`${table_name}-3`">{{ data.email }}</td>
+    <td class="body-data text-capitalize" :class="`${table_name}-3`">
+      {{ data.transaction.type }}
+    </td>
 
-    <td class="body-data" :class="`${table_name}-4`">{{data.role}}</td>
+    <td class="body-data" :class="`${table_name}-4`">
+      {{ data.payment_type || data.payment_method || "-" }}
+    </td>
 
     <td class="body-data" :class="`${table_name}-5`">
       <span v-html="$money.getSign(data.currency)"></span>
-      {{ $money.addComma(data.amount) }}
+      {{ $money.addComma(data.total_amount) }}
     </td>
 
     <td class="body-data" :class="`${table_name}-6`">
       <TagCard
-        :card_text="data.status === 'failed' ? 'Failed' : 'Completed'"
-        :card_type="data.status === 'failed'? 'error' : 'success'"
+        :card_text="data.is_paid === false ? 'Not paid' : 'Paid'"
+        :card_type="data.is_paid === false ? 'error' : 'success'"
       />
     </td>
 
@@ -42,7 +52,7 @@
 import TagCard from "@/shared/components/card-comps/tag-card";
 
 export default {
-  name: "TransactionDisbursementTableRow",
+  name: "TransactionWalletEscrowTableRow",
 
   components: {
     TagCard,

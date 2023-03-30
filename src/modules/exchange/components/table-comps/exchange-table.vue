@@ -109,8 +109,8 @@ export default {
       table_header: [
         "Date",
         "Transaction name",
-        "Initial currency",
-        "Final currency",
+        "Initial amount",
+        "Final amount",
         "Rate",
         "Status",
         "Actions",
