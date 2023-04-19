@@ -146,9 +146,9 @@ export default {
     },
   },
 
-  data() {
-    return {};
-  },
+  data: () => ({
+    acceptable_filetypes: ["doc", "docx", "pdf"],
+  }),
 
   methods: {
     ...mapActions({
@@ -165,6 +165,13 @@ export default {
         : [...$event.target.files];
 
       this.$refs.fileUpload.value = ""; // CLEAR OUT FILE CACHE
+
+      uploaded_files.map((file) => {
+        if (!this.processFileType(file.name)) {
+          this.pushToast("Upload a file of type doc or pdf", "error");
+          return false;
+        }
+      });
 
       if (uploaded_files.length < this.fileCount && this.controlCount) {
         this.$emit("upload", `Upload at least ${this.fileCount} files`);
@@ -188,6 +195,11 @@ export default {
           if (response.code) this.$emit("uploaded", response.data);
         })
         .catch((err) => console.log(err));
+    },
+
+    processFileType(name) {
+      let file_type = name.split(".").at(-1);
+      return this.acceptable_filetypes.includes(file_type) ? true : false;
     },
 
     processFileSize(size) {
