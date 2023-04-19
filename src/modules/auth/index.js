@@ -72,23 +72,24 @@ const authRoutes = [
       // ==================================
       // VESICASH REGISTER LANDER ROUTE
       // ==================================
-      {
-        path: "/register-lander",
-        name: "VesicashRegisterLander",
-        component: () =>
-          import(
-            /* webpackChunkName: "auth-module" */ "@/modules/auth/pages/register-lander"
-          ),
-        meta: {
-          guest: true,
-        },
-      },
+      // {
+      //   path: "/register-lander",
+      //   name: "VesicashRegisterLander",
+      //   component: () =>
+      //     import(
+      //       /* webpackChunkName: "auth-module" */ "@/modules/auth/pages/register-lander"
+      //     ),
+      //   meta: {
+      //     guest: true,
+      //   },
+      // },
 
       // ==================================
       // VESICASH REGISTER ROUTE
       // ==================================
       {
-        path: "/register/:account",
+        path: "/register",
+        alias: "/register-lander",
         name: "VesicashRegister",
         component: () =>
           import(
