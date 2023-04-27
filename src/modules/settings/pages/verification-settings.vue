@@ -5,25 +5,19 @@
 
     <!-- PAGE META -->
     <div class="page-meta tertiary-2-text grey-600">
-      Verify your bvn,and settlements documents here to be able to carry out
+      Verify your bvn, and settlements documents here to be able to carry out
       transactions
     </div>
 
     <div class="cards-container" v-if="loading_verification">
-      <div class="skeleton-loader card-skeleton rounded-12" v-for="i in 5" :key="i"></div>
+      <div
+        class="skeleton-loader card-skeleton rounded-12"
+        v-for="i in 5"
+        :key="i"
+      ></div>
     </div>
 
     <div class="cards-container" v-else>
-      <verification-card
-        title="Phone number verification"
-        subtitle="Verify your phone number."
-        cta_title="Verify phone number"
-        @action="toggleInputModal"
-        :verified="phone_verified || isPhoneVerified"
-      >
-        <TelephoneIcon />
-      </verification-card>
-
       <verification-card
         v-if="isBusiness"
         title="Business information"
@@ -36,6 +30,17 @@
       </verification-card>
 
       <verification-card
+        v-if="isBusiness"
+        title="Business registration document"
+        subtitle="Upload your business registration document for verification."
+        cta_title="Verify business"
+        @action="toggleCACRegistrationModal"
+        :verified="document_verified || isDocVerified"
+      >
+        <FileIcon active />
+      </verification-card>
+
+      <verification-card
         title="Verification document"
         subtitle="Choose and upload documents for verification."
         cta_title="Verify document"
@@ -43,6 +48,16 @@
         :verified="document_verified || isDocVerified"
       >
         <FileIcon active />
+      </verification-card>
+
+      <verification-card
+        title="Phone number verification"
+        subtitle="Verify your phone number."
+        cta_title="Verify phone number"
+        @action="toggleInputModal"
+        :verified="phone_verified || isPhoneVerified"
+      >
+        <TelephoneIcon />
       </verification-card>
 
       <verification-card
@@ -59,7 +74,7 @@
         title="Settlement account"
         subtitle="Provide your bank account details for withdrawals and settlements"
         cta_title="Add bank account"
-        @action="$router.push({name:'AccountSettings'})"
+        @action="$router.push({ name: 'AccountSettings' })"
       >
         <SettlementIcon />
       </verification-card>
@@ -68,7 +83,10 @@
     <!-- MODALS -->
     <portal to="vesicash-modals">
       <transition name="fade" v-if="show_input_modal">
-        <VerifyInputModal @continue="initiateOTPRequest" @closeTriggered="toggleInputModal" />
+        <VerifyInputModal
+          @continue="initiateOTPRequest"
+          @closeTriggered="toggleInputModal"
+        />
       </transition>
 
       <transition name="fade" v-if="show_otp_modal">
@@ -77,21 +95,46 @@
 
       <transition name="fade" v-if="show_business_info_modal">
         <BusinessInfoModal
-          @saved="showSuccessModal('show_business_info_modal','business_info_verified',$event)"
+          @saved="
+            showSuccessModal(
+              'show_business_info_modal',
+              'business_info_verified',
+              $event
+            )
+          "
           @closeTriggered="toggleBusinessInfoModal"
         />
       </transition>
 
       <transition name="fade" v-if="show_doc_upload_modal">
         <VerificationDocumentModal
-          @saved="showSuccessModal('show_doc_upload_modal','document_verified',$event)"
+          @saved="
+            showSuccessModal(
+              'show_doc_upload_modal',
+              'document_verified',
+              $event
+            )
+          "
           @closeTriggered="toggleDocUploadModal"
+        />
+      </transition>
+
+      <transition name="fade" v-if="show_cac_registration_modal">
+        <CoporationVerificationModal
+          @saved="
+            showSuccessModal(
+              'show_doc_upload_modal',
+              'document_verified',
+              $event
+            )
+          "
+          @closeTriggered="toggleCACRegistrationModal"
         />
       </transition>
 
       <transition name="fade" v-if="show_bvn_modal">
         <VerificationBvnModal
-          @saved="showSuccessModal('show_bvn_modal','bvn_verified',$event)"
+          @saved="showSuccessModal('show_bvn_modal', 'bvn_verified', $event)"
           @closeTriggered="toggleBvnModal"
         />
       </transition>
@@ -114,6 +157,7 @@ import VerifyInputModal from "@/modules/settings/modals/verify-input-modal";
 import VerifyOtpModal from "@/modules/settings/modals/verify-otp-modal";
 import BusinessInfoModal from "@/modules/settings/modals/business-info-modal";
 import VerificationDocumentModal from "@/modules/settings/modals/verification-document-modal";
+import CoporationVerificationModal from "@/modules/settings/modals/coporation-verification-modal";
 import VerificationBvnModal from "@/modules/settings/modals/verification-bvn-modal";
 import SuccessModal from "@/shared/modals/success-modal";
 export default {
@@ -125,6 +169,7 @@ export default {
     VerifyOtpModal,
     BusinessInfoModal,
     VerificationDocumentModal,
+    CoporationVerificationModal,
     VerificationBvnModal,
     SuccessModal,
 
@@ -212,6 +257,7 @@ export default {
       show_otp_modal: false,
       show_success_modal: false,
       show_doc_upload_modal: false,
+      show_cac_registration_modal: false,
       show_bvn_modal: false,
       show_business_info_modal: false,
       phone_verified: false,
@@ -268,6 +314,10 @@ export default {
       this.show_doc_upload_modal = !this.show_doc_upload_modal;
     },
 
+    toggleCACRegistrationModal() {
+      this.show_cac_registration_modal = !this.show_cac_registration_modal;
+    },
+
     async showSuccessModal(modal, verified, message) {
       await this.fetchVerifications();
       this[modal] = false;
@@ -316,7 +366,7 @@ export default {
 
 .cards-container {
   display: grid;
-  gap: toRem(56) 0;
+  gap: toRem(32) 0;
   padding-bottom: toRem(100);
 
   @include breakpoint-down(sm) {

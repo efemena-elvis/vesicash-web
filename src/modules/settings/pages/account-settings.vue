@@ -4,13 +4,19 @@
     <div class="page-title primary-1-text grey-900 mgb-4">Account</div>
 
     <!-- PAGE META -->
-    <div class="page-meta tertiary-2-text grey-600">Update or add new naira or dollar account</div>
+    <div class="page-meta tertiary-2-text grey-600">
+      Update or add new naira or dollar account
+    </div>
 
-    <TabSwitcher :tabs="tab_options" @tabSelected="account_type=$event" />
+    <TabSwitcher :tabs="tab_options" @tabSelected="account_type = $event" />
 
     <div class="accounts-container">
       <template v-if="loading_accounts">
-        <div class="skeleton-loader account-skeleton" v-for="i in 4" :key="i"></div>
+        <div
+          class="skeleton-loader account-skeleton"
+          v-for="i in 4"
+          :key="i"
+        ></div>
       </template>
 
       <template v-else>
@@ -20,7 +26,7 @@
         </div>
 
         <UserAccountCard
-          v-for="(account,index) in getSelectedAccount"
+          v-for="(account, index) in getSelectedAccount"
           :key="index"
           :account="account"
           @click="showAccountDetails"
@@ -32,14 +38,14 @@
       <transition name="fade" v-if="show_new_naira_modal">
         <AddNairaAccountModal
           @closeTriggered="toggleNewNairaModal"
-          @saved="showSuccessModal('show_new_naira_modal',$event)"
+          @saved="showSuccessModal('show_new_naira_modal', $event)"
         />
       </transition>
 
       <transition name="fade" v-if="show_new_dollar_modal">
         <AddDollarAccountModal
           @closeTriggered="toggleNewDollarModal"
-          @saved="showSuccessModal('show_new_dollar_modal',$event)"
+          @saved="showSuccessModal('show_new_dollar_modal', $event)"
         />
       </transition>
 
@@ -47,7 +53,7 @@
         <UpdateDollarAccountModal
           @closeTriggered="toggleUpdateDollarModal"
           :savedDetails="selected_account"
-          @saved="showSuccessModal('show_update_dollar_modal',$event)"
+          @saved="showSuccessModal('show_update_dollar_modal', $event)"
         />
       </transition>
 
@@ -79,6 +85,7 @@ import UpdateDollarAccountModal from "@/modules/settings/modals/update-dollar-ac
 import UserAccountCard from "@/shared/components/card-comps/user-account-card";
 import AccountDetailsModal from "@/modules/settings/modals/account-details-modal";
 import SuccessModal from "@/shared/modals/success-modal";
+
 export default {
   name: "AccountSettings",
 
