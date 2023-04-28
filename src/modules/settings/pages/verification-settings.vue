@@ -35,14 +35,14 @@
         subtitle="Upload your business registration document for verification."
         cta_title="Verify business"
         @action="toggleCACRegistrationModal"
-        :verified="document_verified || isDocVerified"
+        :verified="isBusinessVerified"
       >
         <FileIcon active />
       </verification-card>
 
       <verification-card
-        title="Verification document"
-        subtitle="Choose and upload documents for verification."
+        title="Other documents"
+        subtitle="Choose and upload a document for verification."
         cta_title="Verify document"
         @action="toggleDocUploadModal"
         :verified="document_verified || isDocVerified"
