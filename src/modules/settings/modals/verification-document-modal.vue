@@ -7,9 +7,9 @@
     <!-- MODAL COVER HEADER -->
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
-        <div class="modal-cover-title">Verification document</div>
+        <div class="modal-cover-title">Other documents</div>
         <div class="tertiary-2-text grey-600">
-          Choose one of any document type you wish to upload
+          Choose any document type you wish to upload
         </div>
       </div>
     </template>
@@ -46,7 +46,7 @@
         <DocUploadCard
           @uploaded="uploaded_doc = $event"
           titleText="Select document(s) to upload"
-          docID="registeration_document"
+          docID="verification_documents"
           @upload="handleAlert"
         />
 
@@ -149,11 +149,12 @@ export default {
     },
 
     isDisabled() {
-      if (this.isBusiness)
-        !this.form.doc_number ||
-          !this.document ||
-          !this.VerificationDocExist ||
-          !this.directorDocExist;
+      // if (this.isBusiness)
+      //   !this.form.doc_number ||
+      //     !this.document ||
+      //     !this.VerificationDocExist ||
+      //     !this.directorDocExist;
+
       return (
         !this.form.doc_number || !this.document || !this.VerificationDocExist
       );

@@ -7,9 +7,9 @@
     <!-- MODAL COVER HEADER -->
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
-        <div class="modal-cover-title">Business Verification</div>
+        <div class="modal-cover-title">Company Verification</div>
         <div class="tertiary-2-text grey-600">
-          Upload your business registration document
+          Upload your company registration document
         </div>
       </div>
     </template>
@@ -19,7 +19,7 @@
       <div class="modal-cover-body">
         <div class="form-group">
           <BasicInput
-            label_title="Document registration number"
+            label_title="Company registration number"
             label_id="doc-number"
             :input_value="form.doc_number"
             is_required
@@ -27,15 +27,15 @@
             @getInputState="updateFormState($event, 'doc_number')"
             :error_handler="{
               type: 'required',
-              message: 'Enter document verification number',
+              message: 'Enter company registration number',
             }"
           />
         </div>
 
         <DocUploadCard
           @uploaded="uploaded_doc = $event"
-          titleText="Select document(s) to upload"
-          docID="verification_documents"
+          titleText="Select company registration document"
+          docID="cac_document"
           @upload="handleAlert"
         />
       </div>
@@ -94,7 +94,7 @@ export default {
 
     getVerificationDoc() {
       const file_data = this.getAllFilesData.find(
-        (doc) => doc.id === "verification_documents"
+        (doc) => doc.id === "cac_document"
       );
       return file_data === undefined ? null : file_data;
     },
@@ -120,7 +120,6 @@ export default {
       //   !this.document ||
       //   !this.VerificationDocExist ||
       //   !this.directorDocExist;
-
       return !this.form.doc_number || !this.VerificationDocExist;
     },
 
