@@ -33,6 +33,8 @@
 <script>
 import MorIcon from "@/shared/components/icon-comps/mor-icon";
 import MorWaitlistModal from "@/modules/mor/modals/mor-waitlist-modal";
+import { mapActions, mapGetters } from "vuex";
+
 export default {
   name: "MorPage",
 
@@ -41,13 +43,38 @@ export default {
     MorWaitlistModal,
   },
 
+  computed: {
+    ...mapGetters({
+      getMorCountries: "mor/getMorCountries",
+      getMorBusinessTypes: "mor/getMorBusinessTypes",
+    }),
+  },
+
   data() {
     return {
       show_waitlist_modal: false,
     };
   },
 
+  mounted() {
+    this.fetchBusinessTypes();
+    this.fetchCountries();
+  },
+
   methods: {
+    ...mapActions({
+      fetchMORBusinessTypes: "mor/fetchMORBusinessTypes",
+      fetchMORCountries: "mor/fetchMORCountries",
+    }),
+
+    async fetchBusinessTypes() {
+      if (!this.getMorBusinessTypes?.length) this.fetchMORBusinessTypes();
+    },
+
+    async fetchCountries() {
+      if (!this.getMorCountries?.length) this.fetchMORCountries();
+    },
+
     toggleWaitlistModal() {
       this.show_waitlist_modal = !this.show_waitlist_modal;
     },
@@ -56,6 +83,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+// .page-container {
+//   padding-bottom: toRem(250);
+// }
 .page-title {
   @include breakpoint-down(lg) {
     display: none;
