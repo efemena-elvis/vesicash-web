@@ -9,7 +9,22 @@
       :class="option_select ? 'active-select-input' : null"
     >
       <!-- SELECTIONS -->
-      <div class="selections" v-if="selected_value">
+      <div class="multi-selections-wrapper" v-if="validSelection">
+        <div
+          class="selection-tag"
+          v-for="(option, index) in getMultiSelectedOptions"
+          :key="option.id + index"
+          @click.stop
+        >
+          <div class="tertiary-2-text">{{ option.name }}</div>
+          <div
+            class="icon icon-close"
+            @click.stop="makeMultiSelection(option.id)"
+          ></div>
+        </div>
+      </div>
+
+      <div class="selections" v-else-if="selected_value">
         <div class="select-text grey-900 tertiary-2-text text-capitalize">
           <span v-html="selected_value"></span>
         </div>
@@ -41,7 +56,7 @@
         </div>
 
         <!-- OPTIONS -->
-        <template v-if="options.length">
+        <template v-if="options.length && !multi">
           <div class="option-scroll-wrapper">
             <div
               class="option-row"
@@ -53,6 +68,30 @@
                 class="inner-lining wt-100"
                 :class="index + 1 === options.length && 'no-bottom-border'"
               >
+                <span v-html="option.name"></span>
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <!-- OPTIONS -->
+        <template v-else-if="getInputOptions.length && multi">
+          <div class="option-scroll-wrapper">
+            <div
+              class="option-row"
+              v-for="(option, index) in getInputOptions"
+              :key="index"
+              @click.stop="makeMultiSelection(option.id)"
+            >
+              <div
+                class="inner-lining wt-100"
+                :class="index + 1 === options.length && 'no-bottom-border'"
+              >
+                <input
+                  type="checkbox"
+                  class="mgr-10"
+                  :checked="option.selected"
+                />
                 <span v-html="option.name"></span>
               </div>
             </div>
@@ -83,6 +122,22 @@ export default {
         },
       ],
     },
+
+    multi_options: {
+      type: Array,
+      default: () => [
+        {
+          id: 1,
+          name: "Option 1",
+        },
+      ],
+    },
+
+    multi: {
+      type: Boolean,
+      default: false,
+    },
+
     pre_select: {
       type: Object,
       default: () => {},
@@ -101,11 +156,32 @@ export default {
     },
   },
 
+  computed: {
+    getInputOptions() {
+      return this.allow_search
+        ? [...this.input_options].filter((option) =>
+            option.name
+              ?.toLowerCase()
+              ?.includes(this.search_value?.toLowerCase())
+          )
+        : [...this.input_options];
+    },
+
+    getMultiSelectedOptions() {
+      return [...this.input_options]?.filter((option) => option.selected);
+    },
+
+    validSelection() {
+      return [...this.input_options]?.some((option) => option.selected);
+    },
+  },
+
   data() {
     return {
       option_select: false,
       selected_value: null,
       search_value: null,
+      input_options: [],
     };
   },
 
@@ -118,6 +194,13 @@ export default {
   },
 
   watch: {
+    multi_options: {
+      handler(options) {
+        this.input_options = [...options];
+      },
+      immediate: true,
+    },
+
     clear_selection: {
       handler(value) {
         if (value) this.selected_value = null;
@@ -156,6 +239,15 @@ export default {
       this.$emit("optionSelected", this.options[index]);
       this.forceClose();
     },
+
+    makeMultiSelection(id) {
+      this.input_options = this.input_options?.map((option) => {
+        if (option.id === id) option.selected = !option.selected;
+        return option;
+      });
+
+      this.$emit("multiSelected", this.input_options);
+    },
   },
 };
 </script>
@@ -175,6 +267,45 @@ export default {
       color: getColor("grey-300");
     }
 
+    .multi-selections-wrapper {
+      @include flex-row-start-nowrap;
+      gap: 0 toRem(15);
+      max-width: calc(100% - 20px);
+      padding-right: toRem(30);
+      overflow-x: auto;
+      &::-webkit-scrollbar {
+        height: 0;
+      }
+
+      .selection-tag {
+        @include flex-row-start-nowrap;
+        border-radius: toRem(20);
+        background: getColor("neutral-10");
+        padding: 6px 12px 6px 16px;
+        border: 1px solid getColor("grey-300");
+        transition: all ease-in-out 0.25s;
+
+        &:hover {
+          background: getColor("grey-10");
+          border: 0.02px solid getColor("grey-200");
+        }
+
+        .icon {
+          @include draw-shape(22);
+          @include flex-column-center;
+          border-radius: 50%;
+          background: transparent;
+          margin-left: toRem(20);
+          font-weight: 600;
+          color: getColor("grey-500");
+          transition: background ease-in-out 0.25s;
+          &:hover {
+            background: getColor("red-50");
+          }
+        }
+      }
+    }
+
     .selections {
       padding: toRem(2.625) 0;
       @include flex-row-start-wrap;
@@ -185,7 +316,7 @@ export default {
       }
     }
 
-    .icon {
+    .icon-caret-fill-down {
       @include center-placement("y-axis");
       font-size: toRem(24);
       margin-top: toRem(1);
