@@ -7,7 +7,7 @@
     <!-- MODAL COVER HEADER -->
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
-        <div class="modal-cover-title">Merchant of Records</div>
+        <div class="modal-cover-title">Merchant of Record</div>
         <div class="tertiary-2-text grey-600">Create and manage your MOR</div>
       </div>
     </template>

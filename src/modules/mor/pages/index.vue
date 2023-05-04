@@ -1,7 +1,7 @@
 <template>
   <div class="page-container">
     <div class="d-flex justify-content-between">
-      <div class="page-title h5-text">Merchant of Records</div>
+      <div class="page-title h5-text">Merchant of Record</div>
       <a
         href="mailto:support@vesicash.com"
         class="btn btn-secondary btn-sm mgl-auto"
