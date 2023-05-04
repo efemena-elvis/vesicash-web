@@ -1,8 +1,12 @@
 <template>
   <div class="page-container">
     <div class="d-flex justify-content-between">
-      <div class="page-title h5-text">Merchants of Records</div>
-      <button class="btn btn-secondary btn-sm mgl-auto">Contact support</button>
+      <div class="page-title h5-text">Merchant of Records</div>
+      <a
+        href="mailto:support@vesicash.com"
+        class="btn btn-secondary btn-sm mgl-auto"
+        >Contact support</a
+      >
     </div>
 
     <div class="empty-state">

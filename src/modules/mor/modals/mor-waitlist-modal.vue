@@ -7,7 +7,7 @@
     <!-- MODAL COVER HEADER -->
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
-        <div class="modal-cover-title">Merchants of Records</div>
+        <div class="modal-cover-title">Merchant of Records</div>
         <div class="tertiary-2-text grey-600">Create and manage your MOR</div>
       </div>
     </template>
@@ -80,9 +80,9 @@
         </div>
 
         <div class="form-group">
-          <div class="form-label">Country</div>
+          <div class="form-label">Expansion Country</div>
           <DropSelectInput
-            placeholder="Choose one or more country"
+            placeholder="Select as applicable"
             @multiSelected="selectCountry($event)"
             :multi_options="countryOptions"
             multi
