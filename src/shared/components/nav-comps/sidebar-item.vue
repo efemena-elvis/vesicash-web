@@ -14,6 +14,8 @@
       <div class="nav-text secondary-2-text grey-600 smooth-transition">
         {{ nav.title }}
       </div>
+
+      <div class="item-tag secondary-3-text" v-if="nav.tag">{{ nav.tag }}</div>
     </div>
   </router-link>
 </template>
@@ -44,6 +46,10 @@ export default {
     SettingsIcon: () =>
       import(
         /* webpackChunkName: "shared-module" */ "@/shared/components/icon-comps/settings-icon"
+      ),
+    MORIcon: () =>
+      import(
+        /* webpackChunkName: "shared-module" */ "@/shared/components/icon-comps/mor-icon"
       ),
   },
 
@@ -135,6 +141,15 @@ export default {
 
   &-active {
     @extend %active-side-bar-state;
+  }
+
+  .item-tag {
+    border-radius: toRem(12);
+    background: getColor("green-500");
+    padding: toRem(4) toRem(8);
+    color: getColor("neutral-10");
+    margin-left: auto;
+    border: 1px solid #3ab75d;
   }
 }
 

@@ -31,7 +31,7 @@
 
       <verification-card
         v-if="isBusiness"
-        title="Business registration document"
+        title="Company registration document"
         subtitle="Upload your business registration document for verification."
         cta_title="Verify business"
         @action="toggleCACRegistrationModal"
@@ -45,7 +45,7 @@
         subtitle="Choose and upload a document for verification."
         cta_title="Verify document"
         @action="toggleDocUploadModal"
-        :verified="document_verified || isDocVerified"
+        :verified="isDocVerified"
       >
         <FileIcon active />
       </verification-card>
@@ -55,7 +55,7 @@
         subtitle="Verify your phone number."
         cta_title="Verify phone number"
         @action="toggleInputModal"
-        :verified="phone_verified || isPhoneVerified"
+        :verified="isPhoneVerified"
       >
         <TelephoneIcon />
       </verification-card>
@@ -65,7 +65,7 @@
         subtitle="Confirm your BVN details."
         cta_title="Verify BVN details"
         @action="toggleBvnModal"
-        :verified="bvn_verified || isBvnVerified"
+        :verified="isBvnVerified"
       >
         <BvnIcon />
       </verification-card>
@@ -321,7 +321,7 @@ export default {
     async showSuccessModal(modal, verified, message) {
       await this.fetchVerifications();
       this[modal] = false;
-      this[verified] = true;
+      // this[verified] = true;
       this.response_message = message;
       this.show_success_modal = true;
     },

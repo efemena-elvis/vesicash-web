@@ -33,6 +33,15 @@ const navRoutes = [
   },
   {
     id: 5,
+    title: "MOR",
+    icon: "MORIcon",
+    link: "/mor",
+    slug: "mor",
+    tour_id: [],
+    tag: "BETA",
+  },
+  {
+    id: 5,
     title: "Settings",
     icon: "SettingsIcon",
     link: "/settings/profile",
