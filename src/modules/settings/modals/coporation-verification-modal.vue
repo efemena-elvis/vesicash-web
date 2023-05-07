@@ -7,9 +7,9 @@
     <!-- MODAL COVER HEADER -->
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
-        <div class="modal-cover-title">Other documents</div>
+        <div class="modal-cover-title">Company Verification</div>
         <div class="tertiary-2-text grey-600">
-          Choose any document type you wish to upload
+          Upload your company registration document
         </div>
       </div>
     </template>
@@ -18,59 +18,26 @@
     <template slot="modal-cover-body">
       <div class="modal-cover-body">
         <div class="form-group">
-          <div class="form-label">Select document type</div>
-
-          <!-- SELECT INPUT FIELD -->
-          <DropSelectInput
-            placeholder="Choose verificatiom file"
-            :options="verification_docs"
-            @optionSelected="document = $event"
-          />
-        </div>
-
-        <div class="form-group">
           <BasicInput
-            label_title="Document verification number"
+            label_title="Company registration number"
             label_id="doc-number"
             :input_value="form.doc_number"
             is_required
-            placeholder="Enter verification number"
+            placeholder="Enter registration number"
             @getInputState="updateFormState($event, 'doc_number')"
             :error_handler="{
               type: 'required',
-              message: 'Enter document verification number',
+              message: 'Enter company registration number',
             }"
           />
         </div>
 
         <DocUploadCard
           @uploaded="uploaded_doc = $event"
-          titleText="Select document(s) to upload"
-          docID="verification_documents"
+          titleText="Select company registration document"
+          docID="cac_document"
           @upload="handleAlert"
         />
-
-        <template v-if="true">
-          <div class="form-group mgt-24">
-            <div class="form-label">How many directors do you have?</div>
-
-            <!-- SELECT INPUT FIELD -->
-            <DropSelectInput
-              placeholder="Select number of directors"
-              :options="directorsRange"
-              @optionSelected="director_count = Number($event.id)"
-            />
-          </div>
-
-          <DocUploadCard
-            titleText="Select document(s) to upload"
-            :fileCount="director_count"
-            controlCount
-            docID="director_documents"
-            :isDisabled="director_count < 1"
-            @upload="handleAlert"
-          />
-        </template>
       </div>
     </template>
 
@@ -98,7 +65,7 @@ import DropSelectInput from "@/shared/components/drop-select-input";
 import BasicInput from "@/shared/components/form-comps/basic-input";
 
 export default {
-  name: "VerificationDocModal",
+  name: "CoporationVerificationModal",
 
   components: {
     ModalCover,
@@ -127,7 +94,7 @@ export default {
 
     getVerificationDoc() {
       const file_data = this.getAllFilesData.find(
-        (doc) => doc.id === "verification_documents"
+        (doc) => doc.id === "cac_document"
       );
       return file_data === undefined ? null : file_data;
     },
@@ -148,21 +115,18 @@ export default {
     },
 
     isDisabled() {
-      // if (this.isBusiness)
-      //   !this.form.doc_number ||
-      //     !this.document ||
-      //     !this.VerificationDocExist ||
-      //     !this.directorDocExist;
-
-      return (
-        !this.form.doc_number || !this.document || !this.VerificationDocExist
-      );
+      //   if (this.isBusiness)
+      // !this.form.doc_number ||
+      //   !this.document ||
+      //   !this.VerificationDocExist ||
+      //   !this.directorDocExist;
+      return !this.form.doc_number || !this.VerificationDocExist;
     },
 
     verfiyDocPayload() {
       return {
         account_id: this.getAccountId,
-        type: this.document?.id,
+        type: "cac",
         id: this.form.doc_number,
         meta: this.getVerificationDoc?.files[0]?.url,
       };
@@ -172,26 +136,7 @@ export default {
   data() {
     return {
       director_count: 0,
-      verification_docs: [
-        {
-          name: "Passport",
-          id: "passport",
-        },
-        {
-          name: "Driver License",
-          id: "drivers_license",
-        },
-        {
-          name: "National ID",
-          id: "national_id",
-        },
-        // {
-        //   name: "Utility Bill",
-        //   id: "utilitybill",
-        // },
-      ],
 
-      document: null,
       uploaded_doc: null,
 
       form: {
@@ -218,6 +163,7 @@ export default {
 
     async save() {
       this.handleClick("save");
+      console.log("PAYLOAD", this.verfiyDocPayload);
 
       try {
         const response = await this.verfiyUserDocument(this.verfiyDocPayload);

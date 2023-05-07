@@ -5,7 +5,6 @@ pipelines:
     main:
       - step:
           name: Build for Production
-          trigger: manual
           script:
             - npm install
             - npm run build:prod
@@ -35,7 +34,6 @@ pipelines:
     sandbox:
       - step:
           name: Build for Sandbox
-          trigger: manual
           script:
             - npm install
             - npm run build:dev

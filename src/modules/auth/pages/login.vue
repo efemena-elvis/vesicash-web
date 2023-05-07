@@ -60,9 +60,7 @@
       <!-- HELP BLOCK TEXT -->
       <div class="help-block text-center">
         Don’t have an account?
-        <router-link to="/register-lander" class="fw-medium"
-          >Register</router-link
-        >
+        <router-link to="/register" class="fw-medium">Register</router-link>
       </div>
     </form>
   </AuthWrapper>
@@ -128,7 +126,7 @@ export default {
           if (response.code === 200) {
             this.pushToast("User login was successful", "success");
             this.handleClick("loginBtn", "Login to account", false);
-            // console.log("login response", response);
+            console.log("login response", response);
 
             // REDIRECT TO DASHBOARD
             setTimeout(() => (location.href = "/dashboard"), 2000);

@@ -1,5 +1,5 @@
 import { mapActions } from "vuex";
-import { countries } from "@/utilities/countries.json";
+import countries from "@/utilities/countries.json";
 
 const countryHelper = {
   data: () => ({

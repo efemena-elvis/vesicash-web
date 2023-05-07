@@ -9,12 +9,16 @@
       :empty_message="empty_message"
       empty_action_name="Add new user"
       @emptyAction="$emit('emptyAction')"
-      @goToPage="page=$event"
+      @goToPage="page = $event"
       :pagination="getPagination"
       show_paging
     >
       <template v-for="(user, index) in getPaginatedUser">
-        <UserTableRow :key="user.account_id+index" table_name="user-table" :data="user" />
+        <UserTableRow
+          :key="user.account_id + index"
+          table_name="user-table"
+          :data="user"
+        />
       </template>
 
       <template slot="emptyIconSlot">
@@ -47,12 +51,16 @@ export default {
       const index = this.page - 1;
       const start_range = per_page * index;
       const end_range = start_range + per_page;
-      const users = [...this.getConnectedUsers];
+      const users = this.getConnectedUsers?.length
+        ? [...this.getConnectedUsers]
+        : [];
       return users.slice(start_range, end_range);
     },
 
     getPagination() {
-      const users = [...this.getConnectedUsers];
+      const users = this.getConnectedUsers?.length
+        ? [...this.getConnectedUsers]
+        : [];
       const { per_page } = this;
       const current_page = this.page;
 
@@ -131,7 +139,7 @@ export default {
       this.fetchConnectedUsers(payload)
         .then((response) => {
           if (response.code === 200) {
-            this.table_data = response?.data;
+            this.table_data = response?.data ?? [];
             this.table_loading = false;
 
             // this.paginationPages[page] = this.pagination;

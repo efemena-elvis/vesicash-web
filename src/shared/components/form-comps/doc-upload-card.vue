@@ -178,7 +178,7 @@ export default {
         return;
       }
 
-      this.verifyFilesSize(uploaded_files);
+      if (!this.verifyFilesSize(uploaded_files)) return false;
 
       const formatted_files = uploaded_files.map((file) => {
         file.formatted_size = this.processFileSize(file.size);
@@ -210,13 +210,16 @@ export default {
     },
 
     verifyFilesSize(files) {
+      let is_valid = false;
+
       files.forEach((file) => {
-        if (!this.processFileSize(file.size)) {
-          console.log("FILE SIZE", file, file.size);
+        if (this.processFileSize(file.size) === false) {
           this.pushToast("Upload a maximum file size of 1mb", "error");
-          return false;
-        }
+          is_valid = false;
+        } else is_valid = true;
       });
+
+      return is_valid;
     },
 
     removeAttachedFile(index, id) {

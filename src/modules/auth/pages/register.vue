@@ -21,8 +21,35 @@
         />
       </div>
 
-      <!-- FIRSTNAME INPUT -->
+      <!-- FULLNAME INPUT -->
       <div class="form-group">
+        <BasicInput
+          label_title="Full name"
+          label_id="fullName"
+          :input_value="form.fullname"
+          is_required
+          placeholder="Your full name"
+          @getInputState="updateFormState($event, 'fullname')"
+          :error_handler="{
+            type: 'minimum',
+            minimum: 2,
+            message: 'Full name should contain 2 words',
+          }"
+        />
+      </div>
+
+      <!-- BUSINESS TYPE -->
+      <div class="form-group">
+        <div class="form-label">Business type</div>
+        <DropSelectInput
+          placeholder="Select business type"
+          @selectedOption="selectBusinessType($event)"
+          :options="business_type_options"
+        />
+      </div>
+
+      <!-- FIRSTNAME INPUT -->
+      <!-- <div class="form-group">
         <BasicInput
           label_title="First name"
           label_id="firstName"
@@ -35,10 +62,10 @@
             message: 'First name should contain at least 2 characters',
           }"
         />
-      </div>
+      </div> -->
 
       <!-- LASTNAME INPUT -->
-      <div class="form-group">
+      <!-- <div class="form-group">
         <BasicInput
           label_title="Surname"
           label_id="lastName"
@@ -51,7 +78,7 @@
             message: 'Last name should contain at least 2 characters',
           }"
         />
-      </div>
+      </div> -->
 
       <!-- EMAIL ADDRESS INPUT -->
       <div class="form-group">
@@ -143,6 +170,7 @@
 import { mapActions } from "vuex";
 import AuthWrapper from "@/modules/auth/components/auth-wrapper";
 import BasicInput from "@/shared/components/form-comps/basic-input";
+import DropSelectInput from "@/shared/components/drop-select-input";
 
 export default {
   name: "Register",
@@ -155,14 +183,16 @@ export default {
   components: {
     AuthWrapper,
     BasicInput,
+    DropSelectInput,
   },
 
   computed: {
     // GET THE CURRENT SELECTED ACCOUNT TYPE
     getAccount() {
-      return this.account_type.includes(this.$route?.params?.account)
-        ? this.$route?.params?.account
-        : "individual";
+      // return this.account_type.includes(this.$route?.params?.account)
+      //   ? this.$route?.params?.account
+      //   : "individual";
+      return "business";
     },
 
     // CHECK FORM BUTTON VALIDITY STATE
@@ -170,6 +200,8 @@ export default {
       if (this.getAccount === "individual") {
         delete this.validity.business_name;
       }
+
+      this.validity.business_type = this.form.business_type ? false : true;
 
       return Object.values(this.validity).every((valid) => !valid) &&
         this.accept_terms
@@ -184,9 +216,11 @@ export default {
 
       form: {
         business_name: "",
-        account_type: this.$route?.params?.account ?? "individual",
-        firstname: "",
-        lastname: "",
+        account_type: "business",
+        // firstname: "",
+        // lastname: "",
+        fullname: "",
+        business_type: "",
         email_address: "",
         phone_number: "",
         country: "",
@@ -196,13 +230,17 @@ export default {
       validity: {
         business_name: true,
         account_type: false,
-        firstname: true,
-        lastname: true,
+        // firstname: true,
+        // lastname: true,
+        fullname: true,
+        business_type: true,
         email_address: true,
         phone_number: true,
         country: false,
         password: true,
       },
+
+      business_type_options: [],
 
       accept_terms: false,
       user_details: {},
@@ -219,11 +257,38 @@ export default {
     );
   },
 
+  mounted() {
+    this.fetchBusinessTypes();
+  },
+
   methods: {
     ...mapActions({
       registerUser: "auth/registerUser",
       sendUserOTP: "auth/sendUserOTP",
+      getBusinessTypes: "auth/getBusinessTypes",
     }),
+
+    // ===========================================
+    // HANDLE FETCHING OF AVAILABLE BUSINESS TYPES
+    // ===========================================
+    fetchBusinessTypes() {
+      this.getBusinessTypes()
+        .then((response) => {
+          if (response.code === 200) {
+            this.business_type_options = response.data;
+          } else this.business_type_options = [];
+        })
+        .catch((err) => console.log(err));
+    },
+
+    // ===========================================
+    // HANDLE BUSINESS TYPE USER SELECTION
+    // ===========================================
+    selectBusinessType(selected_id) {
+      this.form.business_type = this.business_type_options.find(
+        (business) => business.id === selected_id
+      );
+    },
 
     // ===========================================
     // HANDLE USER CLIENT REGISTRATION
@@ -236,7 +301,21 @@ export default {
         delete this.form.business_name;
       }
 
-      this.registerUser(this.form)
+      let [firstname, lastname] = this.form.fullname.split(" ");
+
+      let response_payload = {
+        ...this.form,
+        business_type_id: +this.form.business_type?.id,
+        firstname,
+        lastname,
+      };
+
+      delete response_payload.fullname;
+      delete response_payload.business_type;
+
+      // console.log(response_payload);
+
+      this.registerUser(response_payload)
         .then((response) => {
           if (response.code === 200) {
             // CHECK FOR EXISTING PHONE NUMBER

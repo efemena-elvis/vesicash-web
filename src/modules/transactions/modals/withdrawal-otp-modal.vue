@@ -259,7 +259,7 @@ export default {
       handler(value) {
         if (value.length === 1) {
           this.$nextTick(() => this.$refs.otpSix.blur());
-          this.handleUserOTPVerification();
+          // this.handleUserOTPVerification();
         }
       },
     },
@@ -335,11 +335,12 @@ export default {
         otp_token: this.getOTPToken,
       };
 
+      this.handleClick("continue");
+
       this.verifyUserOTP(payload)
         .then(async (response) => {
           if (response.code === 200) {
             await this.makeWithdrawal();
-            // this.$emit("closeTriggered");
           }
 
           // HANDLE NON 200 RESPONSE
