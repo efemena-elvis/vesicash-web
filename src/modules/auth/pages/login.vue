@@ -126,7 +126,7 @@ export default {
           if (response.code === 200) {
             this.pushToast("User login was successful", "success");
             this.handleClick("loginBtn", "Login to account", false);
-            // console.log("login response", response);
+            console.log("login response", response);
 
             // REDIRECT TO DASHBOARD
             setTimeout(() => (location.href = "/dashboard"), 2000);

@@ -50,7 +50,7 @@
           @upload="handleAlert"
         />
 
-        <template v-if="false">
+        <template v-if="true">
           <div class="form-group mgt-24">
             <div class="form-label">How many directors do you have?</div>
 
