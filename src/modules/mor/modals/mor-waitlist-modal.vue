@@ -90,6 +90,23 @@
         </div>
 
         <div class="form-group">
+          <BasicInput
+            label_title="Business Name"
+            label_id="businessName"
+            input_type="text"
+            :input_value="form.business_name"
+            is_required
+            placeholder="Enter your business name"
+            @getInputState="updateFormState($event, 'business_name')"
+            :error_handler="{
+              type: 'minimum',
+              minimum: 4,
+              message: 'Enter a business name',
+            }"
+          />
+        </div>
+
+        <div class="form-group">
           <div class="form-label">Business Category</div>
           <DropSelectInput
             placeholder="Select business category"
@@ -165,6 +182,7 @@ export default {
         lastname: this.form.last_name,
         email_address: this.form.email_address,
         phone_number: this.form.phone_number,
+        business_name: this.form.business_name,
         business_type_id: this.selected_business_type,
         country_id: this.selected_countries,
       };
@@ -204,6 +222,7 @@ export default {
         last_name: "",
         email_address: "",
         phone_number: "",
+        business_name: "",
       },
 
       validity: {
@@ -211,6 +230,7 @@ export default {
         last_name: true,
         email_address: true,
         phone_number: true,
+        business_name: true,
       },
     };
   },
