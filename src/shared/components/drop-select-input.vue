@@ -84,15 +84,17 @@
               @click.stop="makeMultiSelection(option.id)"
             >
               <div
-                class="inner-lining wt-100"
-                :class="index + 1 === options.length && 'no-bottom-border'"
+                class="inner-lining wt-100 check-input-row"
+                :class="
+                  index + 1 === getInputOptions.length && 'no-bottom-border'
+                "
               >
+                <span v-html="option.name"></span>
                 <input
                   type="checkbox"
                   class="mgr-10"
                   :checked="option.selected"
                 />
-                <span v-html="option.name"></span>
               </div>
             </div>
           </div>
@@ -328,6 +330,16 @@ export default {
     box-shadow: none;
     border-color: getColor("green-500");
     background: getColor("neutral-10");
+  }
+
+  .check-input-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+
+    input[type="checkbox"] {
+      position: relative;
+      transform: scale(0.8);
+    }
   }
 }
 </style>
