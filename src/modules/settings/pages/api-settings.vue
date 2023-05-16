@@ -4,24 +4,64 @@
     <div class="page-title primary-1-text grey-900 mgb-4">API</div>
 
     <!-- PAGE META -->
-    <div class="page-meta tertiary-2-text grey-600">Generate API keys here</div>
+    <div class="page-meta tertiary-2-text grey-600">
+      View and Copy API keys here
+    </div>
 
     <div class="key-wrapper">
       <div class="key-loader skeleton-loader" v-if="generating_keys"></div>
-      <div class="keys tertiary-2-text" v-else>{{ getAPIKeys }}</div>
+      <div
+        class="keys tertiary-2-text"
+        :class="[
+          getAPIKeysDetails && !getAPIKeysDetails.is_live && 'revoked-key',
+        ]"
+        v-else
+      >
+        {{ getAPIKeysDetails ? getAPIKeysDetails.public_key : "" }}
+      </div>
 
       <button
         class="btn btn-sm btn-secondary"
-        :class="[copied && 'copied-btn']"
-        @click="copyAPIkeys"
+        :class="[copied_key.public_key && 'copied-btn']"
+        @click="copyAPIkeys('public_key')"
+        :disabled="!getAPIKeysDetails"
       >
-        <span v-if="copied">Keys Copied!</span>
+        <span v-if="copied_key.public_key">Keys Copied!</span>
 
         <template v-else>
           <span class="mgr-4">
             <CopyIcon />
           </span>
-          <span>Copy keys</span>
+          <span>Copy public keys</span>
+        </template>
+      </button>
+    </div>
+
+    <div class="key-wrapper">
+      <div class="key-loader skeleton-loader" v-if="generating_keys"></div>
+      <div
+        class="keys tertiary-2-text"
+        :class="[
+          getAPIKeysDetails && !getAPIKeysDetails.is_live && 'revoked-key',
+        ]"
+        v-else
+      >
+        {{ getAPIKeysDetails ? getAPIKeysDetails.private_key : "" }}
+      </div>
+
+      <button
+        class="btn btn-sm btn-secondary"
+        :class="[copied_key.private_key && 'copied-btn']"
+        @click="copyAPIkeys('private_key')"
+        :disabled="!getAPIKeysDetails"
+      >
+        <span v-if="copied_key.private_key">Keys Copied!</span>
+
+        <template v-else>
+          <span class="mgr-4">
+            <CopyIcon />
+          </span>
+          <span>Copy private keys</span>
         </template>
       </button>
     </div>
@@ -31,7 +71,10 @@
       ref="generate"
       @click="generateKeys(true)"
       :disabled="generating_keys"
-    >Generate API key</button>
+      v-if="false"
+    >
+      Generate API key
+    </button>
   </div>
 </template>
 
@@ -47,13 +90,16 @@ export default {
   },
 
   computed: {
-    ...mapGetters({ getAPIKeys: "settings/getAPIKeys" }),
+    ...mapGetters({
+      getAPIKeys: "settings/getAPIKeys",
+      getAPIKeysDetails: "settings/getAPIKeysDetails",
+    }),
   },
 
   watch: {
-    getAPIKeys: {
+    getAPIKeysDetails: {
       async handler(keys) {
-        if (!keys) this.generateKeys(false);
+        if (!keys) this.fetchKeys();
       },
       immediate: true,
     },
@@ -63,12 +109,19 @@ export default {
     return {
       api_keys: "26fhf4jf8key783920v56y",
       copied: false,
+      copied_key: {
+        private_key: false,
+        public_key: false,
+      },
       generating_keys: false,
     };
   },
 
   methods: {
-    ...mapActions({ generateAPIkeys: "settings/generateAPIkeys" }),
+    ...mapActions({
+      generateAPIkeys: "settings/generateAPIkeys",
+      fetchAPIkeys: "settings/fetchAPIkeys",
+    }),
 
     async generateKeys(load) {
       this.generating_keys = true;
@@ -95,11 +148,32 @@ export default {
       }
     },
 
-    async copyAPIkeys() {
-      await navigator.clipboard.writeText(this.getAPIKeys);
-      this.copied = true;
+    async fetchKeys() {
+      this.generating_keys = true;
+      try {
+        const response = await this.fetchAPIkeys({
+          account_id: this.getAccountId,
+        });
+
+        this.generating_keys = false;
+
+        if (![201, 200].includes(response.code))
+          this.pushToast(
+            response?.message || "Failed to load API keys.",
+            "error"
+          );
+      } catch (err) {
+        this.generating_keys = false;
+        this.pushToast("Failed to load API keys", "error");
+        console.log("FAILED TO GET KEYS", err);
+      }
+    },
+
+    async copyAPIkeys(type = "public_key") {
+      await navigator.clipboard.writeText(this.getAPIKeysDetails[type]);
+      this.copied_key[type] = true;
       setTimeout(() => {
-        this.copied = false;
+        this.copied_key[type] = false;
       }, 2500);
     },
   },
@@ -156,6 +230,11 @@ export default {
       background-color: getColor("green-50") !important;
     }
   }
+}
+
+.revoked-key {
+  text-decoration: line-through;
+  opacity: 0.4;
 }
 
 .generate-key-btn {
