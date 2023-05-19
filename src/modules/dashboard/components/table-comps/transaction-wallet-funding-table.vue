@@ -10,7 +10,7 @@
       :empty_message="empty_message"
       @emptyAction="initiateWalletFunding"
       :show_paging="showPagination"
-      @goToPage="getUserWalletTransactions($event)"
+      @goToPage="$emit('changePageView', $event)"
       :pagination="pagination"
     >
       <template v-for="(data, index) in table_data">

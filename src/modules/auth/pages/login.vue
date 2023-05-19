@@ -72,7 +72,7 @@ import AuthWrapper from "@/modules/auth/components/auth-wrapper";
 import BasicInput from "@/shared/components/form-comps/basic-input";
 
 export default {
-  name: "Login",
+  name: "LoginPage",
 
   metaInfo: {
     title: "Login",
@@ -151,5 +151,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

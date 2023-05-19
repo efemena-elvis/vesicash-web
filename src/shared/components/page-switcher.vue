@@ -1,5 +1,8 @@
 <template>
-  <div class="page-switcher rounded-8 grey-50-bg wt-100 mgb-16">
+  <div
+    class="page-switcher rounded-8 grey-50-bg mgb-16"
+    :class="full_width ? 'wt-100' : 'wt-fit'"
+  >
     <!-- PAGE ITEMS -->
     <template>
       <div
@@ -7,8 +10,10 @@
         :class="page.active && 'page-item-active'"
         v-for="(page, index) in pages"
         :key="index"
-        @click="changeTableView(index)"
-      >{{ page.title }}</div>
+        @click="changeView(index)"
+      >
+        {{ page.title }}
+      </div>
     </template>
   </div>
 </template>
@@ -22,6 +27,11 @@ export default {
       type: Array,
       default: () => [],
     },
+
+    full_width: {
+      type: Boolean,
+      default: true,
+    },
   },
 
   data() {
@@ -31,10 +41,10 @@ export default {
   },
 
   methods: {
-    changeTableView(index) {
+    changeView(index) {
       this.pages.map((page) => (page.active = false));
       this.pages[index].active = true;
-      this.$emit("swapTable", this.pages[index].table);
+      this.$emit("swapItem", this.pages[index].value);
     },
   },
 };

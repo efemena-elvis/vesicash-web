@@ -1,7 +1,13 @@
 <template>
   <div class="dashboard-transactions">
+    <PageSwitcher
+      :page_data="pages"
+      :full_width="false"
+      @swapItem="updateTransactionChanges($event)"
+    />
+
     <!-- DATA FILTERS -->
-    <div class="filters mgb-28 row">
+    <div class="filters mgt-28 mgb-28 row">
       <!-- SELECT WALLET TYPE -->
       <div class="select-field col-6 col-lg-3">
         <DropSelectInput
@@ -9,19 +15,6 @@
           @selectedOption="selectUserOption('wallet', $event, wallet_options)"
           :options="wallet_options"
           :pre_select="preselect_wallet"
-          class_name="custom-drop-input"
-        />
-      </div>
-
-      <!-- SELECT TRANSACTION TYPE -->
-      <div class="select-field col-6 col-lg-3">
-        <DropSelectInput
-          placeholder="Transaction type"
-          @selectedOption="
-            selectUserOption('transaction', $event, transaction_options)
-          "
-          :options="transaction_options"
-          :pre_select="preselect_transaction"
           class_name="custom-drop-input"
         />
       </div>
@@ -74,6 +67,7 @@
         :pagination="pagination"
         :empty_message="empty_message"
         @showTransactionModal="toggleTransactionSummaryModal"
+        @changePageView="changePageNumber"
       />
     </transition>
 
@@ -143,7 +137,6 @@ export default {
 
     showFilters() {
       return this.filters.wallet.length ||
-        this.filters.transaction.length ||
         this.filters.source.length ||
         this.filters.date_range.length
         ? true
@@ -162,6 +155,7 @@ export default {
           ? this.formatSelectedDate(this.filters.date_range[1])
           : "",
         account_id: this.getAccountId.toString(),
+        page: this.pageNumber,
       };
     },
   },
@@ -187,9 +181,14 @@ export default {
 
     $route: {
       handler(value) {
-        let { wallet, transaction, source, start_date, end_date } = value.query;
+        let { wallet, source, pageNumber, start_date, end_date } = value.query;
 
-        if ((wallet && transaction && source) || start_date || end_date) {
+        if (
+          (wallet && this.filters.transaction && source) ||
+          pageNumber ||
+          start_date ||
+          end_date
+        ) {
           this.fetchTransactionData();
         } else {
           this.table_data = [];
@@ -234,19 +233,6 @@ export default {
       },
     ],
 
-    transaction_options: [
-      {
-        id: 1,
-        name: "Inflow",
-        slug: "inflow",
-      },
-      {
-        id: 2,
-        name: "Outflow",
-        slug: "outflow",
-      },
-    ],
-
     payment_source_options: [
       {
         id: 1,
@@ -270,15 +256,27 @@ export default {
       },
     ],
 
+    pages: [
+      {
+        title: "Inflow",
+        value: "inflow",
+        active: true,
+      },
+      {
+        title: "Outflow",
+        value: "outflow",
+        active: false,
+      },
+    ],
+
     source_options: [],
 
     preselect_wallet: null,
-    preselect_transaction: null,
     preselect_source: null,
 
     filters: {
       wallet: "",
-      transaction: "",
+      transaction: "inflow",
       source: "",
       date_range: [],
     },
@@ -287,6 +285,7 @@ export default {
 
     table_data: [],
     table_loading: false,
+    pageNumber: 1,
     pagination: {},
 
     empty_message:
@@ -329,7 +328,7 @@ export default {
 
           // NON DATE SELECTIONS
           else {
-            let selected_option = this[`${query}_options`].find(
+            let selected_option = this[`${query}_options`]?.find(
               (option) => option.slug === queries[query]
             );
 
@@ -357,12 +356,10 @@ export default {
     // RESET ALL SELECTED FILTERS
     resetFilters() {
       this.preselect_wallet = {};
-      this.preselect_transaction = {};
       this.preselect_source = {};
 
       this.filters.date_range = [];
       this.filters.wallet = "";
-      this.filters.transaction = "";
       this.filters.source = "";
 
       this.table_data = [];
@@ -390,6 +387,20 @@ export default {
         .replace({
           name: this.$route.name,
           query: { ...this.$route.query, [type]: selected_option },
+        })
+        .catch((error) => {
+          if (error.name != "NavigationDuplicated") throw error;
+        });
+    },
+
+    // MANUALLY UPDATE TRANSACTION CHANGES
+    updateTransactionChanges(selected_value) {
+      this.filters.transaction = selected_value;
+
+      this.$router
+        .replace({
+          name: this.$route.name,
+          query: { ...this.$route.query, transaction: selected_value },
         })
         .catch((error) => {
           if (error.name != "NavigationDuplicated") throw error;
@@ -479,6 +490,20 @@ export default {
       });
     },
 
+    // CHANGE PAGE NUMBER VIEW
+    changePageNumber(pageNumber) {
+      this.pageNumber = pageNumber;
+
+      this.$router
+        .replace({
+          name: this.$route.name,
+          query: { ...this.$route.query, page: this.pageNumber },
+        })
+        .catch((error) => {
+          if (error.name != "NavigationDuplicated") throw error;
+        });
+    },
+
     // FETCH TRANSACTION DATA
     fetchTransactionData() {
       this.table_loading = true;
@@ -488,7 +513,6 @@ export default {
           let { data, ...pagination } = response.data;
 
           if (response.code === 200) {
-            console.log("PAYLOAD", data);
             this.table_loading = false;
 
             this.table_data = data;

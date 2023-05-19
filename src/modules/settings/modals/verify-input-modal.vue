@@ -2,8 +2,7 @@
   <ModalCover
     @closeModal="$emit('closeTriggered')"
     :modal_style="{ size: 'modal-xs' }"
-    :show_close_btn="false"
-    :trigger_self_close="false"
+    show_close_btn
     :place_center="true"
     class="verify-input-modal"
   >

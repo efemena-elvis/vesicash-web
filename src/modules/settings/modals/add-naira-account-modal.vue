@@ -208,7 +208,7 @@ export default {
       }
 
       this.loading_banks = true;
-      const response = await this.getAllBanks("nigeria");
+      const response = await this.getAllBanks("Nigeria");
       this.loading_banks = false;
 
       if (response.code === 200) {
@@ -286,4 +286,3 @@ export default {
   height: toRem(35);
 }
 </style>
-

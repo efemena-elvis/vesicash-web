@@ -13,12 +13,3 @@ export const VESICASH_APP_URL = "http://localhost:8060";
 export const VESICASH_API_URL = `${API_BASE_URL}/${API_VERSION}`;
 export const VESICASH_PRIVATE_KEY_TOKEN = PRIVATE_KEY;
 export const VESICASH_PUBLIC_KEY_TOKEN = PUBLIC_KEY;
-
-// if [ "$NODE_ENV" = "development" ];
-// then npm install
-// else npm install --only=production;
-// fi
-
-// if [ "$NODE_ENV" = 'development' ]; then \
-//         npm install -g nodemon; \
-//         fi

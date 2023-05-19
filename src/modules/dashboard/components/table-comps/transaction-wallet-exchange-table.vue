@@ -8,7 +8,7 @@
       :is_loading="table_loading"
       :empty_message="empty_message"
       :show_paging="showPagination"
-      @goToPage="getUserPaymentTransactions($event)"
+      @goToPage="$emit('changePageView', $event)"
       :pagination="pagination"
     >
       <template v-for="(data, index) in table_data">

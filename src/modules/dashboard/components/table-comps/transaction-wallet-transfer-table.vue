@@ -10,11 +10,11 @@
       :empty_message="empty_message"
       @emptyAction="initiateWalletWithdrwal"
       :show_paging="showPagination"
-      @goToPage="getUserWalletTransactions($event)"
+      @goToPage="$emit('changePageView', $event)"
       :pagination="pagination"
     >
       <template v-for="(data, index) in table_data">
-        <TransactionWalletWithdrawalTableRow
+        <TransactionWalletTransferTableRow
           :key="index"
           table_name="transaction-wallet-tb"
           :data="data"

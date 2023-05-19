@@ -46,8 +46,20 @@
         cta_title="Verify document"
         @action="toggleDocUploadModal"
         :verified="isDocVerified"
+        :verified_docs="[1, 2]"
       >
         <FileIcon active />
+      </verification-card>
+
+      <verification-card
+        v-if="isBusiness"
+        title="Directors Information"
+        subtitle="Confirm directors count and identification details."
+        cta_title="Verify directors"
+        @action="toggleDirectorVerifyModal"
+        :verified="isDocVerified"
+      >
+        <UserIcon />
       </verification-card>
 
       <verification-card
@@ -119,6 +131,20 @@
         />
       </transition>
 
+
+      <transition name="fade" v-if="show_director_verify_modal">
+        <DirectorVerificationModal
+          @saved="
+            showSuccessModal(
+              'show_doc_upload_modal',
+              '_',
+              $event
+            )
+          "
+          @closeTriggered="toggleDirectorVerifyModal"
+        />
+      </transition>
+
       <transition name="fade" v-if="show_cac_registration_modal">
         <CoporationVerificationModal
           @saved="
@@ -157,9 +183,11 @@ import VerifyInputModal from "@/modules/settings/modals/verify-input-modal";
 import VerifyOtpModal from "@/modules/settings/modals/verify-otp-modal";
 import BusinessInfoModal from "@/modules/settings/modals/business-info-modal";
 import VerificationDocumentModal from "@/modules/settings/modals/verification-document-modal";
+import DirectorVerificationModal from "@/modules/settings/modals/director-verification-modal";
 import CoporationVerificationModal from "@/modules/settings/modals/coporation-verification-modal";
 import VerificationBvnModal from "@/modules/settings/modals/verification-bvn-modal";
 import SuccessModal from "@/shared/modals/success-modal";
+
 export default {
   name: "VerificationSettings",
 
@@ -168,6 +196,7 @@ export default {
     VerifyInputModal,
     VerifyOtpModal,
     BusinessInfoModal,
+    DirectorVerificationModal,
     VerificationDocumentModal,
     CoporationVerificationModal,
     VerificationBvnModal,
@@ -188,6 +217,10 @@ export default {
     FileIcon: () =>
       import(
         /* webpackChunkName: 'shared-module' */ "@/shared/components/icon-comps/file-icon"
+      ),
+    UserIcon: () =>
+      import(
+        /* webpackChunkName: 'shared-module' */ "@/shared/components/icon-comps/user-icon"
       ),
     SettlementIcon: () =>
       import(
@@ -257,9 +290,11 @@ export default {
       show_otp_modal: false,
       show_success_modal: false,
       show_doc_upload_modal: false,
+      show_director_verify_modal: false,
       show_cac_registration_modal: false,
       show_bvn_modal: false,
       show_business_info_modal: false,
+
       phone_verified: false,
       business_info_verified: false,
       document_verified: false,
@@ -312,6 +347,10 @@ export default {
 
     toggleDocUploadModal() {
       this.show_doc_upload_modal = !this.show_doc_upload_modal;
+    },
+
+    toggleDirectorVerifyModal() {
+      this.show_director_verify_modal = !this.show_director_verify_modal;
     },
 
     toggleCACRegistrationModal() {
