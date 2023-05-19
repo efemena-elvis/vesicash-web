@@ -13,6 +13,7 @@ import exchangeRoutes from "@/modules/exchange";
 import transactionsRoutes from "@/modules/transactions";
 import paymentsRoutes from "@/modules/payments";
 import settingsRoutes from "@/modules/settings";
+import morRoutes from "@/modules/mor";
 
 // =======================================================
 // SETTING UP A ROUTES ARRAY TO HOLD ALL ROUTE MODULES
@@ -25,6 +26,7 @@ const routes = [
   ...exchangeRoutes,
   ...paymentsRoutes,
   ...settingsRoutes,
+  ...morRoutes,
   {
     path: "/*",
     name: "NotFoundError",

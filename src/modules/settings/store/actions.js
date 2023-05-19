@@ -22,6 +22,7 @@ const routes = {
     verify_bvn: "/verification/bvn/verify",
 
     generate_api_keys: "/admin/tokens/generate",
+    fetch_api_keys:"/admin/tokens/fetch"
 };
 
 export default {
@@ -105,6 +106,16 @@ export default {
         const response = await $api.push(routes.generate_api_keys, { payload });
         if ([201, 200].includes(response.code))
             commit("SET_API_KEYS", response.data.V_PUBLIC_KEY);
+        return response;
+    },
+
+     // ==============================
+    // FETCH API KEYS
+    // ==============================
+    async fetchAPIkeys({ commit }, payload) {
+        const response = await $api.push(routes.fetch_api_keys, { payload });
+        if ([201, 200].includes(response.code))
+            commit("SET_API_KEYS_DETAILS", response.data);
         return response;
     },
 
