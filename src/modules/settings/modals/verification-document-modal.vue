@@ -9,7 +9,8 @@
       <div class="modal-cover-header">
         <div class="modal-cover-title">Other documents</div>
         <div class="tertiary-2-text grey-600">
-           Choose any document type you wish to upload. Upload multiple documents to access more account features. 
+          Choose any document type you wish to upload. Upload multiple documents
+          to access more account features.
         </div>
       </div>
     </template>
@@ -70,19 +71,13 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
-import DocUploadCard from "@/shared/components/form-comps/doc-upload-card";
-import DropSelectInput from "@/shared/components/drop-select-input";
-import BasicInput from "@/shared/components/form-comps/basic-input";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "VerificationDocModal",
 
   components: {
     ModalCover,
-    DropSelectInput,
-    BasicInput,
-    DocUploadCard,
   },
 
   mounted() {
@@ -176,7 +171,7 @@ export default {
 
         this.handleClick("save", "Submit", false);
 
-        if (response.code === 200) {
+        if (response?.code === 200) {
           this.pushToast(response.message, "success");
           this.$emit("saved", "Your document has been uploaded successfully");
         } else {

@@ -118,7 +118,7 @@
 
 <script>
 import { mapGetters, mapMutations, mapActions } from "vuex";
-import { VESICASH_APP_URL } from "@/utilities/constant";
+import { constants } from "@/utilities";
 
 export default {
   name: "ConfirmFundPayoutRules",
@@ -227,8 +227,10 @@ export default {
       if (signup_payload.length) {
         this.registerBulkUsers({ bulk: signup_payload })
           .then((response) => {
+            console.log("response", response);
+
             // RETRY BULK UPLOAD IF IT RETURNS 500 RESPONSE
-            if (response.code === 500) {
+            if (response?.code === 500) {
               this.signupBulkUsers();
               return false;
             }
@@ -241,11 +243,11 @@ export default {
             let cloned_recipients = [...this.getMilestoneRecipients];
 
             // CREATE NEW USER PAYLOAD
-            response.data?.bulk.map((user) => {
+            response.data?.map((user) => {
               user_payload.push({
                 account_id: user.account_id,
-                email_address: user.email_address ?? user.email,
-                phone_number: user.phone_number ?? user.phone,
+                email_address: user.email_address,
+                phone_number: user.phone_number,
               });
             });
 
@@ -267,7 +269,8 @@ export default {
             setTimeout(() => this.setupAndCreateTransaction(), 500);
             return true;
           })
-          .catch(() => {
+          .catch((error) => {
+            console.log(error);
             this.handleEscrowError("An error occured while creating users");
             return false;
           });
@@ -319,7 +322,7 @@ export default {
       this.getTransactionBeneficiaries.map((user) => {
         let party_obj = {};
 
-        party_obj.account_id = user.account_id;
+        party_obj.account_id = +user.account_id;
         party_obj.role = user.role?.name.toLowerCase();
         party_obj.status = user.status;
         party_obj.access_level = {
@@ -348,7 +351,7 @@ export default {
           this.getTransactionAmount.milestone_amounts[index];
 
         milestone_obj.inspection_period =
-          milestone.inspection_period.name.split(" ")[0];
+          +milestone.inspection_period.name.split(" ")[0];
         milestone_obj.due_date = milestone.due_date;
 
         // FETCH MILESTONE RECIPIENTS
@@ -360,7 +363,7 @@ export default {
         milestone_recipients.map((user) => {
           let recipient_obj = {};
 
-          recipient_obj.account_id = user.account_id;
+          recipient_obj.account_id = +user.account_id;
           recipient_obj.amount = Number(user.amount);
 
           // PUSH RECIPIENT OBJECT INTO THE RECIPIENT PAYLOAD
@@ -389,8 +392,8 @@ export default {
         .then((response) => {
           // console.log(response);
 
-          if (response.code === 200) {
-            let transaction_id = response?.data?.transaction?.transaction_id;
+          if ([200, 201].includes(response?.code)) {
+            let transaction_id = response?.data?.transaction_id;
             this.sendOutCreatedTransaction(transaction_id);
           } else {
             this.pushToast(
@@ -436,7 +439,7 @@ export default {
               });
             } else {
               // FOR A SELLER CREATING ESCROW
-              let success_url = `${VESICASH_APP_URL}/transaction/payment-successful?type=seller_escrow&party=${this.$route.query.party}&transaction_id=${transaction_id}&name=${this.$route.query.name}&parties=${this.$route.query.parties}&fee=${this.$route.query.fee}`;
+              let success_url = `${constants.VESICASH_APP_URL}/transaction/payment-successful?type=seller_escrow&party=${this.$route.query.party}&transaction_id=${transaction_id}&name=${this.$route.query.name}&parties=${this.$route.query.parties}&fee=${this.$route.query.fee}`;
 
               location.href = success_url;
             }
@@ -470,7 +473,7 @@ export default {
   }
 
   .fund-details-section {
-    @include flex-row-start-wrap;
+    @include flex-row-wrap("flex-start", "center");
   }
 
   .section-wrapper {

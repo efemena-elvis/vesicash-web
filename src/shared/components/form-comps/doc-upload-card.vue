@@ -192,7 +192,7 @@ export default {
 
       this.uploadToCloud(payload)
         .then((response) => {
-          if (response.code) this.$emit("uploaded", response.data);
+          if (response?.code) this.$emit("uploaded", response.data);
         })
         .catch((err) => console.log(err));
     },
@@ -235,7 +235,7 @@ export default {
 
   .no-content-state {
     padding: toRem(17) toRem(16);
-    @include flex-column-center;
+    @include flex-column("center", "center");
 
     &:hover {
       background: getColor("grey-10");
@@ -281,11 +281,11 @@ export default {
   }
 
   .content-state {
-    @include flex-row-between-nowrap;
+    @include flex-row-nowrap("space-between", "center");
     padding: toRem(17) toRem(16);
 
     .left-section {
-      @include flex-row-start-nowrap;
+      @include flex-row-nowrap("flex-start", "center");
 
       .icon-card {
         position: relative;

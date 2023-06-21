@@ -14,8 +14,8 @@
 
 <script>
 import { mapGetters, mapMutations } from "vuex";
-import { getStorage, setStorage, removeStorage } from "@/utilities/auth-utils";
-import PageBackBtn from "@/shared/components/page-back-btn";
+import { serviceStorage } from "@/shared/services";
+import PageBackBtn from "@/shared/components/util-comps/page-back-btn";
 import ProgressFlowCard from "@/shared/components/card-comps/progress-flow-card";
 
 export default {
@@ -109,23 +109,29 @@ export default {
     }),
 
     takeSnapshots() {
-      setStorage("transaction", this.getTransactions, "object");
+      serviceStorage.setStorage({
+        storage_name: "transaction",
+        storage_value: this.getTransactions,
+        storage_type: "object",
+      });
     },
 
     getSnapshots() {
-      if (getStorage("transaction")) {
-        let cached_transaction = getStorage("transaction", "object");
+      if (serviceStorage.getStorage({ storage_name: "transaction" })) {
+        let cached_transaction = serviceStorage.getStorage({
+          storage_name: "transaction",
+          storage_type: "object",
+        });
 
         // UPDATE CACHED DATA BACK TO STORE
         this.UPDATE_CACHED_TRANSACTION(cached_transaction);
 
         // REMOVED CACHED TRANSACTION DATA FROM LOCAL STORAGE
-        removeStorage("transaction");
+        serviceStorage.removeStorage("transaction");
       }
     },
   },
 };
 </script>
 
-<style lang="scss">
-</style>
+<style lang="scss"></style>

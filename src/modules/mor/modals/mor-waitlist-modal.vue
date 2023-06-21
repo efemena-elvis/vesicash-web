@@ -137,9 +137,7 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
-import BasicInput from "@/shared/components/form-comps/basic-input";
-import DropSelectInput from "@/shared/components/drop-select-input";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "JoinWaitlistModal",
@@ -153,8 +151,6 @@ export default {
 
   components: {
     ModalCover,
-    BasicInput,
-    DropSelectInput,
   },
 
   computed: {
@@ -259,14 +255,14 @@ export default {
         const response = await this.joinWaitlist(this.userPayload);
         this.handleClick("save", "Join Waitlist", false);
 
-        const type = response.code === 200 ? "success" : "error";
+        const type = response?.code === 200 ? "success" : "error";
         const message =
-          response.code === 200
+          response?.code === 200
             ? "You've been added to our MOR waitlist..Cheers"
             : response.message;
         this.pushToast(message, type);
 
-        if (response.code === 200) this.$emit("closeTriggered");
+        if (response?.code === 200) this.$emit("closeTriggered");
       } catch (err) {
         console.log("ERROR ADDING USER", err);
         this.pushToast("Failed to join waitlist", "error");

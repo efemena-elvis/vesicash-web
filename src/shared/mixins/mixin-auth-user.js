@@ -1,10 +1,11 @@
 import { mapGetters } from "vuex";
-import { $serviceString as string } from "@/services/service-string";
+import { serviceUtils } from "@/shared/services";
 
 const MixinAuthUser = {
   computed: {
     ...mapGetters({
       getAuthUser: "auth/getAuthUser",
+      getAuthToken: "auth/getAuthToken",
     }),
 
     // ==============================
@@ -15,12 +16,19 @@ const MixinAuthUser = {
     },
 
     // ==============================
+    // GET AUTH USER OBJECT
+    // ==============================
+    getUserToken() {
+      return this.getAuthToken ?? null;
+    },
+
+    // ==============================
     // GET USER LOGIN COUNT
     // ==============================
     getUserLoginCount() {
       return (
         Object.keys(this.getAuthUser).length &&
-        Number(string.decodeString(this.getAuthUser.total_entry))
+        Number(serviceUtils.decodeString(this.getAuthUser.total_entry))
       );
     },
 
@@ -30,7 +38,7 @@ const MixinAuthUser = {
     getAccountType() {
       return (
         Object.keys(this.getAuthUser).length &&
-        string.decodeString(this.getAuthUser.account_type)
+        serviceUtils.decodeString(this.getAuthUser.account_type)
       );
     },
 
@@ -40,7 +48,7 @@ const MixinAuthUser = {
     getAccountId() {
       return (
         Object.keys(this.getAuthUser).length &&
-        Number(string.decodeString(this.getAuthUser.account_token))
+        Number(serviceUtils.decodeString(this.getAuthUser.account_token))
       );
     },
 
@@ -50,7 +58,7 @@ const MixinAuthUser = {
     getBusinessId() {
       return (
         Object.keys(this.getAuthUser).length &&
-        Number(string.decodeString(this.getAuthUser.business_token))
+        Number(serviceUtils.decodeString(this.getAuthUser.business_token))
       );
     },
 
@@ -60,7 +68,7 @@ const MixinAuthUser = {
 
       let escrow_charge =
         Object.keys(this.getAuthUser).length &&
-        JSON.parse(string.decodeString(this.getAuthUser.business_charge));
+        JSON.parse(serviceUtils.decodeString(this.getAuthUser.business_charge));
 
       return {
         business_id: this.getBusinessId,
@@ -68,7 +76,12 @@ const MixinAuthUser = {
         escrow_charge,
       };
     },
+
+    isMoRSetupEnabled() {
+      return this.getAuthUser.is_merchant ?? false;
+      // return true;
+    },
   },
 };
 
-export { MixinAuthUser };
+export default MixinAuthUser;

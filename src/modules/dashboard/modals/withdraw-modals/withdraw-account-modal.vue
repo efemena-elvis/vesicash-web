@@ -38,7 +38,7 @@
               :total_text="`${selected_currency.slug} balance`"
               :total_value="`${$money.getSign(
                 selected_currency.slug
-              )}${$money.addComma(selected_currency_balance)}`"
+              )}${$utils.formatCurrencyWithComma(selected_currency_balance)}`"
               use_custom_style
             />
           </div>
@@ -70,7 +70,9 @@
                 Minimum amount:
                 <span class="fw-bold"
                   >{{ $money.getSign(selected_currency.slug)
-                  }}{{ $money.addComma(selected_currency.min_amount) }}</span
+                  }}{{
+                    $utils.formatCurrencyWithComma(selected_currency.min_amount)
+                  }}</span
                 >
               </div>
 
@@ -78,7 +80,9 @@
                 Charges:
                 <span class="fw-bold"
                   >{{ $money.getSign(selected_currency.slug)
-                  }}{{ $money.addComma(getWithdrawalCharge) }}</span
+                  }}{{
+                    $utils.formatCurrencyWithComma(getWithdrawalCharge)
+                  }}</span
                 >
               </div>
             </div>
@@ -153,20 +157,15 @@
 
 <script>
 import { mapGetters, mapActions, mapMutations } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
-import PageBackBtn from "@/shared/components/page-back-btn";
-import FormHelper from "@/modules/auth/mixins/auth-helper";
-import DropSelectInput from "@/shared/components/drop-select-input";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
+import PageBackBtn from "@/shared/components/util-comps/page-back-btn";
 
 export default {
   name: "WithdrawAccountModal",
 
-  mixins: [FormHelper],
-
   components: {
     ModalCover,
     PageBackBtn,
-    DropSelectInput,
     AccountDisplayCard: () =>
       import(
         /* webpackChunkName: "dashboard-module" */
@@ -183,11 +182,6 @@ export default {
         /* webpackChunkName: "shared-module" */ "@/shared/components/card-comps/sum-total-display-card"
       ),
 
-    AccountDisplayCard: () =>
-      import(
-        /* webpackChunkName: "dashboard-modal-module" */ "@/modules/dashboard/components/modal-comps/account-display-card"
-      ),
-
     NewNairaAccount: () =>
       import(
         /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/modal-comps/new-naira-account"
@@ -201,11 +195,6 @@ export default {
     NewForeignAccount: () =>
       import(
         /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/modal-comps/new-foreign-account"
-      ),
-
-    BasicInput: () =>
-      import(
-        /* webpackChunkName: 'shared-module' */ "@/shared/components/form-comps/basic-input"
       ),
   },
 
@@ -426,7 +415,7 @@ export default {
         const response = await this.fetchBankDetails(this.getAccountId);
 
         let accounts =
-          response.code === 200
+          response?.code === 200
             ? response.data.map((account) => {
                 // FORMAT BANK CODE
                 let bank_code = account?.bank?.id.toString();
@@ -492,7 +481,7 @@ export default {
 
         this.handleClick("continue", "Continue", false);
 
-        if (response.code === 200) {
+        if (response?.code === 200) {
           this.setWithrawalMeta(withdrawal_details);
           this.$emit("accountSelected");
         }
@@ -511,7 +500,7 @@ export default {
   height: auto;
 
   .amount-meta {
-    @include flex-row-between-nowrap;
+    @include flex-row-nowrap("space-between", "center");
   }
 }
 </style>

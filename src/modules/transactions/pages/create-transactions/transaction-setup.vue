@@ -94,13 +94,11 @@
 
 <script>
 import { mapMutations, mapGetters } from "vuex";
-import BasicInput from "@/shared/components/form-comps/basic-input";
 
 export default {
   name: "TransactionSetup",
 
   components: {
-    BasicInput,
     FundDisburseTypeCard: () =>
       import(
         /* webpackChunkName: "transactions-module" */ "@/modules/transactions/components/card-comps/fund-disburse-type-card"
@@ -260,8 +258,7 @@ export default {
 }
 
 .disbursement-type-selections {
-  @include flex-row-start-wrap;
-  align-items: flex-start;
+  @include flex-row-wrap("flex-start", "flex-start");
 
   .col-4 {
     margin-right: toRem(20);

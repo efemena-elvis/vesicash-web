@@ -47,7 +47,7 @@ export default {
 
   computed: {
     ...mapGetters({
-      getFxTable: "fx/getFxTable",
+      getFxTable: "exchange/getFxTable",
     }),
 
     showPagination() {
@@ -137,12 +137,12 @@ export default {
   },
 
   mounted() {
-    if (!this.getFxTable.length) this.getFxTransactions();
+    if (!this.getFxTable?.length) this.getFxTransactions();
   },
 
   methods: {
     ...mapActions({
-      fetchAllFxTransactions: "fx/fetchAllFxTransactions",
+      fetchAllFxTransactions: "exchange/fetchAllFxTransactions",
     }),
 
     getFxTransactions() {
@@ -154,7 +154,7 @@ export default {
 
       this.fetchAllFxTransactions(payload)
         .then((response) => {
-          if (response.code === 200) {
+          if (response?.code === 200) {
             this.table_data = response.data;
             this.table_loading = false;
           }
@@ -178,23 +178,8 @@ export default {
 
 <style lang="scss">
 .exchange-tb {
-  &-1 {
-  }
-
   &-2 {
     max-width: toRem(205);
-  }
-
-  &-3 {
-  }
-
-  &-4 {
-  }
-
-  &-5 {
-  }
-
-  &-6 {
   }
 }
 </style>

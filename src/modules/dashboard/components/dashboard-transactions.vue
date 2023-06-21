@@ -83,11 +83,10 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
-import PageSwitcher from "@/shared/components/page-switcher";
+import { mapActions, mapGetters } from "vuex";
+import PageSwitcher from "@/shared/components/util-comps/page-switcher";
 import DatePicker from "vue2-datepicker";
-import DropSelectInput from "@/shared/components/drop-select-input";
-import { MixinDateFilter } from "@/shared/mixins/mixin-date-filter";
+import { MixinDateFilter } from "@/shared/mixins";
 
 export default {
   name: "DashboardTransactions",
@@ -96,7 +95,6 @@ export default {
 
   components: {
     PageSwitcher,
-    DropSelectInput,
     DatePicker,
     TransactionWalletExchangeTable: () =>
       import(
@@ -125,9 +123,11 @@ export default {
   },
 
   computed: {
+    ...mapGetters({ getWalletSize: "general/getWalletSize" }),
+
     getCurrentTable() {
-      if (this.filters.source.length) {
-        let table = this.$string.getCapitalizeText(
+      if (this.filters?.source?.length) {
+        let table = this.$utils.getCapitalizeText(
           this.filters?.source || "funding"
         );
 
@@ -136,9 +136,9 @@ export default {
     },
 
     showFilters() {
-      return this.filters.wallet.length ||
-        this.filters.source.length ||
-        this.filters.date_range.length
+      return this.filters.wallet?.length ||
+        this.filters.source?.length ||
+        this.filters.date_range?.length
         ? true
         : false;
     },
@@ -197,41 +197,19 @@ export default {
         }
       },
     },
+
+    getWalletSize: {
+      handler(wallet) {
+        if (wallet.length > 4) {
+          this.populateWalletOptions();
+        }
+      },
+      immediate: true,
+    },
   },
 
   data: () => ({
-    wallet_options: [
-      {
-        id: 1,
-        name: "NGN Wallet",
-        slug: "NGN",
-      },
-      {
-        id: 2,
-        name: "USD Wallet",
-        slug: "USD",
-      },
-      {
-        id: 3,
-        name: "GPB Wallet",
-        slug: "GPB",
-      },
-      {
-        id: 4,
-        name: "Escrow Wallet (NGN)",
-        slug: "ESCROW_NGN",
-      },
-      {
-        id: 5,
-        name: "Escrow Wallet (USD)",
-        slug: "ESCROW_USD",
-      },
-      {
-        id: 6,
-        name: "Escrow Wallet (GPB)",
-        slug: "ESCROW_GPB",
-      },
-    ],
+    wallet_options: [],
 
     payment_source_options: [
       {
@@ -277,7 +255,7 @@ export default {
     filters: {
       wallet: "",
       transaction: "inflow",
-      source: "",
+      source: "funding",
       date_range: [],
     },
 
@@ -293,16 +271,11 @@ export default {
   }),
 
   created() {
+    this.source_options = this.payment_source_options;
+
     this.$bus.$on("showTransactionSummary", () =>
       this.toggleTransactionSummaryModal()
     );
-  },
-
-  mounted() {
-    this.source_options = this.payment_source_options;
-
-    // CHECK ROUTE FOR FILTER OPTIONS
-    this.checkFilterStateOnRoute();
   },
 
   methods: {
@@ -313,6 +286,22 @@ export default {
     toggleTransactionSummaryModal() {
       this.show_transaction_summary_modal =
         !this.show_transaction_summary_modal;
+    },
+
+    populateWalletOptions() {
+      this.getWalletSize
+        .filter((wallet) => wallet.enabled)
+        .map((wallet_type) => {
+          this.wallet_options.push({
+            id: wallet_type.id,
+            name: wallet_type.short.includes("ESCROW")
+              ? `${wallet_type.short.split("_").join(" ")} wallet`
+              : `${wallet_type.short} wallet`,
+            slug: wallet_type.short,
+          });
+        });
+
+      this.checkFilterStateOnRoute();
     },
 
     // CHECK FILTER STATE ON ROUTE
@@ -339,6 +328,33 @@ export default {
 
         // FETCH TRANSACTION PAYMENT DATA
         this.fetchTransactionData();
+      }
+
+      // LOAD DEFAULT OPTION
+      else {
+        // CHECK IF WALLET HAS FEASIBLE LENGTH
+        if (this.wallet_options.length) {
+          this.filters.wallet = this.wallet_options[0]?.slug;
+          this.preselect_wallet = this.wallet_options[0];
+
+          this.filters.source = this.payment_source_options[0]?.slug;
+          this.preselect_source = this.payment_source_options[0];
+
+          this.$router
+            .replace({
+              name: this.$route.name,
+              query: {
+                wallet: this.filters.wallet,
+                source: this.filters.source,
+              },
+            })
+            .catch((error) => {
+              if (error.name != "NavigationDuplicated") throw error;
+            });
+
+          // FETCH TRANSACTION PAYMENT DATA
+          this.fetchTransactionData();
+        }
       }
     },
 
@@ -512,10 +528,13 @@ export default {
         .then((response) => {
           let { data, ...pagination } = response.data;
 
-          if (response.code === 200) {
+          if (response?.code === 200) {
             this.table_loading = false;
 
-            this.table_data = data;
+            this.table_data =
+              this.$route.name === "VesicashDashboard"
+                ? data.slice(0, 3)
+                : data;
             this.pagination = pagination;
           } else {
             this.handleErrorResponse();

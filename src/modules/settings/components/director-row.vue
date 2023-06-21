@@ -31,16 +31,10 @@
 </template>
 
 <script>
-import BasicInput from "@/shared/components/form-comps/basic-input";
-import DropSelectInput from "@/shared/components/drop-select-input";
-
 export default {
   name: "DirectorRow",
 
-  components: {
-    BasicInput,
-    DropSelectInput,
-  },
+  components: {},
 
   props: {
     rowKey: {
@@ -85,12 +79,8 @@ export default {
 
 <style lang="scss" scoped>
 .director-row {
-  label {
-  }
-
   .director-group {
-    @include flex-row-between-wrap;
-    align-items: flex-start;
+    @include flex-row-wrap("space-between", "flex-start");
 
     .document-select {
       width: 46%;

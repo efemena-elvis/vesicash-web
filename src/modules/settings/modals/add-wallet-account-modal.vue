@@ -69,15 +69,13 @@
 
 <script>
 import { mapActions } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
-import BasicInput from "@/shared/components/form-comps/basic-input";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "AddWalletAccountModal",
 
   components: {
     ModalCover,
-    BasicInput,
   },
 
   props: {
@@ -138,7 +136,7 @@ export default {
         updates: this.account_payload,
       });
 
-      if (response.code === 200) {
+      if (response?.code === 200) {
         this.handleClick("save", "Updating bank list...");
         this.handleClick("save", "Add account", false);
 
@@ -192,4 +190,3 @@ export default {
   }
 }
 </style>
-

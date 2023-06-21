@@ -87,17 +87,13 @@
 
 <script>
 import { mapActions, mapMutations, mapGetters } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
-import BasicInput from "@/shared/components/form-comps/basic-input";
-import DropSelectInput from "@/shared/components/drop-select-input";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "AddNairaAccountModal",
 
   components: {
     ModalCover,
-    BasicInput,
-    DropSelectInput,
   },
 
   props: {
@@ -185,7 +181,7 @@ export default {
         updates: this.getNairaBankDetails,
       });
 
-      if (response.code === 200) {
+      if (response?.code === 200) {
         this.handleClick("save", "Updating bank list...");
         await this.fetchAllBanks(this.getAccountId);
         this.handleClick("save", "Add account", false);
@@ -211,7 +207,7 @@ export default {
       const response = await this.getAllBanks("Nigeria");
       this.loading_banks = false;
 
-      if (response.code === 200) {
+      if (response?.code === 200) {
         let bank_options = response.data;
 
         bank_options.sort((a, b) => {

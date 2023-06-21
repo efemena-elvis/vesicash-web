@@ -11,7 +11,8 @@
     </td>
 
     <td class="body-data" :class="`${table_name}-4`">
-      {{ $money.getSign(data.currency) }}{{ $money.addComma(data.amount) }}
+      {{ $money.getSign(data.currency)
+      }}{{ $utils.formatCurrencyWithComma(data.amount) }}
     </td>
 
     <td class="body-data" :class="`${table_name}-5`">
@@ -89,36 +90,38 @@ export default {
           title: "Currency",
           value: this.data.currency,
         },
-        {
-          title: "Total amount",
-          value: `${this.$money.getSign(
-            this.data.currency
-          )}${this.$money.addComma(Number(this.data.amount) + this.data.fee)}`,
-        },
+        // {
+        //   title: "Total amount",
+        //   value: `${this.$money.getSign(
+        //     this.data.currency
+        //   )}${this.$utils.formatCurrencyWithComma(
+        //     Number(this.data.amount) + this.data.fee
+        //   )}`,
+        // },
         {
           title: "Amount received",
           value: `${this.$money.getSign(
             this.data.currency
-          )}${this.$money.addComma(this.data.amount)}`,
+          )}${this.$utils.formatCurrencyWithComma(this.data.amount)}`,
         },
-        {
-          title: "Withdraw charge",
-          value: `${this.$money.getSign(
-            this.data.currency
-          )}${this.$money.addComma(this.data.fee)}`,
-        },
-        {
-          title: "Baneficiary name",
-          value: this.data.beneficiary_name,
-        },
-        {
-          title: "Bank name",
-          value: this.data.bank_name,
-        },
-        {
-          title: "Account number",
-          value: this.data.bank_account_number,
-        },
+        // {
+        //   title: "Withdraw charge",
+        //   value: `${this.$money.getSign(
+        //     this.data.currency
+        //   )}${this.$utils.formatCurrencyWithComma(this.data.fee)}`,
+        // },
+        // {
+        //   title: "Baneficiary name",
+        //   value: this.data.beneficiary_name,
+        // },
+        // {
+        //   title: "Bank name",
+        //   value: this.data.bank_name,
+        // },
+        // {
+        //   title: "Account number",
+        //   value: this.data.bank_account_number,
+        // },
         {
           title: "Transaction status",
           value: this.data.status === "failed" ? "Failed" : "Completed",
@@ -140,5 +143,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

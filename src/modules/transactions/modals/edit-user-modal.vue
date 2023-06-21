@@ -114,17 +114,13 @@ import {
   USER_ACCESS_OPTIONS,
   USER_PAYOUT_OPTIONS,
 } from "@/modules/transactions/constants";
-import ModalCover from "@/shared/components/modal-cover";
-import BasicInput from "@/shared/components/form-comps/basic-input";
-import DropSelectInput from "@/shared/components/drop-select-input";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "EditUserModal",
 
   components: {
     ModalCover,
-    BasicInput,
-    DropSelectInput,
   },
 
   props: {
@@ -279,5 +275,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

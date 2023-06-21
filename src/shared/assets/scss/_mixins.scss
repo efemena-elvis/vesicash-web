@@ -1,0 +1,195 @@
+@import "variables";
+
+//==============================
+// CONVERT UNITS IN PX TO REM
+//==============================
+@function toRem($size) {
+  $result: $size/16;
+  @return #{$result}rem;
+}
+
+//==============================
+//  FULL WIDTH AND HEIGHT
+//==============================
+@mixin width-height($percent) {
+  width: #{$percent};
+  height: #{$percent};
+}
+
+// =========================================
+// FULL BACKGROUND DISPLAY (COVER/CONTAIN)
+// =========================================
+@mixin set-full-bg($type: "") {
+  position: absolute;
+  @include width-height(100%);
+
+  // SET OBJECT FIT ONLY IF TYPE IS NOT EMPTY
+  @if $type != "" {
+    object-fit: #{$type};
+  }
+}
+
+// ====================
+// STRETCHED AREA
+// ====================
+@mixin stretch-area {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  @include width-height(100%);
+}
+
+// ======================
+// PLACE AT CENTER
+// ======================
+@mixin center-placement($axis: "") {
+  position: absolute;
+
+  @if $axis == "y-axis" {
+    top: 50%;
+    transform: translateY(-50%);
+  } @else if $axis == "x-axis" {
+    left: 50%;
+    transform: translateX(-50%);
+  } @else {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+// ==========================
+// FIXED FULL DISPLAY AREA
+// ==========================
+@mixin fixed-display-area {
+  position: fixed;
+  @include width-height(100%);
+  top: 0;
+  left: 0;
+}
+
+// =======================
+// DRAW SHAPE BUILDER
+// =======================
+@mixin draw-shape($width, $height: "") {
+  min-width: toRem($width);
+  width: toRem($width);
+
+  @if $width == $height or $height== "" {
+    min-height: toRem($width);
+    height: toRem($width);
+  } @else {
+    min-height: toRem($height);
+    height: toRem($height);
+  }
+}
+
+// =====================
+// FLEX STYLES
+// =====================
+@mixin flex-setup($type, $wrap: "") {
+  display: flex;
+
+  @if $type == "row" {
+    flex-direction: #{$type};
+    flex-wrap: #{$wrap};
+  } @else {
+    flex-direction: #{$type};
+  }
+}
+
+@mixin flex-alignment($justify, $align) {
+  justify-content: #{$justify};
+  align-items: #{$align};
+}
+
+// =======================
+// FLEX ROW WRAP STYLES
+// =======================
+@mixin flex-row-wrap($justify-content, $align-items) {
+  @include flex-setup("row", "wrap");
+  @include flex-alignment($justify-content, $align-items);
+}
+
+// =======================
+// FLEX ROW NOWRAP STYLES
+// =======================
+@mixin flex-row-nowrap($justify-content, $align-items) {
+  @include flex-setup("row", "nowrap");
+  @include flex-alignment($justify-content, $align-items);
+}
+
+// =======================
+// FLEX COLUMN STYLES
+// =======================
+@mixin flex-column($justify-content, $align-items) {
+  @include flex-setup("column");
+  @include flex-alignment($justify-content, $align-items);
+}
+
+// ============================
+// TRUNCATE TEXT
+// ============================
+@mixin text-truncate() {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+// ============================
+// SMOOTH TRANSITIONING
+// ============================
+@mixin transition($timing) {
+  transition: all #{$timing} ease-in-out;
+}
+
+// ============================
+// FONT STYLING
+// ============================
+@mixin font-height($size, $height) {
+  font-size: toRem($size);
+  line-height: toRem($height);
+}
+
+// ============================
+// FONT STYLING
+// ============================
+@mixin line-clamp($lines) {
+  display: -webkit-box;
+  -webkit-line-clamp: #{$lines};
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// ==============================
+// BOX SHADOW (SOFT && HARD)
+// ==============================
+@mixin box-shadow($style: "soft") {
+  $style_value: "";
+
+  @if $style == "soft" {
+    $style_value: 2;
+  } @else {
+    $style_value: 4;
+  }
+
+  box-shadow: toRem(1) toRem(-1) toRem($style_value) rgba(168, 177, 175, 0.3),
+    toRem(-1) toRem(1) toRem($style_value) rgba(168, 177, 175, 0.3);
+}
+
+// ==============================
+// GENERATE BUTTON SIZES
+// ==============================
+@mixin get-btn-size($size: "lg") {
+  @each $btn-type, $btn-size in $btn-sizes {
+    @if $size == $btn-type {
+      $font: map-get($btn-size, "font");
+      $padding-y: map-get($btn-size, "padding-y");
+      $padding-x: map-get($btn-size, "padding-x");
+
+      @include generate-font-type($font);
+      padding: toRem($padding-y) toRem($padding-x);
+    }
+  }
+}

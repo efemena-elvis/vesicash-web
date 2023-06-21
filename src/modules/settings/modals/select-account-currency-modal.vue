@@ -43,15 +43,13 @@
 </template>
 
 <script>
-import ModalCover from "@/shared/components/modal-cover";
-import DropSelectInput from "@/shared/components/drop-select-input";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "SelectAccountCurrencyModal",
 
   components: {
     ModalCover,
-    DropSelectInput,
   },
 
   data: () => ({

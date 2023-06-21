@@ -20,19 +20,23 @@
       <div class="modal-cover-body mgb-24">
         <ModalListItem
           title="Total Amount"
-          :value="`${$money.getSign(getWalletType.slug)}${$money.addComma(
-            getWithdrawalMeta.amount
-          )}`"
+          :value="`${$money.getSign(
+            getWalletType.slug
+          )}${$utils.formatCurrencyWithComma(getWithdrawalMeta.amount)}`"
         />
         <ModalListItem
           title="Withdrawal fee"
-          :value="`${$money.getSign(getWalletType.slug)}${$money.addComma(
+          :value="`${$money.getSign(
+            getWalletType.slug
+          )}${$utils.formatCurrencyWithComma(
             getWithdrawalMeta.withdrawal_charge
           )}`"
         />
         <ModalListItem
           title="Amount to receive"
-          :value="`${$money.getSign(getWalletType.slug)}${$money.addComma(
+          :value="`${$money.getSign(
+            getWalletType.slug
+          )}${$utils.formatCurrencyWithComma(
             Number(getWithdrawalMeta.amount) -
               getWithdrawalMeta.withdrawal_charge
           )}`"
@@ -110,8 +114,8 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
-import PageBackBtn from "@/shared/components/page-back-btn";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
+import PageBackBtn from "@/shared/components/util-comps/page-back-btn";
 
 export default {
   name: "WithdrawConfirmModal",
@@ -150,7 +154,7 @@ export default {
       this.sendUserOTP(payload)
         .then((response) => {
           this.handleClick("continue", "Continue", false);
-          if (response.code === 200) this.$emit("openOTPDialog");
+          if (response?.code === 200) this.$emit("openOTPDialog");
           else
             this.pushToast(
               response.message ||

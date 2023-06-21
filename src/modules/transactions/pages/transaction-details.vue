@@ -202,7 +202,7 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import PageBackBtn from "@/shared/components/page-back-btn";
+import PageBackBtn from "@/shared/components/util-comps/page-back-btn";
 import paymentHelper from "@/modules/transactions/mixins/payment-mixins";
 
 export default {
@@ -211,7 +211,7 @@ export default {
   mixins: [paymentHelper],
 
   metaInfo: {
-    title: "Disbursement Details",
+    title: "Transaction Details",
     titleTemplate: "%s - Vesicash",
   },
 
@@ -278,19 +278,28 @@ export default {
     },
 
     getTransaction() {
+      console.log("DETAILS", this.transaction_details);
+
       if (Object.keys(this.getTransactionDetails).length)
         return this.getTransactionDetails;
       else return this.transaction_details;
     },
 
     getSortedMilestones() {
-      return this.getTransaction?.milestones?.sort((a, b) =>
-        Number(a.index) < Number(b.index)
-          ? -1
-          : Number(a.index) > Number(b.index)
-          ? 1
-          : 0
-      );
+      console.log("DETAILS----", this.getTransaction);
+      return this.getTransaction?.milestones;
+
+      // return sortMilestones.call();
+
+      // function sortMilestones() {
+      //   return this.getTransaction?.milestones?.sort((a, b) =>
+      //     Number(a.index) < Number(b.index)
+      //       ? -1
+      //       : Number(a.index) > Number(b.index)
+      //       ? 1
+      //       : 0
+      //   );
+      // }
     },
 
     getTransactionModalProps() {
@@ -316,7 +325,7 @@ export default {
         currency_value: transaction_currency,
         total_amount: `${this.$money.getSign(
           transaction_currency
-        )}${this.$money.addComma(transaction_amount)}`,
+        )}${this.$utils.formatCurrencyWithComma(transaction_amount)}`,
       };
     },
 
@@ -360,7 +369,7 @@ export default {
           }
         }
       },
-      immediate: true,
+      // immediate: true,
     },
 
     show_accept_modal: {
@@ -465,8 +474,10 @@ export default {
 
       this.fetchTransactionById({ transaction_id: this.$route.params.id })
         .then((response) => {
-          if (response.code === 200) {
-            this.transaction_details = response?.data?.transaction;
+          console.log("single", response);
+
+          if (response?.code === 200) {
+            this.transaction_details = response?.data;
 
             this.togglePageLoader();
           }
@@ -716,7 +727,7 @@ export default {
         status,
       })
         .then((response) => {
-          if (response.code === 200) {
+          if (response?.code === 200) {
             console.log(response);
 
             this.pushToast(
@@ -744,7 +755,7 @@ export default {
               : status,
         })
           .then((response) => {
-            if (response.code === 200) {
+            if (response?.code === 200) {
               if (milestones.length === index + 1) {
                 // this.pushToast("Transaction has started", "success");
                 setTimeout(() => this.fetchSingleTransaction(), 2000);
@@ -773,7 +784,7 @@ export default {
   }
 
   .fund-details-section {
-    @include flex-row-start-wrap;
+    @include flex-row-wrap("flex-start", "center");
   }
 
   .section-wrapper {
@@ -801,4 +812,4 @@ export default {
     }
   }
 }
-</style>  
+</style>

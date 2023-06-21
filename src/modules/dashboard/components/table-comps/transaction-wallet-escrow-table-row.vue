@@ -20,7 +20,7 @@
 
     <td class="body-data" :class="`${table_name}-5`">
       <span v-html="$money.getSign(data.currency)"></span>
-      {{ $money.addComma(data.total_amount) }}
+      {{ $utils.formatCurrencyWithComma(data.total_amount) }}
     </td>
 
     <td class="body-data" :class="`${table_name}-6`">
@@ -84,12 +84,27 @@ export default {
 
     preparedSummary() {
       let summary_list = [];
-      delete this.data.shit;
+      delete this.data.payment_made_at;
+      delete this.data.deleted_at;
+      delete this.data.updated_at;
+      delete this.data.business_id;
+      delete this.data.payment_method;
+      delete this.data.payment_type;
+      delete this.data.paid_by;
 
       for (const prop in this.data) {
         let prop_obj = {};
         prop_obj.title = prop.split("_").join(" ");
         prop_obj.value = this.data[prop];
+
+        if (prop_obj.title === "user") {
+          prop_obj.value = this.data[prop].email_address;
+        }
+
+        if (prop_obj.title === "transaction") {
+          prop_obj.title = "Transaction Type";
+          prop_obj.value = this.data[prop].type;
+        }
 
         summary_list.push(prop_obj);
       }
@@ -115,5 +130,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

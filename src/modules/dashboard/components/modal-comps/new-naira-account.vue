@@ -50,23 +50,11 @@
 
 <script>
 import { mapActions } from "vuex";
-import FormHelper from "@/modules/auth/mixins/auth-helper";
 
 export default {
   name: "NewNairaAccount",
 
-  mixins: [FormHelper],
-
-  components: {
-    DropSelectInput: () =>
-      import(
-        /* webpackChunkName: 'shared-module' */ "@/shared/components/drop-select-input"
-      ),
-    BasicInput: () =>
-      import(
-        /* webpackChunkName: 'shared-module' */ "@/shared/components/form-comps/basic-input"
-      ),
-  },
+  components: {},
 
   computed: {
     getNairaBankDetails() {
@@ -132,7 +120,7 @@ export default {
     async fetchNigeriaBanks() {
       const response = await this.getAllBanks("Nigeria");
 
-      if (response.code === 200) {
+      if (response?.code === 200) {
         let bank_options = response.data;
 
         bank_options.sort((a, b) => {

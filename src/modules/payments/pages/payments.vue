@@ -1,7 +1,7 @@
 <template>
   <div class="transactions-page">
     <!-- PAGE TITILE -->
-    <div class="page-title grey-900 h4-text mgb-25">Payments</div>
+    <TitleTopBlock title="Payments" />
 
     <!-- DASHBOARD TRANSACTIONS -->
     <div class="wrapper pdb-30">
@@ -23,11 +23,13 @@
 
 <script>
 import { mapGetters } from "vuex";
+import TitleTopBlock from "@/shared/components/block-comps/title-top-block";
 
 export default {
-  name: "Transactions",
+  name: "PaymentPage",
 
   components: {
+    TitleTopBlock,
     DashboardTransactions: () =>
       import(
         /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/dashboard-transactions"
@@ -38,7 +40,7 @@ export default {
       ),
     tourCover: () =>
       import(
-        /* webpackChunkName: "shared-module" */ "@/shared/components/tour-cover"
+        /* webpackChunkName: "shared-module" */ "@/shared/components/util-comps/tour-cover"
       ),
   },
 

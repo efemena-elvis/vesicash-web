@@ -1,19 +1,15 @@
 <template>
-  <AuthWrapper
-    :title_text="`Register a ${
-      getAccount === 'individual' ? 'personal' : 'business'
-    } account`"
-  >
+  <AuthWrapper title_text="Register a business account">
     <!-- AUTH PAGE -->
     <form @submit.prevent="handleUserRegister" class="auth-page">
       <!-- BUSINESS NAME INPUT -->
-      <div class="form-group" v-if="getAccount === 'business'">
-        <BasicInput
+      <div class="form-group">
+        <FormFieldInput
           label_title="Business name"
           label_id="businessName"
-          :input_value="form.business_name"
           placeholder="What is your business called?"
-          @getInputState="updateFormState($event, 'business_name')"
+          :input_value="getFormFieldValueMx(form, 'business_name')"
+          @getInputState="updateFormFieldMx($event, 'business_name')"
           :error_handler="{
             type: 'required',
             message: 'Business name is a required field',
@@ -23,13 +19,13 @@
 
       <!-- FULLNAME INPUT -->
       <div class="form-group">
-        <BasicInput
+        <FormFieldInput
           label_title="Full name"
           label_id="fullName"
-          :input_value="form.fullname"
           is_required
           placeholder="Your full name"
-          @getInputState="updateFormState($event, 'fullname')"
+          :input_value="getFormFieldValueMx(form, 'fullname')"
+          @getInputState="updateFormFieldMx($event, 'fullname')"
           :error_handler="{
             type: 'minimum',
             minimum: 2,
@@ -48,48 +44,16 @@
         />
       </div>
 
-      <!-- FIRSTNAME INPUT -->
-      <!-- <div class="form-group">
-        <BasicInput
-          label_title="First name"
-          label_id="firstName"
-          :input_value="form.firstname"
-          is_required
-          placeholder="Your first name"
-          @getInputState="updateFormState($event, 'firstname')"
-          :error_handler="{
-            type: 'single',
-            message: 'First name should contain at least 2 characters',
-          }"
-        />
-      </div> -->
-
-      <!-- LASTNAME INPUT -->
-      <!-- <div class="form-group">
-        <BasicInput
-          label_title="Surname"
-          label_id="lastName"
-          :input_value="form.lastname"
-          is_required
-          placeholder="Your last name"
-          @getInputState="updateFormState($event, 'lastname')"
-          :error_handler="{
-            type: 'single',
-            message: 'Last name should contain at least 2 characters',
-          }"
-        />
-      </div> -->
-
       <!-- EMAIL ADDRESS INPUT -->
       <div class="form-group">
-        <BasicInput
+        <FormFieldInput
           label_title="Email address"
           label_id="emailAddress"
           input_type="email"
-          :input_value="form.email_address"
           is_required
           placeholder="Enter email address"
-          @getInputState="updateFormState($event, 'email_address')"
+          :input_value="getFormFieldValueMx(form, 'email_address')"
+          @getInputState="updateFormFieldMx($event, 'email_address')"
           :error_handler="{
             type: 'email',
             message: 'Email address is not valid',
@@ -99,16 +63,16 @@
 
       <!-- PHONE INPUT -->
       <div class="form-group">
-        <BasicInput
+        <FormFieldInput
           label_title="Phone number"
           label_id="phoneNumber"
           input_type="number"
-          :input_value="form.phone_number"
           is_phone_type
           is_required
           placeholder="Enter your phone number"
           :custom_style="{ input_wrapper_style: 'form-prefix' }"
-          @getInputState="updateFormState($event, 'phone_number')"
+          :input_value="getFormFieldValueMx(form, 'phone_number')"
+          @getInputState="updateFormFieldMx($event, 'phone_number')"
           :error_handler="{
             type: 'phone',
             message: 'Phone number is not valid',
@@ -118,15 +82,15 @@
 
       <!-- PASSWORD INPUT -->
       <div class="form-group">
-        <BasicInput
+        <FormFieldInput
           label_title="Password"
           label_id="password"
           input_type="password"
-          :input_value="form.password"
           is_required
           placeholder="Enter password"
           :custom_style="{ input_wrapper_style: 'form-suffix' }"
-          @getInputState="updateFormState($event, 'password')"
+          :input_value="getFormFieldValueMx(form, 'password')"
+          @getInputState="updateFormFieldMx($event, 'password')"
           :error_handler="{
             type: 'password',
             message: 'Password should contain at least 4 characters',
@@ -137,7 +101,11 @@
       <!-- TERMS AND CONDITION -->
       <div class="form-group">
         <div class="d-flex justify-content-start align-items-center">
-          <input type="checkbox" v-model="accept_terms" class="mgr-10" />
+          <input
+            type="checkbox"
+            v-model="form['accept_terms'].value"
+            class="mgr-10"
+          />
 
           <div class="tertiary-2-text grey-900">
             I agree to
@@ -150,8 +118,8 @@
       <div class="btn-area mgt-35 mgb-10">
         <button
           class="btn btn-primary btn-md w-100"
-          ref="registerBtn"
-          :disabled="isValidState"
+          ref="btnRef"
+          :disabled="isFormValidated"
         >
           Register
         </button>
@@ -168,12 +136,13 @@
 
 <script>
 import { mapActions } from "vuex";
+import authMixin from "@/modules/auth/mixins/auth-mixin";
 import AuthWrapper from "@/modules/auth/components/auth-wrapper";
-import BasicInput from "@/shared/components/form-comps/basic-input";
-import DropSelectInput from "@/shared/components/drop-select-input";
 
 export default {
-  name: "Register",
+  name: "RegisterPage",
+
+  mixins: [authMixin],
 
   metaInfo: {
     title: "Register",
@@ -182,67 +151,81 @@ export default {
 
   components: {
     AuthWrapper,
-    BasicInput,
-    DropSelectInput,
   },
 
   computed: {
-    // GET THE CURRENT SELECTED ACCOUNT TYPE
-    getAccount() {
-      // return this.account_type.includes(this.$route?.params?.account)
-      //   ? this.$route?.params?.account
-      //   : "individual";
-      return "business";
+    isFormValidated() {
+      return this.validateFormFieldMx(this.form);
     },
 
-    // CHECK FORM BUTTON VALIDITY STATE
-    isValidState() {
-      if (this.getAccount === "individual") {
-        delete this.validity.business_name;
-      }
+    getRequestPayload() {
+      let form_payload = this.getFormPayloadMx(this.form);
+      let [firstname, lastname] = form_payload.fullname.split(" ");
 
-      this.validity.business_type = this.form.business_type ? false : true;
+      let request_payload = {
+        ...form_payload,
+        business_type_id: +this.form.business_type.value?.id,
+        firstname,
+        lastname,
+      };
 
-      return Object.values(this.validity).every((valid) => !valid) &&
-        this.accept_terms
-        ? false
-        : true;
+      delete request_payload.fullname;
+      delete request_payload.business_type;
+
+      return request_payload;
+    },
+  },
+
+  watch: {
+    "form.accept_terms.value": {
+      handler(value) {
+        this.form.accept_terms.validated = value ? true : false;
+      },
     },
   },
 
   data() {
     return {
-      account_type: ["individual", "business"],
-
       form: {
-        business_name: "",
-        account_type: "business",
-        // firstname: "",
-        // lastname: "",
-        fullname: "",
-        business_type: "",
-        email_address: "",
-        phone_number: "",
-        country: "",
-        password: "",
-      },
-
-      validity: {
-        business_name: true,
-        account_type: false,
-        // firstname: true,
-        // lastname: true,
-        fullname: true,
-        business_type: true,
-        email_address: true,
-        phone_number: true,
-        country: false,
-        password: true,
+        business_name: {
+          validated: false,
+          value: "",
+        },
+        account_type: {
+          validated: true,
+          value: "business",
+        },
+        fullname: {
+          validated: false,
+          value: "",
+        },
+        business_type: {
+          validated: true,
+          value: "",
+        },
+        email_address: {
+          validated: false,
+          value: "",
+        },
+        phone_number: {
+          validated: false,
+          value: "",
+        },
+        country: {
+          validated: true,
+          value: "",
+        },
+        password: {
+          validated: false,
+          value: "",
+        },
+        accept_terms: {
+          validated: false,
+          value: false,
+        },
       },
 
       business_type_options: [],
-
-      accept_terms: false,
       user_details: {},
     };
   },
@@ -253,7 +236,7 @@ export default {
     // ==========================================
     this.$bus.$on(
       "update-country-state",
-      (country) => (this.form.country = country.toLowerCase())
+      (country) => (this.form.country.value = country.toLowerCase())
     );
   },
 
@@ -264,121 +247,58 @@ export default {
   methods: {
     ...mapActions({
       registerUser: "auth/registerUser",
-      sendUserOTP: "auth/sendUserOTP",
       getBusinessTypes: "auth/getBusinessTypes",
     }),
 
     // ===========================================
     // HANDLE FETCHING OF AVAILABLE BUSINESS TYPES
     // ===========================================
-    fetchBusinessTypes() {
-      this.getBusinessTypes()
-        .then((response) => {
-          if (response.code === 200) {
-            this.business_type_options = response.data;
-          } else this.business_type_options = [];
-        })
-        .catch((err) => console.log(err));
+    async fetchBusinessTypes() {
+      const response = await this.handleDataRequest({
+        action: "getBusinessTypes",
+      });
+
+      this.business_type_options = response?.code === 200 ? response.data : [];
     },
 
     // ===========================================
     // HANDLE BUSINESS TYPE USER SELECTION
     // ===========================================
     selectBusinessType(selected_id) {
-      this.form.business_type = this.business_type_options.find(
+      this.form.business_type.value = this.business_type_options.find(
         (business) => business.id === selected_id
       );
+      this.form.business_type.validated = true;
     },
 
     // ===========================================
     // HANDLE USER CLIENT REGISTRATION
     // ===========================================
-    handleUserRegister() {
-      this.handleClick("registerBtn");
+    async handleUserRegister() {
+      const response = await this.handleDataRequest({
+        action: "registerUser",
+        payload: this.getRequestPayload,
+        btn_text: "Register",
+        alert_handler: {
+          success: "Your vesicash account has been created",
+          error: "Unable to create your account at this time",
+        },
+      });
 
-      // REMOVE BUSINESS NAME FROM INDIVIDUAL SIGNUP
-      if (this.getAccount === "individual") {
-        delete this.form.business_name;
+      if (response.code === 201) {
+        this.user_details = response.data;
+        this.handleOTPInitiation(); // SEND USER OTP
       }
 
-      let [firstname, lastname] = this.form.fullname.split(" ");
+      if (response?.code === 400) {
+        const error_type = response.message.split(":")[0];
 
-      let response_payload = {
-        ...this.form,
-        business_type_id: +this.form.business_type?.id,
-        firstname,
-        lastname,
-      };
-
-      delete response_payload.fullname;
-      delete response_payload.business_type;
-
-      // console.log(response_payload);
-
-      this.registerUser(response_payload)
-        .then((response) => {
-          if (response.code === 200) {
-            // CHECK FOR EXISTING PHONE NUMBER
-            if (response?.data?.existing === "phone") {
-              this.handleSignupError("Phone number entered, already exist!");
-            }
-
-            // CHECK FOR EXISTING EMAIL ADDRESS
-            else if (response?.data?.existing === "email") {
-              this.handleSignupError("Email address entered, already exist!");
-            }
-
-            // SEND OUT USER OTP CODE AND REDIRECT TO OTP PAGE
-            else {
-              this.user_details = response?.data?.user ?? {};
-              this.handleOTPInitiation(); // SEND USER OTP
-            }
-          }
-
-          // HANDLE NON 200 RESPONSE
-          else this.handleSignupError();
-        })
-        .catch(() => this.handleSignupError());
-    },
-
-    // =======================================
-    // HANDLE SIGNUP ERROR RESPONSE FLOW
-    // =======================================
-    handleSignupError(message = "Unable to create your account at this time") {
-      this.pushToast(message, "error");
-
-      // REVERT BUTTON STATE TO DEFAULT STATE
-      setTimeout(
-        () => this.handleClick("registerBtn", "Register", false),
-        1000
-      );
-    },
-
-    // =======================================
-    // HANDLE THE INITIATION OF USER OTP
-    // =======================================
-    handleOTPInitiation() {
-      let request_payload = { account_id: this.user_details?.account_id };
-
-      this.sendUserOTP(request_payload)
-        .then(() => this.handleOTPRedirect())
-        .catch(() => this.handleOTPRedirect());
-    },
-
-    // =====================================
-    // HANDLE USER OTP REDIRECT
-    // =====================================
-    handleOTPRedirect() {
-      this.handleClick("registerBtn", "Register", false);
-      this.pushToast("Your vesicash account has been created", "success");
-
-      setTimeout(() => {
-        this.$router.push({
-          name: "VesicashVerifyOTP",
-          params: { account_id: this.user_details?.account_id },
-          query: { user_email: this.user_details?.email_address },
-        });
-      }, 3000);
+        if (error_type === "EmailAddress") {
+          this.handleToastPushMx("Email address already exist!", "error");
+        } else if (error_type === "PhoneNumber") {
+          this.handleToastPushMx("Phone number already exist!", "error");
+        }
+      }
     },
   },
 };

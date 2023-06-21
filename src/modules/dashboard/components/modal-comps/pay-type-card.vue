@@ -91,7 +91,7 @@ export default {
 
 <style lang="scss" scoped>
 .pay-type-card {
-  @include flex-row-between-nowrap;
+  @include flex-row-nowrap("space-between", "center");
   padding: toRem(14) toRem(16);
   margin-bottom: toRem(24);
   position: relative;
@@ -105,8 +105,7 @@ export default {
   }
 
   .left-section {
-    @include flex-row-start-nowrap;
-    align-items: flex-start;
+    @include flex-row-nowrap("flex-start", "flex-start");
 
     .icon-card {
       @include draw-shape(48);

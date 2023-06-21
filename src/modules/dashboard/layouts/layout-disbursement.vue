@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import PageBackBtn from "@/shared/components/page-back-btn";
+import PageBackBtn from "@/shared/components/util-comps/page-back-btn";
 import ProgressFlowCard from "@/shared/components/card-comps/progress-flow-card";
 
 export default {
@@ -26,5 +26,4 @@ export default {
 };
 </script>
 
-<style lang="scss">
-</style>
+<style lang="scss"></style>

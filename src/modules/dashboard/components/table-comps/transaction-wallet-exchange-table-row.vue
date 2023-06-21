@@ -21,7 +21,7 @@
         "
       ></span>
       {{
-        $money.addComma(
+        $utils.formatCurrencyWithComma(
           $route.query.transaction === "inflow"
             ? data.final_amount
             : data.initial_amount
@@ -91,11 +91,23 @@ export default {
     preparedSummary() {
       let summary_list = [];
       delete this.data.shit;
+      delete this.data.updated_at;
+      delete this.data.deleted_at;
+      delete this.data.rate_id;
+      delete this.data.uid;
 
       for (const prop in this.data) {
         let prop_obj = {};
         prop_obj.title = prop.split("_").join(" ");
         prop_obj.value = this.data[prop];
+
+        if (prop_obj.title === "user") {
+          prop_obj.value = this.data[prop].email_address;
+        }
+
+        if (prop_obj.title === "rate") {
+          prop_obj.value = `${this.data[prop].from_currency} ${this.data[prop].initial_amount}/${this.data[prop].to_currency} ${this.data[prop].amount}`;
+        }
 
         summary_list.push(prop_obj);
       }
@@ -121,5 +133,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

@@ -68,7 +68,7 @@
 
         <!-- DESCRIPTION TEXT -->
         <div class="description-text tertiary-2-text grey-600 text-center">
-          You can upload a doc or a PDF file
+          {{ descriptionText }}
         </div>
       </label>
 
@@ -86,7 +86,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import FileIcon from "@/shared/components/icon-comps/file-icon";
 
 export default {
@@ -100,6 +100,11 @@ export default {
     titleText: {
       type: String,
       default: "Click to upload agreement file",
+    },
+
+    descriptionText: {
+      type: String,
+      default: "You can upload a doc or a PDF file",
     },
   },
 
@@ -117,13 +122,8 @@ export default {
 
   methods: {
     ...mapActions({
-      uploadFile: "general/uploadFile",
       uploadToSpace: "general/uploadToSpace",
       clearAttachedFile: "general/clearAttachedFile",
-    }),
-
-    ...mapMutations({
-      UPDATE_FILE_PROGRESS: "general/UPDATE_FILE_PROGRESS",
     }),
 
     handleFileUpload($event) {
@@ -147,7 +147,7 @@ export default {
         type: "escrow",
       })
         .then((response) => {
-          if (response.code === 200)
+          if (response?.code === 201)
             this.$emit("contractUploaded", response.data);
         })
         .catch((err) => console.log(err));
@@ -180,7 +180,7 @@ export default {
 
   .no-content-state {
     padding: toRem(17) toRem(16);
-    @include flex-column-center;
+    @include flex-column("center", "center");
 
     &:hover {
       background: getColor("grey-10");
@@ -226,11 +226,11 @@ export default {
   }
 
   .content-state {
-    @include flex-row-between-nowrap;
+    @include flex-row-nowrap("space-between", "center");
     padding: toRem(17) toRem(16);
 
     .left-section {
-      @include flex-row-start-nowrap;
+      @include flex-row-nowrap("flex-start", "center");
 
       .icon-card {
         position: relative;

@@ -80,7 +80,7 @@ export default {
 
   .icon-wrapper {
     @include draw-shape(48);
-    @include flex-column-center;
+    @include flex-column("center", "center");
     background: getColor("teal-50");
     border-radius: 50%;
   }
@@ -90,7 +90,7 @@ export default {
   }
 
   .verified-doc-row {
-    @include flex-row-start-wrap;
+    @include flex-row-wrap("flex-start", "center");
     gap: toRem(6);
 
     .doc-item {

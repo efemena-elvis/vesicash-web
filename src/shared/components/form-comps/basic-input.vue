@@ -111,13 +111,6 @@ export default {
 
   mixins: [CountryHelper],
 
-  components: {
-    CountryDropSelect: () =>
-      import(
-        /* webpackChunkName: 'shared-module' */ "@/shared/components/country-drop-select"
-      ),
-  },
-
   props: {
     label_title: {
       type: String,
@@ -248,6 +241,7 @@ export default {
         this.form_value = value;
       },
       immediate: true,
+      deep: true,
     },
 
     current_country: {
@@ -259,7 +253,7 @@ export default {
 
     currency_country: {
       handler(value) {
-        this.$emit("currencyUpdated", value);
+        this.$emit("update-currency-state", value);
       },
       immediate: true,
     },
@@ -286,6 +280,7 @@ export default {
       passwordType: true,
       error_message: "",
       form_value: "",
+
       currency_country: {
         country: "Nigeria",
         dialing_code: "234",
@@ -297,7 +292,7 @@ export default {
 
   created() {
     // LOAD MY CURRENT COUNTRY
-    this.is_phone_type && this.loadCurrentUserLocation();
+    // this.is_phone_type && this.loadCurrentUserLocation();
   },
 
   methods: {
@@ -306,11 +301,10 @@ export default {
       this.passwordType = !this.passwordType;
     },
 
-    validateInputType(
-      value = this.form_value,
-      type = this.error_handler?.type,
-      message = this.error_handler?.message
-    ) {
+    validateInputType() {
+      const value = this.form_value;
+      const { type, message, minimum } = this.error_handler;
+
       switch (type) {
         case "single":
           this.error_message =
@@ -337,7 +331,6 @@ export default {
           break;
 
         case "minimum":
-          const minimum = this.error_handler?.minimum;
           this.error_message = value.length < minimum && message;
           break;
 
@@ -351,12 +344,11 @@ export default {
     // VALIDATE USER ENTRY INPUT DATA
     // =================================
     validateAndEmitUserInput() {
-      // CHECK INPUT VALIDITY
       this.validateInputType();
 
       // EMIT CLIENT ENTERED VALUE
       this.$emit("getInputState", {
-        validity: this.error_message ? true : false,
+        validity: this.error_message.length ? false : true,
         value: this.form_value,
       });
     },
@@ -364,5 +356,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

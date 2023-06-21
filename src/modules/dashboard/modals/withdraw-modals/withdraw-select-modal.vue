@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import ModalCover from "@/shared/components/modal-cover";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "WithdrawSelectModal",
@@ -88,7 +88,7 @@ export default {
 };
 </script>
 
-<style  lang="scss" scoped>
+<style lang="scss" scoped>
 .mgb-hack {
   border: toRem(1) solid transparent;
 }

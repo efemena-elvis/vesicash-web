@@ -15,36 +15,32 @@
         :key="index"
         :nav="nav"
       />
+
+      <div
+        class="fixed-sidebar"
+        v-if="!isMOREnabled && getAccountType === 'business'"
+      >
+        <SidebarItem is_active :nav="merchant_of_record" />
+      </div>
     </div>
 
     <!-- LOG OUT ACCOUNT SECTION -->
     <div class="wrapper position-absolute wt-100">
       <ProfileMenu @exit="handleUserlogOut" />
-
-      <div
-        v-if="false"
-        class="log-out-section smooth-transition rounded-8 pointer w-100"
-        @click="handleUserlogOut"
-      >
-        <!-- ICON COMPONENT -->
-        <ExitIcon />
-
-        <div class="nav-text secondary-2-text red-500">Logout</div>
-      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { mapActions } from "vuex";
-import navRoutes from "@/shared/nav-routes";
+import { escrowRoutes, merchantRoutes } from "@/shared/nav-routes";
 import VesicashBrandLogo from "@/shared/components/icon-comps/vesicash-brand-logo";
 import ExitIcon from "@/shared/components/icon-comps/exit-icon";
 import SidebarItem from "@/shared/components/nav-comps/sidebar-item";
 import ProfileMenu from "@/shared/components/nav-comps/profile-menu";
 
 export default {
-  name: "Sidebar",
+  name: "SidebarComp",
 
   components: {
     VesicashBrandLogo,
@@ -53,10 +49,30 @@ export default {
     ProfileMenu,
   },
 
+  computed: {
+    isMOREnabled() {
+      const isMerchantRecordEnabled = this.isMoRSetupEnabled;
+      return isMerchantRecordEnabled ? true : false;
+    },
+  },
+
   data() {
     return {
-      sidebar_routes: navRoutes,
+      sidebar_routes: "",
+      merchant_of_record: {
+        id: 5,
+        title: "Merchant of Records",
+        icon: "MORIcon",
+        link: "/merchant/introduction",
+        slug: "mor",
+        tour_id: [],
+        tag: true,
+      },
     };
+  },
+
+  mounted() {
+    this.sidebar_routes = this.isMOREnabled ? merchantRoutes : escrowRoutes;
   },
 
   methods: {
@@ -95,13 +111,17 @@ export default {
     }
   }
 
+  .fixed-sidebar {
+    margin-top: toRem(50);
+  }
+
   .wrapper {
     padding: 0 toRem(16);
     bottom: toRem(24);
     left: 0;
 
     .log-out-section {
-      @include flex-row-start-nowrap;
+      @include flex-row-nowrap("flex-start", "center");
       position: relative;
       padding: toRem(8);
 

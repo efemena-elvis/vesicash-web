@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import ModalCover from "@/shared/components/modal-cover";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "MakePaymentModal",

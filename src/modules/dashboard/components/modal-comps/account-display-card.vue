@@ -71,10 +71,9 @@ export default {
 
 <style lang="scss" scoped>
 .account-display-card {
-  @include flex-row-between-nowrap;
+  @include flex-row-wrap("space-between", "flex-start");
   padding: toRem(14) toRem(16);
   @include transition(0.4s);
-  align-items: flex-start;
   margin-bottom: toRem(12);
   position: relative;
 
@@ -93,7 +92,7 @@ export default {
     }
 
     .bottom {
-      @include flex-row-start-nowrap;
+      @include flex-row-nowrap("flex-start", "center");
 
       .dot {
         background-color: getColor("grey-300");

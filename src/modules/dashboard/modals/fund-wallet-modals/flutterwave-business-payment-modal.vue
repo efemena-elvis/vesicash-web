@@ -81,8 +81,8 @@
 
 <script>
 import { mapActions } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
-import PageBackBtn from "@/shared/components/page-back-btn";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
+import PageBackBtn from "@/shared/components/util-comps/page-back-btn";
 // import { VESICASH_APP_URL } from "@/utilities/constant";
 
 export default {
@@ -117,7 +117,7 @@ export default {
   computed: {
     getAmount() {
       const sign = this.$money.getSign(this.wallet_type);
-      const amount = this.$money.addComma(this.amount);
+      const amount = this.$utils.formatCurrencyWithComma(this.amount);
       return `${sign}${amount}`;
     },
 
@@ -177,7 +177,7 @@ export default {
           request_payload
         );
         this.naira_wallet_loading = false;
-        if (response.code === 500) this.handleFetchingNairaDetails();
+        if (response?.code === 500) this.handleFetchingNairaDetails();
       } catch (e) {
         console.log("ERROR OCCURED", e);
         this.naira_wallet_loading = false;

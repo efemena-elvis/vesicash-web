@@ -296,7 +296,7 @@ export default {
           milestone_recipients.push({
             ...i,
             milestone_id,
-            update_id: this.$string.getRandomString(12),
+            update_id: this.$utils.getRandomString(12),
           });
         });
 
@@ -330,10 +330,10 @@ export default {
     loadMileStoneData() {
       let milestone_data = {};
 
-      let id_one = this.$string.getRandomString(12);
-      let id_two = this.$string.getRandomString(12);
+      let id_one = this.$utils.getRandomString(12);
+      let id_two = this.$utils.getRandomString(12);
 
-      // milestone_data.id = this.$string.getRandomString(12);
+      // milestone_data.id = this.$utils.getRandomString(12);
       milestone_data.name = "";
       milestone_data.due_date = "";
       milestone_data.inspection_period = {};
@@ -395,7 +395,7 @@ export default {
             bulk_recipient.push({
               ...user,
               milestone_id: milestone.id,
-              update_id: this.$string.getRandomString(12),
+              update_id: this.$utils.getRandomString(12),
             });
           });
         });
@@ -426,7 +426,7 @@ export default {
 
       let new_milestone_data = {
         ...previous_milestone,
-        id: this.$string.getRandomString(12),
+        id: this.$utils.getRandomString(12),
       };
 
       this.UPDATE_TRANSACTION_MILESTONE([
@@ -452,7 +452,7 @@ export default {
   }
 
   .instruction-wrapper {
-    @include flex-row-between-wrap;
+    @include flex-row-wrap("space-between", "center");
 
     .btn {
       padding: toRem(8) toRem(24) toRem(8) toRem(18);

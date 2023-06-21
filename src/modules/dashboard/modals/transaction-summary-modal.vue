@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import ModalCover from "@/shared/components/modal-cover";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 import ModalItem from "@/modules/dashboard/components/modal-comps/modal-item";
 
 export default {
@@ -93,15 +93,6 @@ export default {
     },
   },
 
-  // watch: {
-  //   summary_data: {
-  //     handler(value) {
-  //       console.log(value);
-  //       this.processSummaryData(value);
-  //     },
-  //   },
-  // },
-
   data() {
     return {
       summary_list: [],
@@ -111,8 +102,6 @@ export default {
 
   methods: {
     processSummaryData(summary) {
-      console.log("SUMMARY", summary);
-
       for (const prop in summary) {
         let prop_obj = {};
         prop_obj.title = prop.split("_").join(" ");
@@ -120,8 +109,6 @@ export default {
 
         this.summary_list.push(prop_obj);
       }
-
-      console.log("SUMMARY", this.summary_list);
     },
   },
 };
@@ -129,12 +116,11 @@ export default {
 
 <style lang="scss" scoped>
 .modal-cover-body {
-  @include flex-row-between-wrap;
-  align-items: flex-start;
+  @include flex-row-wrap("space-between", "flex-start");
 }
 
 .modal-cover-footer {
-  @include flex-row-start-wrap;
+  @include flex-row-wrap("flex-start", "center");
 
   .btn {
     @include breakpoint-down(sm) {

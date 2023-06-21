@@ -50,8 +50,7 @@
 
 <script>
 import { mapActions } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
-import DropSelectInput from "@/shared/components/drop-select-input";
+import ModalCover from "@/shared/components/util-comps/modal-cover";;
 import DirectorRow from "@/modules/settings/components/director-row";
 
 export default {
@@ -59,7 +58,6 @@ export default {
 
   components: {
     ModalCover,
-    DropSelectInput,
     DirectorRow,
   },
 

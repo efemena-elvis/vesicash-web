@@ -5,17 +5,22 @@
       <SuccessIcon backgroundColor="#043B56" />
 
       <!-- TITLE TEXT -->
-      <div class="title-text primary-1-text grey-900 mgb-8 text-center">Congratulations</div>
+      <div class="title-text primary-1-text grey-900 mgb-8 text-center">
+        Congratulations
+      </div>
 
       <!-- DESCRIPTION TEXT -->
       <div class="description-text tertiary-2-text grey-600 text-center">
-        Your withdrawal of {{$route.query ? $route.query.amount :'N0.00'}} has been sent to your bank account, Please
-        check your bank account for details
+        Your withdrawal of
+        {{ $route.query ? $route.query.amount : "N0.00" }} has been sent to your
+        bank account, Please check your bank account for details
       </div>
 
       <!-- BUTTON AREA -->
       <div class="btn-area mgt-30 mgb-10 wt-100">
-        <router-link to="/dashboard" class="btn btn-primary btn-md wt-100">Go to Dashboard</router-link>
+        <router-link to="/dashboard" class="btn btn-primary btn-md wt-100"
+          >Go to Dashboard</router-link
+        >
       </div>
     </div>
   </AuthWrapper>
@@ -42,7 +47,7 @@ export default {
 
 <style lang="scss" scoped>
 .auth-page-success {
-  @include flex-column-center;
+  @include flex-column("center", "center");
 
   svg {
     @include draw-shape(120);

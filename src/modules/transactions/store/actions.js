@@ -1,11 +1,13 @@
-import $api from "@/services/service-api";
+import $api from "@/shared/services/service-api";
+import { getRequest, postRequest } from "@/utilities/micro-services";
 
 const routes = {
-  all_transactions: "/transactions/listByUser",
-  fetch_single_transaction: "/transactions/listById/",
-  create_transaction: "/transactions/create",
-  send_transaction: "/transactions/send",
-  start_card_payment: "/payment/pay",
+  all_transactions: "listByUser",
+  fetch_single_transaction: "listById",
+  create_transaction: "create",
+  send_transaction: "send",
+  head_payment: "pay",
+  headless_payment: "pay/headless",
   confirm_payment_status: "/payment/pay/new-status",
   update_party_status: "/transactions/parties/update-status",
   update_milestone_status: "/transactions/updateStatus",
@@ -18,11 +20,10 @@ export default {
   // FETCH ALL USER TRANSACTIONS
   // ==================================
   async fetchTransactionsByUser(_, { payload, page, limit = 20 }) {
-    return await $api.push(
+    return await postRequest(
+      "transactions",
       `${routes.all_transactions}?limit=${limit}&page=${page}`,
-      {
-        payload,
-      }
+      payload
     );
   },
 
@@ -30,9 +31,9 @@ export default {
   // FETCH TRANSACTION BY ID
   // ==================================
   async fetchTransactionById(_, { transaction_id }) {
-    return await $api.push(
-      `${routes.fetch_single_transaction}${transaction_id}`,
-      {}
+    return await getRequest(
+      "transactions",
+      `${routes.fetch_single_transaction}/${transaction_id}`
     );
   },
 
@@ -40,21 +41,36 @@ export default {
   // CREATE A USER TRANSACTION
   // ==================================
   async createUserTransaction(_, payload) {
-    return await $api.push(routes.create_transaction, { payload });
+    return await postRequest(
+      "transactions",
+      `${routes.create_transaction}`,
+      payload
+    );
   },
 
   // ==================================
   // SEND CREATED TRANSACTION TO USER
   // ==================================
   async sendUserTransaction(_, payload) {
-    return await $api.push(routes.send_transaction, { payload });
+    return await postRequest(
+      "transactions",
+      `${routes.send_transaction}`,
+      payload
+    );
   },
 
   // ==================================
   // START CARD PAYMENT
   // ==================================
   async startCardPayment(_, payload) {
-    return await $api.push(routes.start_card_payment, { payload });
+    return await postRequest("payment", `${routes.head_payment}`, payload);
+  },
+
+  // ==================================
+  // INITIATE AN HEADLESS CARD PAYMENT
+  // ==================================
+  async initiateHeadlessPayment(_, payload) {
+    return await postRequest("payment", `${routes.headless_payment}`, payload);
   },
 
   // ==================================

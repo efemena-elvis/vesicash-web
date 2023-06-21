@@ -83,10 +83,8 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
 import OTPMixin from "@/modules/dashboard/mixins/otp-mixin";
-import BasicInput from "@/shared/components/form-comps/basic-input";
-import ModalCover from "@/shared/components/modal-cover";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "verifyOTPModal",
@@ -95,7 +93,6 @@ export default {
 
   components: {
     ModalCover,
-    BasicInput,
   },
 
   data: () => ({
@@ -130,7 +127,7 @@ export default {
 
 .modal-cover-body {
   min-height: toRem(35);
-  @include flex-row-center-wrap;
+  @include flex-row-wrap("center", "center");
 
   p {
     @include generate-font-type("tertiary-2");
@@ -140,7 +137,7 @@ export default {
   }
 
   .form-group {
-    @include flex-row-center-nowrap;
+    @include flex-row-nowrap("center", "center");
 
     .form-control {
       padding: toRem(8) toRem(10);

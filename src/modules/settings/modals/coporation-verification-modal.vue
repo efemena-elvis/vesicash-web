@@ -59,19 +59,13 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
-import DocUploadCard from "@/shared/components/form-comps/doc-upload-card";
-import DropSelectInput from "@/shared/components/drop-select-input";
-import BasicInput from "@/shared/components/form-comps/basic-input";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "CoporationVerificationModal",
 
   components: {
     ModalCover,
-    DropSelectInput,
-    BasicInput,
-    DocUploadCard,
   },
 
   mounted() {
@@ -170,7 +164,7 @@ export default {
 
         this.handleClick("save", "Submit", false);
 
-        if (response.code === 200) {
+        if (response?.code === 200) {
           this.pushToast(response.message, "success");
           this.$emit("saved", "Your document has been uploaded successfully");
         } else {

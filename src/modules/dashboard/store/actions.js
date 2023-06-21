@@ -1,15 +1,16 @@
-import $api from "@/services/service-api";
+import $api from "@/shared/services/service-api";
+import { getRequest, postRequest } from "@/utilities/micro-services";
 
 const routes = {
-  wallet_balance: "/admin/account/wallet",
+  wallet_balance: "account/wallet",
   dollar_funding: "/payment/pay/headless",
-  transfer_account_list: "/payment/payment_account/list",
-  verify_payment: "/payment/payment_account/verify",
+  transfer_account_list: "payment_account/list",
+  verify_payment: "payment_account/verify",
   wallet_transactions: "/payment/list/wallet_funding",
   wallet_withdrawals: "/payment/list/wallet_withdrawals",
-  bank_details: "/admin/user/fetch/bank",
+  bank_details: "admin/user/fetch/bank",
   withdraw_fund: "/payment/disbursement/wallet/withdraw",
-  transaction_payments: "/admin/transactions/list",
+  transaction_payments: "admin/transactions/list",
 };
 
 export default {
@@ -17,9 +18,9 @@ export default {
   // GET APPLICATION WALLET BALANCE
   // ==================================
   async getWalletBalance({ commit }, payload) {
-    const response = await $api.push(routes.wallet_balance, { payload });
+    const response = await getRequest("auth", routes.wallet_balance, payload);
 
-    if (response.code === 200)
+    response?.code === 200 &&
       commit("SET_WALLET_BALANCES", response.data.wallets);
 
     return response;
@@ -36,14 +37,14 @@ export default {
   // FETCH NAIRA WALLET BANK DETAILS
   // ====================================
   async fetchTransferAccountBankDetails(_, payload) {
-    return await $api.push(routes.transfer_account_list, { payload });
+    return await postRequest("payment", routes.transfer_account_list, payload);
   },
 
   // ====================================
   // VERIFY USER ACCOUNT PAYMENT
   // ====================================
   async verifyPaymentAccount(_, payload) {
-    return await $api.push(routes.verify_payment, { payload });
+    return await postRequest("payment", routes.verify_payment, payload);
   },
 
   // =====================================
@@ -87,6 +88,6 @@ export default {
   // GET ALL POSSIBLE TRANSACTIN PAYMENTS TYPE AND SOURCES
   // ========================================================
   async getTransactionPayments(_, payload) {
-    return await $api.push(routes.transaction_payments, { payload });
+    return await postRequest("admin", routes.transaction_payments, payload);
   },
 };

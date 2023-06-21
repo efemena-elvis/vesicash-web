@@ -163,17 +163,13 @@
 
 <script>
 import { mapActions } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
-import BasicInput from "@/shared/components/form-comps/basic-input";
-import DropSelectInput from "@/shared/components/drop-select-input";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "AddDollarAccountModal",
 
   components: {
     ModalCover,
-    BasicInput,
-    DropSelectInput,
   },
 
   computed: {
@@ -250,7 +246,7 @@ export default {
       try {
         const response = await this.addNewBank(this.getNewDollarAccountDetails);
 
-        if (response.code === 200) {
+        if (response?.code === 200) {
           this.handleClick("save", "Updating bank list...");
           await this.fetchAllBanks(this.getAccountId);
           this.handleClick("save", "Add account", false);
@@ -277,13 +273,11 @@ export default {
 
 <style lang="scss" scoped>
 .inline-group {
-  @include flex-row-start-nowrap;
-  align-items: flex-start;
+  @include flex-row-wrap("flex-start", "flex-start");
   gap: toRem(16);
 
   @include breakpoint-custom-down(776) {
-    @include flex-row-start-wrap;
+    @include flex-row-wrap("flex-start", "center");
   }
 }
 </style>
-

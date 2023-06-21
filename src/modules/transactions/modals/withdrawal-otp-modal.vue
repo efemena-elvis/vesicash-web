@@ -17,7 +17,9 @@
           to withdraw
           <b>
             {{
-              `${$money.getSign(getWalletType.slug)}${$money.addComma(
+              `${$money.getSign(
+                getWalletType.slug
+              )}${$utils.formatCurrencyWithComma(
                 Number(getWithdrawalMeta.amount) -
                   getWithdrawalMeta.withdrawal_charge
               )}`
@@ -117,7 +119,7 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "WithdrawalOTPModal",
@@ -150,7 +152,7 @@ export default {
     }),
 
     getUserPhone() {
-      return this.$string.getAsterickedText(this.getUser?.phone, [3, 4, 5]);
+      return this.$utils.getAsterickedText(this.getUser?.phone, [3, 4, 5]);
     },
 
     getUserEmail() {
@@ -160,7 +162,7 @@ export default {
       const domain = this.getUser?.email
         ? this.getUser?.email?.split("@")[1]
         : "";
-      const astericed_protion = this.$string.getAsterickedText(
+      const astericed_protion = this.$utils.getAsterickedText(
         email_name,
         [3, 4, 5]
       );
@@ -339,7 +341,7 @@ export default {
 
       this.verifyUserOTP(payload)
         .then(async (response) => {
-          if (response.code === 200) {
+          if (response?.code === 200) {
             await this.makeWithdrawal();
           }
 
@@ -365,7 +367,7 @@ export default {
 
       this.sendUserOTP(payload)
         .then((response) => {
-          if (response.code === 200) this.pushToast(`OTP sent`, "success");
+          if (response?.code === 200) this.pushToast(`OTP sent`, "success");
         })
         .catch(() => this.pushToast("Unable to generate an OTP code", "error"));
     },
@@ -396,7 +398,7 @@ export default {
       try {
         const amount = `${this.$money.getSign(
           this.getWalletType.slug
-        )}${this.$money.addComma(
+        )}${this.$utils.formatCurrencyWithComma(
           this.getWithdrawalMeta.amount -
             this.getWithdrawalMeta.withdrawal_charge
         )}`;
@@ -411,7 +413,7 @@ export default {
         this.$bus.$emit("hide-page-loader");
         this.handleClick("continue", "Continue", false);
 
-        response.code == 200
+        response?.code == 200
           ? this.$emit("done", amount)
           : this.pushToast(
               response.message || "Withdrawal failed. Please try again",
@@ -431,7 +433,7 @@ export default {
 <style lang="scss" scoped>
 .auth-page {
   .form-group {
-    @include flex-row-center-nowrap;
+    @include flex-row-nowrap("center", "center");
 
     .form-control {
       padding: toRem(8) toRem(10);

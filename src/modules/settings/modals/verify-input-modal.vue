@@ -72,16 +72,15 @@
 </template>
 
 <script>
-import ModalCover from "@/shared/components/modal-cover";
-import BasicInput from "@/shared/components/form-comps/basic-input";
 import { mapActions } from "vuex";
+import countries from "@/utilities/countries";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "VerifyInputModal",
 
   components: {
     ModalCover,
-    BasicInput,
   },
 
   props: {
@@ -121,6 +120,8 @@ export default {
 
   data() {
     return {
+      country_code: "",
+
       form: {
         email_address: "",
         phone_number: "",
@@ -133,25 +134,41 @@ export default {
     };
   },
 
+  created() {
+    // ==========================================
+    // UPDATE USER SELECTED COUNTRY STATE
+    // ==========================================
+    this.$bus.$on("update-country-state", (country) =>
+      this.extractCountryCode(country)
+    );
+  },
+
   methods: {
     ...mapActions({
       sendUserOTP: "settings/requestOTP",
       sendEmailOTP: "settings/requestEmailOTP",
-      // sendEmailOTP: "auth/sendUserOTP",
     }),
+
+    extractCountryCode(country_name) {
+      this.country_code = countries.find(
+        (country) => country.country === country_name
+      ).dialing_code;
+    },
 
     requestOTP() {
       this.handleClick("continue");
+      // const user_phone = this.$validate.validatePhoneNumber(
+      //   this.form.phone_number,
+      //   this.country_code
+      // );
 
       let request_payload = {
-        account_id: this.getAccountId,
-        phone_number: this.form.phone_number,
+        phone_number: `+${this.form.phone_number}`,
       };
 
       let request_email_otp_payload = {
         account_id: this.getAccountId,
         email_address: this.form.email_address,
-        email: this.form.email_address,
       };
 
       const payload = this.email ? request_email_otp_payload : request_payload;
@@ -164,7 +181,7 @@ export default {
         .then((response) => {
           this.handleClick("continue", "Continue", false);
 
-          if (response.code === 200) {
+          if (response?.code === 200) {
             this.pushToast(
               `An OTP code has been sent to ${input_type}`,
               "success"
@@ -185,7 +202,6 @@ export default {
   },
 };
 </script>
-
 
 <style lang="scss">
 .verify-input-modal {

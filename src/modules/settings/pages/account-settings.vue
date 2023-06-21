@@ -5,7 +5,7 @@
 
     <!-- PAGE META -->
     <div class="page-meta tertiary-2-text grey-600">
-      Update or add new naira or dollar account
+      Update or add new transfer bank accounts
     </div>
 
     <TabSwitcher :tabs="tab_options" @tabSelected="account_type = $event" />
@@ -115,8 +115,7 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import DropSelectInput from "@/shared/components/drop-select-input";
-import TabSwitcher from "@/shared/components/tab-switcher";
+import TabSwitcher from "@/shared/components/util-comps/tab-switcher";
 import AddNairaAccountModal from "@/modules/settings/modals/add-naira-account-modal";
 import AddWalletAccountModal from "@/modules/settings/modals/add-wallet-account-modal";
 import AddDollarAccountModal from "@/modules/settings/modals/add-dollar-account-modal";
@@ -131,7 +130,6 @@ export default {
 
   components: {
     TabSwitcher,
-    DropSelectInput,
     AddWalletAccountModal,
     AddNairaAccountModal,
     AddDollarAccountModal,
@@ -140,10 +138,6 @@ export default {
     UserAccountCard,
     AccountDetailsModal,
     SuccessModal,
-    BasicInput: () =>
-      import(
-        /* webpackChunkName: 'shared-module' */ "@/shared/components/form-comps/basic-input"
-      ),
   },
 
   async mounted() {
@@ -316,9 +310,8 @@ export default {
 .accounts-container {
   position: absolute;
   width: calc(100% - 70px);
-  @include flex-row-start-wrap;
+  @include flex-row-wrap("flex-start", "flex-end");
   gap: toRem(32);
-  align-items: flex-end;
   margin-top: toRem(12);
   padding-bottom: toRem(150);
 
@@ -331,7 +324,7 @@ export default {
   }
 
   .add-account-button {
-    @include flex-column-center;
+    @include flex-column("center", "center");
     @include card-size;
     padding: toRem(14);
     border: toRem(1) solid getColor("grey-100");
@@ -352,7 +345,7 @@ export default {
 }
 
 .filter-row-section {
-  @include flex-row-between-wrap;
+  @include flex-row-wrap("space-between", "center");
 
   .form-group {
     width: toRem(340);

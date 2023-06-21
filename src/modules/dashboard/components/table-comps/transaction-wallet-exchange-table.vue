@@ -119,7 +119,7 @@ export default {
 
       this.fetchWalletTransactions(payload)
         .then((response) => {
-          if (response.code === 200) {
+          if (response?.code === 200) {
             // SHOW ALL DATA ROWS OR THREE ROWS BASED ON ROUTE
             this.table_data =
               this.$route?.name === "PaymentsPage"

@@ -157,4 +157,4 @@ const MixinDateFilter = {
   },
 };
 
-export { MixinDateFilter };
+export default MixinDateFilter;

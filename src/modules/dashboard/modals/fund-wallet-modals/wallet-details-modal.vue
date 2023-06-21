@@ -126,10 +126,9 @@
 
 <script>
 import { mapActions } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
-import PageBackBtn from "@/shared/components/page-back-btn";
-import BasicInput from "@/shared/components/form-comps/basic-input";
-import { VESICASH_APP_URL } from "@/utilities/constant";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
+import PageBackBtn from "@/shared/components/util-comps/page-back-btn";
+import { constants } from "@/utilities";
 
 export default {
   name: "WalletDetailsModal",
@@ -137,7 +136,6 @@ export default {
   components: {
     ModalCover,
     PageBackBtn,
-    BasicInput,
     ModalListItem: () =>
       import(
         /* webpackChunkName: "dashboard-modal-module" */ "@/modules/dashboard/components/modal-comps/modal-list-item"
@@ -212,7 +210,7 @@ export default {
 
       this.fetchTransferAccountBankDetails(request_payload)
         .then((response) => {
-          if (response.code === 200) {
+          if (response?.code === 200) {
             let account = response?.data?.payment_account ?? {};
             this.account_reference_id = account.payment_account_id;
 
@@ -242,7 +240,7 @@ export default {
             this.naira_wallet_info.at(-1).value = `Vesicash-${account_name}`;
 
             this.naira_wallet_loading = false;
-          } else if (response.code === 500) {
+          } else if (response?.code === 500) {
             this.naira_wallet_loading = false;
             this.handleFetchingNairaDetails();
           } else this.naira_wallet_loading = false;
@@ -273,13 +271,13 @@ export default {
         country: "US",
         amount: this.form.dollar_amount,
         fund_wallet: true,
-        success_url: `${VESICASH_APP_URL}/fund-wallet-success`,
-        fail_url: `${VESICASH_APP_URL}/fund-wallet-error`,
+        success_url: `${constants.VESICASH_APP_URL}/fund-wallet-success`,
+        fail_url: `${constants.VESICASH_APP_URL}/fund-wallet-error`,
       };
 
       this.initiateDollarFunds(request_payload)
         .then((response) => {
-          if (response.code === 200) {
+          if (response?.code === 200) {
             // REDIRECT USER TO PAYMENT GATEWAY
             this.handleClick("fundBtn", "Make payment", false);
             location.href = response.data.link;

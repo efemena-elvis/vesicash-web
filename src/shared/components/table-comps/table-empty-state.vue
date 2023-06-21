@@ -48,7 +48,7 @@ export default {
 
 <style lang="scss" scoped>
 .table-empty-state {
-  @include flex-column-center;
+  @include flex-column("center", "center");
   padding: toRem(30) 0;
 
   .message-text {

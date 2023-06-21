@@ -110,9 +110,6 @@ const authRoutes = [
           import(
             /* webpackChunkName: "auth-module" */ "@/modules/auth/pages/verify-otp"
           ),
-        meta: {
-          guest: true,
-        },
       },
     ],
   },

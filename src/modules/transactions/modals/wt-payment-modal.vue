@@ -77,8 +77,8 @@
 
 <script>
 import { mapActions } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
-import PageBackBtn from "@/shared/components/page-back-btn";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
+import PageBackBtn from "@/shared/components/util-comps/page-back-btn";
 
 export default {
   name: "WTPaymentModal",

@@ -22,6 +22,8 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 export default {
   name: "App",
 
@@ -37,12 +39,12 @@ export default {
   components: {
     PageLoader: () =>
       import(
-        /* webpackChunkName: "app-module" */ "@/shared/components/page-loader"
+        /* webpackChunkName: "app-module" */ "@/shared/components/util-comps/page-loader"
       ),
 
     AlertBanner: () =>
       import(
-        /* webpackChunkName: "app-module" */ "@/shared/components/alert-banner"
+        /* webpackChunkName: "app-module" */ "@/shared/components/util-comps/alert-banner"
       ),
   },
 
@@ -84,12 +86,34 @@ export default {
 
     // EVENT BUS TO TOGGLE ALERT BANNER
     this.$bus.$on("toggle-alert-banner", (data) => this.toggleAlert(data));
+
+    // CHECK IF USER EMAIL NEEDS VALIDATION
+    this.checkIfEmailIsVerified();
   },
 
   methods: {
-    toggleAlert(data = {}) {
-      Object.keys(data).length ? (this.alert = data) : null;
+    ...mapActions({
+      verifyEmailOTP: "settings/verifyEmailOTP",
+    }),
+
+    toggleAlert(data) {
+      this.alert = data;
       this.show_alert = !this.show_alert;
+    },
+
+    async checkIfEmailIsVerified() {
+      const saved_token = this.$storage.getStorage({
+        storage_name: "validate_user_email",
+      });
+
+      if (saved_token) {
+        await this.handleDataRequest({
+          action: "verifyEmailOTP",
+          payload: { account_id: this.getAccountId, code: saved_token },
+        });
+
+        this.$storage.removeStorage("validate_user_email");
+      }
     },
   },
 };

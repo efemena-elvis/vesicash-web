@@ -91,7 +91,7 @@ export default {
 
 <style lang="scss" scoped>
 .radio-select-card {
-  @include flex-row-between-nowrap;
+  @include flex-row-nowrap("space-between", "center");
   padding: toRem(10) toRem(16);
   @include transition(0.4s);
   position: relative;
@@ -107,8 +107,7 @@ export default {
   }
 
   .select-area {
-    @include flex-row-start-nowrap;
-    align-items: center;
+    @include flex-row-nowrap("flex-start", "center");
   }
 
   .tooltip-wrapper {

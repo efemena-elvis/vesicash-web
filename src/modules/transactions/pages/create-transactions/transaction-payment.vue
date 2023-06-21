@@ -18,7 +18,7 @@
         <div class="mgb-40">
           <SumTotalDisplayCard
             total_text="Total amount to pay"
-            :total_value="`${getCurrencySign} ${$money.addComma(
+            :total_value="`${getCurrencySign} ${$utils.formatCurrencyWithComma(
               getTransactionAmount.total_fee
             )}`"
           />
@@ -32,7 +32,9 @@
         ref="pay"
         class="btn btn-primary btn-md"
         @click="togglePaymentOptionModal"
-      >Make Payment</button>
+      >
+        Make Payment
+      </button>
     </div>
 
     <!-- MODALS -->
@@ -108,7 +110,7 @@ import { mapGetters } from "vuex";
 import paymentHelper from "@/modules/transactions/mixins/payment-mixins";
 
 export default {
-  name: "TrasactionPayment",
+  name: "TransactionPayment",
 
   mixins: [paymentHelper],
 
