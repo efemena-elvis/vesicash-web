@@ -8,10 +8,12 @@
       Update or add new transfer bank accounts
     </div>
 
-    <TabSwitcher :tabs="tab_options" @tabSelected="account_type = $event" />
+    <div class="mgb-20">
+      <TabSwitcher :tabs="tab_options" @tabSelected="account_type = $event" />
+    </div>
 
     <!-- FILTER ROW SECTION -->
-    <div class="filter-row-section mgt-32">
+    <div class="filter-row-section mgt-32" v-if="false">
       <div class="form-group">
         <BasicInput
           label_title=""
@@ -56,11 +58,12 @@
     </div>
 
     <portal to="vesicash-modals">
-      <transition name="fade" v-if="show_new_naira_modal">
-        <AddNairaAccountModal
+      <transition name="fade" v-if="show_new_local_account_modal">
+        <AddLocalAccountModal
           :account_type="account_type"
-          @closeTriggered="toggleNewNairaModal"
-          @saved="showSuccessModal('show_new_naira_modal', $event)"
+          :selected_currency="selected_currency"
+          @closeTriggered="toggleNewLocalAccountModal"
+          @saved="showSuccessModal('show_new_local_account_modal', $event)"
         />
       </transition>
 
@@ -79,26 +82,26 @@
         />
       </transition>
 
-      <transition name="fade" v-if="show_new_dollar_modal">
-        <AddDollarAccountModal
-          @closeTriggered="toggleNewDollarModal"
-          @saved="showSuccessModal('show_new_dollar_modal', $event)"
+      <transition name="fade" v-if="show_new_foreign_account_modal">
+        <AddForeignAccountModal
+          @closeTriggered="toggleNewForeignAccountModal"
+          @saved="showSuccessModal('show_new_foreign_account_modal', $event)"
         />
       </transition>
 
-      <transition name="fade" v-if="show_update_dollar_modal">
+      <transition name="fade" v-if="show_update_foreign_account_modal">
         <UpdateDollarAccountModal
-          @closeTriggered="toggleUpdateDollarModal"
+          @closeTriggered="toggleUpdateForeignAccountModal"
           :savedDetails="selected_account"
-          @saved="showSuccessModal('show_update_dollar_modal', $event)"
+          @saved="showSuccessModal('show_update_foreign_account_modal', $event)"
         />
       </transition>
 
-      <transition name="fade" v-if="show_naira_details_modal">
+      <transition name="fade" v-if="show_local_account_details_modal">
         <AccountDetailsModal
-          @closeTriggered="toggleNairaDetailsModal"
+          @closeTriggered="toggleLocalAccountDetailsModal"
           :account="selected_account"
-          @edit="editDollarAccount"
+          @edit="editForeignAccount"
         />
       </transition>
 
@@ -116,9 +119,10 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import TabSwitcher from "@/shared/components/util-comps/tab-switcher";
-import AddNairaAccountModal from "@/modules/settings/modals/add-naira-account-modal";
+import AddLocalAccountModal from "@/modules/settings/modals/add-local-account-modal";
 import AddWalletAccountModal from "@/modules/settings/modals/add-wallet-account-modal";
-import AddDollarAccountModal from "@/modules/settings/modals/add-dollar-account-modal";
+import AddForeignAccountModal from "@/modules/settings/modals/add-foreign-account-modal";
+
 import SelectAccountCurrencyModal from "@/modules/settings/modals/select-account-currency-modal";
 import UpdateDollarAccountModal from "@/modules/settings/modals/update-dollar-account-modal";
 import UserAccountCard from "@/shared/components/card-comps/user-account-card";
@@ -131,8 +135,8 @@ export default {
   components: {
     TabSwitcher,
     AddWalletAccountModal,
-    AddNairaAccountModal,
-    AddDollarAccountModal,
+    AddLocalAccountModal,
+    AddForeignAccountModal,
     UpdateDollarAccountModal,
     SelectAccountCurrencyModal,
     UserAccountCard,
@@ -140,16 +144,11 @@ export default {
     SuccessModal,
   },
 
-  async mounted() {
-    if (!this.getAccounts?.length) {
-      this.loading_accounts = true;
-      await this.fetchBanks();
-      this.loading_accounts = false;
-    }
-  },
-
   computed: {
-    ...mapGetters({ getAccounts: "settings/getAccounts" }),
+    ...mapGetters({
+      getAccounts: "settings/getAccounts",
+      getWalletSize: "general/getWalletSize",
+    }),
 
     getSelectedAccount() {
       return this.getAccounts.filter(
@@ -178,21 +177,7 @@ export default {
         },
       ],
 
-      currency_options: [
-        {
-          id: 1,
-          name: "Naira account (NGN)",
-          slug: "naira",
-          short: "NGN",
-        },
-        {
-          id: 2,
-          name: "Dollar account (USD)",
-          slug: "dollar",
-          short: "USD",
-        },
-        // { id: 3, name: "GBP (£)", slug: "pound", short: "GPB" },
-      ],
+      currency_options: [],
 
       form: {
         search_filter: "",
@@ -207,22 +192,46 @@ export default {
 
       show_success_modal: false,
       show_select_account_modal: false,
-      show_new_naira_modal: false,
+      show_new_local_account_modal: false,
+      show_new_foreign_account_modal: false,
       show_new_wallet_modal: false,
-      show_new_dollar_modal: false,
-      show_naira_details_modal: false,
-      show_update_dollar_modal: false,
+
+      show_local_account_details_modal: false,
+      show_update_foreign_account_modal: false,
       loading_accounts: false,
 
       response_message: "",
+      selected_currency: {},
     };
+  },
+
+  async mounted() {
+    this.loadWalletCurrencyOptions();
+
+    this.loading_accounts = true;
+    await this.fetchUserBanks();
+    this.loading_accounts = false;
   },
 
   methods: {
     ...mapActions({ fetchAllBanks: "settings/fetchAllBanks" }),
 
-    async fetchBanks() {
+    async fetchUserBanks() {
       await this.fetchAllBanks(this.getAccountId);
+    },
+
+    loadWalletCurrencyOptions() {
+      this.getWalletSize
+        .filter((wallet) => wallet.enabled && !wallet.short.includes("ESCROW"))
+        .map((wallet_type) => {
+          this.currency_options.push({
+            id: wallet_type.id,
+            name: `${wallet_type.long} wallet (${wallet_type.short})`,
+            slug: wallet_type.long.toLowerCase(),
+            short: wallet_type.short,
+            country: wallet_type.code.toUpperCase(),
+          });
+        });
     },
 
     // SELECT OPTION FROM OPTION LIST
@@ -235,37 +244,40 @@ export default {
       else this.show_select_account_modal = !this.show_select_account_modal;
     },
 
-    toggleNewNairaModal() {
-      this.show_new_naira_modal = !this.show_new_naira_modal;
+    toggleNewLocalAccountModal() {
+      this.show_new_local_account_modal = !this.show_new_local_account_modal;
     },
 
     toggleNewWalletModal() {
       this.show_new_wallet_modal = !this.show_new_wallet_modal;
     },
 
-    toggleNewDollarModal() {
-      this.show_new_dollar_modal = !this.show_new_dollar_modal;
+    toggleNewForeignAccountModal() {
+      this.show_new_foreign_account_modal =
+        !this.show_new_foreign_account_modal;
     },
 
-    toggleUpdateDollarModal() {
-      this.show_update_dollar_modal = !this.show_update_dollar_modal;
+    toggleUpdateForeignAccountModal() {
+      this.show_update_foreign_account_modal =
+        !this.show_update_foreign_account_modal;
     },
 
     toggleNewAccountModal(currency) {
       this.toggleAccountCurrencySelection();
+      this.selected_currency = currency;
 
-      if (currency === "NGN") this.toggleNewNairaModal();
-      else if (currency === "USD") this.toggleNewDollarModal();
-      else this.toggleNewNairaModal();
+      if (currency.short === "USD") this.toggleNewForeignAccountModal();
+      else this.toggleNewLocalAccountModal();
     },
 
-    toggleNairaDetailsModal() {
-      this.show_naira_details_modal = !this.show_naira_details_modal;
+    toggleLocalAccountDetailsModal() {
+      this.show_local_account_details_modal =
+        !this.show_local_account_details_modal;
     },
 
-    editDollarAccount() {
-      this.show_naira_details_modal = false;
-      this.toggleUpdateDollarModal();
+    editForeignAccount() {
+      this.show_local_account_details_modal = false;
+      this.toggleUpdateForeignAccountModal();
     },
 
     toggleSuccessModal() {
@@ -274,7 +286,7 @@ export default {
 
     showAccountDetails(account) {
       this.selected_account = account;
-      this.toggleNairaDetailsModal();
+      this.toggleLocalAccountDetailsModal();
     },
 
     showSuccessModal(modal, message) {

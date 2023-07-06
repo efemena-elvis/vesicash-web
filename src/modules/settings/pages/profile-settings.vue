@@ -178,7 +178,7 @@
           <button
             class="btn btn-secondary btn-sm fw-semibold"
             v-else
-            :disabled="!form.email.validated"
+            :disabled="!isEmailValidated"
             @click="toggleInputModal('email_address')"
           >
             Verify
@@ -229,7 +229,7 @@
             <button
               v-if="is_phone_changed"
               class="btn btn-secondary btn-sm fw-semibold"
-              :disabled="!form.phone_number.validated"
+              :disabled="!isPhoneValidated"
               @click="updateUserPhone()"
             >
               Update phone
@@ -238,7 +238,7 @@
             <button
               v-else
               class="btn btn-secondary btn-sm fw-semibold"
-              :disabled="!form.phone_number.validated"
+              :disabled="!isPhoneValidated"
               @click="toggleInputModal('phone_number')"
             >
               Verify
@@ -316,6 +316,14 @@ export default {
 
     isEmailVerified() {
       return this.getUser?.verifications?.email ?? false;
+    },
+
+    isPhoneValidated() {
+      return this.form.phone_number?.validated;
+    },
+
+    isEmailValidated() {
+      return this.form.email?.validated;
     },
 
     isDisabled() {

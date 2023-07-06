@@ -14,7 +14,7 @@
           Enter the OTP code we sent to
           <b>{{ getUserEmail }}</b> and
           <b>{{ getUserPhone }}</b>
-          to withdraw
+          to transfer
           <b>
             {{
               `${$money.getSign(
@@ -171,13 +171,13 @@ export default {
 
     getWithdrawalPayload() {
       return {
-        account_id: this.getAccountId,
+        account_id: +this.getAccountId,
         beneficiary_name:
           this.getWithdrawalMeta.selected_beneficiary.account_name,
         bank_account_number:
           this.getWithdrawalMeta.selected_beneficiary.account_no.toString(),
         bank_code: this.getWithdrawalMeta.selected_beneficiary.bank_code,
-        amount: this.getWithdrawalMeta.amount,
+        amount: +this.getWithdrawalMeta.amount,
         currency: this.getWalletType.short,
         debit_currency: this.getWalletType.short,
         gateway: "monnify",
@@ -187,11 +187,11 @@ export default {
 
     getWalletTransferDetails() {
       return {
-        sender_account_id: this.getAccountId,
+        sender_account_id: +this.getAccountId,
         recipient_account_id:
-          this.getWithdrawalMeta.selected_beneficiary.account_no,
-        amount: this.getWithdrawalMeta.amount,
-        final_amount: this.getWithdrawalMeta.amount,
+          +this.getWithdrawalMeta.selected_beneficiary.account_no,
+        amount: +this.getWithdrawalMeta.amount,
+        final_amount: +this.getWithdrawalMeta.amount,
         sender_currency: this.getWalletType.short,
         recipient_currency: this.getWalletType.short,
       };
@@ -396,13 +396,6 @@ export default {
       this.$bus.$emit("show-page-loader", "Processing your transfer");
 
       try {
-        const amount = `${this.$money.getSign(
-          this.getWalletType.slug
-        )}${this.$utils.formatCurrencyWithComma(
-          this.getWithdrawalMeta.amount -
-            this.getWithdrawalMeta.withdrawal_charge
-        )}`;
-
         this.handleClick("continue");
 
         const response =
@@ -414,7 +407,12 @@ export default {
         this.handleClick("continue", "Continue", false);
 
         response?.code == 200
-          ? this.$emit("done", amount)
+          ? this.$emit("done", {
+              amount:
+                this.getWithdrawalMeta.amount -
+                this.getWithdrawalMeta.withdrawal_charge,
+              currency: this.getWalletType.slug,
+            })
           : this.pushToast(
               response.message || "Withdrawal failed. Please try again",
               "warning"

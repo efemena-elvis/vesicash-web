@@ -4,7 +4,7 @@
     <div class="page-title grey-900 h4-text mgb-25">Settings</div>
 
     <div class="row">
-      <div class="col-12 col-md-10 col-lg-9">
+      <div class="col-12 col-md-10">
         <!-- PAGE SWITCHER ROUTE -->
         <PageSwitcherRoute :page_data="getPages" />
 
@@ -97,12 +97,12 @@ export default {
       ],
 
       mor_pages: [
-        {
-          id: 7,
-          name: "MoR Preferences",
-          route: "UsersSettings",
-          active: false,
-        },
+        // {
+        //   id: 7,
+        //   name: "MoR Preferences",
+        //   route: "UsersSettings",
+        //   active: false,
+        // },
       ],
     };
   },

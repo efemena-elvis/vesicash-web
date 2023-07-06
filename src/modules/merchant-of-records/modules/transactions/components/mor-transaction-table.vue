@@ -11,7 +11,6 @@
       :show_paging="showPagination"
       :pagination="pagination"
       @goToPage="getUserTransactions($event)"
-      @emptyAction="initiateEscrowTransaction"
     >
       <template v-for="(data, index) in table_data">
         <MoRTransactionTableRow
@@ -25,7 +24,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import TableContainer from "@/shared/components/table-comps/table-container";
 
 export default {
@@ -47,6 +46,8 @@ export default {
   },
 
   computed: {
+    ...mapGetters({ getWalletSize: "general/getWalletSize" }),
+
     showPagination() {
       return false;
     },
@@ -69,11 +70,11 @@ export default {
         "Amount Paid",
         "Payment Method",
         "Status",
-        "Actions",
       ],
+      // "Actions",
 
-      table_data: [{}, {}],
-      table_loading: false,
+      table_data: [],
+      table_loading: true,
       paginatedData: {},
       paginationPages: {},
       pagination: {
@@ -87,13 +88,51 @@ export default {
     };
   },
 
+  mounted() {
+    this.fetchMoRTransaction();
+  },
+
   methods: {
     ...mapActions({
-      fetchTransactionsByUser: "transactions/fetchTransactionsByUser",
+      getMoRTransactions: "merchantTransactions/getMoRTransactions",
     }),
 
-    initiateEscrowTransaction() {
-      this.$router.push({ name: "TransactionSetup" });
+    async fetchMoRTransaction() {
+      const response = await this.handleDataRequest({
+        action: "getMoRTransactions",
+        alert_handler: {
+          error: "Unable to fetch MoR transactions",
+          request_error: "Unable to fetch MoR transactions",
+        },
+      });
+
+      if (response?.code === 200 && response.data?.length) {
+        this.table_data = response?.data ?? [];
+        this.sortTransactionByCountry(response?.data ?? []);
+      }
+
+      this.table_loading = false;
+    },
+
+    sortTransactionByCountry(transactions) {
+      let mor_wallet = this.getWalletSize
+        .filter(
+          (wallet) =>
+            wallet.enabled && !wallet.short.includes("ESCROW") && wallet?.mor
+        )
+        .map((filtered_wallet) => ({ ...filtered_wallet, metric_value: 0 }));
+
+      transactions.forEach((obj) => {
+        const wallet_payload = mor_wallet.find(
+          (item) => item.short === obj.currency
+        );
+
+        if (wallet_payload) {
+          wallet_payload.metric_value++;
+        }
+      });
+
+      this.$bus.$emit("updateTransactionVolume", mor_wallet);
     },
 
     // ====================================

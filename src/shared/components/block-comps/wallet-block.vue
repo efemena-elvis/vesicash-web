@@ -96,6 +96,7 @@ export default {
         sign: local_currency.currency.sign,
         short: local_currency.currency.short,
         long: local_currency.currency.long,
+        description: local_currency.currency.description,
         default: true,
         enabled: true,
       };
@@ -140,6 +141,57 @@ export default {
               type.balance = "0.00";
             }
           });
+        });
+
+        this.wallet_balance = this.getWalletSize;
+        this.checkMoRWallets(wallets);
+      }
+    },
+
+    // CHECK FOR MOR WALLETS
+    checkMoRWallets(wallets) {
+      let updated_mor_wallets = [];
+
+      if (this.isMoRSetupEnabled) {
+        let mor_wallets = wallets.filter((wallet) =>
+          wallet.currency.includes("MOR")
+        );
+
+        mor_wallets.map((wallet) => {
+          const fetched_wallet = countries.find(
+            (country) =>
+              country.currency.short === wallet.currency.split("_")[1]
+          );
+
+          if (fetched_wallet !== -1) {
+            let wallet_payload = {
+              id: wallet.id,
+              balance: wallet.available,
+              code: fetched_wallet.code,
+              sign: fetched_wallet.currency.sign,
+              short: fetched_wallet.currency.short,
+              long: fetched_wallet.currency.long,
+              description: fetched_wallet.currency.description,
+              default: false,
+              enabled: true,
+              mor: true,
+            };
+
+            updated_mor_wallets.push(wallet_payload);
+          }
+        });
+
+        updated_mor_wallets.map((wallet) => {
+          const wallet_found = this.getWalletSize.some(
+            (w) => w.short === wallet.short
+          );
+
+          if (!wallet_found) {
+            this.updateWalletListSize([...this.getWalletSize, wallet]);
+          }
+
+          this.getWalletSize.find((w) => w.id === wallet.id).balance =
+            wallet?.balance?.toString() ?? "0.00";
         });
 
         this.wallet_balance = this.getWalletSize;

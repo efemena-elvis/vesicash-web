@@ -355,16 +355,14 @@ export default {
           country: "Nigeria",
           dialing_code: "234",
           code: "ng",
-          flag: "https://dyclassroom.com/image/flags/ng.png",
+          flag: "https://flagsapi.com/NG/flat/64.png",
         },
-
         {
           country: "United States",
           dialing_code: "1",
           code: "us",
-          flag: "https://dyclassroom.com/image/flags/us.png",
+          flag: "https://flagsapi.com/US/flat/64.png",
         },
-
         // {
         //   country: "United Kingdom",
         //   dialing_code: "44",
@@ -387,14 +385,14 @@ export default {
         country: "Nigeria",
         dialing_code: "234",
         code: "ng",
-        flag: "https://dyclassroom.com/image/flags/ng.png",
+        flag: "https://flagsapi.com/NG/flat/64.png",
       },
 
       initial_currency: {
         country: "United States",
         dialing_code: "1",
         code: "us",
-        flag: "https://dyclassroom.com/image/flags/us.png",
+        flag: "https://flagsapi.com/US/flat/64.png",
       },
     };
   },

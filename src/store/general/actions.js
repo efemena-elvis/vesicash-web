@@ -2,12 +2,13 @@ import axios from "axios";
 import { constants } from "@/utilities";
 import { getServiceRoute } from "@/utilities/micro-services";
 import { serviceStorage, serviceApi as $api } from "@/shared/services";
+import { getRequest, postRequest } from "@/utilities/micro-services";
 
 const routes = {
   location: "https://ip2c.org/s",
   upload_file: "files",
-  country_bank_list: "/admin/banks/country",
-  verify_account: "/payment/banks/account_verification",
+  country_bank_list: "banks",
+  verify_bank_account: "bank_account/verify",
   verify_wallet: "/auth/user/bank-details",
 };
 
@@ -215,16 +216,18 @@ export default {
   // ==============================
   // GET ALL BANKS IN A COUNTRY
   // ==============================
-  async getAllBanks(_, country) {
-    return await $api.push(routes.country_bank_list, { payload: { country } });
+  async getAllBanks(_, payload) {
+    return await postRequest("payment", routes.country_bank_list, payload);
   },
 
   // ==============================
   // VERIFY BANK ACCOUNT
   // ==============================
-  async verifyBankAccount(_, { bank_code, account_number }) {
-    return await $api.fetch(
-      `${routes.verify_account}?bank_code=${bank_code}&account_number=${account_number}`
+  async verifyBankAccount(_, payload) {
+    return await postRequest(
+      "verification",
+      routes.verify_bank_account,
+      payload
     );
   },
 

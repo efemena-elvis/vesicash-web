@@ -18,7 +18,7 @@
 
       <div
         class="fixed-sidebar"
-        v-if="!isMOREnabled && getAccountType === 'business'"
+        v-if="!isMoRSetupEnabled && getAccountType === 'business'"
       >
         <SidebarItem is_active :nav="merchant_of_record" />
       </div>
@@ -49,13 +49,6 @@ export default {
     ProfileMenu,
   },
 
-  computed: {
-    isMOREnabled() {
-      const isMerchantRecordEnabled = this.isMoRSetupEnabled;
-      return isMerchantRecordEnabled ? true : false;
-    },
-  },
-
   data() {
     return {
       sidebar_routes: "",
@@ -72,7 +65,9 @@ export default {
   },
 
   mounted() {
-    this.sidebar_routes = this.isMOREnabled ? merchantRoutes : escrowRoutes;
+    this.sidebar_routes = this.isMoRSetupEnabled
+      ? merchantRoutes
+      : escrowRoutes;
   },
 
   methods: {

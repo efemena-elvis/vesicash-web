@@ -115,6 +115,12 @@ class serviceUtils {
     return typeof value === "number" && !Number.isNaN(value);
   }
 
+  getTimestampInSeconds() {
+    const current_time = new Date().getTime();
+    const timestamp_in_seconds = current_time / 1000;
+    return Math.floor(timestamp_in_seconds);
+  }
+
   // ============================================================
   // METHODS RELATED TO CURRENCY HANDLING
   // ============================================================

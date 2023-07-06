@@ -19,12 +19,12 @@
               >{{ escrow_balance[0]?.sign || "-"
               }}{{
                 $utils.formatCurrencyWithComma(
-                  escrow_balance[0]?.balance.split(".")[0] || "0"
+                  escrow_balance[0]?.balance?.split(".")[0] || "0"
                 )
               }}</span
             >
             <span class="amount-zero"
-              >.{{ escrow_balance[0]?.balance.split(".")[1] || "00" }}</span
+              >.{{ escrow_balance[0]?.balance?.split(".")[1] || "00" }}</span
             >
           </div>
         </div>
@@ -40,12 +40,12 @@
               >{{ escrow_balance[1]?.sign || "-"
               }}{{
                 $utils.formatCurrencyWithComma(
-                  escrow_balance[1]?.balance.split(".")[0] || "0"
+                  escrow_balance[1]?.balance?.split(".")[0] || "0"
                 )
               }}</span
             >
             <span class="amount-zero"
-              >.{{ escrow_balance[1]?.balance.split(".")[1] || "00" }}</span
+              >.{{ escrow_balance[1]?.balance?.split(".")[1] || "00" }}</span
             >
           </div>
 
@@ -67,12 +67,12 @@
               >{{ escrow_balance[2]?.sign || "-"
               }}{{
                 $utils.formatCurrencyWithComma(
-                  escrow_balance[2]?.balance.split(".")[0] || "0"
+                  escrow_balance[2]?.balance?.split(".")[0] || "0"
                 )
               }}</span
             >
             <span class="amount-zero"
-              >.{{ escrow_balance[2]?.balance.split(".")[1] || "00" }}</span
+              >.{{ escrow_balance[2]?.balance?.split(".")[1] || "00" }}</span
             >
           </div>
         </div>

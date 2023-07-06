@@ -129,10 +129,7 @@ class serviceApi {
         const originalConfig = error.config;
 
         if (error.response) {
-          if (
-            [401, 403].includes(error.response.status) &&
-            !originalConfig._retry
-          ) {
+          if ([401].includes(error.response.status) && !originalConfig._retry) {
             originalConfig._retry = true;
 
             localStorage.clear();

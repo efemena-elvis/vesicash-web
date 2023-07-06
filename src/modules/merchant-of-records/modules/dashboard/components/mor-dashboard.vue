@@ -4,19 +4,34 @@
       <div class="wrapper">
         <div class="title-text h5-text grey-900 mgb-8">Your Metrics</div>
 
-        <MetricCard metric_title="MoR Revenue metrics" metric_theme="teal" />
+        <div class="metric-card-section">
+          <MetricCard
+            metric_title="MoR Revenue metrics"
+            metric_theme="teal"
+            :metric_data="getTransactionRevenue"
+            :is_loading="loading"
+          />
 
-        <MetricCard metric_title="MoR Transaction volume" metric_theme="teal" />
+          <MetricCard
+            metric_title="MoR Transaction volume"
+            metric_theme="teal"
+            :metric_data="getTransactionVolume"
+            :is_currency_type="false"
+            :is_loading="loading"
+          />
+        </div>
 
-        <!-- <MetricCard
-          metric_title="MoR Collected Tax metrics"
-          metric_theme="yellow"
-        />
+        <!-- <div class="cards-area">
+          <MetricCard
+            metric_title="MoR Collected Tax metrics"
+            metric_theme="yellow"
+          />
 
-        <MetricCard
-          metric_title="MoR Remitted Tax metrics"
-          metric_theme="yellow"
-        /> -->
+          <MetricCard
+            metric_title="MoR Remitted Tax metrics"
+            metric_theme="yellow"
+          />
+        </div> -->
       </div>
     </template>
 
@@ -34,10 +49,7 @@
           <div class="table-title primary-1-text grey-900 mgb-16">
             {{ getTableTitle }}
           </div>
-
-          <keep-alive>
-            <component :is="active_transaction_view" />
-          </keep-alive>
+          <component :is="active_transaction_view" />
         </template>
       </div>
     </template>
@@ -45,11 +57,14 @@
 </template>
 
 <script>
+import MoRSummary from "@/modules/merchant-of-records/modules/dashboard/mixins/mor-summary";
 import MetricCard from "@/modules/merchant-of-records/modules/dashboard/components/metric-card";
 import PageSwitcher from "@/shared/components/util-comps/page-switcher";
 
 export default {
   name: "MoRDashboard",
+
+  mixins: [MoRSummary],
 
   components: {
     MetricCard,
@@ -109,5 +124,10 @@ export default {
   .title-text {
     font-size: toRem(18);
   }
+}
+
+.metric-card-section {
+  @include flex-row-wrap("flex-start", "stretch");
+  gap: toRem(20);
 }
 </style>

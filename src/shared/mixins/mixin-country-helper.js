@@ -9,7 +9,7 @@ const countryHelper = {
       country: "Nigeria",
       dialing_code: "234",
       code: "ng",
-      flag: "https://dyclassroom.com/image/flags/ng.png",
+      flag: "https://flagsapi.com/NG/flat/64.png",
       currency: {
         sign: "₦",
         short: "NGN",

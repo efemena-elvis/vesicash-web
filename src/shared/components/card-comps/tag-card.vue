@@ -15,11 +15,10 @@ export default {
 
     card_type: {
       type: String,
-      default: "success", // success, error, progress, okay
+      default: "success", // success | error | progress | okay | stale
     },
   },
 };
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

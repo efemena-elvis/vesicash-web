@@ -43,6 +43,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
@@ -52,24 +53,14 @@ export default {
     ModalCover,
   },
 
+  computed: {
+    ...mapGetters({
+      getWalletSize: "general/getWalletSize",
+    }),
+  },
+
   data: () => ({
-    currency_options: [
-      {
-        id: 1,
-        name: "Naira wallet (NGN)",
-        slug: "naira",
-        short: "NGN",
-        min_amount: 1000,
-      },
-      {
-        id: 2,
-        name: "Dollar wallet (USD)",
-        slug: "dollar",
-        short: "USD",
-        min_amount: 100,
-      },
-      // { id: 3, name: "GBP (£)", slug: "pound", short: "GPB" },
-    ],
+    currency_options: [],
 
     selected_currency: {
       slug: "", // naira
@@ -77,7 +68,25 @@ export default {
     },
   }),
 
+  mounted() {
+    this.loadWalletCurrencyOptions();
+  },
+
   methods: {
+    loadWalletCurrencyOptions() {
+      this.getWalletSize
+        .filter((wallet) => wallet.enabled && !wallet.short.includes("ESCROW"))
+        .map((wallet_type) => {
+          this.currency_options.push({
+            id: wallet_type.id,
+            name: `${wallet_type.long} wallet (${wallet_type.short})`,
+            slug: wallet_type.long.toLowerCase(),
+            short: wallet_type.short,
+            country: wallet_type.code.toUpperCase(),
+          });
+        });
+    },
+
     // ========================================
     // SELECT OPTION FROM OPTION LIST
     // ========================================
@@ -88,7 +97,7 @@ export default {
     },
 
     proceedToCreateAccount() {
-      this.$emit("selectCurrency", this.selected_currency.short);
+      this.$emit("selectCurrency", this.selected_currency);
     },
   },
 };

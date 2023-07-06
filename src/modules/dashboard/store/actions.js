@@ -9,8 +9,8 @@ const routes = {
   wallet_transactions: "/payment/list/wallet_funding",
   wallet_withdrawals: "/payment/list/wallet_withdrawals",
   bank_details: "admin/user/fetch/bank",
-  withdraw_fund: "/payment/disbursement/wallet/withdraw",
-  transaction_payments: "admin/transactions/list",
+  withdraw_fund: "disbursement/wallet/withdraw",
+  transaction_payments: "transactions/list",
 };
 
 export default {
@@ -71,7 +71,8 @@ export default {
   // FETCH USER BANK DETAILS
   // =====================================
   async fetchBankDetails(_, account_id) {
-    return await $api.push(
+    return await postRequest(
+      "admin",
       `${routes.bank_details}/${account_id}?array=true`,
       {}
     );
@@ -81,7 +82,7 @@ export default {
   // WIDTHDRAW FUND FROM WALLET
   // =====================================
   async withdrawWalletFund(_, payload) {
-    return await $api.push(routes.withdraw_fund, { payload });
+    return await postRequest("payment", routes.withdraw_fund, payload);
   },
 
   // ========================================================

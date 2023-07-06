@@ -84,18 +84,7 @@ export default {
     },
   },
 
-  computed: {
-    getNairaBankDetails() {
-      return {
-        account_name: this.account_details?.account_name,
-        account_no: this.account_details?.account_number,
-        bank_id: this.bank.code,
-        bank_name: this.bank.name,
-        country: this.bank.country,
-        currency: "NGN",
-      };
-    },
-  },
+  computed: {},
 
   watch: {
     "form.account_id": {
@@ -156,7 +145,7 @@ export default {
 
       const response = await this.verifyWalletAccountID(account_id);
 
-      if (response?.status === "ok") {
+      if (response?.code === 200) {
         this.verification_message = "";
 
         this.account_payload = {

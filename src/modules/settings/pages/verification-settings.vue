@@ -5,8 +5,8 @@
 
     <!-- PAGE META -->
     <div class="page-meta tertiary-2-text grey-600">
-      Verify your bvn, and settlements documents here to be able to carry out
-      transactions
+      Verify your bvn, business documents and settlements documents here to be
+      able to carry out transactions
     </div>
 
     <div class="cards-container" v-if="loading_verification">
@@ -87,6 +87,7 @@
         subtitle="Provide your bank account details for withdrawals and settlements"
         cta_title="Add bank account"
         @action="$router.push({ name: 'AccountSettings' })"
+        :verified="hasSettlementAccount"
       >
         <SettlementIcon />
       </verification-card>
@@ -131,16 +132,9 @@
         />
       </transition>
 
-
       <transition name="fade" v-if="show_director_verify_modal">
         <DirectorVerificationModal
-          @saved="
-            showSuccessModal(
-              'show_doc_upload_modal',
-              '_',
-              $event
-            )
-          "
+          @saved="showSuccessModal('show_doc_upload_modal', '_', $event)"
           @closeTriggered="toggleDirectorVerifyModal"
         />
       </transition>
@@ -177,7 +171,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from "vuex";
+import { mapActions, mapMutations } from "vuex";
 import VerificationCard from "@/modules/settings/components/card-comps/verification-card";
 import VerifyInputModal from "@/modules/settings/modals/verify-input-modal";
 import VerifyOtpModal from "@/modules/settings/modals/verify-otp-modal";
@@ -228,8 +222,46 @@ export default {
       ),
   },
 
-  mounted() {
-    if (!this.getUserVerifications) this.fetchVerifications();
+  computed: {
+    isBusiness() {
+      return this.getAccountType === "business" ? true : false;
+    },
+
+    isPhoneVerified() {
+      if (!this.user_verifications) return false;
+      const phone_verification = this.user_verifications.find(
+        (type) => type.verification_type === "phone"
+      );
+      return phone_verification ? phone_verification?.is_verified : false;
+    },
+
+    isBvnVerified() {
+      if (!this.user_verifications) return false;
+      const bvn_verification = this.user_verifications.find(
+        (type) => type.verification_type === "bvn"
+      );
+      return bvn_verification ? bvn_verification?.is_verified : false;
+    },
+
+    isBusinessVerified() {
+      if (!this.user_verifications) return false;
+      const business_verification = this.user_verifications.find(
+        (type) => type.verification_type === "cac"
+      );
+      return business_verification ? business_verification?.is_verified : false;
+    },
+
+    isDocVerified() {
+      if (!this.user_verifications) return false;
+      const doc_verification = this.user_verifications.find(
+        (type) => type.verification_type === "cac"
+      );
+      return doc_verification ? doc_verification?.is_verified : false;
+    },
+
+    hasSettlementAccount() {
+      return this.has_settlement_account;
+    },
   },
 
   watch: {
@@ -241,46 +273,6 @@ export default {
         }
       },
       immediate: true,
-    },
-  },
-
-  computed: {
-    ...mapGetters({ getUserVerifications: "settings/getUserVerifications" }),
-
-    isBusiness() {
-      return this.getAccountType === "business" ? true : false;
-    },
-
-    isPhoneVerified() {
-      if (!this.getUserVerifications) return false;
-      const phone_verification = this.getUserVerifications.find(
-        (type) => type.verification_type === "phone"
-      );
-      return phone_verification ? phone_verification?.is_verified : false;
-    },
-
-    isBvnVerified() {
-      if (!this.getUserVerifications) return false;
-      const bvn_verification = this.getUserVerifications.find(
-        (type) => type.verification_type === "bvn"
-      );
-      return bvn_verification ? bvn_verification?.is_verified : false;
-    },
-
-    isBusinessVerified() {
-      if (!this.getUserVerifications) return false;
-      const business_verification = this.getUserVerifications.find(
-        (type) => type.verification_type === "cac"
-      );
-      return business_verification ? business_verification?.is_verified : false;
-    },
-
-    isDocVerified() {
-      if (!this.getUserVerifications) return false;
-      const doc_verification = this.getUserVerifications.find(
-        (type) => type.verification_type === "cac"
-      );
-      return doc_verification ? doc_verification?.is_verified : false;
     },
   },
 
@@ -300,23 +292,59 @@ export default {
       document_verified: false,
       bvn_verified: false,
       response_message: "",
-      loading_verification: false,
+      loading_verification: true,
       updated_phone: "",
+      has_settlement_account: false,
+
+      user_verifications: [
+        {
+          is_verified: false,
+          verification_type: "phone",
+        },
+        {
+          is_verified: false,
+          verification_type: "email",
+        },
+      ],
     };
+  },
+
+  mounted() {
+    this.checkSettlementAccount();
+    this.fetchVerifications();
   },
 
   methods: {
     ...mapActions({
       fetchUserVerifications: "settings/fetchUserVerifications",
       saveUserProfile: "settings/saveUserProfile",
+      fetchAllBanks: "settings/fetchAllBanks",
     }),
 
     ...mapMutations({ UPDATE_AUTH_USER: "auth/UPDATE_AUTH_USER" }),
 
+    async checkSettlementAccount() {
+      const response = await this.fetchAllBanks(this.getAccountId);
+      this.has_settlement_account = response?.data?.some(
+        (bank) => bank.category === "settlement"
+      );
+    },
+
     async fetchVerifications() {
-      this.loading_verification = true;
-      await this.fetchUserVerifications({ account_id: this.getAccountId });
+      const response = await this.handleDataRequest({
+        action: "fetchUserVerifications",
+        payload: { account_id: this.getAccountId },
+        alert_handler: {
+          error: "Unable to fetch user verification details",
+        },
+      });
+
       this.loading_verification = false;
+
+      if (response.code === 200) {
+        console.log(response);
+        this.user_verifications = response.data;
+      }
     },
 
     toggleInputModal() {

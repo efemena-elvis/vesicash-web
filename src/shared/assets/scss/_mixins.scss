@@ -1,10 +1,11 @@
+@use "sass:math";
 @import "variables";
 
 //==============================
 // CONVERT UNITS IN PX TO REM
 //==============================
 @function toRem($size) {
-  $result: $size/16;
+  $result: math.div($size, 16);
   @return #{$result}rem;
 }
 

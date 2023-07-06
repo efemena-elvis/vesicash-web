@@ -6,9 +6,12 @@
     <MetricCard
       metric_title="Processed transaction summary"
       metric_theme="teal"
+      :metric_data="getTransactionRevenue"
+      :is_loading="loading"
     />
 
     <PageSwitcher
+      v-if="false"
       :page_data="pages"
       :full_width="false"
       @swapItem="updateTransactionChanges($event)"
@@ -21,12 +24,15 @@
 </template>
 
 <script>
+import MoRSummary from "@/modules/merchant-of-records/modules/dashboard/mixins/mor-summary";
 import MetricCard from "@/modules/merchant-of-records/modules/dashboard/components/metric-card";
 import TitleTopBlock from "@/shared/components/block-comps/title-top-block";
 import PageSwitcher from "@/shared/components/util-comps/page-switcher";
 
 export default {
   name: "MoRTransaction",
+
+  mixins: [MoRSummary],
 
   components: {
     TitleTopBlock,
@@ -47,7 +53,7 @@ export default {
           active: true,
         },
         {
-          title: "Outflow",
+          title: "Payout",
           value: "outflow",
           active: false,
         },

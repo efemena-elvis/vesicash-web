@@ -3,6 +3,7 @@
     <div
       class="modal-outer-container"
       :class="place_center && 'modal-center-placement'"
+      @click.self="selfCloseModal"
     >
       <div
         :class="getModalWrapperStyle"

@@ -2,19 +2,19 @@
   <AuthWrapper title_text>
     <!-- AUTH PAGE -->
     <div class="auth-page auth-page-success">
-      <SuccessIcon backgroundColor="#043B56" />
+      <WarningIcon v-if="type === 'pending'" />
+      <SuccessIcon backgroundColor="#043B56" v-else />
 
       <!-- TITLE TEXT -->
       <div class="title-text primary-1-text grey-900 mgb-8 text-center">
-        Congratulations
+        {{ getTitle }}
       </div>
 
       <!-- DESCRIPTION TEXT -->
-      <div class="description-text tertiary-2-text grey-600 text-center">
-        Your withdrawal of
-        {{ $route.query ? $route.query.amount : "N0.00" }} has been sent to your
-        bank account, Please check your bank account for details
-      </div>
+      <div
+        class="description-text tertiary-2-text grey-600 text-center"
+        v-html="getDescription"
+      ></div>
 
       <!-- BUTTON AREA -->
       <div class="btn-area mgt-30 mgb-10 wt-100">
@@ -29,18 +29,68 @@
 <script>
 import AuthWrapper from "@/modules/auth/components/auth-wrapper";
 import SuccessIcon from "@/shared/components/icon-comps/success-icon";
+import WarningIcon from "@/shared/components/icon-comps/warning-icon";
 
 export default {
   name: "WithdrawSuccessful",
 
   metaInfo: {
-    title: "Withdrawal Successful",
+    title: "Fund Withdrawal",
     titleTemplate: "%s - Vesicash",
   },
 
   components: {
     AuthWrapper,
     SuccessIcon,
+    WarningIcon,
+  },
+
+  computed: {
+    getFormattedAmount() {
+      const currency_sign = this.$utils.formatCurrency({
+        input: this.currency,
+        output: "sign",
+      });
+
+      const amount = this.$utils.formatCurrencyWithComma(this.amount);
+
+      return `${currency_sign}${amount}`;
+    },
+
+    getTitle() {
+      return this.type === "pending"
+        ? "Confirming your request"
+        : "Congratulations";
+    },
+
+    getDescription() {
+      return this.type === "pending"
+        ? `Please wait while we confirm your withdrawal request of <span class=fw-bold>${this.getFormattedAmount}</span>, your account manager would reach out shortly.`
+        : `Your withdrawal of
+       <span class=fw-bold>${this.getFormattedAmount}</span> has been sent to
+        your bank account, Please check your bank account for details`;
+    },
+  },
+
+  data() {
+    return {
+      type: "",
+      amount: "",
+      currency: "",
+    };
+  },
+
+  mounted() {
+    this.getRouteData();
+  },
+
+  methods: {
+    getRouteData() {
+      const { type, amount, currency } = this.$route.query;
+      this.type = type;
+      this.amount = amount;
+      this.currency = currency;
+    },
   },
 };
 </script>

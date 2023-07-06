@@ -10,7 +10,7 @@
     <div class="left-section">
       <!-- ICON CARD -->
       <div class="icon-card position-relative rounded-circle teal-50-bg">
-        <component :is="payment.icon" />
+        <component :is="payment.icon" fill />
       </div>
 
       <!-- CARD INFO -->
@@ -53,6 +53,7 @@
 import CreditCardIcon from "@/shared/components/icon-comps/credit-card-icon";
 import ArrowRightIcon from "@/shared/components/icon-comps/arrow-right-icon";
 import BusinessIcon from "@/shared/components/icon-comps/business-icon";
+import MoneyIcon from "@/shared/components/icon-comps/money-icon";
 import EmptyWalletIcon from "@/shared/components/icon-comps/empty-wallet-icon";
 
 export default {
@@ -62,6 +63,7 @@ export default {
     CreditCardIcon,
     ArrowRightIcon,
     BusinessIcon,
+    MoneyIcon,
     WalletIcon: EmptyWalletIcon,
   },
 

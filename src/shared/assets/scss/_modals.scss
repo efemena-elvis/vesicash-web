@@ -25,9 +25,11 @@
   }
 
   .modal-center-placement {
-    margin-bottom: toRem(60);
-    @include center-placement();
-    top: 25%;
+    position: absolute;
+    @include flex-column("center", "center");
+    top: 0;
+    bottom: 0;
+    width: 100%;
   }
 
   .modal-cover {
@@ -117,6 +119,22 @@
 
     @include breakpoint-down(sm) {
       width: 93%;
+    }
+  }
+
+  .modal-xxl {
+    width: toRem(840);
+
+    @include breakpoint-down(lg) {
+      width: 80% !important;
+    }
+
+    @include breakpoint-down(md) {
+      width: 88% !important;
+    }
+
+    @include breakpoint-down(sm) {
+      width: 95%;
     }
   }
 }

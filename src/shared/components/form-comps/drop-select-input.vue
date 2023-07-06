@@ -136,15 +136,17 @@ export default {
         },
       ],
     },
-
     multi: {
       type: Boolean,
       default: false,
     },
-
     pre_select: {
       type: Object,
       default: () => {},
+    },
+    pre_select_multiple: {
+      type: Array,
+      default: () => [],
     },
     placeholder: {
       type: String,
@@ -152,7 +154,7 @@ export default {
     },
     empty_text: {
       type: String,
-      default: " No options available",
+      default: "No options available",
     },
     allow_search: {
       type: Boolean,
@@ -180,7 +182,8 @@ export default {
     },
 
     getMultiSelectedOptions() {
-      return [...this.input_options]?.filter((option) => option.selected);
+      // return [...this.input_options]?.filter((option) => option.selected);
+      return [...this.selected_multi_options];
     },
 
     validSelection() {
@@ -194,6 +197,7 @@ export default {
       selected_value: null,
       search_value: null,
       input_options: [],
+      selected_multi_options: [],
     };
   },
 
@@ -230,6 +234,26 @@ export default {
       immediate: true,
       deep: true,
     },
+
+    pre_select_multiple: {
+      handler(value = []) {
+        if (value.length) {
+          this.input_options?.map((option) => {
+            if (value.some((item) => item.id === option.id)) {
+              option.selected = true;
+            }
+          });
+        }
+      },
+      immediate: true,
+      deep: true,
+    },
+  },
+
+  created() {
+    this.$bus.$on("preSelectMultiple", (data) =>
+      this.makeMultiSelection(data.id)
+    );
   },
 
   methods: {
@@ -258,7 +282,11 @@ export default {
         return option;
       });
 
-      this.$emit("multiSelected", this.input_options);
+      this.selected_multi_options = this.input_options.filter(
+        (option) => option.selected
+      );
+
+      this.$emit("multiSelected", this.selected_multi_options);
     },
   },
 };

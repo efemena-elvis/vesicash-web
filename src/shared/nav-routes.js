@@ -68,7 +68,7 @@ const merchantRoutes = [
   },
   {
     id: 3,
-    title: "MOR transactions",
+    title: "MoR transactions",
     icon: "PaymentIcon",
     link: "/merchant/mor-transaction",
     slug: "mor-transaction",

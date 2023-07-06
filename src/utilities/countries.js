@@ -3,7 +3,7 @@ const countries = [
     country: "Argentina",
     dialing_code: "54",
     code: "ar",
-    flag: "https://dyclassroom.com/image/flags/ar.png",
+    flag: "https://flagsapi.com/AR/flat/64.png",
     currency: {
       sign: "$",
       short: "ARS",
@@ -15,7 +15,7 @@ const countries = [
     country: "Australia",
     dialing_code: "61",
     code: "au",
-    flag: "https://dyclassroom.com/image/flags/au.png",
+    flag: "https://flagsapi.com/AU/flat/64.png",
     currency: {
       sign: "$",
       short: "AUD",
@@ -27,7 +27,7 @@ const countries = [
     country: "Brazil",
     dialing_code: "55",
     code: "br",
-    flag: "https://dyclassroom.com/image/flags/br.png",
+    flag: "https://flagsapi.com/BR/flat/64.png",
     currency: {
       sign: "R$",
       short: "BRL",
@@ -39,7 +39,7 @@ const countries = [
     country: "Cameroon",
     dialing_code: "237",
     code: "cm",
-    flag: "https://dyclassroom.com/image/flags/cm.png",
+    flag: "https://flagsapi.com/CM/flat/64.png",
     currency: {
       sign: "XAF",
       short: "FCFA",
@@ -51,7 +51,7 @@ const countries = [
     country: "Canada",
     dialing_code: "1",
     code: "ca",
-    flag: "https://dyclassroom.com/image/flags/ca.png",
+    flag: "https://flagsapi.com/CA/flat/64.png",
     currency: {
       sign: "$",
       short: "CAD",
@@ -63,7 +63,7 @@ const countries = [
     country: "Denmark",
     dialing_code: "45",
     code: "dk",
-    flag: "https://dyclassroom.com/image/flags/dk.png",
+    flag: "https://flagsapi.com/DK/flat/64.png",
     currency: {
       sign: "kr",
       short: "DKK",
@@ -75,7 +75,7 @@ const countries = [
     country: "Ecuador",
     dialing_code: "593",
     code: "ec",
-    flag: "https://dyclassroom.com/image/flags/ec.png",
+    flag: "https://flagsapi.com/EC/flat/64.png",
     currency: {
       sign: "$",
       short: "USD",
@@ -87,9 +87,9 @@ const countries = [
     country: "Egypt",
     dialing_code: "20",
     code: "eg",
-    flag: "https://dyclassroom.com/image/flags/eg.png",
+    flag: "https://flagsapi.com/EG/flat/64.png",
     currency: {
-      sign: "E£",
+      sign: "£",
       short: "EGP",
       long: "Pound",
       description: "Egyptian Pound",
@@ -99,7 +99,7 @@ const countries = [
     country: "France",
     dialing_code: "33",
     code: "fr",
-    flag: "https://dyclassroom.com/image/flags/fr.png",
+    flag: "https://flagsapi.com/FR/flat/64.png",
     currency: {
       sign: "€",
       short: "EUR",
@@ -111,7 +111,7 @@ const countries = [
     country: "Gabon",
     dialing_code: "241",
     code: "ga",
-    flag: "https://dyclassroom.com/image/flags/ga.png",
+    flag: "https://flagsapi.com/GA/flat/64.png",
     currency: {
       sign: "FCF",
       short: "XAF",
@@ -123,7 +123,7 @@ const countries = [
     country: "Germany",
     dialing_code: "49",
     code: "de",
-    flag: "https://dyclassroom.com/image/flags/de.png",
+    flag: "https://flagsapi.com/DE/flat/64.png",
     currency: {
       sign: "€",
       short: "EUR",
@@ -135,7 +135,7 @@ const countries = [
     country: "Ghana",
     dialing_code: "233",
     code: "gh",
-    flag: "https://dyclassroom.com/image/flags/gh.png",
+    flag: "https://flagsapi.com/GH/flat/64.png",
     currency: {
       sign: "GH₵",
       short: "GHS",
@@ -147,7 +147,7 @@ const countries = [
     country: "Ivory Coast",
     dialing_code: "225",
     code: "ci",
-    flag: "https://dyclassroom.com/image/flags/ci.png",
+    flag: "https://flagsapi.com/CI/flat/64.png",
     currency: {
       sign: "CFA",
       short: "XOF",
@@ -159,7 +159,7 @@ const countries = [
     country: "Jamaica",
     dialing_code: "1-876",
     code: "jm",
-    flag: "https://dyclassroom.com/image/flags/jm.png",
+    flag: "https://flagsapi.com/JM/flat/64.png",
     currency: {
       sign: "J$",
       short: "JMD",
@@ -171,7 +171,7 @@ const countries = [
     country: "Kenya",
     dialing_code: "254",
     code: "ke",
-    flag: "https://dyclassroom.com/image/flags/ke.png",
+    flag: "https://flagsapi.com/KE/flat/64.png",
     currency: {
       sign: "KSh",
       short: "KES",
@@ -183,7 +183,7 @@ const countries = [
     country: "Mali",
     dialing_code: "223",
     code: "ml",
-    flag: "https://dyclassroom.com/image/flags/ml.png",
+    flag: "https://flagsapi.com/ML/flat/64.png",
     currency: {
       sign: "CFA",
       short: "XOF",
@@ -195,7 +195,7 @@ const countries = [
     country: "Mexico",
     dialing_code: "52",
     code: "mx",
-    flag: "https://dyclassroom.com/image/flags/mx.png",
+    flag: "https://flagsapi.com/MX/flat/64.png",
     currency: {
       sign: "$",
       short: "MXN",
@@ -207,7 +207,7 @@ const countries = [
     country: "Netherlands",
     dialing_code: "31",
     code: "nl",
-    flag: "https://dyclassroom.com/image/flags/nl.png",
+    flag: "https://flagsapi.com/NL/flat/64.png",
     currency: {
       sign: "€",
       short: "EUR",
@@ -219,7 +219,7 @@ const countries = [
     country: "New Zealand",
     dialing_code: "64",
     code: "nz",
-    flag: "https://dyclassroom.com/image/flags/nz.png",
+    flag: "https://flagsapi.com/NZ/flat/64.png",
     currency: {
       sign: "$",
       short: "NZD",
@@ -231,7 +231,7 @@ const countries = [
     country: "Nigeria",
     dialing_code: "234",
     code: "ng",
-    flag: "https://dyclassroom.com/image/flags/ng.png",
+    flag: "https://flagsapi.com/NG/flat/64.png",
     currency: {
       sign: "₦",
       short: "NGN",
@@ -243,7 +243,7 @@ const countries = [
     country: "North Korea",
     dialing_code: "850",
     code: "kp",
-    flag: "https://dyclassroom.com/image/flags/kp.png",
+    flag: "https://flagsapi.com/KP/flat/64.png",
     currency: {
       sign: "₩",
       short: "KPW",
@@ -255,7 +255,7 @@ const countries = [
     country: "Norway",
     dialing_code: "47",
     code: "no",
-    flag: "https://dyclassroom.com/image/flags/no.png",
+    flag: "https://flagsapi.com/NO/flat/64.png",
     currency: {
       sign: "kr",
       short: "NOK",
@@ -267,7 +267,7 @@ const countries = [
     country: "Oman",
     dialing_code: "968",
     code: "om",
-    flag: "https://dyclassroom.com/image/flags/om.png",
+    flag: "https://flagsapi.com/OM/flat/64.png",
     currency: {
       sign: "ر.ع.",
       short: "OMR",
@@ -279,7 +279,7 @@ const countries = [
     country: "Pakistan",
     dialing_code: "92",
     code: "pk",
-    flag: "https://dyclassroom.com/image/flags/pk.png",
+    flag: "https://flagsapi.com/PK/flat/64.png",
     currency: {
       sign: "₨",
       short: "PKR",
@@ -291,7 +291,7 @@ const countries = [
     country: "Paraguay",
     dialing_code: "595",
     code: "py",
-    flag: "https://dyclassroom.com/image/flags/py.png",
+    flag: "https://flagsapi.com/PY/flat/64.png",
     currency: {
       sign: "₲",
       short: "PYG",
@@ -303,7 +303,7 @@ const countries = [
     country: "Peru",
     dialing_code: "51",
     code: "pe",
-    flag: "https://dyclassroom.com/image/flags/pe.png",
+    flag: "https://flagsapi.com/PE/flat/64.png",
     currency: {
       sign: "S/.",
       short: "PEN",
@@ -315,7 +315,7 @@ const countries = [
     country: "Philippines",
     dialing_code: "63",
     code: "ph",
-    flag: "https://dyclassroom.com/image/flags/ph.png",
+    flag: "https://flagsapi.com/PH/flat/64.png",
     currency: {
       sign: "₱",
       short: "PHP",
@@ -327,7 +327,7 @@ const countries = [
     country: "Poland",
     dialing_code: "48",
     code: "pl",
-    flag: "https://dyclassroom.com/image/flags/pl.png",
+    flag: "https://flagsapi.com/PL/flat/64.png",
     currency: {
       sign: "zł",
       short: "PLN",
@@ -339,7 +339,7 @@ const countries = [
     country: "Portugal",
     dialing_code: "351",
     code: "pt",
-    flag: "https://dyclassroom.com/image/flags/pt.png",
+    flag: "https://flagsapi.com/PT/flat/64.png",
     currency: {
       sign: "€",
       short: "EUR",
@@ -351,7 +351,7 @@ const countries = [
     country: "Qatar",
     dialing_code: "974",
     code: "qa",
-    flag: "https://dyclassroom.com/image/flags/qa.png",
+    flag: "https://flagsapi.com/QA/flat/64.png",
     currency: {
       sign: "ر.ق",
       short: "QAR",
@@ -363,7 +363,7 @@ const countries = [
     country: "Republic of the Congo",
     dialing_code: "242",
     code: "cg",
-    flag: "https://dyclassroom.com/image/flags/cg.png",
+    flag: "https://flagsapi.com/CG/flat/64.png",
     currency: {
       sign: "FC",
       short: "XAF",
@@ -375,7 +375,7 @@ const countries = [
     country: "Romania",
     dialing_code: "40",
     code: "ro",
-    flag: "https://dyclassroom.com/image/flags/ro.png",
+    flag: "https://flagsapi.com/RO/flat/64.png",
     currency: {
       sign: "lei",
       short: "RON",
@@ -387,7 +387,7 @@ const countries = [
     country: "Russia",
     dialing_code: "7",
     code: "ru",
-    flag: "https://dyclassroom.com/image/flags/ru.png",
+    flag: "https://flagsapi.com/RU/flat/64.png",
     currency: {
       sign: "₽",
       short: "RUB",
@@ -399,7 +399,7 @@ const countries = [
     country: "Rwanda",
     dialing_code: "250",
     code: "rw",
-    flag: "https://dyclassroom.com/image/flags/rw.png",
+    flag: "https://flagsapi.com/RW/flat/64.png",
     currency: {
       sign: "RWF",
       short: "RWF",
@@ -411,7 +411,7 @@ const countries = [
     country: "Senegal",
     dialing_code: "221",
     code: "sn",
-    flag: "https://dyclassroom.com/image/flags/sn.png",
+    flag: "https://flagsapi.com/SN/flat/64.png",
     currency: {
       sign: "CFA",
       short: "XOF",
@@ -423,7 +423,7 @@ const countries = [
     country: "South Africa",
     dialing_code: "27",
     code: "za",
-    flag: "https://dyclassroom.com/image/flags/za.png",
+    flag: "https://flagsapi.com/ZA/flat/64.png",
     currency: {
       sign: "R",
       short: "ZAR",
@@ -435,7 +435,7 @@ const countries = [
     country: "Spain",
     dialing_code: "34",
     code: "es",
-    flag: "https://dyclassroom.com/image/flags/es.png",
+    flag: "https://flagsapi.com/ES/flat/64.png",
     currency: {
       sign: "€",
       short: "EUR",
@@ -447,7 +447,7 @@ const countries = [
     country: "Tanzania",
     dialing_code: "255",
     code: "tz",
-    flag: "https://dyclassroom.com/image/flags/tz.png",
+    flag: "https://flagsapi.com/TZ/flat/64.png",
     currency: {
       sign: "TZS",
       short: "TZS",
@@ -459,7 +459,7 @@ const countries = [
     country: "Togo",
     dialing_code: "228",
     code: "tg",
-    flag: "https://dyclassroom.com/image/flags/tg.png",
+    flag: "https://flagsapi.com/TG/flat/64.png",
     currency: {
       sign: "CFA",
       short: "XOF",
@@ -471,7 +471,7 @@ const countries = [
     country: "Tunisia",
     dialing_code: "216",
     code: "tn",
-    flag: "https://dyclassroom.com/image/flags/tn.png",
+    flag: "https://flagsapi.com/TN/flat/64.png",
     currency: {
       sign: "DT",
       short: "TND",
@@ -483,7 +483,7 @@ const countries = [
     country: "Turkey",
     dialing_code: "90",
     code: "tr",
-    flag: "https://dyclassroom.com/image/flags/tr.png",
+    flag: "https://flagsapi.com/TR/flat/64.png",
     currency: {
       sign: "₺",
       short: "TRY",
@@ -495,7 +495,7 @@ const countries = [
     country: "Ukraine",
     dialing_code: "380",
     code: "ua",
-    flag: "https://dyclassroom.com/image/flags/ua.png",
+    flag: "https://flagsapi.com/UA/flat/64.png",
     currency: {
       sign: "₴",
       short: "UAH",
@@ -507,7 +507,7 @@ const countries = [
     country: "United Arab Emirates",
     dialing_code: "971",
     code: "ae",
-    flag: "https://dyclassroom.com/image/flags/ae.png",
+    flag: "https://flagsapi.com/AE/flat/64.png",
     currency: {
       sign: "د.إ",
       short: "AED",
@@ -519,7 +519,7 @@ const countries = [
     country: "United Kingdom",
     dialing_code: "44",
     code: "gb",
-    flag: "https://dyclassroom.com/image/flags/gb.png",
+    flag: "https://flagsapi.com/GB/flat/64.png",
     currency: {
       sign: "£",
       short: "GBP",
@@ -531,7 +531,7 @@ const countries = [
     country: "United States",
     dialing_code: "1",
     code: "us",
-    flag: "https://dyclassroom.com/image/flags/us.png",
+    flag: "https://flagsapi.com/US/flat/64.png",
     currency: {
       sign: "$",
       short: "USD",
@@ -543,7 +543,7 @@ const countries = [
     country: "Zambia",
     dialing_code: "260",
     code: "zm",
-    flag: "https://dyclassroom.com/image/flags/zm.png",
+    flag: "https://flagsapi.com/ZM/flat/64.png",
     currency: {
       sign: "ZK",
       short: "ZMW",
@@ -555,7 +555,7 @@ const countries = [
     country: "Zimbabwe",
     dialing_code: "263",
     code: "zw",
-    flag: "https://dyclassroom.com/image/flags/zw.png",
+    flag: "https://flagsapi.com/ZW/flat/64.png",
     currency: {
       sign: "$",
       short: "ZWL",

@@ -12,7 +12,7 @@
     </div>
 
     <!-- FIELD INPUT AREA -->
-    <div class="field-input">
+    <div class="field-input" :class="expand ? 'w-100 mgt-24' : null">
       <slot name="form-area"></slot>
     </div>
   </div>
@@ -25,6 +25,10 @@ export default {
   props: {
     title: String,
     description: String,
+    expand: {
+      type: Boolean,
+      default: false,
+    },
   },
 };
 </script>

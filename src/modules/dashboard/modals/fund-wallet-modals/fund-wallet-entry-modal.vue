@@ -215,11 +215,14 @@ export default {
 
     loadWalletCurrencyOptions() {
       this.getWalletSize
-        .filter((wallet) => wallet.enabled && !wallet.short.includes("ESCROW"))
+        .filter(
+          (wallet) =>
+            wallet.enabled && !wallet.short.includes("ESCROW") && !wallet?.mor
+        )
         .map((wallet_type) => {
           this.currency_options.push({
             id: wallet_type.id,
-            name: `${wallet_type.long} wallet (${wallet_type.short})`,
+            name: `${wallet_type.description} (${wallet_type.short})`,
             slug: wallet_type.long.toLowerCase(),
             short: wallet_type.short,
             country: wallet_type.code.toUpperCase(),
@@ -315,7 +318,7 @@ export default {
               query: {
                 type: "transfer",
                 currency: this.selected_currency.short,
-                amount: response.data?.amount ?? +this.form.amount,
+                amount: +this.form.amount,
               },
             });
           }

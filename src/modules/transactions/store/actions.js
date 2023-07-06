@@ -8,11 +8,11 @@ const routes = {
   send_transaction: "send",
   head_payment: "pay",
   headless_payment: "pay/headless",
-  confirm_payment_status: "/payment/pay/new-status",
-  update_party_status: "/transactions/parties/update-status",
-  update_milestone_status: "/transactions/updateStatus",
-  renew_milestone_date: "/transactions/approve/due_date_extension",
-  wallet_to_wallet_transfer: "/payment/disbursement/wallet/wallet-transfer",
+  confirm_payment_status: "pay/new-status",
+  update_party_status: "parties/update-status",
+  update_milestone_status: "api/updateStatus",
+  renew_milestone_date: "approve/due_date_extension",
+  wallet_to_wallet_transfer: "disbursement/wallet/wallet-transfer",
 };
 
 export default {
@@ -77,34 +77,54 @@ export default {
   // CONFIRM PAYMENT STATUS
   // ==================================
   async confirmPaymentStatus(_, payload) {
-    return await $api.push(routes.confirm_payment_status, { payload });
+    return await postRequest(
+      "payment",
+      `${routes.confirm_payment_status}`,
+      payload
+    );
   },
 
   // ==================================
   // UPDATE TRANSACTION PARTY STATUS
   // ==================================
   async updateTransactionParty(_, payload) {
-    return await $api.push(routes.update_party_status, { payload });
+    return await postRequest(
+      "transactions",
+      `${routes.update_party_status}`,
+      payload
+    );
   },
 
   // ======================================
   // UPDATE MILESTONE TRANSACTION STATUS
   // ======================================
   async updateMilestoneTransaction(_, payload) {
-    return await $api.push(routes.update_milestone_status, { payload });
+    return await postRequest(
+      "transactions",
+      `${routes.update_milestone_status}`,
+      payload
+    );
   },
 
   // ======================================
   // RENEW MILESTONE TRANSACTION DATE
   // ======================================
   async renewMilestoneDate(_, payload) {
-    return await $api.push(routes.renew_milestone_date, { payload });
+    return await postRequest(
+      "transactions",
+      `${routes.renew_milestone_date}`,
+      payload
+    );
   },
 
   // ======================================
   // TRANSFER MONEY FROM WALLET TO WALLET
   // ======================================
   async walletToWalletTransfer(_, payload) {
-    return await $api.push(routes.wallet_to_wallet_transfer, { payload });
+    return await postRequest(
+      "payment",
+      routes.wallet_to_wallet_transfer,
+      payload
+    );
   },
 };

@@ -73,7 +73,16 @@
       }
     }
   }
-}
 
-.dropdown-card {
+  &-stale {
+    border: toRem(1) solid getColor("grey-50");
+    background-color: getColor("grey-50");
+    color: getColor("grey-700");
+
+    .chip-text {
+      &:before {
+        background-color: getColor("grey-700");
+      }
+    }
+  }
 }

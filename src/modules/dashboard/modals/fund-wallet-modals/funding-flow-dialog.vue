@@ -29,11 +29,13 @@
     <!-- MODAL COVER BODY -->
     <template slot="modal-cover-body">
       <div class="modal-cover-body">
-        <component
-          :is="getActiveFlow"
-          :payment_type="flows[1].payment_selection"
-          @fundingOptionSelected="goToNextFlow"
-        />
+        <keep-alive>
+          <component
+            :is="getActiveFlow"
+            :payment_type="flows[1].payment_selection"
+            @fundingOptionSelected="goToNextFlow"
+          />
+        </keep-alive>
       </div>
     </template>
   </ModalCover>

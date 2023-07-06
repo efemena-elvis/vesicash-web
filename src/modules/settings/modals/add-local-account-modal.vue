@@ -86,11 +86,11 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapGetters } from "vuex";
+import { mapActions } from "vuex";
 import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
-  name: "AddNairaAccountModal",
+  name: "AddLocalAccountModal",
 
   components: {
     ModalCover,
@@ -100,19 +100,22 @@ export default {
     account_type: {
       type: String,
     },
+
+    selected_currency: {
+      type: String,
+    },
   },
 
   computed: {
-    ...mapGetters({ getNigerianBanks: "settings/getNigerianBanks" }),
-
-    getNairaBankDetails() {
+    getBankDetails() {
       return {
         account_name: this.account_details?.account_name,
         account_no: this.account_details?.account_number,
         bank_id: this.bank.code,
         bank_name: this.bank.name,
-        country: this.bank.country,
-        currency: "NGN",
+        country: this.selected_currency.country.toLowerCase(),
+        currency: this.selected_currency.short,
+        category: this.account_type,
       };
     },
   },
@@ -138,7 +141,8 @@ export default {
   },
 
   async mounted() {
-    await this.fetchNigeriaBanks();
+    console.log(this.account_type);
+    await this.fetchBanksInCountry();
   },
 
   data: () => ({
@@ -169,16 +173,12 @@ export default {
       fetchAllBanks: "settings/fetchAllBanks",
     }),
 
-    ...mapMutations({
-      setNigerianBanks: "settings/SET_NIGERIAN_BANKS",
-    }),
-
     async addAccountDetails() {
       this.handleClick("save", "Adding account...");
 
       const response = await this.addNewBank({
         account_id: this.getAccountId,
-        updates: this.getNairaBankDetails,
+        updates: this.getBankDetails,
       });
 
       if (response?.code === 200) {
@@ -195,16 +195,11 @@ export default {
       }
     },
 
-    async fetchNigeriaBanks() {
-      // AVOID CALLING API IF BANKS IS ALREADY SAVED IN THE STORE
-      if (this.getNigerianBanks?.length) {
-        this.bank_name_options_repo = this.bank_name_options =
-          this.getNigerianBanks;
-        return;
-      }
-
+    async fetchBanksInCountry() {
       this.loading_banks = true;
-      const response = await this.getAllBanks("Nigeria");
+      const response = await this.getAllBanks({
+        country_code: this.selected_currency.country.toLowerCase(),
+      });
       this.loading_banks = false;
 
       if (response?.code === 200) {
@@ -224,9 +219,6 @@ export default {
         });
 
         this.bank_name_options_repo = this.bank_name_options = filtered_banks;
-
-        // SAVE FILTERED BANKS IN THE STORE
-        this.setNigerianBanks(filtered_banks);
       }
     },
 
@@ -241,10 +233,10 @@ export default {
 
       const response = await this.verifyBankAccount(payload);
 
-      if (response && response?.status === "ok") {
-        this.verification_message = "Account Name";
+      if (response?.code === 200) {
+        this.verification_message = "";
         this.account_details = response.data;
-        // this.$emit("nairaBankUpdated", this.getNairaBankDetails);
+        // this.$emit("nairaBankUpdated", this.getBankDetails);
       } else {
         this.verification_message =
           response?.message || response?.status

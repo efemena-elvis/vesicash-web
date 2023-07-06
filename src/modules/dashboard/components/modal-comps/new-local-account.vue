@@ -33,7 +33,7 @@
 
     <!-- ACCOUNT CONFIRM CARD -->
     <div
-      class="account-confirm-card grey-10-bg rounded-12 mgt--10"
+      class="account-confirm-card grey-10-bg rounded-12 mgt--10 mgb-14"
       v-if="account_details?.account_name || verification_message"
     >
       <div
@@ -52,19 +52,23 @@
 import { mapActions } from "vuex";
 
 export default {
-  name: "NewNairaAccount",
+  name: "NewLocalAccount",
 
-  components: {},
+  props: {
+    selected_country: {
+      type: Object,
+    },
+  },
 
   computed: {
-    getNairaBankDetails() {
+    getBankDetails() {
       return {
         account_name: this.account_details?.account_name,
         account_no: this.account_details?.account_number,
         bank_code: this.bank.code,
         bank_name: this.bank.name,
-        country: "NG",
-        currency: "NGN",
+        country: this.selected_country.country.toLowerCase(),
+        currency: this.selected_country.short,
       };
     },
   },
@@ -108,7 +112,7 @@ export default {
   }),
 
   async mounted() {
-    await this.fetchNigeriaBanks();
+    await this.fetchBankList();
   },
 
   methods: {
@@ -117,8 +121,10 @@ export default {
       verifyBankAccount: "general/verifyBankAccount",
     }),
 
-    async fetchNigeriaBanks() {
-      const response = await this.getAllBanks("Nigeria");
+    async fetchBankList() {
+      const response = await this.getAllBanks({
+        country_code: this.selected_country.country.toLowerCase(),
+      });
 
       if (response?.code === 200) {
         let bank_options = response.data;
@@ -151,11 +157,11 @@ export default {
 
       const response = await this.verifyBankAccount(payload);
 
-      if (response?.status === "ok") {
+      if (response?.code === 200) {
         this.verification_message = "";
         this.account_details = response.data;
 
-        this.$emit("bankDetailsUpdated", this.getNairaBankDetails);
+        this.$emit("bankDetailsUpdated", this.getBankDetails);
       } else {
         this.verification_message =
           response?.message || "Please check account details";
