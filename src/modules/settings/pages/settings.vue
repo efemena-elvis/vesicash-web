@@ -4,7 +4,7 @@
     <div class="page-title grey-900 h4-text mgb-25">Settings</div>
 
     <div class="row">
-      <div class="col-12 col-md-10 col-lg-9">
+      <div class="col-12 col-md-10">
         <!-- PAGE SWITCHER ROUTE -->
         <PageSwitcherRoute :page_data="getPages" />
 
@@ -17,10 +17,10 @@
 </template>
 
 <script>
-import PageSwitcherRoute from "@/shared/components/page-switcher-route";
+import PageSwitcherRoute from "@/shared/components/util-comps/page-switcher-route";
 
 export default {
-  name: "Settings",
+  name: "SettingsPage",
 
   components: {
     PageSwitcherRoute,
@@ -31,16 +31,30 @@ export default {
       return this.getAccountType === "business" ? true : false;
     },
 
+    isMoREnabled() {
+      return this.isMoRSetupEnabled;
+    },
+
     getPages() {
-      const pages = [...this.pages];
-      if (!this.isBusiness) pages.splice(4, 1);
-      return pages;
+      if (this.isBusiness) {
+        if (this.isMoREnabled) {
+          return [
+            ...this.individual_pages,
+            ...this.business_pages,
+            ...this.mor_pages,
+          ];
+        } else {
+          return [...this.individual_pages, ...this.business_pages];
+        }
+      } else {
+        return this.individual_pages;
+      }
     },
   },
 
   data() {
     return {
-      pages: [
+      individual_pages: [
         {
           id: 1,
           name: "Profile",
@@ -65,6 +79,9 @@ export default {
           route: "AccountSettings",
           active: false,
         },
+      ],
+
+      business_pages: [
         {
           id: 5,
           name: "Users",
@@ -73,10 +90,19 @@ export default {
         },
         {
           id: 6,
-          name: "API",
-          route: "APISettings",
+          name: "MoR Setup",
+          route: "MerchantConfig",
           active: false,
         },
+      ],
+
+      mor_pages: [
+        // {
+        //   id: 7,
+        //   name: "MoR Preferences",
+        //   route: "UsersSettings",
+        //   active: false,
+        // },
       ],
     };
   },
@@ -87,12 +113,11 @@ export default {
 .settings-form-area {
   .page-input-block {
     border-top: toRem(0.5) solid getColor("grey-200");
-    @include flex-row-start-nowrap;
-    align-items: flex-start;
+    @include flex-row-nowrap("flex-start", "flex-start");
     padding: toRem(32) 0;
 
     @include breakpoint-down(sm) {
-      @include flex-column-start-start;
+      @include flex-column("flex-start", "flex-start");
       padding: toRem(24) 0;
     }
   }

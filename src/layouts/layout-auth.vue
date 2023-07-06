@@ -35,7 +35,7 @@ export default {
   data: () => ({}),
 
   mounted() {
-    this.$color.setPageBackgroundColor("#011a27");
+    this.$utils.setPageBackgroundColor("#011a27");
   },
 };
 </script>

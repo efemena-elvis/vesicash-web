@@ -56,8 +56,7 @@ export default {
 }
 
 .fund-disburse-type-card {
-  @include flex-row-between-nowrap;
-  align-items: flex-start;
+  @include flex-row-nowrap("space-between", "flex-start");
   padding: toRem(14) toRem(16);
   @include transition(0.4s);
   margin-bottom: toRem(24);

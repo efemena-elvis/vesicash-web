@@ -8,9 +8,9 @@
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
         <div class="modal-cover-title">BVN details</div>
-        <div
-          class="tertiary-2-text grey-600 wt-75"
-        >Enter Your bank verificaton number to verify your identity</div>
+        <div class="tertiary-2-text grey-600 wt-75">
+          Enter Your bank verificaton number to verify your identity
+        </div>
       </div>
     </template>
 
@@ -26,16 +26,22 @@
             placeholder="Enter Number"
             @getInputState="updateFormState($event, 'bvn')"
             :error_handler="{
-            type: 'minimum',
-            message: 'Enter a valid bvn',
-            minimum:10
-          }"
+              type: 'minimum',
+              message: 'Enter a valid bvn',
+              minimum: 10,
+            }"
           />
         </div>
 
         <div class="form-group">
           <label class="form-label" for="dob">Date of birth</label>
-          <input type="date" name="dob" id="dob" class="form-control" v-model="dob" />
+          <input
+            type="date"
+            name="dob"
+            id="dob"
+            class="form-control"
+            v-model="dob"
+          />
         </div>
 
         <InfoAlertCard />
@@ -45,7 +51,13 @@
     <!-- MODAL COVER FOOTER -->
     <template slot="modal-cover-footer">
       <div class="modal-cover-footer">
-        <button ref="save" class="btn btn-primary btn-md wt-100 mgt-17" @click="save">Submit</button>
+        <button
+          ref="save"
+          class="btn btn-primary btn-md wt-100 mgt-17"
+          @click="save"
+        >
+          Submit
+        </button>
       </div>
     </template>
   </ModalCover>
@@ -53,15 +65,13 @@
 
 <script>
 import { mapActions } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
-import BasicInput from "@/shared/components/form-comps/basic-input";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "VerificationBvnModal",
 
   components: {
     ModalCover,
-    BasicInput,
     InfoAlertCard: () =>
       import(
         /* webpackChunkName: 'shared-module' */ "@/shared/components/card-comps/info-alert-card"
@@ -105,7 +115,7 @@ export default {
 
         this.handleClick("save", "Submit", false);
 
-        if (response.code === 200) {
+        if (response?.code === 200) {
           this.$emit("saved", "Your BVN has been verified successfully");
         } else this.pushToast(response.message, "error");
       } catch (err) {

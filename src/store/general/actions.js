@@ -1,18 +1,14 @@
 import axios from "axios";
-import {
-  VESICASH_API_URL,
-  VESICASH_PRIVATE_KEY_TOKEN,
-  VESICASH_PUBLIC_KEY_TOKEN,
-  VESICASH_AUTH_TOKEN,
-} from "@/utilities/constant";
-import { getStorage } from "@/utilities/auth-utils";
-import $api from "@/services/service-api";
+import { constants } from "@/utilities";
+import { getServiceRoute } from "@/utilities/micro-services";
+import { serviceStorage, serviceApi as $api } from "@/shared/services";
+import { getRequest, postRequest } from "@/utilities/micro-services";
 
 const routes = {
   location: "https://ip2c.org/s",
-  upload_file: "/upload/file",
-  country_bank_list: "/admin/banks/country",
-  verify_account: "/payment/banks/account_verification",
+  upload_file: "files",
+  country_bank_list: "banks",
+  verify_bank_account: "bank_account/verify",
   verify_wallet: "/auth/user/bank-details",
 };
 
@@ -39,20 +35,24 @@ export default {
   // UPLOAD FILE TO DIGITAL SPACE
   // ======================================
   async uploadToSpace({ commit }, { file, formatted_size, type = null }) {
-    const authUserToken = getStorage(VESICASH_AUTH_TOKEN) || null;
-    formData.append("files[0]", file);
+    const authUserToken =
+      serviceStorage.getStorage({
+        storage_name: constants.VESICASH_AUTH_TOKEN,
+      }) || null;
+
+    formData.append("files", file);
     let file_payload = [];
 
     try {
       const response = await axios.post(
-        `${VESICASH_API_URL}${routes.upload_file}`,
+        getServiceRoute("upload", routes.upload_file),
         formData,
         {
           headers: {
             Authorization: `Bearer ${authUserToken}`,
             "Content-Type": "multipart/form-data",
-            "V-PUBLIC-KEY": VESICASH_PUBLIC_KEY_TOKEN,
-            "V-PRIVATE-KEY": VESICASH_PRIVATE_KEY_TOKEN,
+            "V-PUBLIC-KEY": constants.VESICASH_PUBLIC_KEY_TOKEN,
+            "V-PRIVATE-KEY": constants.VESICASH_PRIVATE_KEY_TOKEN,
           },
           onUploadProgress: function (progressEvent) {
             let progress_count = parseInt(
@@ -71,16 +71,15 @@ export default {
         }
       );
 
-      // UPDATE FILE STATE
-      if (response.data.code === 200) {
-        file_payload = [
-          {
-            name: file.name,
-            url: response?.data?.data?.urls[0],
-          },
-        ];
+      let file_response = response.data;
 
-        type !== "escrow" &&
+      // UPDATE FILE STATE
+      if (file_response.code === 201) {
+        file_response.data.map((item) => {
+          file_payload.push({ name: item.original_name, url: item.file_url });
+        });
+
+        type === "escrow" &&
           commit("transactions/UPDATE_TRANSACTION_ATTACHMENT", file_payload, {
             root: true,
           });
@@ -101,7 +100,7 @@ export default {
       }
 
       let response_payload = {
-        code: 200,
+        code: 201,
         data: file_payload,
       };
 
@@ -115,7 +114,10 @@ export default {
   // UPLOAD FILE TO DIGITAL CLOUD [MULTIPLE FILES]
   // ======================================
   async uploadToCloud({ commit }, { files, id }) {
-    const authUserToken = getStorage(VESICASH_AUTH_TOKEN) || null;
+    const authUserToken =
+      serviceStorage.getStorage({
+        storage_name: constants.VESICASH_AUTH_TOKEN,
+      }) || null;
 
     let form_data = new FormData();
 
@@ -125,14 +127,14 @@ export default {
 
     try {
       const response = await axios.post(
-        `${VESICASH_API_URL}${routes.upload_file}`,
+        `${constants.VESICASH_API_URL}${routes.upload_file}`,
         form_data,
         {
           headers: {
             Authorization: `Bearer ${authUserToken}`,
             "Content-Type": "multipart/form-data",
-            "V-PUBLIC-KEY": VESICASH_PUBLIC_KEY_TOKEN,
-            "V-PRIVATE-KEY": VESICASH_PRIVATE_KEY_TOKEN,
+            "V-PUBLIC-KEY": constants.VESICASH_PUBLIC_KEY_TOKEN,
+            "V-PRIVATE-KEY": constants.VESICASH_PRIVATE_KEY_TOKEN,
           },
 
           onUploadProgress: function (progressEvent) {
@@ -214,16 +216,18 @@ export default {
   // ==============================
   // GET ALL BANKS IN A COUNTRY
   // ==============================
-  async getAllBanks(_, country) {
-    return await $api.push(routes.country_bank_list, { payload: { country } });
+  async getAllBanks(_, payload) {
+    return await postRequest("payment", routes.country_bank_list, payload);
   },
 
   // ==============================
   // VERIFY BANK ACCOUNT
   // ==============================
-  async verifyBankAccount(_, { bank_code, account_number }) {
-    return await $api.fetch(
-      `${routes.verify_account}?bank_code=${bank_code}&account_number=${account_number}`
+  async verifyBankAccount(_, payload) {
+    return await postRequest(
+      "verification",
+      routes.verify_bank_account,
+      payload
     );
   },
 
@@ -232,5 +236,9 @@ export default {
   // ==============================
   async verifyWalletAccountID(_, account_id) {
     return await $api.fetch(`${routes.verify_wallet}/${account_id}`);
+  },
+
+  updateWalletListSize({ commit }, wallet_size) {
+    commit("UPDATE_WALLET_SIZE", wallet_size);
   },
 };

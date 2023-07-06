@@ -14,10 +14,12 @@
           Enter the OTP code we sent to
           <b>{{ getUserEmail }}</b> and
           <b>{{ getUserPhone }}</b>
-          to withdraw
+          to transfer
           <b>
             {{
-              `${$money.getSign(getWalletType.slug)}${$money.addComma(
+              `${$money.getSign(
+                getWalletType.slug
+              )}${$utils.formatCurrencyWithComma(
                 Number(getWithdrawalMeta.amount) -
                   getWithdrawalMeta.withdrawal_charge
               )}`
@@ -117,7 +119,7 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "WithdrawalOTPModal",
@@ -150,7 +152,7 @@ export default {
     }),
 
     getUserPhone() {
-      return this.$string.getAsterickedText(this.getUser?.phone, [3, 4, 5]);
+      return this.$utils.getAsterickedText(this.getUser?.phone, [3, 4, 5]);
     },
 
     getUserEmail() {
@@ -160,7 +162,7 @@ export default {
       const domain = this.getUser?.email
         ? this.getUser?.email?.split("@")[1]
         : "";
-      const astericed_protion = this.$string.getAsterickedText(
+      const astericed_protion = this.$utils.getAsterickedText(
         email_name,
         [3, 4, 5]
       );
@@ -169,13 +171,13 @@ export default {
 
     getWithdrawalPayload() {
       return {
-        account_id: this.getAccountId,
+        account_id: +this.getAccountId,
         beneficiary_name:
           this.getWithdrawalMeta.selected_beneficiary.account_name,
         bank_account_number:
           this.getWithdrawalMeta.selected_beneficiary.account_no.toString(),
         bank_code: this.getWithdrawalMeta.selected_beneficiary.bank_code,
-        amount: this.getWithdrawalMeta.amount,
+        amount: +this.getWithdrawalMeta.amount,
         currency: this.getWalletType.short,
         debit_currency: this.getWalletType.short,
         gateway: "monnify",
@@ -185,11 +187,11 @@ export default {
 
     getWalletTransferDetails() {
       return {
-        sender_account_id: this.getAccountId,
+        sender_account_id: +this.getAccountId,
         recipient_account_id:
-          this.getWithdrawalMeta.selected_beneficiary.account_no,
-        amount: this.getWithdrawalMeta.amount,
-        final_amount: this.getWithdrawalMeta.amount,
+          +this.getWithdrawalMeta.selected_beneficiary.account_no,
+        amount: +this.getWithdrawalMeta.amount,
+        final_amount: +this.getWithdrawalMeta.amount,
         sender_currency: this.getWalletType.short,
         recipient_currency: this.getWalletType.short,
       };
@@ -259,7 +261,7 @@ export default {
       handler(value) {
         if (value.length === 1) {
           this.$nextTick(() => this.$refs.otpSix.blur());
-          this.handleUserOTPVerification();
+          // this.handleUserOTPVerification();
         }
       },
     },
@@ -335,11 +337,12 @@ export default {
         otp_token: this.getOTPToken,
       };
 
+      this.handleClick("continue");
+
       this.verifyUserOTP(payload)
         .then(async (response) => {
-          if (response.code === 200) {
+          if (response?.code === 200) {
             await this.makeWithdrawal();
-            // this.$emit("closeTriggered");
           }
 
           // HANDLE NON 200 RESPONSE
@@ -364,7 +367,7 @@ export default {
 
       this.sendUserOTP(payload)
         .then((response) => {
-          if (response.code === 200) this.pushToast(`OTP sent`, "success");
+          if (response?.code === 200) this.pushToast(`OTP sent`, "success");
         })
         .catch(() => this.pushToast("Unable to generate an OTP code", "error"));
     },
@@ -393,13 +396,6 @@ export default {
       this.$bus.$emit("show-page-loader", "Processing your transfer");
 
       try {
-        const amount = `${this.$money.getSign(
-          this.getWalletType.slug
-        )}${this.$money.addComma(
-          this.getWithdrawalMeta.amount -
-            this.getWithdrawalMeta.withdrawal_charge
-        )}`;
-
         this.handleClick("continue");
 
         const response =
@@ -410,8 +406,13 @@ export default {
         this.$bus.$emit("hide-page-loader");
         this.handleClick("continue", "Continue", false);
 
-        response.code == 200
-          ? this.$emit("done", amount)
+        response?.code == 200
+          ? this.$emit("done", {
+              amount:
+                this.getWithdrawalMeta.amount -
+                this.getWithdrawalMeta.withdrawal_charge,
+              currency: this.getWalletType.slug,
+            })
           : this.pushToast(
               response.message || "Withdrawal failed. Please try again",
               "warning"
@@ -430,7 +431,7 @@ export default {
 <style lang="scss" scoped>
 .auth-page {
   .form-group {
-    @include flex-row-center-nowrap;
+    @include flex-row-nowrap("center", "center");
 
     .form-control {
       padding: toRem(8) toRem(10);

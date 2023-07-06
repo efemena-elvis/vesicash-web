@@ -1,27 +1,19 @@
 // =============================================
 // APPLICATION AUTHENTICATION MIDDLEWARE
 // =============================================
-
-import {
-  verifyAuthRoutes,
-  verifyGuestRoutes,
-} from "@/middlewares/verify-routes-entry";
-
-// GET USER AUTHENTICATION TOKEN
+import routeGuard from "./route-guard";
 
 export default (to, from, next) => {
-  // =========================================
-  // VERIFY IF ROUTE NEEDS AUTHENTICATION
-  // =========================================
+  /***********************************************************
+   * Verify if user accessing route is an authenticated user
+   *************************************************************/
   if (to.matched.some((record) => record.meta.requiresAuth)) {
-    verifyAuthRoutes(to, next);
-  }
-
-  // =========================================
-  // VERIFY IF ROUTE IS A JUST A GUEST
-  // =========================================
-  else if (to.matched.some((record) => record.meta.guest)) {
-    verifyGuestRoutes(to, next);
+    routeGuard.verifyAuthRoutes(to, next);
+  } else if (to.matched.some((record) => record.meta.guest)) {
+    /***********************************************************
+     * Verify if user accessing route is just a guest user
+     *************************************************************/
+    routeGuard.verifyGuestRoutes(to, next);
   }
 
   // FALLBACK

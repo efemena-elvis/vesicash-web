@@ -4,11 +4,13 @@
     <div class="page-title primary-1-text grey-900 mgb-4">Users</div>
 
     <!-- PAGE META -->
-    <div class="page-meta tertiary-2-text grey-600">Create and manage your users here.</div>
+    <div class="page-meta tertiary-2-text grey-600">
+      Create and manage your users here.
+    </div>
 
     <button
       class="btn btn-md btn-primary add-user-button"
-      v-if="getConnectedUsers.length"
+      v-if="hasConnectedUsers"
       @click="toggleAddUserModal"
     >
       <span class="icon icon-plus mgr-8"></span> Add new user
@@ -20,7 +22,10 @@
 
     <portal to="vesicash-modals">
       <transition name="fade" v-if="show_add_user_modal">
-        <AddUserModal @closeTriggered="toggleAddUserModal" @saved="toggleSuccessModal" />
+        <AddUserModal
+          @closeTriggered="toggleAddUserModal"
+          @saved="toggleSuccessModal"
+        />
       </transition>
 
       <transition name="fade" v-if="show_success_modal">
@@ -50,6 +55,10 @@ export default {
 
   computed: {
     ...mapGetters({ getConnectedUsers: "settings/getConnectedUsers" }),
+
+    hasConnectedUsers() {
+      return this.getConnectedUsers?.length;
+    },
   },
 
   data() {
@@ -112,7 +121,7 @@ export default {
 }
 
 .users-empty-state {
-  @include flex-column-center;
+  @include flex-column("center", "center");
   margin-top: toRem(37.5);
   padding-bottom: toRem(130);
 

@@ -94,7 +94,7 @@ export default {
   }
 
   .auth-page {
-    width: toRem(362);
+    width: toRem(400);
 
     @include breakpoint-down(xxs) {
       width: 100%;
@@ -105,7 +105,7 @@ export default {
     }
 
     @include breakpoint-up(sm) {
-      width: toRem(362);
+      width: toRem(400);
     }
 
     .btn-area {

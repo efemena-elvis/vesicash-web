@@ -115,11 +115,11 @@ export default {
       let sliced_currency = amount_data.slice(0, 3);
 
       if (currencies.includes(sliced_currency)) {
-        return `${this.$money.getSign(sliced_currency)}${this.$money.addComma(
-          amount_data.slice(3)
-        )}`;
+        return `${this.$money.getSign(
+          sliced_currency
+        )}${this.$utils.formatCurrencyWithComma(amount_data.slice(3))}`;
       } else {
-        return `${this.$money.addComma(amount_data.slice(3))}`;
+        return `${this.$utils.formatCurrencyWithComma(amount_data.slice(3))}`;
       }
     },
   },
@@ -159,7 +159,7 @@ export default {
 
         this.hidePageLoader();
 
-        if (response.code === 200) this.payment_confirmed = true;
+        if (response?.code === 200) this.payment_confirmed = true;
         else {
           // this.pushToast(response.message || "Payment failed", "error");
 

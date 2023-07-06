@@ -12,13 +12,7 @@
         <div class="card-item" :key="index">
           <!-- CARD TITLE TITLE -->
           <div
-            class="
-              card-item-title
-              text-uppercase
-              grey-600
-              tertiary-3-text
-              mgb-8
-            "
+            class="card-item-title text-uppercase grey-600 tertiary-3-text mgb-8"
           >
             {{ card.title }}
           </div>
@@ -32,14 +26,7 @@
             >
               <FileIcon active />
               <div
-                class="
-                  card-item-value
-                  green-500
-                  secondary-2-text
-                  link-underline
-                  mgl-6
-                  pointer text-no-wrap
-                "
+                class="card-item-value green-500 secondary-2-text link-underline mgl-6 pointer text-no-wrap"
               >
                 {{ card.file.name }}
               </div>
@@ -135,10 +122,10 @@ export default {
   }
 
   .bottom-row {
-    @include flex-row-start-nowrap;
+    @include flex-row-nowrap("flex-start", "center");
 
     @include breakpoint-custom-down(640) {
-      @include flex-row-between-wrap;
+      @include flex-row-wrap("space-between", "center");
     }
 
     .card-item {

@@ -1,5 +1,5 @@
 import { mapActions, mapGetters } from "vuex";
-import { VESICASH_APP_URL } from "@/utilities/constant";
+import { constants } from "@/utilities";
 import { CURRENCY_CODE } from "@/modules/transactions/constants";
 
 const paymentHelper = {
@@ -75,7 +75,9 @@ const paymentHelper = {
         let invited_party =
           JSON.parse(recipients).length > 1 ? "All" : seller?.email;
 
-        return `${VESICASH_APP_URL}/transaction/payment-successful?type=${type}&party=${party}&transaction_id=${transaction_id}&name=${title}&parties=${invited_party}&fee=${
+        return `${
+          constants.VESICASH_APP_URL
+        }/transaction/payment-successful?type=${type}&party=${party}&transaction_id=${transaction_id}&name=${title}&parties=${invited_party}&fee=${
           this.getCurrency
         }${this.transfer_amount || totalAmount}&redirect=${location.href}`;
       }
@@ -84,7 +86,9 @@ const paymentHelper = {
       else {
         let { transaction_id, name, parties, fee } = this.$route.query;
 
-        return `${VESICASH_APP_URL}/transaction/payment-successful?type=${type}&party=${party}&transaction_id=${transaction_id}&name=${name}&parties=${parties}&fee=${
+        return `${
+          constants.VESICASH_APP_URL
+        }/transaction/payment-successful?type=${type}&party=${party}&transaction_id=${transaction_id}&name=${name}&parties=${parties}&fee=${
           this.getCurrency
         }${this.transfer_amount || fee}`;
       }
@@ -175,7 +179,7 @@ const paymentHelper = {
 
     closePaymentOpenWire({ currency, gateway }) {
       this.show_payment_option_modal = false;
-      this.gateway = gateway;
+      this.gateway = gateway ?? "monnify";
       currency === "naira"
         ? this.toggleNairaTransferModal()
         : this.toggleWireTransferModal();
@@ -261,7 +265,7 @@ const paymentHelper = {
 
         this.hidePageLoader();
 
-        if (response.code === 200) {
+        if (response?.code === 200) {
           location.href = this.getSuccessPageRoute;
         } else {
           this.transfer_amount = "";

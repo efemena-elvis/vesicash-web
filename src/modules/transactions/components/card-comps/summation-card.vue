@@ -8,7 +8,7 @@
         <div
           class="value grey-900 secondary-2-text"
           v-html="
-            `${getCurrencySign} ${$money.addComma(
+            `${getCurrencySign} ${$utils.formatCurrencyWithComma(
               amount_data.milestone_amounts[0] || 0
             )}`
           "
@@ -31,7 +31,7 @@
         <div
           class="value grey-900 secondary-2-text"
           v-html="
-            `${getCurrencySign} ${$money.addComma(
+            `${getCurrencySign} ${$utils.formatCurrencyWithComma(
               amount_data.milestone_amounts[index] || 0
             )}`
           "
@@ -43,7 +43,11 @@
       <div class="item grey-600 tertiary-2-text">Escrow fee (5%)</div>
       <div
         class="value grey-900 secondary-2-text"
-        v-html="`${getCurrencySign} ${$money.addComma(amount_data.escrow_fee)}`"
+        v-html="
+          `${getCurrencySign} ${$utils.formatCurrencyWithComma(
+            amount_data.escrow_fee
+          )}`
+        "
       ></div>
     </div>
 
@@ -52,7 +56,11 @@
       <div class="item grey-900 tertiary-2-text">TOTAL AMOUNT</div>
       <div
         class="value grey-900 primary-2-text"
-        v-html="`${getCurrencySign} ${$money.addComma(amount_data.total_fee)}`"
+        v-html="
+          `${getCurrencySign} ${$utils.formatCurrencyWithComma(
+            amount_data.total_fee
+          )}`
+        "
       ></div>
     </div>
   </div>
@@ -120,7 +128,7 @@ export default {
 
   .item-row {
     border-bottom: toRem(1) solid getColor("grey-100");
-    @include flex-row-between-nowrap;
+    @include flex-row-nowrap("space-between", "center");
     padding-bottom: toRem(14);
     margin-bottom: toRem(16);
 
@@ -131,7 +139,7 @@ export default {
   }
 
   .total-row {
-    @include flex-row-between-nowrap;
+    @include flex-row-nowrap("space-between", "center");
   }
 }
 </style>

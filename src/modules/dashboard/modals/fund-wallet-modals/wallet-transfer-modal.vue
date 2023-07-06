@@ -67,14 +67,11 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
-import PageBackBtn from "@/shared/components/page-back-btn";
-import FormHelper from "@/modules/auth/mixins/auth-helper";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
+import PageBackBtn from "@/shared/components/util-comps/page-back-btn";
 
 export default {
   name: "WalletTransferModal",
-
-  mixins: [FormHelper],
 
   components: {
     ModalCover,
@@ -83,11 +80,6 @@ export default {
     SumTotalDisplayCard: () =>
       import(
         /* webpackChunkName: "shared-module" */ "@/shared/components/card-comps/sum-total-display-card"
-      ),
-
-    BasicInput: () =>
-      import(
-        /* webpackChunkName: 'shared-module' */ "@/shared/components/form-comps/basic-input"
       ),
   },
 
@@ -139,7 +131,9 @@ export default {
 
       const currency = this.isNaira ? "NGN" : "USD";
 
-      return `${this.$money.getSign(currency)}${this.$money.addComma(balance)}`;
+      return `${this.$money.getSign(
+        currency
+      )}${this.$utils.formatCurrencyWithComma(balance)}`;
     },
 
     continueDisabled() {

@@ -1,10 +1,14 @@
 <template>
   <div class="wrapper position-absolute w-auto h-auto" :class="tour.position">
-    <div class="walkthrough-modal position-relative rounded-8 neutral-10-bg h-auto">
+    <div
+      class="walkthrough-modal position-relative rounded-8 neutral-10-bg h-auto"
+    >
       <!-- TOP AREA -->
       <div class="top-area">
         <!-- TITLE TEXT -->
-        <div class="title-text primary-1-text text-center grey-900 mgb-8">{{ tour.title }}</div>
+        <div class="title-text primary-1-text text-center grey-900 mgb-8">
+          {{ tour.title }}
+        </div>
 
         <!-- DESCRIPTION TEXT -->
         <div
@@ -15,12 +19,14 @@
 
       <!-- BOTTOM AREA -->
       <div class="bottom-area">
-        <button class="btn btn-secondary btn-md" @click="skipTour" ref="skip">Skip</button>
+        <button class="btn btn-secondary btn-md" @click="skipTour" ref="skip">
+          Skip
+        </button>
 
         <!-- PAGING OPTIONS -->
-        <div
-          class="paging-option tertiary-2-text grey-700"
-        >{{ getTourData.count }} of {{ getTourData.total }}</div>
+        <div class="paging-option tertiary-2-text grey-700">
+          {{ getTourData.count }} of {{ getTourData.total }}
+        </div>
 
         <button class="btn btn-primary btn-md" @click="nextTour">Next</button>
       </div>
@@ -71,7 +77,7 @@ export default {
 
       this.handleClick("skip", "Skip", false);
 
-      if (response.code === 200) this.$emit("skipTour");
+      if (response?.code === 200) this.$emit("skipTour");
     },
 
     // MOVE TO NEXT TOUR SCREEN
@@ -116,8 +122,7 @@ export default {
 
     .bottom-area {
       padding: toRem(20) toRem(16);
-      @include flex-row-between-nowrap;
-      align-items: center;
+      @include flex-row-nowrap("space-between", "center");
     }
 
     .arrow-indicator {

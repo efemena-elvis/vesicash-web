@@ -146,9 +146,9 @@ export default {
     },
   },
 
-  data() {
-    return {};
-  },
+  data: () => ({
+    acceptable_filetypes: ["doc", "docx", "pdf"],
+  }),
 
   methods: {
     ...mapActions({
@@ -166,12 +166,19 @@ export default {
 
       this.$refs.fileUpload.value = ""; // CLEAR OUT FILE CACHE
 
+      uploaded_files.map((file) => {
+        if (!this.processFileType(file.name)) {
+          this.pushToast("Upload a file of type doc or pdf", "error");
+          return false;
+        }
+      });
+
       if (uploaded_files.length < this.fileCount && this.controlCount) {
         this.$emit("upload", `Upload at least ${this.fileCount} files`);
         return;
       }
 
-      this.verifyFilesSize(uploaded_files);
+      if (!this.verifyFilesSize(uploaded_files)) return false;
 
       const formatted_files = uploaded_files.map((file) => {
         file.formatted_size = this.processFileSize(file.size);
@@ -185,9 +192,14 @@ export default {
 
       this.uploadToCloud(payload)
         .then((response) => {
-          if (response.code) this.$emit("uploaded", response.data);
+          if (response?.code) this.$emit("uploaded", response.data);
         })
         .catch((err) => console.log(err));
+    },
+
+    processFileType(name) {
+      let file_type = name.split(".").at(-1);
+      return this.acceptable_filetypes.includes(file_type) ? true : false;
     },
 
     processFileSize(size) {
@@ -198,13 +210,16 @@ export default {
     },
 
     verifyFilesSize(files) {
+      let is_valid = false;
+
       files.forEach((file) => {
-        if (!this.processFileSize(file.size)) {
-          console.log("FILE SIZE", file, file.size);
+        if (this.processFileSize(file.size) === false) {
           this.pushToast("Upload a maximum file size of 1mb", "error");
-          return false;
-        }
+          is_valid = false;
+        } else is_valid = true;
       });
+
+      return is_valid;
     },
 
     removeAttachedFile(index, id) {
@@ -220,7 +235,7 @@ export default {
 
   .no-content-state {
     padding: toRem(17) toRem(16);
-    @include flex-column-center;
+    @include flex-column("center", "center");
 
     &:hover {
       background: getColor("grey-10");
@@ -266,11 +281,11 @@ export default {
   }
 
   .content-state {
-    @include flex-row-between-nowrap;
+    @include flex-row-nowrap("space-between", "center");
     padding: toRem(17) toRem(16);
 
     .left-section {
-      @include flex-row-start-nowrap;
+      @include flex-row-nowrap("flex-start", "center");
 
       .icon-card {
         position: relative;

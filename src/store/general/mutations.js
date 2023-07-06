@@ -1,3 +1,5 @@
+import { serviceStorage } from "@/shared/services";
+
 export default {
   UPDATE_FILE_PROGRESS: (state, payload) => {
     state.file = payload;
@@ -36,5 +38,15 @@ export default {
 
   END_TOUR_FLOW: (state) => {
     state.tour.ongoing = false;
+  },
+
+  UPDATE_WALLET_SIZE: (state, wallet) => {
+    state.wallets = wallet;
+
+    serviceStorage.setStorage({
+      storage_name: "user_wallet_size",
+      storage_value: state.wallets,
+      storage_type: "object",
+    });
   },
 };

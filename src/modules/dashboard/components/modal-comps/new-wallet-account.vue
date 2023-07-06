@@ -36,19 +36,11 @@
 
 <script>
 import { mapActions } from "vuex";
-import FormHelper from "@/modules/auth/mixins/auth-helper";
 
 export default {
   name: "NewWalletAccount",
 
-  mixins: [FormHelper],
-
-  components: {
-    BasicInput: () =>
-      import(
-        /* webpackChunkName: 'shared-module' */ "@/shared/components/form-comps/basic-input"
-      ),
-  },
+  components: {},
 
   watch: {
     "form.account_id": {

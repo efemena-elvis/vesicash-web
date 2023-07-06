@@ -1,3 +1,5 @@
+import { serviceStorage } from "@/shared/services";
+
 export default () => ({
   file: {
     name: "",
@@ -13,4 +15,10 @@ export default () => ({
     total: 8,
     ongoing: false,
   },
+
+  wallets:
+    serviceStorage.getStorage({
+      storage_name: "user_wallet_size",
+      storage_type: "object",
+    }) || [],
 });

@@ -54,7 +54,7 @@
 <script>
 import { mapActions } from "vuex";
 import UserIcon from "@/shared/components/icon-comps/user-icon";
-import ModalCover from "@/shared/components/modal-cover";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "AcceptTransactionModal",
@@ -90,7 +90,7 @@ export default {
 
       this.updateTransactionParty(request_payload)
         .then((response) => {
-          if (response.code === 200) {
+          if (response?.code === 200) {
             this.pushToast(
               status === "accepted"
                 ? "Transaction has been accepted"
@@ -113,10 +113,10 @@ export default {
 
 <style lang="scss" scoped>
 .modal-cover-body {
-  @include flex-column-center;
+  @include flex-column("center", "center");
 
   .user-icon-wrapper {
-    @include flex-column-center;
+    @include flex-column("center", "center");
     @include draw-shape(115);
     position: relative;
 

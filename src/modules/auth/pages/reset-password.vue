@@ -4,16 +4,16 @@
     <form @submit.prevent="handleUserResetPassword" class="auth-page">
       <!-- PASSWORD INPUT -->
       <div class="form-group mgb-13">
-        <BasicInput
+        <FormFieldInput
           label_title="New password"
           label_id="password"
           input_type="password"
           is_required
           placeholder="Enter new password"
           toggle_password
-          :input_value="form.password"
           :custom_style="{ input_wrapper_style: 'form-suffix' }"
-          @getInputState="updateFormState($event, 'password')"
+          :input_value="getFormFieldValueMx(form, 'password')"
+          @getInputState="updateFormFieldMx($event, 'password')"
           :error_handler="{
             type: 'password',
             message: 'Password should contain at least 4 characters',
@@ -23,16 +23,16 @@
 
       <!-- CONFIRM PASSWORD INPUT -->
       <div class="form-group mgb-13">
-        <BasicInput
+        <FormFieldInput
           label_title="Confirm password"
           label_id="newPassword"
           input_type="password"
           is_required
           placeholder="Enter new password"
           toggle_password
-          :input_value="form.confirm_password"
           :custom_style="{ input_wrapper_style: 'form-suffix' }"
-          @getInputState="updateFormState($event, 'confirm_password')"
+          :input_value="getFormFieldValueMx(form, 'confirm_password')"
+          @getInputState="updateFormFieldMx($event, 'confirm_password')"
           :error_handler="{
             type: 'password',
             message: 'Password should contain at least 4 characters',
@@ -42,13 +42,13 @@
 
       <!-- PASSWORD RESET TOKEN -->
       <div class="form-group mgb-13">
-        <BasicInput
+        <FormFieldInput
           label_title="Reset Token"
           label_id="resetToken"
           is_required
           placeholder="Enter reset token"
-          :input_value="form.reset_token"
-          @getInputState="updateFormState($event, 'reset_token')"
+          :input_value="getFormFieldValueMx(form, 'token')"
+          @getInputState="updateFormFieldMx($event, 'token')"
           :error_handler="{
             type: 'required',
             message: 'Reset token field is required',
@@ -60,8 +60,8 @@
       <div class="btn-area mgt-30 mgb-10">
         <button
           class="btn btn-primary btn-md w-100"
-          ref="resetBtn"
-          :disabled="isValidState"
+          ref="btnRef"
+          :disabled="isFormValidated"
         >
           Reset Password
         </button>
@@ -73,7 +73,6 @@
 <script>
 import { mapActions } from "vuex";
 import AuthWrapper from "@/modules/auth/components/auth-wrapper";
-import BasicInput from "@/shared/components/form-comps/basic-input";
 
 export default {
   name: "ResetPassword",
@@ -85,30 +84,39 @@ export default {
 
   components: {
     AuthWrapper,
-    BasicInput,
   },
 
   computed: {
-    // CHECK FORM BUTTON VALIDITY STATE
-    isValidState() {
-      return Object.values(this.validity).every((valid) => !valid)
-        ? false
-        : true;
+    isFormValidated() {
+      return this.validateFormFieldMx(this.form);
+    },
+
+    getRequestPayload() {
+      let formPayload = this.getFormPayloadMx(this.form);
+      formPayload.account_id = +this.$route.params.account_id;
+      formPayload.token = +formPayload.token;
+
+      delete formPayload.confirm_password;
+
+      return formPayload;
     },
   },
 
   data() {
     return {
       form: {
-        password: "",
-        confirm_password: "",
-        reset_token: "",
-      },
-
-      validity: {
-        password: true,
-        confirm_password: true,
-        reset_token: true,
+        password: {
+          validated: false,
+          value: "",
+        },
+        confirm_password: {
+          validated: false,
+          value: "",
+        },
+        token: {
+          validated: false,
+          value: "",
+        },
       },
     };
   },
@@ -119,49 +127,29 @@ export default {
     // =========================================
     // HANDLE USER CLIENT FORGOT PASSWORD BTN
     // =========================================
-    handleUserResetPassword() {
-      this.handleClick("resetBtn");
-
-      let request_payload = {
-        account_id: this.$route.params.account_id,
-        token: this.form?.reset_token,
-        password: this.form?.password,
-      };
-
-      // COMPARE PASSWORD
-      if (this.form.password !== this.form.confirm_password) {
-        this.handleResponse("Password provided does not match");
-        return;
+    async handleUserResetPassword() {
+      if (this.form.password.value !== this.form.confirm_password.value) {
+        this.handleToastPushMx("Password provided does not match", "error");
+        return false;
       }
 
-      this.resetUserPassword(request_payload)
-        .then((response) => {
-          if (response.code === 200) {
-            setTimeout(
-              () =>
-                this.$router.push({ name: "VesicashSuccessfulPasswordReset" }),
-              2000
-            );
-          }
+      const response = await this.handleDataRequest({
+        action: "resetUserPassword",
+        payload: this.getRequestPayload,
+        btn_text: "Reset Password",
+        alert_handler: {
+          success: "",
+          error: "Unable to reset password at this time",
+          request_error: "Reset token has expired.",
+        },
+      });
 
-          // HANDLE NON 200 RESPONSE
-          else this.handleResponse(response.message);
-        })
-        .catch(() =>
-          this.handleResponse("Unable to reset password at this time")
-        );
-    },
-
-    // ============================
-    // HANDLE USER ERROR STATE
-    // ============================
-    handleResponse(message, state = "error") {
-      this.pushToast(message, state);
-      this.handleClick("resetBtn", "Reset Password", false);
+      if (response?.code === 200) {
+        this.$router.push({ name: "VesicashSuccessfulPasswordReset" });
+      }
     },
   },
 };
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

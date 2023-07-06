@@ -125,7 +125,7 @@ export default {
 
       this.fetchTransactionsByUser(payload)
         .then((response) => {
-          if (response.code === 200) {
+          if (response?.code === 200) {
             this.table_data = response.data;
             this.table_loading = false;
 

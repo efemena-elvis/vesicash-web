@@ -46,7 +46,7 @@
 
 <script>
 import { mapMutations } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "startWalkthroughModal",
@@ -75,7 +75,7 @@ export default {
 }
 
 .modal-cover-body {
-  @include flex-row-center-wrap;
+  @include flex-row-wrap("center", "center");
 
   p {
     @include generate-font-type("tertiary-1");

@@ -39,7 +39,7 @@ export default {
 <style lang="scss" scoped>
 .sum-total-card {
   border: toRem(1) dashed getColor("green-500");
-  @include flex-row-between-nowrap;
+  @include flex-row-nowrap("space-between", "center");
   padding: toRem(14) toRem(16);
 
   @include breakpoint-down(sm) {

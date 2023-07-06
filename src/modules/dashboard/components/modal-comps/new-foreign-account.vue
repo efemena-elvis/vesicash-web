@@ -153,27 +153,10 @@
 </template>
 
 <script>
-import FormHelper from "@/modules/auth/mixins/auth-helper";
-
 export default {
   name: "NewForeignAccount",
 
-  mixins: [FormHelper],
-
-  components: {
-    DropSelectInput: () =>
-      import(
-        /* webpackChunkName: 'shared-module' */ "@/shared/components/drop-select-input"
-      ),
-    DropDownSelect: () =>
-      import(
-        /* webpackChunkName: 'shared-module' */ "@/shared/components/drop-down-select"
-      ),
-    BasicInput: () =>
-      import(
-        /* webpackChunkName: 'shared-module' */ "@/shared/components/form-comps/basic-input"
-      ),
-  },
+  components: {},
 
   computed: {
     getBankDetails() {

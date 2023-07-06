@@ -1,10 +1,15 @@
 <template>
-  <ModalCover @closeModal="$emit('closeTriggered')" :modal_style="{ size: 'modal-sm' }">
+  <ModalCover
+    @closeModal="$emit('closeTriggered')"
+    :modal_style="{ size: 'modal-sm' }"
+  >
     <!-- MODAL COVER HEADER -->
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
         <div class="modal-cover-title">Add users to account</div>
-        <div class="tertiary-2-text grey-600 wt-75">Create account for new users</div>
+        <div class="tertiary-2-text grey-600 wt-75">
+          Create account for new users
+        </div>
       </div>
     </template>
 
@@ -12,64 +17,63 @@
     <template slot="modal-cover-body">
       <div class="modal-cover-body">
         <div class="form-group inline-group">
-          <BasicInput
+          <FormFieldInput
             label_title="First name"
-            label_id="first-name"
-            :input_value="form.first_name"
+            label_id="firstName"
             is_required
             placeholder="Enter first name"
-            @getInputState="updateFormState($event, 'first_name')"
+            :input_value="getFormFieldValueMx(form, 'firstname')"
+            @getInputState="updateFormFieldMx($event, 'firstname')"
             :error_handler="{
-            type: 'minimum',
-            minimum:2,
-            message: 'Name should be at least 2 characters long'
-          }"
+              type: 'required',
+              message: 'First name is a required field',
+            }"
           />
 
-          <BasicInput
+          <FormFieldInput
             label_title="Last name"
-            label_id="last-name"
-            :input_value="form.last_name"
+            label_id="lastName"
             is_required
             placeholder="Enter last name"
-            @getInputState="updateFormState($event, 'last_name')"
+            :input_value="getFormFieldValueMx(form, 'lastname')"
+            @getInputState="updateFormFieldMx($event, 'lastname')"
             :error_handler="{
-            type: 'minimum',
-            minimum:2,
-            message: 'Name should be at least 2 characters long'
-          }"
+              type: 'required',
+              message: 'Last name is a required field',
+            }"
           />
         </div>
 
         <div class="form-group">
-          <BasicInput
+          <FormFieldInput
             label_title="Email address"
-            label_id="email-address"
-            :input_value="form.email_address"
+            label_id="emailAddress"
+            input_type="email"
             is_required
             placeholder="Enter email address"
-            @getInputState="updateFormState($event, 'email_address')"
+            :input_value="getFormFieldValueMx(form, 'email_address')"
+            @getInputState="updateFormFieldMx($event, 'email_address')"
             :error_handler="{
-            type: 'email',
-            message: 'Enter a valid email address'
-          }"
+              type: 'email',
+              message: 'Enter a valid email address',
+            }"
           />
         </div>
 
         <div class="form-group">
-          <BasicInput
+          <FormFieldInput
             label_title="Password"
             label_id="password"
-            :input_value="form.password"
-            is_required
             input_type="password"
-            :custom_style="{ input_wrapper_style: 'form-suffix' }"
+            is_required
             placeholder="Enter password"
-            @getInputState="updateFormState($event, 'password')"
+            :custom_style="{ input_wrapper_style: 'form-suffix' }"
+            :input_value="getFormFieldValueMx(form, 'password')"
+            @getInputState="updateFormFieldMx($event, 'password')"
             :error_handler="{
-            type: 'password',
-            message: 'Password should contain at least 4 characters',
-          }"
+              type: 'password',
+              message: 'Password should contain at least 4 characters',
+            }"
           />
         </div>
       </div>
@@ -79,11 +83,13 @@
     <template slot="modal-cover-footer">
       <div class="modal-cover-footer">
         <button
-          ref="save"
+          ref="btnRef"
           class="btn btn-primary btn-md wt-100 mgt-10"
           @click="addUser"
-          :disabled="isDisabled"
-        >Add user</button>
+          :disabled="isFormValidated"
+        >
+          Add user
+        </button>
       </div>
     </template>
   </ModalCover>
@@ -91,8 +97,7 @@
 
 <script>
 import { mapActions } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
-import BasicInput from "@/shared/components/form-comps/basic-input";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "AddUserModal",
@@ -106,41 +111,42 @@ export default {
 
   components: {
     ModalCover,
-    BasicInput,
   },
 
   computed: {
-    userPayload() {
-      return {
-        business_id: this.getAccountId,
-        // account_type: "business",
-        firstname: this.form.first_name,
-        lastname: this.form.last_name,
-        email_address: this.form.email_address,
-        phone_number: this.form.phone_number,
-        password: this.form.password,
-      };
+    isFormValidated() {
+      return this.validateFormFieldMx(this.form);
     },
 
-    isDisabled() {
-      return Object.values(this.validity).some((valid) => valid);
+    userPayload() {
+      return {
+        ...this.getFormPayloadMx(this.form),
+        business_id: this.getAccountId,
+        account_type: "individual",
+        phone_number: "",
+      };
     },
   },
 
   data() {
     return {
       form: {
-        first_name: "",
-        last_name: "",
-        email_address: "",
-        password: "",
-      },
-
-      validity: {
-        first_name: true,
-        last_name: true,
-        email_address: true,
-        password: true,
+        firstname: {
+          validated: false,
+          value: "",
+        },
+        lastname: {
+          validated: false,
+          value: "",
+        },
+        email_address: {
+          validated: false,
+          value: "",
+        },
+        password: {
+          validated: false,
+          value: "",
+        },
       },
     };
   },
@@ -152,32 +158,29 @@ export default {
     }),
 
     async addUser() {
-      this.handleClick("save");
+      const response = await this.handleDataRequest({
+        action: "registerUser",
+        payload: this.userPayload,
+        btn_text: "Add User",
+        alert_handler: {
+          success: "User invitation has been sent successfully.",
+          error: "Unable to add a new user",
+        },
+      });
 
-      try {
-        const response = await this.registerUser(this.userPayload);
+      if (response?.code === 201) {
+        await this.fetchConnectedUsers({ business_id: this.getAccountId });
+        this.$emit("saved");
+      }
 
-        const type = response.code === 200 ? "success" : "error";
+      if (response.code === 400) {
+        const error_type = response.message.split(":")[0];
 
-        if (response.code === 200) {
-          if (response?.data?.existing) {
-            this.pushToast(
-              `User with the ${response?.data?.existing} already exists`
-            );
-            this.handleClick("save", "Add user", false);
-            return;
-          }
-          await this.fetchConnectedUsers({ business_id: this.getAccountId });
-          this.handleClick("save", "Add user", false);
-          this.$emit("saved");
-        } else {
-          this.handleClick("save", "Add user", false);
-          this.pushToast(response.message, type);
+        if (error_type === "EmailAddress") {
+          this.handleToastPushMx("Email address already exist!", "error");
+        } else if (error_type === "PhoneNumber") {
+          this.handleToastPushMx("Phone number already exist!", "error");
         }
-      } catch (err) {
-        console.log("ERROR ADDING USER", err);
-        this.pushToast("Failed to add new user", "error");
-        this.handleClick("save", "Add user", false);
       }
     },
   },
@@ -191,4 +194,3 @@ export default {
   gap: 0 toRem(16);
 }
 </style>
-

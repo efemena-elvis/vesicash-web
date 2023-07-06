@@ -136,21 +136,13 @@
 </template>
 
 <script>
-import {
-  CURRENCY_OPTIONS,
-  INSPECTION_OPTIONS,
-} from "@/modules/transactions/constants";
+import { INSPECTION_OPTIONS } from "@/modules/transactions/constants";
 import { mapGetters, mapMutations } from "vuex";
-import BasicInput from "@/shared/components/form-comps/basic-input";
-import DropSelectInput from "@/shared/components/drop-select-input";
 
 export default {
   name: "PayoutCard",
 
-  components: {
-    BasicInput,
-    DropSelectInput,
-  },
+  components: {},
 
   props: {
     index: {
@@ -172,6 +164,7 @@ export default {
     ...mapGetters({
       getTransactionMilestones: "transactions/getTransactionMilestones",
       getMilestoneRecipients: "transactions/getMilestoneRecipients",
+      getWalletSize: "general/getWalletSize",
     }),
 
     // =============================================
@@ -205,7 +198,7 @@ export default {
   },
 
   data: () => ({
-    currency_options: CURRENCY_OPTIONS,
+    currency_options: [],
     inspection_options: INSPECTION_OPTIONS,
     min_date: "",
 
@@ -215,6 +208,20 @@ export default {
       inspection_period: "",
     },
   }),
+
+  created() {
+    // GET WALLET OPTIONS
+    this.getWalletSize
+      .filter((wallet) => wallet.enabled && !wallet.short.includes("ESCROW"))
+      .map((wallet_type) => {
+        this.currency_options.push({
+          id: wallet_type.id,
+          name: `${wallet_type.short} (${wallet_type.sign})`,
+          slug: wallet_type.long.toLowerCase(),
+          short: wallet_type.short,
+        });
+      });
+  },
 
   mounted() {
     this.hidePastDate();
@@ -338,7 +345,7 @@ export default {
 
   .payout-inputs {
     .row {
-      @include flex-row-between-wrap;
+      @include flex-row-wrap("space-between", "center");
     }
   }
 }

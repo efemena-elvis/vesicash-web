@@ -7,9 +7,10 @@
     <!-- MODAL COVER HEADER -->
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
-        <div class="modal-cover-title">Verification document</div>
+        <div class="modal-cover-title">Other documents</div>
         <div class="tertiary-2-text grey-600">
-          Choose the document type you wish to upload
+          Choose any document type you wish to upload. Upload multiple documents
+          to access more account features.
         </div>
       </div>
     </template>
@@ -45,32 +46,10 @@
 
         <DocUploadCard
           @uploaded="uploaded_doc = $event"
-          titleText="Select document(s) to upload"
+          titleText="Select document to upload"
           docID="verification_documents"
           @upload="handleAlert"
         />
-
-        <template v-if="isBusiness">
-          <div class="form-group mgt-24">
-            <div class="form-label">How many directors do you have?</div>
-
-            <!-- SELECT INPUT FIELD -->
-            <DropSelectInput
-              placeholder="Select number of directors"
-              :options="directorsRange"
-              @optionSelected="director_count = Number($event.id)"
-            />
-          </div>
-
-          <DocUploadCard
-            titleText="Select document(s) to upload"
-            :fileCount="director_count"
-            controlCount
-            docID="director_documents"
-            :isDisabled="director_count < 1"
-            @upload="handleAlert"
-          />
-        </template>
       </div>
     </template>
 
@@ -92,19 +71,13 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
-import DocUploadCard from "@/shared/components/form-comps/doc-upload-card";
-import DropSelectInput from "@/shared/components/drop-select-input";
-import BasicInput from "@/shared/components/form-comps/basic-input";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "VerificationDocModal",
 
   components: {
     ModalCover,
-    DropSelectInput,
-    BasicInput,
-    DocUploadCard,
   },
 
   mounted() {
@@ -116,10 +89,6 @@ export default {
       getFileData: "general/getFileData",
       getAllFilesData: "general/getAllFilesData",
     }),
-
-    directorsRange() {
-      return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => ({ name: i, id: i }));
-    },
 
     isBusiness() {
       return this.getAccountType === "business" ? true : false;
@@ -136,23 +105,7 @@ export default {
       return this.getVerificationDoc?.files?.length ? true : false;
     },
 
-    getDirectorDoc() {
-      const file_data = this.getAllFilesData.find(
-        (doc) => doc.id === "director_documents"
-      );
-      return file_data === undefined ? null : file_data;
-    },
-
-    directorDocExist() {
-      return this.getDirectorDoc?.files?.length ? true : false;
-    },
-
     isDisabled() {
-      if (this.isBusiness)
-        !this.form.doc_number ||
-          !this.document ||
-          !this.VerificationDocExist ||
-          !this.directorDocExist;
       return (
         !this.form.doc_number || !this.document || !this.VerificationDocExist
       );
@@ -170,12 +123,7 @@ export default {
 
   data() {
     return {
-      director_count: 0,
       verification_docs: [
-        {
-          name: "CAC document",
-          id: "cac",
-        },
         {
           name: "Passport",
           id: "passport",
@@ -187,18 +135,6 @@ export default {
         {
           name: "National ID",
           id: "national_id",
-        },
-        {
-          name: "BVN document",
-          id: "bvn",
-        },
-        {
-          name: "NIN document",
-          id: "nin",
-        },
-        {
-          name: "Utility Bill",
-          id: "utilitybill",
         },
       ],
 
@@ -235,7 +171,7 @@ export default {
 
         this.handleClick("save", "Submit", false);
 
-        if (response.code === 200) {
+        if (response?.code === 200) {
           this.pushToast(response.message, "success");
           this.$emit("saved", "Your document has been uploaded successfully");
         } else {

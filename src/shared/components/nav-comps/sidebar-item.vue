@@ -1,5 +1,9 @@
 <template>
-  <router-link :to="nav.link" class="d-block mgb-14">
+  <router-link
+    :to="nav.link"
+    class="d-block mgb-14"
+    @click="$emit('isClicked')"
+  >
     <div
       class="sidebar-item smooth-transition rounded-8 position-relative"
       :class="[
@@ -7,6 +11,12 @@
         ongoingTour && nav.tour_id.includes(getTourData.count) && 'tour-index',
       ]"
     >
+      <!-- ACTIVE SIDE TAG -->
+      <div
+        class="active-side-tag position-absolute green-600-bg h-100"
+        v-if="is_active"
+      ></div>
+
       <!-- ICON COMPONENT -->
       <component :is="nav.icon" />
 
@@ -14,6 +24,11 @@
       <div class="nav-text secondary-2-text grey-600 smooth-transition">
         {{ nav.title }}
       </div>
+
+      <div
+        class="item-tag rounded-circle position-relative pulse-animate"
+        v-if="nav.tag"
+      ></div>
     </div>
   </router-link>
 </template>
@@ -41,9 +56,33 @@ export default {
       import(
         /* webpackChunkName: "shared-module" */ "@/shared/components/icon-comps/exchange-icon"
       ),
+    FundIcon: () =>
+      import(
+        /* webpackChunkName: "shared-module" */ "@/shared/components/icon-comps/fund-icon"
+      ),
+    TaxIcon: () =>
+      import(
+        /* webpackChunkName: "shared-module" */ "@/shared/components/icon-comps/tax-icon"
+      ),
+    ChartIcon: () =>
+      import(
+        /* webpackChunkName: "shared-module" */ "@/shared/components/icon-comps/chart-icon"
+      ),
+    CustomerIcon: () =>
+      import(
+        /* webpackChunkName: "shared-module" */ "@/shared/components/icon-comps/customer-icon"
+      ),
+    DeveloperIcon: () =>
+      import(
+        /* webpackChunkName: "shared-module" */ "@/shared/components/icon-comps/developer-icon"
+      ),
     SettingsIcon: () =>
       import(
         /* webpackChunkName: "shared-module" */ "@/shared/components/icon-comps/settings-icon"
+      ),
+    MORIcon: () =>
+      import(
+        /* webpackChunkName: "shared-module" */ "@/shared/components/icon-comps/mor-icon"
       ),
   },
 
@@ -56,13 +95,20 @@ export default {
         link: "/dashboard",
       }),
     },
+
+    is_active: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   computed: {
     ...mapGetters({ getTourData: "general/getTourData" }),
 
     isActive() {
-      return this.path_list.includes(this.nav.slug) ? true : false;
+      return this.is_active || this.path_list.includes(this.nav.slug)
+        ? true
+        : false;
     },
 
     ongoingTour() {
@@ -108,11 +154,18 @@ export default {
 }
 
 .sidebar-item {
-  @include flex-row-start-nowrap;
+  @include flex-row-nowrap("flex-start", "center");
   padding: toRem(8);
 
   &:last-of-type {
     margin-bottom: 0;
+  }
+
+  .active-side-tag {
+    border-radius: toRem(8) 0 0 toRem(8);
+    width: toRem(3);
+    top: 0;
+    left: 0;
   }
 
   svg {
@@ -135,6 +188,25 @@ export default {
 
   &-active {
     @extend %active-side-bar-state;
+  }
+
+  .item-tag {
+    @include draw-shape(12);
+    box-shadow: 0 0 toRem(1) toRem(1) #0000001a;
+    animation: pulse-animation 1.8s infinite;
+    background: getColor("green-500");
+    margin-left: auto;
+    margin-right: toRem(2.5);
+  }
+}
+
+@keyframes pulse-animation {
+  0% {
+    box-shadow: 0 0 0 0 rgba(getColor("green-500"), 0.45);
+  }
+
+  100% {
+    box-shadow: 0 0 0 toRem(10) rgba(getColor("green-500"), 0);
   }
 }
 

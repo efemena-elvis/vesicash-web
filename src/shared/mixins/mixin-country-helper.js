@@ -1,22 +1,31 @@
 import { mapActions } from "vuex";
-import { countries } from "@/utilities/countries.json";
+import countries from "@/utilities/countries";
 
 const countryHelper = {
   data: () => ({
     show_dropdown: false,
-
     countries_data: countries,
     current_country: {
       country: "Nigeria",
       dialing_code: "234",
       code: "ng",
-      flag: "https://dyclassroom.com/image/flags/ng.png",
+      flag: "https://flagsapi.com/NG/flat/64.png",
+      currency: {
+        sign: "₦",
+        short: "NGN",
+        long: "Naira",
+        description: "Nigerian Naira",
+      },
     },
   }),
 
   created() {
-    // LOAD MY CURRENT COUNTRY
-    this.loadCurrentUserLocation();
+    const saved_country_data = this.$storage.getStorage({
+      storage_name: "base_country_data",
+      storage_type: "object",
+    });
+
+    saved_country_data === null && this.loadCurrentUserLocation();
   },
 
   methods: {
@@ -39,23 +48,22 @@ const countryHelper = {
     // ==============================
     // LOAD CURRENT USER LOCATION
     // ==============================
-    loadCurrentUserLocation() {
-      let country_fallback = {
-        country: "Nigeria",
-        dialing_code: "234",
-        code: "ng",
-        flag: "https://dyclassroom.com/image/flags/ng.png",
-      };
+    async loadCurrentUserLocation() {
+      const response = await this.handleDataRequest({
+        action: "getMyLocation",
+        payload: "",
+      });
 
-      this.getMyLocation()
-        .then((response) => {
-          let country_code = response?.split(";")[1].toLowerCase() ?? "ng";
+      let country_code = response?.split(";")[1]?.toLowerCase() ?? "ng";
+      this.current_country = this.countries_data.find(
+        (country) => country.code === country_code
+      );
 
-          this.current_country = this.countries_data.find(
-            (country) => country.code === country_code
-          );
-        })
-        .catch(() => (this.current_country = country_fallback));
+      this.$storage.setStorage({
+        storage_name: "base_country_data",
+        storage_value: this.current_country,
+        storage_type: "object",
+      });
     },
   },
 };

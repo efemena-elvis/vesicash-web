@@ -5,25 +5,19 @@
 
     <!-- PAGE META -->
     <div class="page-meta tertiary-2-text grey-600">
-      Verify your bvn,and settlements documents here to be able to carry out
-      transactions
+      Verify your bvn, business documents and settlements documents here to be
+      able to carry out transactions
     </div>
 
     <div class="cards-container" v-if="loading_verification">
-      <div class="skeleton-loader card-skeleton rounded-12" v-for="i in 5" :key="i"></div>
+      <div
+        class="skeleton-loader card-skeleton rounded-12"
+        v-for="i in 5"
+        :key="i"
+      ></div>
     </div>
 
     <div class="cards-container" v-else>
-      <verification-card
-        title="Phone number verification"
-        subtitle="Verify your phone number."
-        cta_title="Verify phone number"
-        @action="toggleInputModal"
-        :verified="phone_verified || isPhoneVerified"
-      >
-        <TelephoneIcon />
-      </verification-card>
-
       <verification-card
         v-if="isBusiness"
         title="Business information"
@@ -36,13 +30,46 @@
       </verification-card>
 
       <verification-card
-        title="Verification document"
-        subtitle="Choose and upload documents for verification."
-        cta_title="Verify document"
-        @action="toggleDocUploadModal"
-        :verified="document_verified || isDocVerified"
+        v-if="isBusiness"
+        title="Company registration document"
+        subtitle="Upload your business registration document for verification."
+        cta_title="Verify business"
+        @action="toggleCACRegistrationModal"
+        :verified="isBusinessVerified"
       >
         <FileIcon active />
+      </verification-card>
+
+      <verification-card
+        title="Other documents"
+        subtitle="Choose and upload a document for verification."
+        cta_title="Verify document"
+        @action="toggleDocUploadModal"
+        :verified="isDocVerified"
+        :verified_docs="[1, 2]"
+      >
+        <FileIcon active />
+      </verification-card>
+
+      <verification-card
+        v-if="isBusiness"
+        title="Directors Information"
+        subtitle="Confirm directors count and identification details."
+        cta_title="Verify directors"
+        @action="toggleDirectorVerifyModal"
+        :verified="isDocVerified"
+      >
+        <UserIcon />
+      </verification-card>
+
+      <verification-card
+        title="Phone number verification"
+        subtitle="Verify your phone number."
+        cta_title="Verify phone number"
+        @action="toggleInputModal"
+        :verified="isPhoneVerified"
+      >
+        <TelephoneIcon />
       </verification-card>
 
       <verification-card
@@ -50,7 +77,7 @@
         subtitle="Confirm your BVN details."
         cta_title="Verify BVN details"
         @action="toggleBvnModal"
-        :verified="bvn_verified || isBvnVerified"
+        :verified="isBvnVerified"
       >
         <BvnIcon />
       </verification-card>
@@ -59,7 +86,8 @@
         title="Settlement account"
         subtitle="Provide your bank account details for withdrawals and settlements"
         cta_title="Add bank account"
-        @action="$router.push({name:'AccountSettings'})"
+        @action="$router.push({ name: 'AccountSettings' })"
+        :verified="hasSettlementAccount"
       >
         <SettlementIcon />
       </verification-card>
@@ -68,7 +96,10 @@
     <!-- MODALS -->
     <portal to="vesicash-modals">
       <transition name="fade" v-if="show_input_modal">
-        <VerifyInputModal @continue="initiateOTPRequest" @closeTriggered="toggleInputModal" />
+        <VerifyInputModal
+          @continue="initiateOTPRequest"
+          @closeTriggered="toggleInputModal"
+        />
       </transition>
 
       <transition name="fade" v-if="show_otp_modal">
@@ -77,21 +108,53 @@
 
       <transition name="fade" v-if="show_business_info_modal">
         <BusinessInfoModal
-          @saved="showSuccessModal('show_business_info_modal','business_info_verified',$event)"
+          @saved="
+            showSuccessModal(
+              'show_business_info_modal',
+              'business_info_verified',
+              $event
+            )
+          "
           @closeTriggered="toggleBusinessInfoModal"
         />
       </transition>
 
       <transition name="fade" v-if="show_doc_upload_modal">
         <VerificationDocumentModal
-          @saved="showSuccessModal('show_doc_upload_modal','document_verified',$event)"
+          @saved="
+            showSuccessModal(
+              'show_doc_upload_modal',
+              'document_verified',
+              $event
+            )
+          "
           @closeTriggered="toggleDocUploadModal"
+        />
+      </transition>
+
+      <transition name="fade" v-if="show_director_verify_modal">
+        <DirectorVerificationModal
+          @saved="showSuccessModal('show_doc_upload_modal', '_', $event)"
+          @closeTriggered="toggleDirectorVerifyModal"
+        />
+      </transition>
+
+      <transition name="fade" v-if="show_cac_registration_modal">
+        <CoporationVerificationModal
+          @saved="
+            showSuccessModal(
+              'show_doc_upload_modal',
+              'document_verified',
+              $event
+            )
+          "
+          @closeTriggered="toggleCACRegistrationModal"
         />
       </transition>
 
       <transition name="fade" v-if="show_bvn_modal">
         <VerificationBvnModal
-          @saved="showSuccessModal('show_bvn_modal','bvn_verified',$event)"
+          @saved="showSuccessModal('show_bvn_modal', 'bvn_verified', $event)"
           @closeTriggered="toggleBvnModal"
         />
       </transition>
@@ -108,14 +171,17 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from "vuex";
+import { mapActions, mapMutations } from "vuex";
 import VerificationCard from "@/modules/settings/components/card-comps/verification-card";
 import VerifyInputModal from "@/modules/settings/modals/verify-input-modal";
 import VerifyOtpModal from "@/modules/settings/modals/verify-otp-modal";
 import BusinessInfoModal from "@/modules/settings/modals/business-info-modal";
 import VerificationDocumentModal from "@/modules/settings/modals/verification-document-modal";
+import DirectorVerificationModal from "@/modules/settings/modals/director-verification-modal";
+import CoporationVerificationModal from "@/modules/settings/modals/coporation-verification-modal";
 import VerificationBvnModal from "@/modules/settings/modals/verification-bvn-modal";
 import SuccessModal from "@/shared/modals/success-modal";
+
 export default {
   name: "VerificationSettings",
 
@@ -124,7 +190,9 @@ export default {
     VerifyInputModal,
     VerifyOtpModal,
     BusinessInfoModal,
+    DirectorVerificationModal,
     VerificationDocumentModal,
+    CoporationVerificationModal,
     VerificationBvnModal,
     SuccessModal,
 
@@ -144,14 +212,56 @@ export default {
       import(
         /* webpackChunkName: 'shared-module' */ "@/shared/components/icon-comps/file-icon"
       ),
+    UserIcon: () =>
+      import(
+        /* webpackChunkName: 'shared-module' */ "@/shared/components/icon-comps/user-icon"
+      ),
     SettlementIcon: () =>
       import(
         /* webpackChunkName: 'shared-module' */ "@/shared/components/icon-comps/settlement-icon"
       ),
   },
 
-  mounted() {
-    if (!this.getUserVerifications) this.fetchVerifications();
+  computed: {
+    isBusiness() {
+      return this.getAccountType === "business" ? true : false;
+    },
+
+    isPhoneVerified() {
+      if (!this.user_verifications) return false;
+      const phone_verification = this.user_verifications.find(
+        (type) => type.verification_type === "phone"
+      );
+      return phone_verification ? phone_verification?.is_verified : false;
+    },
+
+    isBvnVerified() {
+      if (!this.user_verifications) return false;
+      const bvn_verification = this.user_verifications.find(
+        (type) => type.verification_type === "bvn"
+      );
+      return bvn_verification ? bvn_verification?.is_verified : false;
+    },
+
+    isBusinessVerified() {
+      if (!this.user_verifications) return false;
+      const business_verification = this.user_verifications.find(
+        (type) => type.verification_type === "cac"
+      );
+      return business_verification ? business_verification?.is_verified : false;
+    },
+
+    isDocVerified() {
+      if (!this.user_verifications) return false;
+      const doc_verification = this.user_verifications.find(
+        (type) => type.verification_type === "cac"
+      );
+      return doc_verification ? doc_verification?.is_verified : false;
+    },
+
+    hasSettlementAccount() {
+      return this.has_settlement_account;
+    },
   },
 
   watch: {
@@ -166,76 +276,75 @@ export default {
     },
   },
 
-  computed: {
-    ...mapGetters({ getUserVerifications: "settings/getUserVerifications" }),
-
-    isBusiness() {
-      return this.getAccountType === "business" ? true : false;
-    },
-
-    isPhoneVerified() {
-      if (!this.getUserVerifications) return false;
-      const phone_verification = this.getUserVerifications.find(
-        (type) => type.verification_type === "phone"
-      );
-      return phone_verification ? phone_verification?.is_verified : false;
-    },
-
-    isBvnVerified() {
-      if (!this.getUserVerifications) return false;
-      const bvn_verification = this.getUserVerifications.find(
-        (type) => type.verification_type === "bvn"
-      );
-      return bvn_verification ? bvn_verification?.is_verified : false;
-    },
-
-    isBusinessVerified() {
-      if (!this.getUserVerifications) return false;
-      const business_verification = this.getUserVerifications.find(
-        (type) => type.verification_type === "cac"
-      );
-      return business_verification ? business_verification?.is_verified : false;
-    },
-
-    isDocVerified() {
-      if (!this.getUserVerifications) return false;
-      const doc_verification = this.getUserVerifications.find(
-        (type) => type.verification_type === "cac"
-      );
-      return doc_verification ? doc_verification?.is_verified : false;
-    },
-  },
-
   data() {
     return {
       show_input_modal: false,
       show_otp_modal: false,
       show_success_modal: false,
       show_doc_upload_modal: false,
+      show_director_verify_modal: false,
+      show_cac_registration_modal: false,
       show_bvn_modal: false,
       show_business_info_modal: false,
+
       phone_verified: false,
       business_info_verified: false,
       document_verified: false,
       bvn_verified: false,
       response_message: "",
-      loading_verification: false,
+      loading_verification: true,
       updated_phone: "",
+      has_settlement_account: false,
+
+      user_verifications: [
+        {
+          is_verified: false,
+          verification_type: "phone",
+        },
+        {
+          is_verified: false,
+          verification_type: "email",
+        },
+      ],
     };
+  },
+
+  mounted() {
+    this.checkSettlementAccount();
+    this.fetchVerifications();
   },
 
   methods: {
     ...mapActions({
       fetchUserVerifications: "settings/fetchUserVerifications",
       saveUserProfile: "settings/saveUserProfile",
+      fetchAllBanks: "settings/fetchAllBanks",
     }),
 
     ...mapMutations({ UPDATE_AUTH_USER: "auth/UPDATE_AUTH_USER" }),
 
+    async checkSettlementAccount() {
+      const response = await this.fetchAllBanks(this.getAccountId);
+      this.has_settlement_account = response?.data?.some(
+        (bank) => bank.category === "settlement"
+      );
+    },
+
     async fetchVerifications() {
-      this.loading_verification = true;
-      await this.fetchUserVerifications({ account_id: this.getAccountId });
+      const response = await this.handleDataRequest({
+        action: "fetchUserVerifications",
+        payload: { account_id: this.getAccountId },
+        alert_handler: {
+          error: "Unable to fetch user verification details",
+        },
+      });
+
       this.loading_verification = false;
+
+      if (response.code === 200) {
+        console.log(response);
+        this.user_verifications = response.data;
+      }
     },
 
     toggleInputModal() {
@@ -268,10 +377,18 @@ export default {
       this.show_doc_upload_modal = !this.show_doc_upload_modal;
     },
 
+    toggleDirectorVerifyModal() {
+      this.show_director_verify_modal = !this.show_director_verify_modal;
+    },
+
+    toggleCACRegistrationModal() {
+      this.show_cac_registration_modal = !this.show_cac_registration_modal;
+    },
+
     async showSuccessModal(modal, verified, message) {
       await this.fetchVerifications();
       this[modal] = false;
-      this[verified] = true;
+      // this[verified] = true;
       this.response_message = message;
       this.show_success_modal = true;
     },
@@ -316,7 +433,7 @@ export default {
 
 .cards-container {
   display: grid;
-  gap: toRem(56) 0;
+  gap: toRem(32) 0;
   padding-bottom: toRem(100);
 
   @include breakpoint-down(sm) {

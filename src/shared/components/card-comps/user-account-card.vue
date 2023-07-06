@@ -58,8 +58,7 @@ export default {
   @include card-size;
   padding: toRem(14) toRem(16);
   border-radius: toRem(12);
-  @include flex-row-between-nowrap;
-  align-items: center;
+  @include flex-row-nowrap("space-between", "center");
   background: getColor("teal-800");
   transition: background ease-in-out 0.25s;
   cursor: pointer;
@@ -69,12 +68,12 @@ export default {
   }
 
   .meta-wrapper {
-    @include flex-row-start-nowrap;
+    @include flex-row-nowrap("flex-start", "center");
     gap: 0 toRem(8);
   }
 
   .account-meta {
-    @include flex-row-start-nowrap;
+    @include flex-row-nowrap("flex-start", "center");
     gap: 0 toRem(8);
     color: getColor("teal-200");
 

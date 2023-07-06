@@ -20,12 +20,14 @@
       <div class="text mgb-6 text-no-wrap">
         {{ $money.getSign(data.currency)
         }}{{
-          $money.addComma(data.totalAmount ? data.totalAmount : data.amount)
+          $utils.formatCurrencyWithComma(
+            data.totalAmount ? data.totalAmount : data.amount
+          )
         }}
       </div>
       <div class="meta tertiary-3-text grey-600">
         {{ $money.getSign(data.currency)
-        }}{{ $money.addComma(getTotalAmountPaid || 0) }} paid
+        }}{{ $utils.formatCurrencyWithComma(getTotalAmountPaid || 0) }} paid
       </div>
     </td>
 
@@ -67,12 +69,9 @@ export default {
 
   computed: {
     getCreatedDate() {
-      let first_milestone_date =
-        `${
-          this.data?.milestones[0]?.due_date.split(" ")[0] ?? "2022-01-01"
-        } 00:00:00` ?? this.data?.due_date_formatted;
-
-      let { d3, m4, y1 } = this.$date.formatDate(first_milestone_date).getAll();
+      let { d3, m4, y1 } = this.$date
+        .formatTimestamp(this.data?.milestones[0]?.due_date)
+        .getAll();
 
       return `${d3} ${m4}, ${y1}`;
     },
@@ -225,5 +224,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

@@ -77,13 +77,13 @@ export default {
 // ================================================
 // CREATED A MIXIN TO AVOID REPEATING CODE LINES
 @mixin handle-extra-small-screen-view {
-  @include flex-column-start-center;
+  @include flex-column("flex-start", "center");
   padding: 0;
   width: 100%;
 }
 
 @mixin handle-base-screen-view {
-  @include flex-row-between-nowrap;
+  @include flex-row-nowrap("space-between", "center");
   padding: 0 toRem(25);
   width: toRem(560);
 }

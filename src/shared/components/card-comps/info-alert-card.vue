@@ -24,8 +24,7 @@ export default {
   padding: toRem(16);
   background: getColor("grey-10");
   border-radius: toRem(8);
-  @include flex-row-start-nowrap;
-  align-items: flex-start;
+  @include flex-row-nowrap("flex-start", "flex-start");
   gap: toRem(8);
 
   .icon-info {
@@ -34,7 +33,7 @@ export default {
 
   .icon-wrapper {
     @include draw-shape(24);
-    @include flex-column-center;
+    @include flex-column("center", "center");
     border-radius: 50%;
   }
 }

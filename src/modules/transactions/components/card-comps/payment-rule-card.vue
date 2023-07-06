@@ -59,7 +59,7 @@
       <div
         class="actions-row"
         :class="[
-          $string.isOddNumber(user_details.length) && 'mgt-24',
+          $utils.isOddNumber(user_details.length) && 'mgt-24',
           !['in progress', 'delivered', 'delivered - rejected'].includes(
             getMilestoneStatus
           ) && 'pdb--24',
@@ -259,9 +259,25 @@ export default {
     // GET PAYMENT RULES FOR CURRENT MILESTONE
     // ===================================================
     loadPaymentRules() {
-      let milestone_date = `${this.milestone?.due_date.split(" ")[0]} 00:00:00`;
+      let milestone_date = this.milestone?.due_date;
+      let formatted_date = {
+        date: "",
+        timestamp: false,
+      };
 
-      let { d3, m4, y1 } = this.$date.formatDate(milestone_date).getAll();
+      if (milestone_date.includes("-")) {
+        formatted_date.date = `${
+          this.milestone?.due_date.split(" ")[0]
+        } 00:00:00`;
+        formatted_date.timestamp = false;
+      } else {
+        formatted_date.date = milestone_date;
+        formatted_date.timestamp = true;
+      }
+
+      let { d3, m4, y1 } = formatted_date.timestamp
+        ? this.$date.formatTimestamp(formatted_date.date).getAll()
+        : this.$date.formatDate(formatted_date.date).getAll();
 
       if (this.getTransactionParty === "single") {
         return [
@@ -275,8 +291,8 @@ export default {
             title: "Amount",
             value: `${this.$money.getSign(
               this.currency?.slug ?? this.currency
-            )}${this.$money.addComma(
-              this.loadCurrentMilestoneRecipients[0].amount
+            )}${this.$utils.formatCurrencyWithComma(
+              this.loadCurrentMilestoneRecipients[0].amount.toString()
             )}`,
           },
           {
@@ -480,7 +496,7 @@ export default {
         .then((response) => {
           this.handleClick(ref, btn_text, false);
 
-          if (response.code === 200) {
+          if (response?.code === 200) {
             this.pushToast("Transaction status has been updated", "success");
             setTimeout(
               () => this.$bus.$emit("refetchTransactionDetails"),
@@ -514,8 +530,7 @@ export default {
   }
 
   .payment-items {
-    @include flex-row-start-wrap;
-    align-items: flex-start;
+    @include flex-row-wrap("flex-start", "flex-start");
 
     .item {
       margin-bottom: toRem(26);
@@ -566,8 +581,7 @@ export default {
   }
 
   .user-payment-details {
-    @include flex-row-between-wrap;
-    align-items: flex-start;
+    @include flex-row-wrap("space-between", "flex-start");
 
     .wrapper {
       margin-bottom: toRem(24);
@@ -584,8 +598,7 @@ export default {
   }
 
   .actions-row {
-    @include flex-row-start-wrap;
-    // margin-top: toRem(24);
+    @include flex-row-wrap("flex-start", "center");
 
     .btn {
       &:first-of-type {

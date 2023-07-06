@@ -88,7 +88,7 @@
 </template>
 
 <script>
-import PageBackBtn from "@/shared/components/page-back-btn";
+import PageBackBtn from "@/shared/components/util-comps/page-back-btn";
 
 export default {
   name: "DashboardDisbursement",
@@ -139,7 +139,7 @@ export default {
   }
 
   .fund-details-section {
-    @include flex-row-start-wrap;
+    @include flex-row-wrap("flex-start", "center");
   }
 
   .section-wrapper {
@@ -167,4 +167,4 @@ export default {
     }
   }
 }
-</style>  
+</style>
