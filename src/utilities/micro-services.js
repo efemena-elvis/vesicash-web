@@ -6,12 +6,10 @@ const API_BASE_URL = constants.VESICASH_API_URL;
 const API_VERSION = constants.VESICASH_API_VERSION;
 
 function getServiceRoute(service, url) {
-  const BASE_API_VERSION = service === "admin" ? "" : `/${API_VERSION}`;
-
   const BASE_API_ROUTE = `${API_BASE_URL.replace(
     "${service}",
     service
-  )}${BASE_API_VERSION}`;
+  )}${API_VERSION}`;
 
   axios.defaults.baseURL = BASE_API_ROUTE;
   return `${BASE_API_ROUTE}/${url}`;
