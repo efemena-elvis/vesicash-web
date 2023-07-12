@@ -9,7 +9,7 @@ function getServiceRoute(service, url) {
   const BASE_API_ROUTE = `${API_BASE_URL.replace(
     "${service}",
     service
-  )}${API_VERSION}`;
+  )}/${API_VERSION}`;
 
   axios.defaults.baseURL = BASE_API_ROUTE;
   return `${BASE_API_ROUTE}/${url}`;

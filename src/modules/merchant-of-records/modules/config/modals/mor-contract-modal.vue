@@ -58,10 +58,13 @@
                 >
                 (the “<span class="fw-semibold">Merchant of Record</span>” or
                 the “<span class="fw-semibold">MoR”</span>) a company duly
-                incorporated under the Laws of the Federal Republic of Nigeria,
-                having its place of business at 16 Mudashiru Eletu Way, Osapa
-                Estate, Nigeria, which expression shall where the context so
-                admits, include its successors and assigns, of the second part;
+                incorporated under the Laws of
+                {{ country_data.country_data.name }},
+                <span v-if="getMoRAddress"
+                  >having its place of business at {{ getMoRAddress }},</span
+                >
+                which expression shall where the context so admits, include its
+                successors and assigns, of the second part;
               </p>
 
               <p>
@@ -1135,6 +1138,10 @@ export default {
 
       return this.validateFormFieldMx(this.form);
     },
+
+    getMoRAddress() {
+      return this.locations[this.country_data.country_data.name.toLowerCase()];
+    },
   },
 
   watch: {
@@ -1160,6 +1167,16 @@ export default {
           value: false,
         },
       },
+
+      locations: {
+        nigeria: "16 Mudashiru Eletu Way, Osapa Estate, Nigeria",
+        ghana:
+          "The Enterprise Village, 7 Tunemete Street, Accra-Ghana (Near Perez Chapel – Dworwulu Junction)",
+        rwanda: "Remera, Gasabo, Umujyi wa Kigali, Rwanda",
+        egypt: "24 Al Tayaran Street, Nasr City, Cairo, Egypt",
+        zambia: "LN2260/27 Off Lilayi Road, Shaft Five, Kafue, Zambia",
+        kenya: "",
+      },
     };
   },
 
@@ -1170,11 +1187,7 @@ export default {
     });
 
     this.business_country = base_country_data.country ?? null;
-
-    this.form.fullname.value = this.getUser.fullname
-      .split(" ")
-      .reverse()
-      .join(" ");
+    this.form.fullname.value = this.getUser.fullname;
 
     const isSigned = ["pending", "verified"].includes(this.country_data.status);
 
