@@ -152,8 +152,7 @@ export default {
 
   methods: {
     ...mapActions({
-      uploadFile: "general/uploadFile",
-      uploadToCloud: "general/uploadToCloud",
+      uploadToSpace: "general/uploadToSpace",
       clearAttachedFile: "general/clearAllAttachedFiles",
     }),
 
@@ -190,7 +189,7 @@ export default {
         id: this.docID,
       };
 
-      this.uploadToCloud(payload)
+      this.uploadToSpace(payload)
         .then((response) => {
           if (response?.code) this.$emit("uploaded", response.data);
         })

@@ -63,6 +63,7 @@
 
       <!-- MOR BUSINESS CATEGORY -->
       <FieldSetup
+        v-if="show_business_types"
         title="Select business category"
         description="Select a business category that your business belongs to."
       >
@@ -194,6 +195,7 @@ export default {
   data() {
     return {
       base_countries: countries,
+      show_business_types: false,
 
       mor_countries: [],
       mor_business_types: [],
@@ -246,6 +248,8 @@ export default {
   mounted() {
     this.$bus.$emit("toggle-page-loader");
     this.loadMoRWalletSize();
+
+    console.log(this.getUser.business_type);
   },
 
   methods: {
@@ -320,6 +324,8 @@ export default {
     populateMoRDataset(dataset) {
       const { business_type_id, usage_type, countries, verifications } =
         dataset;
+
+      if (business_type_id) this.show_business_types = false;
 
       this.form.business_type_id = business_type_id;
       this.form.usage_type = usage_type;
@@ -441,6 +447,16 @@ export default {
 
       if (response.code === 200) {
         this.mor_business_types = response.data;
+
+        if (this.getUser.business_type) {
+          this.show_business_types = false;
+
+          this.form.business_type_id = this.mor_business_types.find(
+            (business) => business.name === this.getUser.business_type
+          ).id;
+        } else {
+          this.show_business_types = true;
+        }
       }
     },
 

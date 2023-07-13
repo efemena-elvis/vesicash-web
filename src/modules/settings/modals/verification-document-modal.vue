@@ -48,7 +48,6 @@
           @uploaded="uploaded_doc = $event"
           titleText="Select document to upload"
           docID="verification_documents"
-          @upload="handleAlert"
         />
       </div>
     </template>
@@ -156,12 +155,6 @@ export default {
       clearAttachedFile: "general/clearAttachedFile",
       verfiyUserDocument: "settings/verfiyUserDocument",
     }),
-
-    handleAlert(message) {
-      if (this.director_count < 1)
-        this.pushToast("Select number of directors", "error");
-      if (message) this.pushToast(message, "error");
-    },
 
     async save() {
       this.handleClick("save");

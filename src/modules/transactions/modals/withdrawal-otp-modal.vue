@@ -20,8 +20,8 @@
               `${$money.getSign(
                 getWalletType.slug
               )}${$utils.formatCurrencyWithComma(
-                Number(getWithdrawalMeta.amount) -
-                  getWithdrawalMeta.withdrawal_charge
+                Number(getUpdatedDisplayData.amount) -
+                  getUpdatedDisplayData.charge
               )}`
             }}
           </b>
@@ -91,7 +91,7 @@
             class="btn btn-primary btn-md w-100"
             :disabled="getOTPToken.length === 6 ? false : true"
             @click="handleUserOTPVerification"
-            ref="continue"
+            ref="btnRef"
           >
             Verify OTP code
           </button>
@@ -118,7 +118,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters, mapMutations } from "vuex";
 import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
@@ -149,6 +149,7 @@ export default {
     ...mapGetters({
       getWalletType: "dashboard/getWalletType",
       getWithdrawalMeta: "dashboard/getWithdrawalMeta",
+      getWithdrawalRequest: "dashboard/getWithdrawalRequest",
     }),
 
     getUserPhone() {
@@ -167,6 +168,19 @@ export default {
         [3, 4, 5]
       );
       return `${astericed_protion}@${domain}`;
+    },
+
+    getUpdatedDisplayData() {
+      if (Object.keys(this.getWithdrawalRequest).length) {
+        return {
+          amount: this.getWithdrawalRequest.amount,
+          charge: 0,
+        };
+      } else
+        return {
+          amount: this.getWithdrawalMeta.amount,
+          charge: this.getWithdrawalMeta.withdrawal_charge,
+        };
     },
 
     getWithdrawalPayload() {
@@ -298,7 +312,10 @@ export default {
       verifyUserOTP: "auth/verifyUserOTP",
       walletToWalletTransfer: "transactions/walletToWalletTransfer",
       withdrawWalletFund: "dashboard/withdrawWalletFund",
+      processWithdrawalRequest: "merchantDashboard/processWithdrawalRequest",
     }),
+
+    ...mapMutations({ resetAuthToken: "auth/AUTH_RESET_TOKEN" }),
 
     // ===============================
     // CLEAR OUT ALL OTP INPUTS
@@ -331,30 +348,31 @@ export default {
     // ===================================
     // VERIFY USER ACCOUNT OTP ENTRY
     // ===================================
-    handleUserOTPVerification() {
+    async handleUserOTPVerification() {
       let payload = {
         account_id: this.getAccountId,
         otp_token: this.getOTPToken,
       };
 
-      this.handleClick("continue");
+      const response = await this.handleDataRequest({
+        action: "verifyUserOTP",
+        payload,
+        btn_text: "Verify OTP code",
+        alert_handler: {
+          error: "Unable to verify OTP token. Try again.",
+          request_error: "You entered an invalid OTP",
+        },
+      });
 
-      this.verifyUserOTP(payload)
-        .then(async (response) => {
-          if (response?.code === 200) {
-            await this.makeWithdrawal();
-          }
+      if (response.code === 200) {
+        // RESET AUTH TOKEN
+        this.resetAuthToken(response.data);
 
-          // HANDLE NON 200 RESPONSE
-          else {
-            this.pushToast("You entered an invalid OTP", "error");
-            this.clearOutInput();
-          }
-        })
-        .catch(() => {
-          this.pushToast("Unable to verify OTP token", "error");
-          this.clearOutInput();
-        });
+        // CHECK IF IT'S A WITHDRAWAL REQUEST
+        if (Object.keys(this.getWithdrawalRequest).length)
+          await this.initiateWithdrawalRequest();
+        else await this.makeWithdrawal();
+      }
     },
 
     // ===================================
@@ -396,7 +414,7 @@ export default {
       this.$bus.$emit("show-page-loader", "Processing your transfer");
 
       try {
-        this.handleClick("continue");
+        this.handleClick("btnRef");
 
         const response =
           this.getWithdrawalMeta.selected_beneficiary.category === "wallet"
@@ -404,7 +422,7 @@ export default {
             : await this.withdrawWalletFund(this.getWithdrawalPayload);
 
         this.$bus.$emit("hide-page-loader");
-        this.handleClick("continue", "Continue", false);
+        this.handleClick("btnRef", "Continue", false);
 
         response?.code == 200
           ? this.$emit("done", {
@@ -420,8 +438,30 @@ export default {
       } catch (error) {
         console.log(error);
         this.$bus.$emit("hide-page-loader");
-        this.handleClick("continue", "Continue", false);
+        this.handleClick("btnRef", "Continue", false);
         this.pushToast("Withdrawal failed. Please try again", "error");
+      }
+    },
+
+    async initiateWithdrawalRequest() {
+      const response = await this.handleDataRequest({
+        action: "processWithdrawalRequest",
+        payload: this.getWithdrawalRequest,
+        alert_handler: {
+          error: "Unable to request for withdrawal at this time",
+          request_error: "Insufficient wallet balance",
+        },
+      });
+
+      if (response.code === 200) {
+        this.$router.push({
+          name: "SuccessfulWithdrawal",
+          query: {
+            type: "pending",
+            amount: this.getWithdrawalRequest.amount,
+            currency: this.getWithdrawalRequest.currency,
+          },
+        });
       }
     },
   },

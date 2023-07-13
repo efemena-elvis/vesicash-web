@@ -20,4 +20,5 @@ export default {
   },
 
   getWithdrawalMeta: (state) => state.withdrawal_meta,
+  getWithdrawalRequest: (state) => state.withdrawal_request ?? {},
 };

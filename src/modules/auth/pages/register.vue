@@ -164,14 +164,11 @@ export default {
 
       let request_payload = {
         ...form_payload,
-        business_type_id: +this.form.business_type.value?.id,
         firstname,
         lastname,
       };
 
       delete request_payload.fullname;
-      delete request_payload.business_type;
-
       return request_payload;
     },
   },
@@ -267,8 +264,9 @@ export default {
     selectBusinessType(selected_id) {
       this.form.business_type.value = this.business_type_options.find(
         (business) => business.id === selected_id
-      );
+      ).name;
       this.form.business_type.validated = true;
+      console.log(this.form.business_type);
     },
 
     // ===========================================
@@ -284,15 +282,12 @@ export default {
           error: "Unable to create your account at this time",
         },
       });
-
       if (response.code === 201) {
         this.user_details = response.data;
         this.handleOTPInitiation(); // SEND USER OTP
       }
-
       if (response?.code === 400) {
         const error_type = response.message.split(":")[0];
-
         if (error_type === "EmailAddress") {
           this.handleToastPushMx("Email address already exist!", "error");
         } else if (error_type === "PhoneNumber") {
