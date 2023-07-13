@@ -2,8 +2,8 @@ import $api from "@/shared/services/service-api";
 import { postRequest } from "@/utilities/micro-services";
 
 const routes = {
-  generate_api_keys: "admin/tokens/generate",
-  fetch_api_keys: "admin/tokens/fetch",
+  generate_api_keys: "tokens/generate",
+  fetch_api_keys: "tokens/fetch",
 };
 
 export default {

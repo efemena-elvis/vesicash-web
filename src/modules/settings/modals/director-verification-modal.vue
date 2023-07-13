@@ -1,7 +1,7 @@
 <template>
   <ModalCover
     @closeModal="$emit('closeTriggered')"
-    :modal_style="{ size: 'modal-md' }"
+    :modal_style="{ size: 'modal-sm' }"
   >
     <!-- MODAL COVER HEADER -->
     <template slot="modal-cover-header">
@@ -50,7 +50,7 @@
 
 <script>
 import { mapActions } from "vuex";
-import ModalCover from "@/shared/components/util-comps/modal-cover";;
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 import DirectorRow from "@/modules/settings/components/director-row";
 
 export default {

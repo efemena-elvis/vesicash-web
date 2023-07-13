@@ -38,6 +38,8 @@ export default {
     // BUSINESS ACCOUNT DATA
     userData.business_name =
       response_payload.profile?.business?.business_name ?? null;
+    userData.business_type =
+      response_payload.profile?.business?.business_type ?? null;
     userData.business_charge = response_payload.profile?.business
       ?.escrow_charge ?? { type: "percentage", value: "0.05" };
 
@@ -80,6 +82,21 @@ export default {
       storage_name: constants.VESICASH_AUTH_USER,
       storage_value: state.authUser,
       storage_type: "object",
+    });
+  },
+
+  AUTH_RESET_TOKEN: (_, response_payload) => {
+    axios.defaults.headers.common["Authorization"] =
+      response_payload.access_token;
+
+    serviceStorage.setStorage({
+      storage_name: constants.VESICASH_AUTH_TOKEN,
+      storage_value: response_payload.access_token,
+    });
+
+    serviceStorage.setStorage({
+      storage_name: "timestamp",
+      storage_value: +new Date(),
     });
   },
 

@@ -1,11 +1,11 @@
 import { getRequest, postRequest } from "@/utilities/micro-services";
 
 const routes = {
-  user_banks: "admin/user/fetch/bank/",
-  update_user_banks: "admin/user/update/bank",
-  remove_user_bank: "admin/user/remove/bank/",
-  fetch_connected_users: "admin/fetch-users-by-business",
-  delete_connected_user: "admin/user/delete",
+  user_banks: "user/fetch/bank/",
+  update_user_banks: "user/update/bank",
+  remove_user_bank: "user/remove/bank/",
+  fetch_connected_users: "fetch-users-by-business",
+  delete_connected_user: "user/delete",
 
   request_phone_otp: "phone",
   verify_phone_otp: "phone/verify",
@@ -13,8 +13,8 @@ const routes = {
   verify_email_otp: "email/verify",
 
   update_user_password: "user/security/update_password",
-  update_profile: "admin/user/update/account",
-  update_business_info: "admin/business/profile/update",
+  update_profile: "user/update/account",
+  update_business_info: "business/profile/update",
 
   fetch_verifications: "fetch",
 

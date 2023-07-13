@@ -32,11 +32,10 @@
           />
         </div>
 
-        <DocUploadCard
-          @uploaded="uploaded_doc = $event"
+        <ContractUploadCard
           titleText="Select company registration document"
-          docID="cac_document"
-          @upload="handleAlert"
+          @fileUploaded="uploaded_doc = $event"
+          @clearTransactionFile="uploaded_doc = null"
         />
       </div>
     </template>
@@ -68,19 +67,11 @@ export default {
     ModalCover,
   },
 
-  mounted() {
-    this.clearAttachedFile();
-  },
-
   computed: {
     ...mapGetters({
       getFileData: "general/getFileData",
       getAllFilesData: "general/getAllFilesData",
     }),
-
-    directorsRange() {
-      return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => ({ name: i, id: i }));
-    },
 
     isBusiness() {
       return this.getAccountType === "business" ? true : false;
@@ -97,23 +88,7 @@ export default {
       return this.getVerificationDoc?.files?.length ? true : false;
     },
 
-    getDirectorDoc() {
-      const file_data = this.getAllFilesData.find(
-        (doc) => doc.id === "director_documents"
-      );
-      return file_data === undefined ? null : file_data;
-    },
-
-    directorDocExist() {
-      return this.getDirectorDoc?.files?.length ? true : false;
-    },
-
     isDisabled() {
-      //   if (this.isBusiness)
-      // !this.form.doc_number ||
-      //   !this.document ||
-      //   !this.VerificationDocExist ||
-      //   !this.directorDocExist;
       return !this.form.doc_number || !this.VerificationDocExist;
     },
 
@@ -127,10 +102,16 @@ export default {
     },
   },
 
+  watch: {
+    uploaded_doc: {
+      handler(value) {
+        console.log("UPLOAD", value);
+      },
+    },
+  },
+
   data() {
     return {
-      director_count: 0,
-
       uploaded_doc: null,
 
       form: {
@@ -143,21 +124,18 @@ export default {
     };
   },
 
+  mounted() {
+    this.clearAttachedFile();
+  },
+
   methods: {
     ...mapActions({
       clearAttachedFile: "general/clearAttachedFile",
       verfiyUserDocument: "settings/verfiyUserDocument",
     }),
 
-    handleAlert(message) {
-      if (this.director_count < 1)
-        this.pushToast("Select number of directors", "error");
-      if (message) this.pushToast(message, "error");
-    },
-
     async save() {
       this.handleClick("save");
-      console.log("PAYLOAD", this.verfiyDocPayload);
 
       try {
         const response = await this.verfiyUserDocument(this.verfiyDocPayload);
@@ -171,7 +149,6 @@ export default {
           this.pushToast(response.message, "error");
         }
       } catch (err) {
-        console.log("ERROR SAVING DOCUMENT", err);
         this.handleClick("save", "Submit", false);
         this.pushToast("Failed to verify document", "error");
       }
