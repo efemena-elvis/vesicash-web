@@ -28,6 +28,7 @@ import BasicInput from "@/shared/components/form-comps/basic-input";
 import FormFieldInput from "@/shared/components/form-comps/form-field-input";
 import CountryDropSelect from "@/shared/components/form-comps/country-drop-select";
 import DocUploadCard from "@/shared/components/form-comps/doc-upload-card";
+import ContractUploadCard from "@/modules/transactions/components/card-comps/contract-upload-card";
 import DropDownSelect from "@/shared/components/form-comps/drop-down-select";
 import DropSelectInput from "@/shared/components/form-comps/drop-select-input";
 
@@ -35,6 +36,7 @@ Vue.component("BasicInput", BasicInput);
 Vue.component("FormFieldInput", FormFieldInput);
 Vue.component("CountryDropSelect", CountryDropSelect);
 Vue.component("DocUploadCard", DocUploadCard);
+Vue.component("ContractUploadCard", ContractUploadCard);
 Vue.component("DropDownSelect", DropDownSelect);
 Vue.component("DropSelectInput", DropSelectInput);
 

@@ -343,14 +343,15 @@ export default {
 
   methods: {
     ...mapActions({
-      processWithdrawalRequest: "merchantDashboard/processWithdrawalRequest",
       fetchBankDetails: "dashboard/fetchBankDetails",
       addNewBank: "settings/addNewBank",
+      sendUserOTP: "auth/sendUserOTP",
     }),
 
     ...mapMutations({
       setWalletType: "dashboard/SET_WALLET_TYPE",
       setWithdrawalMeta: "dashboard/SET_WITHDRAWAL_META",
+      saveWithdrawalRequest: "dashboard/SAVE_WITHDRAWAL_REQUEST_DATA",
     }),
 
     updateWithdrawalInput(value) {
@@ -590,25 +591,22 @@ export default {
         withdrawal_date: this.$utils.getTimestampInSeconds(),
       };
 
+      this.saveWithdrawalRequest(requestPayload);
+
       const response = await this.handleDataRequest({
-        action: "processWithdrawalRequest",
-        payload: requestPayload,
+        action: "sendUserOTP",
+        payload: {
+          account_id: this.getAccountId,
+        },
         btn_text: "Continue",
         alert_handler: {
-          error: "Unable to request for withdrawal at this time",
-          request_error: "Insufficient wallet balance",
+          error: "Failed to generate OTP for this withdarwal. Try again.",
+          request_error: "Unable to generate OTP",
         },
       });
 
-      if (response.code === 200) {
-        this.$router.push({
-          name: "SuccessfulWithdrawal",
-          query: {
-            type: "pending",
-            amount: this.form.amount,
-            currency: this.selected_currency.short,
-          },
-        });
+      if (response?.code === 200) {
+        this.$emit("verifyWithdrawalOTP");
       }
     },
   },

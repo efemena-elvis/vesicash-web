@@ -28,7 +28,10 @@ export default {
   // ================================
   async uploadFile(_, payload) {
     formData.append("files[0]", payload);
-    return await $api.push(routes.upload_file, { formData, is_attach: true });
+    return await postRequest("upload", routes.upload_file, {
+      formData,
+      is_attach: true,
+    });
   },
 
   // ======================================
@@ -79,10 +82,11 @@ export default {
           file_payload.push({ name: item.original_name, url: item.file_url });
         });
 
-        type === "escrow" &&
-          commit("transactions/UPDATE_TRANSACTION_ATTACHMENT", file_payload, {
-            root: true,
-          });
+        type === "escrow"
+          ? commit("transactions/UPDATE_TRANSACTION_ATTACHMENT", file_payload, {
+              root: true,
+            })
+          : null;
 
         commit("UPDATE_FILE_PROGRESS", {
           name: file.name,
@@ -127,7 +131,7 @@ export default {
 
     try {
       const response = await axios.post(
-        `${constants.VESICASH_API_URL}${routes.upload_file}`,
+        getServiceRoute("upload", routes.upload_file),
         form_data,
         {
           headers: {

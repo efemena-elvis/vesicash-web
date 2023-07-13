@@ -73,7 +73,8 @@
 
       <div class="col-12 col-lg-10 col-xl-8 mgb-40">
         <ContractUploadCard
-          @contractUploaded="updateTransactionFile"
+          upload_type="escrow"
+          @fileUploaded="updateTransactionFile"
           @clearTransactionFile="removeUploadedFile"
         />
       </div>
@@ -102,10 +103,6 @@ export default {
     FundDisburseTypeCard: () =>
       import(
         /* webpackChunkName: "transactions-module" */ "@/modules/transactions/components/card-comps/fund-disburse-type-card"
-      ),
-    ContractUploadCard: () =>
-      import(
-        /* webpackChunkName: "transactions-module" */ "@/modules/transactions/components/card-comps/contract-upload-card"
       ),
   },
 

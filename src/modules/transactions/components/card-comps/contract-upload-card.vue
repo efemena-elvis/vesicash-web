@@ -106,6 +106,11 @@ export default {
       type: String,
       default: "You can upload a doc or a PDF file",
     },
+
+    upload_type: {
+      type: String,
+      default: null,
+    },
   },
 
   computed: {
@@ -144,11 +149,10 @@ export default {
       this.uploadToSpace({
         file: uploaded_file,
         formatted_size: this.processFileSize(uploaded_file.size),
-        type: "escrow",
+        type: this.upload_type,
       })
         .then((response) => {
-          if (response?.code === 201)
-            this.$emit("contractUploaded", response.data);
+          if (response?.code === 201) this.$emit("fileUploaded", response.data);
         })
         .catch((err) => console.log(err));
     },

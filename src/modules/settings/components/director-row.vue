@@ -4,7 +4,7 @@
       >Director {{ rowKey + 1 }} document info</label
     >
     <div class="director-group">
-      <div class="document-select">
+      <div class="document-select mgb-10">
         <DropSelectInput
           placeholder="Select document"
           :options="verification_docs"
@@ -13,17 +13,10 @@
       </div>
 
       <div class="document-id">
-        <BasicInput
-          label_title=""
-          label_id="id"
-          :input_value="form.doc_id"
-          is_required
-          placeholder="Enter document id"
-          @getInputState="updateFormState($event, 'doc_id')"
-          :error_handler="{
-            type: 'required',
-            message: 'Document id is required',
-          }"
+        <DocUploadCard
+          @uploaded="uploaded_doc = $event"
+          titleText="Select director document"
+          docID="director_doc"
         />
       </div>
     </div>
@@ -80,15 +73,6 @@ export default {
 <style lang="scss" scoped>
 .director-row {
   .director-group {
-    @include flex-row-wrap("space-between", "flex-start");
-
-    .document-select {
-      width: 46%;
-    }
-
-    .document-id {
-      width: 52%;
-    }
   }
 }
 </style>
