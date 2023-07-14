@@ -4,7 +4,7 @@
 // CONVERT UNITS IN PX TO REM
 //==============================
 @function toRem($size) {
-  $result: $size/16;
+  $result: calc($size / 16);
   @return #{$result}rem;
 }
 

@@ -1,17 +1,25 @@
 <template>
-  <ModalCover @closeModal="$emit('closeTriggered')" :modal_style="{ size: 'modal-xs' }">
+  <ModalCover
+    @closeModal="$emit('closeTriggered')"
+    :modal_style="{ size: 'modal-xs' }"
+  >
     <!-- MODAL COVER HEADER -->
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
         <div class="modal-cover-title">Add naira account</div>
-        <div class="tertiary-2-text grey-600 wt-75">Add a new naira account</div>
+        <div class="tertiary-2-text grey-600 wt-75">
+          Add a new naira account
+        </div>
       </div>
     </template>
 
     <!-- MODAL COVER BODY -->
     <template slot="modal-cover-body">
       <div class="modal-cover-body">
-        <div class="skeleton-loader bank-skeleton rounded-3 mgb-15" v-if="loading_banks"></div>
+        <div
+          class="skeleton-loader bank-skeleton rounded-3 mgb-15"
+          v-if="loading_banks"
+        ></div>
 
         <div class="form-group" v-else>
           <div class="form-label">Select bank</div>
@@ -35,10 +43,10 @@
             placeholder="Enter account number"
             @getInputState="updateFormState($event, 'account_number')"
             :error_handler="{
-            type: 'minimum',
-            message: 'Enter a valid account number',
-            minimum:10
-          }"
+              type: 'minimum',
+              message: 'Enter a valid account number',
+              minimum: 10,
+            }"
           />
         </div>
 
@@ -47,9 +55,14 @@
           class="account-confirm-card grey-10-bg rounded-12 mgt--10"
           v-if="account_details || verification_message"
         >
-          <div class="name tertiary-2-text" :class="invalid_account ? 'red-600' : 'grey-900'">
+          <div
+            class="name tertiary-2-text"
+            :class="invalid_account ? 'red-600' : 'grey-900'"
+          >
             {{
-            account_details ? account_details.account_name : verification_message
+              account_details
+                ? account_details.account_name
+                : verification_message
             }}
           </div>
         </div>
@@ -64,7 +77,9 @@
           ref="save"
           class="btn btn-primary btn-md wt-100"
           @click="addAccountDetails"
-        >Add account</button>
+        >
+          Add account
+        </button>
       </div>
     </template>
   </ModalCover>
@@ -186,7 +201,7 @@ export default {
       }
 
       this.loading_banks = true;
-      const response = await this.getAllBanks("nigeria");
+      const response = await this.getAllBanks("Nigeria");
       this.loading_banks = false;
 
       if (response.code === 200) {
@@ -264,4 +279,3 @@ export default {
   height: toRem(35);
 }
 </style>
-
