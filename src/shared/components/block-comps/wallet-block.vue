@@ -186,12 +186,15 @@ export default {
             (w) => w.short === wallet.short
           );
 
-          if (!wallet_found) {
+          if (wallet_found === false) {
             this.updateWalletListSize([...this.getWalletSize, wallet]);
           }
 
-          this.getWalletSize.find((w) => w.id === wallet.id).balance =
-            wallet?.balance?.toString() ?? "0.00";
+          const in_wallet = this.getWalletSize.find((w) => w.id === wallet.id);
+
+          if (typeof in_wallet !== "undefined") {
+            in_wallet.balance = wallet?.balance?.toString() ?? "0.00";
+          }
         });
 
         this.wallet_balance = this.getWalletSize;

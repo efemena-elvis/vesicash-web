@@ -1,7 +1,10 @@
 <template>
   <div class="layout-disbursement">
     <!-- BACK BUTTON -->
-    <PageBackBtn history_mode />
+    <PageBackBtn
+      :history_mode="isOnPaymentPage ? false : true"
+      :btn_text="isOnPaymentPage ? 'Go to Dashboard' : 'Back'"
+    />
 
     <!-- FUND DISBURSMENT FLOW -->
     <ProgressFlowCard :flows="getComputedPageFlow" />
@@ -33,7 +36,13 @@ export default {
     }),
 
     getComputedPageFlow() {
+      console.log(document.referrer);
+
       return this.computed_page_flow;
+    },
+
+    isOnPaymentPage() {
+      return this.$route.name === "TransactionPayment" ? true : false;
     },
   },
 
