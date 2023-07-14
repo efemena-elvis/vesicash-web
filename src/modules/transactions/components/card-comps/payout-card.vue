@@ -212,7 +212,10 @@ export default {
   created() {
     // GET WALLET OPTIONS
     this.getWalletSize
-      .filter((wallet) => wallet.enabled && !wallet.short.includes("ESCROW"))
+      .filter(
+        (wallet) =>
+          wallet.enabled && !wallet.short.includes("ESCROW") && !wallet?.mor
+      )
       .map((wallet_type) => {
         this.currency_options.push({
           id: wallet_type.id,
