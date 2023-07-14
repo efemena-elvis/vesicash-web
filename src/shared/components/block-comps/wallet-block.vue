@@ -157,6 +157,8 @@ export default {
           wallet.currency.includes("MOR")
         );
 
+        console.log("MOR", mor_wallets);
+
         mor_wallets.map((wallet) => {
           const fetched_wallet = countries.find(
             (country) =>
@@ -180,6 +182,9 @@ export default {
             updated_mor_wallets.push(wallet_payload);
           }
         });
+
+        console.log("updated", updated_mor_wallets);
+        console.log("wallet", this.getWalletSize);
 
         updated_mor_wallets.map((wallet) => {
           const wallet_found = this.getWalletSize.some(
