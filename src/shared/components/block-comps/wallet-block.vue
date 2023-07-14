@@ -157,8 +157,6 @@ export default {
           wallet.currency.includes("MOR")
         );
 
-        console.log("MOR", mor_wallets);
-
         mor_wallets.map((wallet) => {
           const fetched_wallet = countries.find(
             (country) =>
@@ -183,20 +181,20 @@ export default {
           }
         });
 
-        console.log("updated", updated_mor_wallets);
-        console.log("wallet", this.getWalletSize);
-
         updated_mor_wallets.map((wallet) => {
           const wallet_found = this.getWalletSize.some(
             (w) => w.short === wallet.short
           );
 
-          if (!wallet_found) {
+          if (wallet_found === false) {
             this.updateWalletListSize([...this.getWalletSize, wallet]);
           }
 
-          this.getWalletSize.find((w) => w.id === wallet.id).balance =
-            wallet?.balance?.toString() ?? "0.00";
+          const in_wallet = this.getWalletSize.find((w) => w.id === wallet.id);
+
+          if (typeof in_wallet !== "undefined") {
+            in_wallet.balance = wallet?.balance?.toString() ?? "0.00";
+          }
         });
 
         this.wallet_balance = this.getWalletSize;
