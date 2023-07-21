@@ -5,17 +5,17 @@
     <td
       class="body-data text-no-wrap"
       :class="`${table_name}-2`"
-      :title="data.transaction.transaction_id"
+      :title="data?.transaction?.transaction_id ?? '--------'"
     >
-      {{ data.transaction.transaction_id }}
+      {{ data?.transaction?.transaction_id ?? "--------" }}
     </td>
 
     <td class="body-data text-capitalize" :class="`${table_name}-3`">
-      {{ data.transaction.type }}
+      {{ data?.transaction?.type ?? "-------" }}
     </td>
 
     <td class="body-data" :class="`${table_name}-4`">
-      {{ data.payment_type || data.payment_method || "-" }}
+      {{ data.payment_type || data.payment_method || "-------" }}
     </td>
 
     <td class="body-data" :class="`${table_name}-5`">

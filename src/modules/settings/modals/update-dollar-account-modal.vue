@@ -196,7 +196,7 @@ export default {
         account_id: this.getAccountId,
         updates: {
           account_name: `${this.form.account_last_name} ${this.form.account_first_name}`,
-          account_no: this.form.account_number,
+          account_no: "" + this.form.account_number,
           swift_code: this.form.account_swift_code,
           sort_code: this.form.account_sort_code,
           bank_address: this.form.account_bank_address,
@@ -294,7 +294,7 @@ export default {
       try {
         const response = await this.addNewBank(this.getNewDollarAccountDetails);
 
-        if (response?.code === 200) {
+        if ([200, 201].includes(response.code)) {
           this.handleClick("save", "Updating bank list...");
           await this.fetchAllBanks(this.getAccountId);
           this.handleClick("save", "Update account", false);

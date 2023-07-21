@@ -9,7 +9,7 @@ const routes = {
   upload_file: "files",
   country_bank_list: "banks",
   verify_bank_account: "bank_account/verify",
-  verify_wallet: "/auth/user/bank-details",
+  verify_wallet: "user/bank-details",
 };
 
 let formData = new FormData();

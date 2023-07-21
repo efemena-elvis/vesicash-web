@@ -307,23 +307,25 @@ export default {
     // ===============================
     // VERIFY USER WALLET PAYMENT
     // ===============================
-    handleFundSuccess() {
-      this.verifyPaymentAccount({
-        reference: this.account_reference_id,
-      })
-        .then((response) => {
-          if (response.code === 200) {
-            this.$router.push({
-              name: "SuccessfulWalletFund",
-              query: {
-                type: "transfer",
-                currency: this.selected_currency.short,
-                amount: +this.form.amount,
-              },
-            });
-          }
-        })
-        .catch((err) => {});
+    async handleFundSuccess() {
+      const response = await this.handleDataRequest({
+        action: "verifyPaymentAccount",
+        payload: { reference: this.account_reference_id },
+        alert_handler: {
+          error: "Unable to verify account payment",
+        },
+      });
+
+      if (response.code === 200) {
+        this.$router.push({
+          name: "SuccessfulWalletFund",
+          query: {
+            type: "transfer",
+            currency: this.selected_currency.short,
+            amount: +this.form.amount,
+          },
+        });
+      }
     },
 
     // =======================================

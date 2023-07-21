@@ -16,7 +16,8 @@
             <template v-if="$route.name !== 'VesicashDashboard'"
               >Escrow</template
             >
-            <span class="text-capitalize">{{ " " + wallet_type }}</span> Wallet
+            <span class="text-capitalize">{{ " " + wallet_type }}</span>
+            Wallet
           </template>
         </div>
 
@@ -30,8 +31,17 @@
             </template>
 
             <template v-else>
-              Please send the total transaction amount to the Bank account
-              details below, inorder to initiate your transaction.
+              Please send the transaction amount of
+              <span class="fw-bold"
+                >{{
+                  $utils.formatCurrency({
+                    input: currency,
+                    output: "sign",
+                  })
+                }}{{ $utils.formatCurrencyWithComma(amount) }}</span
+              >
+              to the Bank account details below, inorder to initiate your
+              transaction.
             </template>
           </template>
 
@@ -152,6 +162,15 @@ export default {
       type: String,
       default: "",
     },
+
+    amount: {
+      type: Number,
+      default: 0,
+    },
+
+    currency: {
+      type: String,
+    },
   },
 
   computed: {
@@ -184,7 +203,7 @@ export default {
   },
 
   mounted() {
-    this.wallet_type === "naira" && this.handleFetchingNairaDetails();
+    this.wallet_type === "naira" && this.handleFetchingAccountDetails();
   },
 
   methods: {
@@ -198,20 +217,19 @@ export default {
     // ========================================
     // HANDLE FETCHING OF NAIRA BANK DETAILS
     // ========================================
-    handleFetchingNairaDetails() {
+    handleFetchingAccountDetails() {
       let request_payload = {
         account_id: this.getAccountId,
         transaction_id:
           this.$route?.query?.transaction_id ?? this.$route?.params?.id,
-        gateway: this.gateway,
+        gateway: "monnify",
       };
-
-      if (!this.gateway) delete request_payload?.gateway;
+      // if (!this.gateway) delete request_payload?.gateway;
 
       this.fetchTransferAccountBankDetails(request_payload)
         .then((response) => {
-          if (response?.code === 200) {
-            let account = response?.data?.payment_account ?? {};
+          if (response.code === 200) {
+            let account = response?.data ?? {};
             this.account_reference_id = account.payment_account_id;
 
             delete account.id;
@@ -242,7 +260,7 @@ export default {
             this.naira_wallet_loading = false;
           } else if (response?.code === 500) {
             this.naira_wallet_loading = false;
-            this.handleFetchingNairaDetails();
+            this.handleFetchingAccountDetails();
           } else this.naira_wallet_loading = false;
         })
         .catch(() => (this.naira_wallet_loading = false));
@@ -254,9 +272,22 @@ export default {
     handleFundSuccess() {
       this.verifyPaymentAccount({
         reference: this.account_reference_id,
-      });
+      })
+        .then((response) => {
+          if (response.code === 200) {
+            this.$router.push({
+              name: "SuccessfulWalletFund",
+              query: {
+                type: "transfer",
+                currency: this.currency,
+                amount: this.amount,
+              },
+            });
+          }
+        })
+        .catch((err) => {});
 
-      setTimeout(() => this.$emit("walletFunded"), 1500);
+      // setTimeout(() => this.$emit("walletFunded"), 1500);
     },
 
     // =======================================

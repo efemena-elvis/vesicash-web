@@ -101,7 +101,9 @@
       <FieldSetup
         v-if="mor_selected_countries.length"
         title="Review MoR contracts"
-        description="Please review the MoR contract for selected country and sign to be able to use MoR in those countries."
+        :description="`Please review the MoR contract for selected ${
+          form.documents.length > 1 ? 'countries' : 'country'
+        } and sign to be able to use MoR in those countries.`"
         expand
       >
         <template slot="form-area">

@@ -153,11 +153,14 @@
           @paid="closeWireAndOpenSuccess"
         />
       </transition>
+
       <transition name="fade" v-if="show_naira_transfer_modal">
         <WalletDetailsModal
           @closeTriggered="toggleNairaTransferModal"
           @goBackWalletSelection="closeNairaPaymentOpenPayment"
           @walletFunded="closeFundDetailsAndOpenSuccess"
+          :amount="+getTransaction.total_amount - +getTransaction.amount_paid"
+          :currency="getTransaction.currency"
         />
       </transition>
 
@@ -167,9 +170,7 @@
           @goBackWalletSelection="closeFWBizOpenPayment"
           @walletFunded="closeFundDetailsAndOpenSuccess"
           :gateway="gateway"
-          :amount="
-            getTransaction.totalAmount ? getTransaction.totalAmount : '0'
-          "
+          :amount="+getTransaction.total_amount - +getTransaction.amount_paid"
         />
       </transition>
 
@@ -194,6 +195,7 @@
           @goBackOptionSelection="toggleWalletTransferModal"
           @transfer="transferFromWallet"
           :currency="getCurrency"
+          :amount="+getTransaction.total_amount - +getTransaction.amount_paid"
         />
       </transition>
     </portal>
@@ -278,15 +280,12 @@ export default {
     },
 
     getTransaction() {
-      console.log("DETAILS", this.transaction_details);
-
       if (Object.keys(this.getTransactionDetails).length)
         return this.getTransactionDetails;
       else return this.transaction_details;
     },
 
     getSortedMilestones() {
-      console.log("DETAILS----", this.getTransaction);
       return this.getTransaction?.milestones;
 
       // return sortMilestones.call();
@@ -306,7 +305,7 @@ export default {
       let transaction_owner = this.getTransaction?.members[0]?.email ?? "Owner";
       let transaction_title = this.getTransaction.title;
       let transaction_amount =
-        this.getTransaction?.totalAmount ??
+        this.getTransaction?.total_amount ??
         Number(this.getTransaction?.amount) ??
         0;
       let transaction_amount_paid =
@@ -317,10 +316,7 @@ export default {
       return {
         owner: transaction_owner,
         title: transaction_title,
-        amount_paid:
-          transaction_amount_paid > 0
-            ? transaction_amount_paid + escrow_charge
-            : transaction_amount_paid,
+        amount_paid: transaction_amount_paid,
         currency: this.$money.getSign(transaction_currency),
         currency_value: transaction_currency,
         total_amount: `${this.$money.getSign(
@@ -360,11 +356,7 @@ export default {
         );
 
         if (current_user.role?.toLowerCase() === "buyer") {
-          if (
-            Number(value.amount_paid) + Number(value.escrow_charge) >
-              value.totalAmount ??
-            Number(value.amount)
-          ) {
+          if (+value.amount_paid < value.total_amount) {
             this.togglePaymentModal();
           }
         }
@@ -474,8 +466,6 @@ export default {
 
       this.fetchTransactionById({ transaction_id: this.$route.params.id })
         .then((response) => {
-          console.log("single", response);
-
           if (response?.code === 200) {
             this.transaction_details = response?.data;
 
@@ -492,7 +482,7 @@ export default {
         title,
         amount_paid,
         escrow_charge,
-        totalAmount,
+        total_amount,
         amount,
         type,
       } = this.getTransaction;
@@ -517,10 +507,7 @@ export default {
           } else if (current_user.status?.toLowerCase() === "accepted") {
             // CHECK PAYMENT
             if (Number(amount_paid > 0)) {
-              if (
-                Number(amount_paid) + Number(escrow_charge) <
-                Number(totalAmount ?? amount)
-              ) {
+              if (Number(amount_paid) < Number(total_amount ?? amount)) {
                 this.togglePaymentModal();
               } else {
                 if (!all_accepted)
@@ -542,9 +529,7 @@ export default {
             if (all_accepted) {
               // CHECK IF FUNDS HAS BEEN PAID
               let payment_complete =
-                Number(amount_paid) + Number(escrow_charge) >= totalAmount
-                  ? true
-                  : false;
+                Number(amount_paid) >= total_amount ? true : false;
 
               if (!payment_complete) {
                 this.pushToast(
@@ -646,7 +631,7 @@ export default {
         milestones,
         amount_paid,
         escrow_charge,
-        totalAmount,
+        total_amount,
       } = this.getTransaction;
 
       // GET FIRST MILESTONE STATUS
@@ -663,10 +648,7 @@ export default {
       );
 
       // CHECK IF PAYMENT HAS BEEN MADE
-      let payment_complete =
-        Number(amount_paid) + Number(escrow_charge) >= totalAmount
-          ? true
-          : false;
+      let payment_complete = +amount_paid >= +total_amount ? true : false;
 
       // FOR ALL ACCEPTED AND COMPLETE PAYMENT
       if (
@@ -728,8 +710,6 @@ export default {
       })
         .then((response) => {
           if (response?.code === 200) {
-            console.log(response);
-
             this.pushToast(
               `${milestone.title} milestone is now in progress`,
               "success"
@@ -757,7 +737,6 @@ export default {
           .then((response) => {
             if (response?.code === 200) {
               if (milestones.length === index + 1) {
-                // this.pushToast("Transaction has started", "success");
                 setTimeout(() => this.fetchSingleTransaction(), 2000);
               }
             }

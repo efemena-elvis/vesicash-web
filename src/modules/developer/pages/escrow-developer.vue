@@ -68,6 +68,7 @@
     </div>
 
     <button
+      v-if="false"
       class="btn btn-md btn-primary generate-key-btn"
       ref="btnRef"
       @click="generateKeys()"
@@ -101,7 +102,7 @@ export default {
   watch: {
     getAPIKeysDetails: {
       async handler(keys) {
-        if (!keys) this.fetchAPIKeys();
+        if (!keys) this.fetchTokenKeys();
       },
       immediate: true,
     },
@@ -146,7 +147,7 @@ export default {
       }
     },
 
-    async fetchAPIKeys() {
+    async fetchTokenKeys() {
       this.generating_keys = true;
 
       const response = await this.handleDataRequest({
