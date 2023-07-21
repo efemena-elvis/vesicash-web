@@ -8,7 +8,7 @@ const routes = {
   verify_payment: "payment_account/verify",
   wallet_transactions: "/payment/list/wallet_funding",
   wallet_withdrawals: "/payment/list/wallet_withdrawals",
-  bank_details: "user/fetch/bank",
+  bank_details: "user/fetch/bank?array=true",
   withdraw_fund: "disbursement/wallet/withdraw",
   transaction_payments: "list",
 };
