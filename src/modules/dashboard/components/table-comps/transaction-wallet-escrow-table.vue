@@ -124,7 +124,7 @@ export default {
                 : this.dummyData.slice(0, 3);
             this.table_loading = false;
 
-            //SET PAGINATION DATA
+            // SET PAGINATION DATA
             this.pagination = {
               current_page: 1 || response?.data?.current_page,
               per_page: 30 || response?.data?.per_page,

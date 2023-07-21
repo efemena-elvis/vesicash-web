@@ -84,7 +84,7 @@ export default {
 
       let request_payload = {
         transaction_id: this.$route.params.id,
-        account_id: this.getAccountId.toString(),
+        account_id: +this.getAccountId,
         status,
       };
 

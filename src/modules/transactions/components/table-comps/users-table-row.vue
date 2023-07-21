@@ -22,7 +22,10 @@
     </template>
 
     <td class="body-data" :class="`${table_name}-6`">
-      <TagCard :card_text="data.status" :card_type="getTagColor" />
+      <TagCard
+        :card_text="data.status === 'Created' ? 'Invited' : data.status"
+        :card_type="getTagColor"
+      />
     </td>
   </tr>
 </template>
@@ -74,5 +77,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

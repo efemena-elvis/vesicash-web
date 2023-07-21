@@ -89,6 +89,11 @@ export default {
       default: "single",
     },
 
+    amount: {
+      type: Number,
+      default: 0,
+    },
+
     currency: {
       type: String,
       default: "naira",
@@ -99,7 +104,8 @@ export default {
     this.fetchUserWalletBalance();
 
     // CHECK IF FEE IS IN ROUTE
-    if (this.$route.query.fee) this.form.amount = this.$route.query.fee;
+    if (this.$route.query.fee || this.amount)
+      this.form.amount = this.$route.query.fee ?? this.amount;
   },
 
   computed: {

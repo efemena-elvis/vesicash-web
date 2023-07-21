@@ -10,7 +10,7 @@ const routes = {
   wallet_withdrawals: "/payment/list/wallet_withdrawals",
   bank_details: "user/fetch/bank",
   withdraw_fund: "disbursement/wallet/withdraw",
-  transaction_payments: "transactions/list",
+  transaction_payments: "list",
 };
 
 export default {
@@ -70,12 +70,8 @@ export default {
   // =====================================
   // FETCH USER BANK DETAILS
   // =====================================
-  async fetchBankDetails(_, account_id) {
-    return await postRequest(
-      "admin",
-      `${routes.bank_details}/${account_id}?array=true`,
-      {}
-    );
+  async fetchBankDetails() {
+    return await getRequest("auth", routes.bank_details, {});
   },
 
   // =====================================
@@ -89,6 +85,10 @@ export default {
   // GET ALL POSSIBLE TRANSACTIN PAYMENTS TYPE AND SOURCES
   // ========================================================
   async getTransactionPayments(_, payload) {
-    return await postRequest("admin", routes.transaction_payments, payload);
+    return await postRequest(
+      "transactions",
+      routes.transaction_payments,
+      payload
+    );
   },
 };

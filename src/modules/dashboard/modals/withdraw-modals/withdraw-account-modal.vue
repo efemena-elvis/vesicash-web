@@ -355,7 +355,7 @@ export default {
     }),
 
     updateWithdrawalInput(value) {
-      console.log("Date", value);
+      // console.log("Date", value);
     },
 
     loadWalletCurrencyOptions() {
@@ -556,12 +556,12 @@ export default {
 
         const response = await this.addNewBank({
           account_id: this.getAccountId,
-          updates: this.form.selected_beneficiary,
+          ...this.form.selected_beneficiary,
         });
 
         this.handleClick("btnRef", "Continue", false);
 
-        if (response?.code === 200) {
+        if ([200, 201].includes(response.code)) {
           this.setWithdrawalMeta(withdrawal_details);
           this.$emit("confirmAccountSelected", {
             title: "Confirm transaction",

@@ -1,5 +1,8 @@
-import $api from "@/shared/services/service-api";
-import { getRequest, postRequest } from "@/utilities/micro-services";
+import {
+  getRequest,
+  postRequest,
+  patchRequest,
+} from "@/utilities/micro-services";
 
 const routes = {
   all_transactions: "listByUser",
@@ -88,7 +91,7 @@ export default {
   // UPDATE TRANSACTION PARTY STATUS
   // ==================================
   async updateTransactionParty(_, payload) {
-    return await postRequest(
+    return await patchRequest(
       "transactions",
       `${routes.update_party_status}`,
       payload
@@ -99,7 +102,7 @@ export default {
   // UPDATE MILESTONE TRANSACTION STATUS
   // ======================================
   async updateMilestoneTransaction(_, payload) {
-    return await postRequest(
+    return await patchRequest(
       "transactions",
       `${routes.update_milestone_status}`,
       payload

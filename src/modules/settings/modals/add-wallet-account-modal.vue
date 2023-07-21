@@ -122,10 +122,10 @@ export default {
 
       const response = await this.addNewBank({
         account_id: this.getAccountId,
-        updates: this.account_payload,
+        ...this.account_payload,
       });
 
-      if (response?.code === 200) {
+      if ([200, 201].includes(response.code)) {
         this.handleClick("save", "Updating bank list...");
         this.handleClick("save", "Add account", false);
 
@@ -152,7 +152,7 @@ export default {
           account_name: response.data.firstname
             ? `${response.data.firstname} ${response.data.lastname}`
             : response.data.email_address,
-          account_no: response.data.account_id,
+          account_no: "" + response.data.account_id,
           category: "wallet",
         };
 

@@ -19,7 +19,7 @@
 
     <!-- ACCOUNT CONFIRM CARD -->
     <div
-      class="account-confirm-card grey-10-bg rounded-12 mgt--10"
+      class="account-confirm-card grey-10-bg rounded-12 mgt--10 mgb-20"
       v-if="account_details?.account_name || verification_message"
     >
       <div
@@ -75,16 +75,24 @@ export default {
       this.invalid_account = false;
       this.verification_message = "Verifying account...";
 
-      const response = await this.verifyWalletAccountID(account_id);
+      const response = await this.handleDataRequest({
+        action: "verifyWalletAccountID",
+        payload: account_id,
+        alert_handler: {
+          error: "Please check account details",
+          request_error: "Account details was not found",
+          not_found_error: "Account details was not found",
+        },
+      });
 
-      if (response?.status === "ok") {
+      if (response.code === 200) {
         this.verification_message = "";
 
         let response_payload = {
           account_name: response.data.firstname
             ? `${response.data.firstname} ${response.data.lastname}`
             : response.data.email_address,
-          account_no: response.data.account_id,
+          account_no: "" + response.data.account_id,
           category: "wallet",
           bank_name: "Vesicash",
         };

@@ -176,6 +176,10 @@ export default {
     ],
   }),
 
+  mounted() {
+    console.log("...", this.paymentDetails);
+  },
+
   methods: {
     handleModalClick(action) {
       this[action]();

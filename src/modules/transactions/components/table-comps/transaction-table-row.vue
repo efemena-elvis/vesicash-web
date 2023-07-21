@@ -140,9 +140,7 @@ export default {
     },
 
     getTotalAmountPaid() {
-      let amount_paid = Number(this.data?.amount_paid);
-      let escrow_charge = Number(this.data?.escrow_charge);
-      return amount_paid > 0 ? amount_paid + escrow_charge : amount_paid;
+      return +this.data?.amount_paid;
     },
   },
 

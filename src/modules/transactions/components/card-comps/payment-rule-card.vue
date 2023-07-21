@@ -124,8 +124,7 @@
             <button
               class="btn btn-secondary btn-md"
               ref="rejectBtn"
-              @click="closeAllMilestoneTransaction"
-              v-if="false"
+              @click="closeMilestoneTransaction"
             >
               Reject
             </button>
@@ -480,8 +479,10 @@ export default {
       );
     },
 
-    // CLOSE ALL OCCURING TRANSACTIONS
-    closeAllMilestoneTransaction() {},
+    // CLOSE MILESTONE TRANSACTION
+    closeMilestoneTransaction() {
+      this.updateStatus(this.ms_key["closed-refunded"], "rejectBtn", "Reject");
+    },
 
     // UPDATE TRANSACTION STATUS
     updateStatus(status, ref, btn_text) {

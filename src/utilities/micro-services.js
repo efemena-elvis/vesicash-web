@@ -26,4 +26,20 @@ async function postRequest(service_name, route, payload = {}) {
   return await $api.push(api_route, { payload });
 }
 
-export { getServiceRoute, getRequest, postRequest };
+async function patchRequest(service_name, route, payload = {}) {
+  const api_route = getServiceRoute(service_name, route);
+  return await $api.patch(api_route, { payload });
+}
+
+async function deleteRequest(service_name, route, payload = {}) {
+  const api_route = getServiceRoute(service_name, route);
+  return await $api.remove(api_route, { payload });
+}
+
+export {
+  getServiceRoute,
+  getRequest,
+  postRequest,
+  patchRequest,
+  deleteRequest,
+};
