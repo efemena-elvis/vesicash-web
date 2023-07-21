@@ -6,7 +6,7 @@ import {
 } from "@/utilities/micro-services";
 
 const routes = {
-  user_banks: "user/fetch/bank/",
+  user_banks: "user/fetch/bank?array=true",
   add_user_bank: "user/bank_details",
   update_user_banks: "user/bank_details/update",
   remove_user_bank: "user/remove/bank/",
