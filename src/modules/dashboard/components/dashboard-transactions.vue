@@ -144,19 +144,21 @@ export default {
     },
 
     getTransactionPayload() {
-      return {
+      let payload = {
         wallet_type: this.filters.wallet,
         tx_type: this.filters.transaction,
         payment_entry: this.filters.source,
         start_date: this.filters.date_range.length
           ? this.formatSelectedDate(this.filters.date_range[0])
-          : "",
+          : 0,
         end_date: this.filters.date_range.length
           ? this.formatSelectedDate(this.filters.date_range[1])
-          : "",
-        account_id: this.getAccountId.toString(),
+          : 0,
+        account_id: this.getAccountId,
         page: this.pageNumber,
       };
+
+      return payload;
     },
   },
 

@@ -65,6 +65,8 @@
           @goBackWalletSelection="closeNairaPaymentOpenPayment"
           @walletFunded="closeFundDetailsAndOpenSuccess"
           :gateway="gateway"
+          :amount="getTransactionAmount.total_fee"
+          :currency="getTransactionAmount.currency.short"
         />
       </transition>
 
@@ -77,13 +79,6 @@
           :amount="getTransactionAmount || '0'"
         />
       </transition>
-
-      <!-- <transition name="fade" v-if="show_fw_biz_modal">
-        <FWBizModal
-          @closeTriggered="toggleFWBizModal"
-          @goBackPaymentSelection="closeFWBizOpenPayment"
-        />
-      </transition>-->
 
       <transition name="fade" v-if="show_failed_wallet_transfer">
         <FailedWalletTransferModal
@@ -131,6 +126,10 @@ export default {
       getTransactionSetup: "transactions/getTransactionSetup",
       getTransactionAmount: "transactions/getTransactionAmount",
     }),
+  },
+
+  mounted() {
+    console.log("----", this.getTransactionAmount);
   },
 };
 </script>

@@ -65,6 +65,22 @@ class serviceApi {
   }
 
   // ===============================
+  // PATCH API REQUEST
+  // ===============================
+  async patch(url, { payload = {}, resolve = true, is_attach = false }) {
+    try {
+      let response = await axios.patch(
+        url,
+        payload,
+        this.getHeaders(is_attach)
+      );
+      return resolve ? response.data : response;
+    } catch (err) {
+      return this.handleErrors(err);
+    }
+  }
+
+  // ===============================
   // DELETE API REQUEST
   // ===============================
   async remove(url, option = { payload: {}, resolve: true }) {

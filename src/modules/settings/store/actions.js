@@ -1,10 +1,16 @@
-import { getRequest, postRequest } from "@/utilities/micro-services";
+import {
+  getRequest,
+  postRequest,
+  patchRequest,
+  deleteRequest,
+} from "@/utilities/micro-services";
 
 const routes = {
   user_banks: "user/fetch/bank/",
-  update_user_banks: "user/update/bank",
+  add_user_bank: "user/bank_details",
+  update_user_banks: "user/bank_details/update",
   remove_user_bank: "user/remove/bank/",
-  fetch_connected_users: "fetch-users-by-business",
+  fetch_connected_users: "user/fetch-users-by-business",
   delete_connected_user: "user/delete",
 
   request_phone_otp: "phone",
@@ -13,8 +19,8 @@ const routes = {
   verify_email_otp: "email/verify",
 
   update_user_password: "user/security/update_password",
-  update_profile: "user/update/account",
-  update_business_info: "business/profile/update",
+  update_profile: "user/account/update",
+  update_business_info: "user/business/profile/update",
 
   fetch_verifications: "fetch",
 
@@ -26,12 +32,8 @@ export default {
   // ==============================
   // FETCH USER BANK ACCOUNTS
   // ==============================
-  async fetchAllBanks({ commit }, account_id) {
-    const response = await postRequest(
-      "admin",
-      `${routes.user_banks}${account_id}?array=true`,
-      {}
-    );
+  async fetchAllBanks({ commit }) {
+    const response = await getRequest("auth", routes.user_banks, {});
 
     if (response?.code === 200) commit("SET_BANK_ACCOUNTS", response.data);
     else commit("SET_BANK_ACCOUNTS", []);
@@ -43,7 +45,7 @@ export default {
   // ADD BANK ACCOUNT
   // ==============================
   async addNewBank(_, payload) {
-    return await postRequest("admin", routes.update_user_banks, payload);
+    return await postRequest("auth", routes.add_user_bank, payload);
   },
 
   // ==============================
@@ -51,7 +53,7 @@ export default {
   // ==============================
 
   async removeUserBank(_, payload) {
-    return await postRequest("admin", routes.remove_user_bank, payload);
+    return await deleteRequest("auth", routes.remove_user_bank, payload);
   },
 
   // ==============================
@@ -93,7 +95,7 @@ export default {
   // UPDATE PROFILE
   // ==============================
   async saveUserProfile(_, payload) {
-    return await postRequest("admin", routes.update_profile, payload);
+    return await patchRequest("auth", routes.update_profile, payload);
   },
 
   // ==============================
@@ -135,17 +137,17 @@ export default {
   // UPDATE BUSINESS INFO
   // ==============================
   async updateUserBusinessInfo(_, payload) {
-    return await postRequest("admin", routes.update_business_info, payload);
+    return await patchRequest("auth", routes.update_business_info, payload);
   },
 
   // ==============================
   // FETCH CONNECTED USERS
   // ==============================
   async fetchConnectedUsers({ commit }, payload) {
-    const response = await postRequest(
-      "admin",
-      routes.fetch_connected_users,
-      payload
+    const response = await getRequest(
+      "auth",
+      `${routes.fetch_connected_users}/${payload.business_id}`,
+      {}
     );
 
     response?.code === 200 && commit("SAVE_CONNECTED_USERS", response.data);
@@ -156,6 +158,10 @@ export default {
   // DELETE CONNECTED USER
   // ==============================
   async deleteConnectedUser(_, payload) {
-    return await postRequest("admin", routes.delete_connected_user, payload);
+    return await deleteRequest(
+      "auth",
+      `${routes.delete_connected_user}/${payload.account_id}`,
+      {}
+    );
   },
 };

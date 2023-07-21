@@ -110,7 +110,7 @@ export default {
     getBankDetails() {
       return {
         account_name: this.account_details?.account_name,
-        account_no: this.account_details?.account_number,
+        account_no: "" + this.account_details?.account_number,
         bank_id: this.bank.code,
         bank_name: this.bank.name,
         country: this.selected_currency.country.toLowerCase(),
@@ -178,10 +178,10 @@ export default {
 
       const response = await this.addNewBank({
         account_id: this.getAccountId,
-        updates: this.getBankDetails,
+        ...this.getBankDetails,
       });
 
-      if (response?.code === 200) {
+      if ([200, 201].includes(response.code)) {
         this.handleClick("save", "Updating bank list...");
         await this.fetchAllBanks(this.getAccountId);
         this.handleClick("save", "Add account", false);
