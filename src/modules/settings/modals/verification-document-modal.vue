@@ -25,7 +25,7 @@
           <DropSelectInput
             placeholder="Choose verificatiom file"
             :options="verification_docs"
-            @optionSelected="document = $event"
+            @optionSelected="updateSelectedDocument"
           />
         </div>
 
@@ -44,10 +44,10 @@
           />
         </div>
 
-        <DocUploadCard
-          @uploaded="uploaded_doc = $event"
+        <ContractUploadCard
           titleText="Select document to upload"
-          docID="verification_documents"
+          @fileUploaded="uploaded_doc = $event"
+          @clearTransactionFile="uploaded_doc = null"
         />
       </div>
     </template>
@@ -79,10 +79,6 @@ export default {
     ModalCover,
   },
 
-  mounted() {
-    this.clearAttachedFile();
-  },
-
   computed: {
     ...mapGetters({
       getFileData: "general/getFileData",
@@ -93,30 +89,30 @@ export default {
       return this.getAccountType === "business" ? true : false;
     },
 
-    getVerificationDoc() {
-      const file_data = this.getAllFilesData.find(
-        (doc) => doc.id === "verification_documents"
-      );
-      return file_data === undefined ? null : file_data;
-    },
-
-    VerificationDocExist() {
-      return this.getVerificationDoc?.files?.length ? true : false;
-    },
-
     isDisabled() {
-      return (
-        !this.form.doc_number || !this.document || !this.VerificationDocExist
-      );
+      return this.form.type && this.form.doc_number && this.form.file_url
+        ? false
+        : true;
     },
 
     verfiyDocPayload() {
       return {
-        account_id: this.getAccountId,
-        type: this.document?.id,
+        type: this.form.type,
         id: this.form.doc_number,
-        meta: this.getVerificationDoc?.files[0]?.url,
+        meta: this.form.file_url,
       };
+    },
+  },
+
+  watch: {
+    uploaded_doc: {
+      handler(value) {
+        if (Array.isArray(value)) {
+          this.form.file_url = value[0].file_url;
+        } else {
+          this.form.file_url = value.file_url;
+        }
+      },
     },
   },
 
@@ -137,11 +133,12 @@ export default {
         },
       ],
 
-      document: null,
       uploaded_doc: null,
 
       form: {
+        type: "",
         doc_number: "",
+        file_url: "",
       },
 
       validity: {
@@ -150,11 +147,19 @@ export default {
     };
   },
 
+  mounted() {
+    this.clearAttachedFile();
+  },
+
   methods: {
     ...mapActions({
       clearAttachedFile: "general/clearAttachedFile",
       verfiyUserDocument: "settings/verfiyUserDocument",
     }),
+
+    updateSelectedDocument(document) {
+      this.form.type = document.id;
+    },
 
     async save() {
       this.handleClick("save");
@@ -167,11 +172,12 @@ export default {
         if (response?.code === 200) {
           this.pushToast(response.message, "success");
           this.$emit("saved", "Your document has been uploaded successfully");
+
+          setTimeout(() => this.$emit("closeTriggered"), 3000);
         } else {
           this.pushToast(response.message, "error");
         }
       } catch (err) {
-        console.log("ERROR SAVING DOCUMENT", err);
         this.handleClick("save", "Submit", false);
         this.pushToast("Failed to verify document", "error");
       }

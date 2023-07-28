@@ -23,8 +23,8 @@
         title="Business information"
         subtitle="Provide information about your business."
         cta_title="Update business information"
-        @action="toggleBusinessInfoModal"
         :verified="false"
+        @action="toggleBusinessInfoModal"
       >
         <BusinessIcon />
       </verification-card>
@@ -34,8 +34,10 @@
         title="Company registration document"
         subtitle="Upload your business registration document for verification."
         cta_title="Verify business"
+        :verified="isCACDocVerified.is_verified"
+        :verification_state="isCACDocVerified.verification_state"
+        :check_verification_state="true"
         @action="toggleCACRegistrationModal"
-        :verified="isBusinessVerified"
       >
         <FileIcon active />
       </verification-card>
@@ -44,30 +46,33 @@
         title="Other documents"
         subtitle="Choose and upload a document for verification."
         cta_title="Verify document"
-        @action="toggleDocUploadModal"
         :verified="isDocVerified"
-        :verified_docs="[1, 2]"
+        :verified_docs="getOtherDocuments"
+        @action="toggleDocUploadModal"
       >
         <FileIcon active />
       </verification-card>
 
-      <verification-card
-        v-if="isBusiness"
-        title="Directors Information"
-        subtitle="Confirm directors count and identification details."
-        cta_title="Verify directors"
-        @action="toggleDirectorVerifyModal"
-        :verified="isDocVerified"
-      >
-        <UserIcon />
-      </verification-card>
+      <template v-if="false">
+        <verification-card
+          v-if="isBusiness"
+          title="Directors information"
+          subtitle="Confirm current number of directors and identification details."
+          cta_title="Verify directors"
+          :verified="isDocVerified"
+          :check_verification_state="true"
+          @action="toggleDirectorVerifyModal"
+        >
+          <UserIcon />
+        </verification-card>
+      </template>
 
       <verification-card
         title="Phone number verification"
         subtitle="Verify your phone number."
         cta_title="Verify phone number"
-        @action="toggleInputModal"
         :verified="isPhoneVerified"
+        @action="toggleInputModal"
       >
         <TelephoneIcon />
       </verification-card>
@@ -76,8 +81,8 @@
         title="BVN details"
         subtitle="Confirm your BVN details."
         cta_title="Verify BVN details"
-        @action="toggleBvnModal"
         :verified="isBvnVerified"
+        @action="toggleBvnModal"
       >
         <BvnIcon />
       </verification-card>
@@ -243,14 +248,6 @@ export default {
       return bvn_verification ? bvn_verification?.is_verified : false;
     },
 
-    isBusinessVerified() {
-      if (!this.user_verifications) return false;
-      const business_verification = this.user_verifications.find(
-        (type) => type.verification_type === "cac"
-      );
-      return business_verification ? business_verification?.is_verified : false;
-    },
-
     isDocVerified() {
       if (!this.user_verifications) return false;
       const doc_verification = this.user_verifications.find(
@@ -261,6 +258,42 @@ export default {
 
     hasSettlementAccount() {
       return this.has_settlement_account;
+    },
+
+    isCACDocVerified() {
+      if (!this.user_verifications) return false;
+      const cac_verification = this.user_verifications.find(
+        (type) => type.verification_type === "cac"
+      );
+
+      if (cac_verification !== -1) {
+        return {
+          is_verified: cac_verification?.is_verified,
+          verification_state: this.getVerificationState(cac_verification),
+        };
+      } else
+        return {
+          is_verified: cac_verification?.is_verified,
+          verification_state: "not_uploaded",
+        };
+    },
+
+    getOtherDocuments() {
+      if (!this.user_verifications) return [];
+
+      let doc_verifications = [];
+
+      this.user_verifications.map((doc) => {
+        if (this.other_documents.includes(doc.verification_type)) {
+          doc_verifications.push(doc);
+        }
+      });
+
+      doc_verifications = doc_verifications.map((doc) => {
+        return { ...doc, verification_state: this.getVerificationState(doc) };
+      });
+
+      return doc_verifications;
     },
   },
 
@@ -306,6 +339,9 @@ export default {
           verification_type: "email",
         },
       ],
+
+      base_timestamp: "0001-01-01T00:00:00Z",
+      other_documents: ["passport", "drivers_license", "national_id"],
     };
   },
 
@@ -344,6 +380,14 @@ export default {
       if (response.code === 200) {
         console.log(response);
         this.user_verifications = response.data;
+      }
+    },
+
+    getVerificationState(payload) {
+      if (payload.is_verified) return "verified";
+      else {
+        if (this.base_timestamp === payload.verified_at) return "pending";
+        else return "declined";
       }
     },
 

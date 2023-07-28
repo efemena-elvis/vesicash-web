@@ -110,32 +110,6 @@ export default {
     @include flex-row-nowrap("flex-start", "center");
   }
 
-  .tooltip-wrapper {
-    left: 0;
-    top: 40%;
-    visibility: hidden;
-    z-index: 10;
-
-    .tooltip-data {
-      position: relative;
-      border: toRem(1) solid getColor("grey-100");
-      @include generate-font-type("tertiary-2");
-      padding: toRem(14) toRem(16);
-
-      &:before {
-        content: "";
-        position: absolute;
-        top: toRem(-9);
-        right: toRem(17);
-        @include draw-shape(18);
-        transform: rotate(45deg);
-        background: getColor("grey-10");
-        border-top: toRem(1) solid getColor("grey-100");
-        border-left: toRem(1) solid getColor("grey-100");
-      }
-    }
-  }
-
   .helper-icon {
     .icon {
       font-size: toRem(21.5);
