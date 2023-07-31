@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapActions } from "vuex";
 import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
@@ -68,36 +68,19 @@ export default {
   },
 
   computed: {
-    ...mapGetters({
-      getFileData: "general/getFileData",
-      getAllFilesData: "general/getAllFilesData",
-    }),
-
     isBusiness() {
       return this.getAccountType === "business" ? true : false;
     },
 
-    getVerificationDoc() {
-      const file_data = this.getAllFilesData.find(
-        (doc) => doc.id === "cac_document"
-      );
-      return file_data === undefined ? null : file_data;
-    },
-
-    VerificationDocExist() {
-      return this.getVerificationDoc?.files?.length ? true : false;
-    },
-
     isDisabled() {
-      return !this.form.doc_number || !this.VerificationDocExist;
+      return this.form.doc_number && this.form.file_url ? false : true;
     },
 
     verfiyDocPayload() {
       return {
-        account_id: this.getAccountId,
-        type: "cac",
+        type: this.form.type,
         id: this.form.doc_number,
-        meta: this.getVerificationDoc?.files[0]?.url,
+        meta: this.form.file_url,
       };
     },
   },
@@ -105,7 +88,11 @@ export default {
   watch: {
     uploaded_doc: {
       handler(value) {
-        console.log("UPLOAD", value);
+        if (Array.isArray(value)) {
+          this.form.file_url = value[0].file_url;
+        } else {
+          this.form.file_url = value.file_url;
+        }
       },
     },
   },
@@ -115,7 +102,9 @@ export default {
       uploaded_doc: null,
 
       form: {
+        type: "cac",
         doc_number: "",
+        file_url: "",
       },
 
       validity: {
@@ -145,6 +134,8 @@ export default {
         if (response?.code === 200) {
           this.pushToast(response.message, "success");
           this.$emit("saved", "Your document has been uploaded successfully");
+
+          setTimeout(() => this.$emit("closeTriggered"), 3000);
         } else {
           this.pushToast(response.message, "error");
         }

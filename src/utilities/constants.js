@@ -4,7 +4,6 @@ const API_VERSION = process.env.VUE_APP_VESICASH_API_VERSION;
 const VESICASH_PRIVATE_KEY_TOKEN = process.env.VUE_APP_VESICASH_PRIVATE_KEY;
 const VESICASH_PUBLIC_KEY_TOKEN = process.env.VUE_APP_VESICASH_PUBLIC_KEY;
 
-// export const VESICASH_APP_URL = APP_URL;
 const LOCAL_DOMAIN = "http://localhost:8060";
 const IS_LOCAL_HOST = window.location.hostname === "localhost" ? true : false;
 

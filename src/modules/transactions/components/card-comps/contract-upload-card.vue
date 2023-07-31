@@ -79,7 +79,7 @@
         ref="fileUpload"
         @change="handleFileUpload"
         class="position-absolute invisible"
-        accept=".doc, .docx, .pdf"
+        accept=".doc, .docx, .pdf, .jpeg, .jpg"
       />
     </template>
   </div>
@@ -104,7 +104,7 @@ export default {
 
     descriptionText: {
       type: String,
-      default: "You can upload a doc or a PDF file",
+      default: "You can upload a doc, jpg or a PDF file",
     },
 
     upload_type: {
@@ -122,7 +122,7 @@ export default {
   },
 
   data: () => ({
-    acceptable_filetypes: ["doc", "docx", "pdf"],
+    acceptable_filetypes: ["doc", "docx", "pdf", "jpeg", "jpg"],
   }),
 
   methods: {
