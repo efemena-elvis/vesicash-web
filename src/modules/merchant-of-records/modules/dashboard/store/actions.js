@@ -3,6 +3,7 @@ import { getRequest, postRequest } from "@/utilities/micro-services";
 const routes = {
   withdrawal_request: "withdrawal/request",
   mor_transaction_summary: "transactions/summary/",
+  mor_transaction_metric: "transactions/metrics",
 };
 
 export default {
@@ -15,5 +16,9 @@ export default {
       "mor",
       `${routes.mor_transaction_summary}${account_id}`
     );
+  },
+
+  async getMoRTransactionMetric() {
+    return await getRequest("mor", routes.mor_transaction_metric);
   },
 };
