@@ -23,10 +23,11 @@ const MoRSummary = {
         });
 
         this.wallet_revenue_metrics = this.wallet_size;
-        this.wallet_transaction_volume = this.wallet_size;
+        // this.wallet_transaction_volume = this.wallet_size;
 
         if (this.wallet_size.length) {
           this.fetchMoRSummary();
+          this.fetchMoRMetric();
         }
       },
       immediate: true,
@@ -53,6 +54,7 @@ const MoRSummary = {
   methods: {
     ...mapActions({
       getMoRTransactionSummary: "merchantDashboard/getMoRTransactionSummary",
+      getMoRTransactionMetric: "merchantDashboard/getMoRTransactionMetric",
     }),
 
     async fetchMoRSummary() {
@@ -78,6 +80,18 @@ const MoRSummary = {
       }
 
       setTimeout(() => (this.loading = false), 1000);
+    },
+
+    async fetchMoRMetric() {
+      const response = await this.handleDataRequest({
+        action: "getMoRTransactionMetric",
+        alert_handler: {
+          error: "Unable to fetch MoR metric",
+          request_error: "Unable to fetch MoR metric",
+        },
+      });
+
+      console.log("RESPONSE", response);
     },
   },
 };
