@@ -9,9 +9,9 @@
           v-if="detail.has_sign"
           class="value grey-900 text-wrap"
           v-html="
-            `${$money.getSign(currency.slug || currency)}${$money.addComma(
-              detail.value
-            )}`
+            `${$money.getSign(
+              currency.slug || currency
+            )}${$utils.formatCurrencyWithComma(detail.value)}`
           "
         ></div>
 
@@ -49,8 +49,7 @@ export default {
 
 <style lang="scss" scoped>
 .payment-user-card {
-  @include flex-row-between-nowrap;
-  align-items: flex-start;
+  @include flex-row-nowrap("space-between", "flex-start");
   padding: toRem(16);
 
   .item {

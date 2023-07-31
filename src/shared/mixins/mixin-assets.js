@@ -1,7 +1,7 @@
-// ===========================================================
+// =================================================
 // A SIMPLE APPLICATION LEVEL MIXIN FOR EASY IMAGE LOADING
 // WITHIN AND OUTSIDE APPLICATION MODULES
-// ===========================================================
+// =================================================
 
 const MixinAssets = {
   methods: {
@@ -21,4 +21,4 @@ const MixinAssets = {
   },
 };
 
-export { MixinAssets };
+export default MixinAssets;

@@ -1,71 +1,119 @@
 <template>
-  <ModalCover
-    @closeModal="$emit('closeTriggered')"
-    :modal_style="{ size: 'modal-sm' }"
-    :show_close_btn="false"
-    :trigger_self_close="false"
-  >
-    <!-- MODAL COVER HEADER -->
-    <template slot="modal-cover-header">
-      <div class="modal-cover-header">
-        <!-- BACK BUTTON -->
-        <PageBackBtn custom_mode @clicked="processBackButtonClicks" />
-
-        <div class="modal-cover-title h5-text mgt--4">
-          {{ account_type.title }}
-        </div>
-      </div>
-    </template>
-
+  <div>
     <!-- MODAL COVER BODY -->
-    <template slot="modal-cover-body">
-      <div class="modal-cover-body">
-        <!-- CURRENCY SELECTION -->
-        <div class="mgb-24">
-          <div class="form-label">Select wallet type</div>
+    <div>
+      <!-- CURRENCY SELECTION -->
+      <div class="mgb-24">
+        <div class="form-label">Select wallet type</div>
 
-          <DropSelectInput
-            placeholder="Select wallet"
-            :options="currency_options"
-            @selectedOption="selectDropdownOption('wallet', $event)"
+        <DropSelectInput
+          placeholder="Select wallet"
+          :options="currency_options"
+          @selectedOption="selectDropdownOption('wallet', $event)"
+        />
+      </div>
+
+      <!-- TOTAL DISPLAY CARDS -->
+      <template v-if="selected_currency.slug">
+        <div class="mgb-24">
+          <SumTotalDisplayCard
+            :total_text="`${selected_currency.slug} balance`"
+            :total_value="`${$utils.formatCurrency({
+              input: selected_currency.slug,
+              output: 'sign',
+            })}${$utils.formatCurrencyWithComma(selected_currency_balance)}`"
+            use_custom_style
           />
         </div>
 
-        <!-- TOTAL DISPLAY CARDS -->
-        <template v-if="selected_currency.slug">
-          <div class="mgb-24">
-            <SumTotalDisplayCard
-              :total_text="`${selected_currency.slug} balance`"
-              :total_value="`${$money.getSign(
-                selected_currency.slug
-              )}${$money.addComma(selected_currency_balance)}`"
-              use_custom_style
-            />
+        <!-- AMOUNT TO WITHDRAW -->
+        <div class="form-group">
+          <BasicInput
+            label_title="Amount to withdraw"
+            label_id="amount"
+            :input_value="form.amount"
+            input_type="number"
+            is_required
+            placeholder="0.00"
+            :custom_style="{ input_wrapper_style: 'form-prefix' }"
+            :currency="`${selected_currency.short} (${$utils.formatCurrency({
+              input: selected_currency.slug,
+              output: 'sign',
+            })})`"
+            class="form-prefix-right"
+            @getInputState="updateFormState($event, 'amount')"
+            :error_handler="{
+              type: 'required',
+              message: 'Enter an amount',
+            }"
+          />
+
+          <!-- AMOUNT DATA -->
+          <div
+            v-if="account_type.slug !== 'transfer_request'"
+            class="amount-meta mgt-8 tertiary-2-text grey-600"
+          >
+            <div>
+              Minimum amount:
+              <span class="fw-bold"
+                >{{ $money.getSign(selected_currency.slug)
+                }}{{
+                  $utils.formatCurrencyWithComma(selected_currency.min_amount)
+                }}</span
+              >
+            </div>
+
+            <div class="green-500">
+              Charges:
+              <span class="fw-bold"
+                >{{ $money.getSign(selected_currency.slug)
+                }}{{
+                  $utils.formatCurrencyWithComma(getWithdrawalCharge)
+                }}</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <template v-if="account_type.slug === 'transfer_request'">
+          <!-- INFO CARD -->
+          <div class="info-card grey-10 border-grey-100 rounded-8 mgb-24">
+            <div
+              class="icon-info green-600 f-size-18 mgr-8"
+              style="position: relative; top: 1px"
+            ></div>
+
+            <div class="text grey-700 tertiary-2-text">
+              On confirmation of your withdrawal request, your requested amount
+              would be processed within 1-3 business working days.
+            </div>
           </div>
 
-          <!-- AMOUNT TO WITHDRAW -->
-          <div class="form-group">
+          <!-- <div class="form-group">
             <BasicInput
-              label_title="Amount to withdraw"
-              label_id="amount"
-              :input_value="form.amount"
-              input_type="number"
+              label_title="Withdrawal date"
+              label_id="withdrawalDate"
+              input_type="date"
+              :input_value="mor_withdrawal_date"
+              placeholder="Select date"
               is_required
-              placeholder="0.00"
-              :custom_style="{ input_wrapper_style: 'form-prefix' }"
-              :currency="`${selected_currency.short} (${$money.getSign(
-                selected_currency.slug
-              )})`"
-              class="form-prefix-right"
-              @getInputState="updateFormState($event, 'amount')"
-              :error_handler="{
-                type: 'required',
-                message: 'Enter an amount',
-              }"
+              :minimum_date="minimum_date"
+              @getInputState="updateWithdrawalInput($event.value)"
+            />
+          </div> -->
+        </template>
+
+        <template v-else>
+          <!-- TOGGLE BENEFICIARY ENTRY -->
+          <div class="mgb-10" v-if="account_type.slug !== 'settlement'">
+            <PageSwitcher
+              :page_data="pages"
+              :full_width="false"
+              @swapItem="updateBeneficiaryState($event)"
             />
           </div>
 
-          <template v-if="!create_new_account">
+          <template v-if="beneficiary_state === 'saved'">
             <!--ACCOUNT DISPLAY DETAILS -->
             <div class="form-group mgb-20">
               <div class="form-label">
@@ -75,8 +123,11 @@
               <DropSelectInput
                 :placeholder="getBeneficiaryLabel"
                 :options="beneficiary_account_options"
-                :allow_search="true"
+                :allow_search="
+                  beneficiary_account_options.length > 5 ? true : false
+                "
                 :pre_select="account_pre_select"
+                empty_text="No beneficiary account available"
                 @selectedOption="selectDropdownOption('account', $event)"
               />
 
@@ -89,7 +140,7 @@
             </div>
 
             <!-- ADD NEW BANK BENEFICIARY -->
-            <div v-if="account_type.slug !== 'settlement'">
+            <div v-if="false">
               <RadioSelectCard
                 label_id="account1"
                 label_text="Add new account details"
@@ -99,52 +150,44 @@
               />
             </div>
           </template>
-
-          <!-- NEW ACCOUNT VIEW -->
-          <template v-if="create_new_account">
-            <transition name="fade" mode="out-in">
-              <component
-                :is="getNewAccountCreateView"
-                @bankDetailsUpdated="validateNewBankAccountPayload"
-              />
-            </transition>
-          </template>
         </template>
-      </div>
-    </template>
+
+        <!-- NEW ACCOUNT VIEW -->
+        <template v-if="beneficiary_state === 'new'">
+          <transition name="fade" mode="out-in">
+            <component
+              :is="getNewAccountCreateView"
+              :selected_country="getWalletType"
+              @bankDetailsUpdated="validateNewBankAccountPayload"
+            />
+          </transition>
+        </template>
+      </template>
+    </div>
 
     <!-- MODAL COVER FOOTER -->
-    <template slot="modal-cover-footer">
-      <div class="modal-cover-footer">
-        <button
-          class="btn btn-primary btn-md wt-100"
-          @click="handleAccountSelection"
-          :disabled="isFormFieldsValid"
-          ref="continue"
-        >
-          Continue
-        </button>
-      </div>
-    </template>
-  </ModalCover>
+    <div class="pdb-30">
+      <button
+        class="btn btn-primary btn-md wt-100"
+        @click="handleButtonClick"
+        :disabled="isFormFieldsValid"
+        ref="btnRef"
+      >
+        Continue
+      </button>
+    </div>
+  </div>
 </template>
 
 <script>
 import { mapGetters, mapActions, mapMutations } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
-import PageBackBtn from "@/shared/components/page-back-btn";
-import FormHelper from "@/modules/auth/mixins/auth-helper";
-import DropSelectInput from "@/shared/components/drop-select-input";
+import PageSwitcher from "@/shared/components/util-comps/page-switcher";
 
 export default {
   name: "WithdrawAccountModal",
 
-  mixins: [FormHelper],
-
   components: {
-    ModalCover,
-    PageBackBtn,
-    DropSelectInput,
+    PageSwitcher,
     AccountDisplayCard: () =>
       import(
         /* webpackChunkName: "dashboard-module" */
@@ -161,14 +204,9 @@ export default {
         /* webpackChunkName: "shared-module" */ "@/shared/components/card-comps/sum-total-display-card"
       ),
 
-    AccountDisplayCard: () =>
+    NewLocalAccount: () =>
       import(
-        /* webpackChunkName: "dashboard-modal-module" */ "@/modules/dashboard/components/modal-comps/account-display-card"
-      ),
-
-    NewNairaAccount: () =>
-      import(
-        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/modal-comps/new-naira-account"
+        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/modal-comps/new-local-account"
       ),
 
     NewWalletAccount: () =>
@@ -179,11 +217,6 @@ export default {
     NewForeignAccount: () =>
       import(
         /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/modal-comps/new-foreign-account"
-      ),
-
-    BasicInput: () =>
-      import(
-        /* webpackChunkName: 'shared-module' */ "@/shared/components/form-comps/basic-input"
       ),
   },
 
@@ -202,6 +235,7 @@ export default {
     ...mapGetters({
       getWalletType: "dashboard/getWalletType",
       getWalletBalances: "dashboard/getWalletBalances",
+      getWalletSize: "general/getWalletSize",
     }),
 
     // GET ACCOUNT BENEFICIARY INPUT FILED LABEL
@@ -215,9 +249,14 @@ export default {
     getNewAccountCreateView() {
       if (this.account_type.slug === "wallet") return "NewWalletAccount";
       else
-        return this.getWalletType?.slug === "naira"
-          ? "NewNairaAccount"
-          : "NewForeignAccount";
+        return this.getWalletType?.slug === "dollar"
+          ? "NewForeignAccount"
+          : "NewLocalAccount";
+    },
+
+    getWithdrawalCharge() {
+      let account_type = this.account_type.slug;
+      return account_type === "wallet" ? 0 : 50;
     },
 
     // dollarWithdrawalDetails() {
@@ -243,6 +282,10 @@ export default {
 
     // CHECK AMOUNT AND BANK ACCOUNT SELECTED
     isFormFieldsValid() {
+      if (this.account_type.slug === "transfer_request") {
+        return this.form.amount ? false : true;
+      }
+
       return this.form.amount && this.form.selected_beneficiary.selected
         ? false
         : true;
@@ -250,22 +293,20 @@ export default {
   },
 
   async mounted() {
-    await this.fetchUserSavedAccountList();
+    this.loadWalletCurrencyOptions();
+    await this.fetchUserSavedAccountList(this.account_type.slug);
   },
 
   data: () => ({
-    currency_options: [
-      { id: 1, name: "Naira wallet (NGN)", slug: "naira", short: "NGN" },
-      { id: 2, name: "Dollar wallet (USD)", slug: "dollar", short: "USD" },
-      // { id: 3, name: "GBP (£)", slug: "pound", short: "GPB" },
-    ],
+    currency_options: [],
+
     selected_currency: {
       slug: "", // naira
       short: "", // NGN
     },
+
     selected_currency_balance: "0.00",
     beneficiary_account_options: [],
-    withdrawal_charge: 50,
 
     account_pre_select: null,
 
@@ -280,19 +321,73 @@ export default {
       amount: true,
     },
 
+    mor_withdrawal_date: "",
+
     create_new_account: false,
+
+    pages: [
+      {
+        title: "Saved Beneficiary",
+        value: "saved",
+        active: true,
+      },
+      {
+        title: "New Beneficiary",
+        value: "new",
+        active: false,
+      },
+    ],
+
+    beneficiary_state: "saved",
   }),
 
   methods: {
     ...mapActions({
       fetchBankDetails: "dashboard/fetchBankDetails",
       addNewBank: "settings/addNewBank",
+      sendUserOTP: "auth/sendUserOTP",
     }),
 
     ...mapMutations({
       setWalletType: "dashboard/SET_WALLET_TYPE",
-      setWithrawalMeta: "dashboard/SET_WITHDRAWAL_META",
+      setWithdrawalMeta: "dashboard/SET_WITHDRAWAL_META",
+      saveWithdrawalRequest: "dashboard/SAVE_WITHDRAWAL_REQUEST_DATA",
     }),
+
+    updateWithdrawalInput(value) {
+      // console.log("Date", value);
+    },
+
+    loadWalletCurrencyOptions() {
+      let get_wallets = [];
+
+      if (this.account_type.slug === "transfer_request") {
+        get_wallets = this.getWalletSize.filter(
+          (wallet) =>
+            wallet.enabled && !wallet.short.includes("ESCROW") && wallet?.mor
+        );
+      } else {
+        get_wallets = this.getWalletSize.filter(
+          (wallet) =>
+            wallet.enabled && !wallet.short.includes("ESCROW") && !wallet?.mor
+        );
+      }
+
+      get_wallets.map((wallet_type) => {
+        this.currency_options.push({
+          id: wallet_type.id,
+          name: `${wallet_type.description} (${wallet_type.short})`,
+          slug: wallet_type.long.toLowerCase(),
+          short: wallet_type.short,
+          country: wallet_type.code.toUpperCase(),
+          min_amount: wallet_type.short === "USD" ? 100 : 1000,
+        });
+      });
+    },
+
+    updateBeneficiaryState($event) {
+      this.beneficiary_state = $event;
+    },
 
     // CHECK STATE OF CREATE NEW ACCOUNT
     // IF STATE IS TRUE TOGGLE ELSE GO BACK
@@ -345,9 +440,16 @@ export default {
 
     // GET CURRENT CURRENCY ACCOUNT BALANCE
     getSelectedCurrencyBalance(currency) {
+      let currency_value = currency;
+
+      if (this.account_type.slug === "transfer_request") {
+        currency_value = `MOR_${currency}`;
+      }
+
       return (
-        this.getWalletBalances.find((wallet) => wallet.currency == currency)
-          ?.available ?? "0.00"
+        this.getWalletBalances.find(
+          (wallet) => wallet.currency == currency_value
+        )?.available ?? "0.00"
       );
     },
 
@@ -380,18 +482,19 @@ export default {
     },
 
     // FETCH ALL SAVED USER BENEFICIARY ACCOUNTS
-    async fetchUserSavedAccountList() {
+    async fetchUserSavedAccountList(filter_type) {
       this.beneficiary_account_options = [];
 
       try {
         const response = await this.fetchBankDetails(this.getAccountId);
+
         let accounts =
-          response.code === 200
+          response?.code === 200
             ? response.data.map((account) => {
                 // FORMAT BANK CODE
-                let bank_code = account.bank?.id.toString();
+                let bank_code = account?.bank?.id.toString();
                 let formatted_bank_code =
-                  bank_code.length < 3 ? `0${bank_code}` : bank_code;
+                  bank_code?.length < 3 ? `0${bank_code}` : bank_code;
 
                 return {
                   ...account,
@@ -401,14 +504,18 @@ export default {
             : [];
 
         // ! Filter accounts base on currency and account type
-        console.log(accounts);
+        accounts = accounts.filter(
+          (account) => account.category === filter_type
+        );
 
         // CHECK IF ACCOUNT HAS LENGTH AND POPULATE BENEFICIARY LIST
         if (accounts.length) {
           accounts.map((account) =>
             this.beneficiary_account_options.push({
               id: account.id,
-              name: `${account.account_name} &bull; ${account.bank_name} &bull; ${account.account_no}`,
+              name: `${account.account_name} ${
+                account.bank_name !== null ? "&bull; " + account.bank_name : ""
+              } &bull; ${account.account_no}`,
               options: account,
             })
           );
@@ -416,6 +523,12 @@ export default {
       } catch {
         console.log("ERROR: Failed to load bank details");
       }
+    },
+
+    handleButtonClick() {
+      this.account_type.slug === "transfer_request"
+        ? this.handleWithdrawalRequest()
+        : this.handleAccountSelection();
     },
 
     async handleAccountSelection() {
@@ -432,29 +545,68 @@ export default {
       // SETUP WITHDRAWAL CHARGE
       let withdrawal_details = {
         ...this.form,
-        withdrawal_charge: this.withdrawal_charge,
+        withdrawal_charge: this.getWithdrawalCharge,
       };
 
-      if (this.create_new_account) {
-        this.handleClick("continue", "Adding new account");
+      if (this.beneficiary_state === "new") {
+        this.handleClick("btnRef", "Adding new account");
 
         // REMOVE THE SELECTED KEY FROM SELECTED BENEFICIARY
         delete this.form.selected_beneficiary.selected;
 
         const response = await this.addNewBank({
           account_id: this.getAccountId,
-          updates: this.form.selected_beneficiary,
+          ...this.form.selected_beneficiary,
         });
 
-        this.handleClick("continue", "Continue", false);
+        this.handleClick("btnRef", "Continue", false);
 
-        if (response.code === 200) {
-          this.setWithrawalMeta(withdrawal_details);
-          this.$emit("accountSelected");
+        if ([200, 201].includes(response.code)) {
+          this.setWithdrawalMeta(withdrawal_details);
+          this.$emit("confirmAccountSelected", {
+            title: "Confirm transaction",
+          });
         }
       } else {
-        this.setWithrawalMeta(withdrawal_details);
-        this.$emit("accountSelected");
+        this.setWithdrawalMeta(withdrawal_details);
+        this.$emit("confirmAccountSelected", {
+          title: "Confirm transaction",
+        });
+      }
+    },
+
+    async handleWithdrawalRequest() {
+      if (this.accountBalanceNotSufficient()) {
+        this.form.amount = "";
+        this.pushToast(
+          "Your wallet account balance is not sufficient",
+          "error"
+        );
+        return true;
+      }
+
+      const requestPayload = {
+        currency: this.selected_currency.short,
+        amount: +this.form.amount,
+        withdrawal_date: this.$utils.getTimestampInSeconds(),
+      };
+
+      this.saveWithdrawalRequest(requestPayload);
+
+      const response = await this.handleDataRequest({
+        action: "sendUserOTP",
+        payload: {
+          account_id: this.getAccountId,
+        },
+        btn_text: "Continue",
+        alert_handler: {
+          error: "Failed to generate OTP for this withdarwal. Try again.",
+          request_error: "Unable to generate OTP",
+        },
+      });
+
+      if (response?.code === 200) {
+        this.$emit("verifyWithdrawalOTP");
       }
     },
   },
@@ -462,8 +614,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.modal-cover-body {
-  min-height: toRem(110);
-  height: auto;
+.amount-meta {
+  @include flex-row-nowrap("space-between", "center");
+}
+
+.info-card {
+  padding: toRem(10);
+  @include flex-row-nowrap("flex-start", "flex-start");
 }
 </style>

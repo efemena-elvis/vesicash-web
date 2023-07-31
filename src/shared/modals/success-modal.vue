@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import ModalCover from "@/shared/components/modal-cover";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 export default {
   name: "SuccesModal",
 
@@ -75,7 +75,7 @@ export default {
 
 <style lang="scss" scoped>
 .success-icon-wrapper {
-  @include flex-column-center;
+  @include flex-column("center", "center");
   @include draw-shape(120);
   border-radius: 50%;
   background: getColor("teal-800");

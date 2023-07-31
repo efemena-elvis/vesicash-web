@@ -1,5 +1,5 @@
 import { mapActions, mapGetters } from "vuex";
-import { VESICASH_APP_URL } from "@/utilities/constant";
+import { constants } from "@/utilities";
 import { CURRENCY_CODE } from "@/modules/transactions/constants";
 
 const paymentHelper = {
@@ -68,25 +68,28 @@ const paymentHelper = {
       // TRANSACTION DETAILS PAGE SUCCESS PAGE SETUP
       if (this.$route.name === "TransactionDetails") {
         let transaction_id = this.$route.params?.id;
-        let { title, recipients, members, totalAmount } = this.getTransaction;
+        let { title, recipients, members, total_amount } = this.getTransaction;
 
         const seller = members.find((item) => item.role === "seller");
 
-        let invited_party =
-          JSON.parse(recipients).length > 1 ? "All" : seller?.email;
+        let invited_party = recipients.length > 1 ? "All" : seller?.email;
 
-        return `${VESICASH_APP_URL}/transaction/payment-successful?type=${type}&party=${party}&transaction_id=${transaction_id}&name=${title}&parties=${invited_party}&fee=${
+        return `${
+          constants.VESICASH_APP_URL
+        }/transaction/payment-successful?type=${type}&party=${party}&transaction_id=${transaction_id}&name=${title}&parties=${invited_party}&fee=${
           this.getCurrency
-        }${this.transfer_amount || totalAmount}&redirect=${location.href}`;
+        }${this.transfer_amount || total_amount}&redirect=${location.href}`;
       }
 
       // PAYMENT PAGE SUCCESS PAGE SETUP
       else {
         let { transaction_id, name, parties, fee } = this.$route.query;
 
-        return `${VESICASH_APP_URL}/transaction/payment-successful?type=${type}&party=${party}&transaction_id=${transaction_id}&name=${name}&parties=${parties}&fee=${
+        return `${
+          constants.VESICASH_APP_URL
+        }/transaction/payment-successful?type=${type}&party=${party}&transaction_id=${transaction_id}&name=${name}&parties=${parties}&fee=${
           this.getCurrency
-        }${this.transfer_amount || fee}`;
+        }${this.transferAmount || fee}`;
       }
     },
 
@@ -105,13 +108,13 @@ const paymentHelper = {
         sender_account_id: this.getAccountId,
         recipient_account_id: this.getAccountId,
         amount:
-          this.transfer_amount ||
-          this.$route?.query?.fee ||
-          this.getTransaction.totalAmount,
+          +this.transfer_amount ||
+          +this.$route?.query?.fee ||
+          +this.getTransaction.total_amount,
         final_amount:
-          this.transfer_amount ||
-          this.$route?.query?.fee ||
-          this.getTransaction.totalAmount,
+          +this.transfer_amount ||
+          +this.$route?.query?.fee ||
+          +this.getTransaction.total_amount,
         sender_currency: this.getCurrency,
         recipient_currency: `ESCROW_${this.getCurrency}`,
         transaction_id:
@@ -175,7 +178,7 @@ const paymentHelper = {
 
     closePaymentOpenWire({ currency, gateway }) {
       this.show_payment_option_modal = false;
-      this.gateway = gateway;
+      this.gateway = gateway ?? "monnify";
       currency === "naira"
         ? this.toggleNairaTransferModal()
         : this.toggleWireTransferModal();
@@ -219,35 +222,31 @@ const paymentHelper = {
     },
 
     async initiateCardPayment() {
-      this.togglePaymentOptionModal();
-      // this.handleClick("pay", "Initiating card payment...");
-      if (this.$route.name === "TransactionDetails")
+      // this.togglePaymentOptionModal();
+      if (this.$route.name === "TransactionDetails") {
         this.show_payment_modal = false;
+      }
+
       this.showPageLoader("Initiating card payment");
 
-      try {
-        const response = await this.startCardPayment(
-          this.getCardPaymentDetails
+      const response = await this.handleDataRequest({
+        action: "startCardPayment",
+        payload: this.getCardPaymentDetails,
+        alert_handler: {
+          error: "Failed to initiate card payment",
+          request_error: "Failed to initiate card payment",
+        },
+      });
+
+      this.hidePageLoader();
+
+      if (response?.code === 200) {
+        location.href = response?.data?.link;
+      } else {
+        this.pushToast(
+          response?.message || "Failed to initiate card payment",
+          "error"
         );
-
-        this.hidePageLoader();
-
-        if (response?.code === 200) location.href = response?.data?.link;
-        else
-          this.pushToast(
-            response?.message || "Failed to initiate card payment",
-            "error"
-          );
-
-        // this.handleClick("pay", "Make Payment", false);
-      } catch (err) {
-        this.hidePageLoader();
-
-        console.log("ERROR STARTING CARD PAYMENT", err);
-
-        // this.handleClick("pay", "Make Payment", false);
-
-        this.pushToast("Failed to initiate card payment", "error");
       }
     },
 
@@ -263,7 +262,7 @@ const paymentHelper = {
 
         this.hidePageLoader();
 
-        if (response.code === 200) {
+        if (response?.code === 200) {
           location.href = this.getSuccessPageRoute;
         } else {
           this.transfer_amount = "";

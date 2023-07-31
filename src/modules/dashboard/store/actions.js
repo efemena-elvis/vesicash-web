@@ -1,14 +1,16 @@
-import $api from "@/services/service-api";
+import $api from "@/shared/services/service-api";
+import { getRequest, postRequest } from "@/utilities/micro-services";
 
 const routes = {
-  wallet_balance: "/admin/account/wallet",
+  wallet_balance: "account/wallet",
   dollar_funding: "/payment/pay/headless",
-  transfer_account_list: "/payment/payment_account/list",
-  verify_payment: "/payment/payment_account/verify",
+  transfer_account_list: "payment_account/list",
+  verify_payment: "payment_account/verify",
   wallet_transactions: "/payment/list/wallet_funding",
   wallet_withdrawals: "/payment/list/wallet_withdrawals",
-  bank_details: "/admin/user/fetch/bank",
-  withdraw_fund: "/payment/disbursement/wallet/withdraw",
+  bank_details: "user/fetch/bank?array=true",
+  withdraw_fund: "disbursement/wallet/withdraw",
+  transaction_payments: "list",
 };
 
 export default {
@@ -16,9 +18,9 @@ export default {
   // GET APPLICATION WALLET BALANCE
   // ==================================
   async getWalletBalance({ commit }, payload) {
-    const response = await $api.push(routes.wallet_balance, { payload });
+    const response = await getRequest("auth", routes.wallet_balance, payload);
 
-    if (response.code === 200)
+    response?.code === 200 &&
       commit("SET_WALLET_BALANCES", response.data.wallets);
 
     return response;
@@ -35,14 +37,14 @@ export default {
   // FETCH NAIRA WALLET BANK DETAILS
   // ====================================
   async fetchTransferAccountBankDetails(_, payload) {
-    return await $api.push(routes.transfer_account_list, { payload });
+    return await postRequest("payment", routes.transfer_account_list, payload);
   },
 
   // ====================================
   // VERIFY USER ACCOUNT PAYMENT
   // ====================================
   async verifyPaymentAccount(_, payload) {
-    return await $api.push(routes.verify_payment, { payload });
+    return await postRequest("payment", routes.verify_payment, payload);
   },
 
   // =====================================
@@ -68,17 +70,25 @@ export default {
   // =====================================
   // FETCH USER BANK DETAILS
   // =====================================
-  async fetchBankDetails(_, account_id) {
-    return await $api.push(
-      `${routes.bank_details}/${account_id}?array=true`,
-      {}
-    );
+  async fetchBankDetails() {
+    return await getRequest("auth", routes.bank_details, {});
   },
 
   // =====================================
   // WIDTHDRAW FUND FROM WALLET
   // =====================================
   async withdrawWalletFund(_, payload) {
-    return await $api.push(routes.withdraw_fund, { payload });
+    return await postRequest("payment", routes.withdraw_fund, payload);
+  },
+
+  // ========================================================
+  // GET ALL POSSIBLE TRANSACTIN PAYMENTS TYPE AND SOURCES
+  // ========================================================
+  async getTransactionPayments(_, payload) {
+    return await postRequest(
+      "transactions",
+      routes.transaction_payments,
+      payload
+    );
   },
 };

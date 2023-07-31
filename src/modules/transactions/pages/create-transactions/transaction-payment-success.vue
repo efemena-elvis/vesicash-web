@@ -10,25 +10,53 @@
 
         <!-- BODY DATA -->
         <div class="body-data">
-          <SuccessItemCard
-            :info="{
-              icon: 'SuccessIcon',
-              title: 'Payment made successfully',
-              description: `Your payment of <b>${getTransactionAmount}</b> has been made sucessfully, Please check your escrow account on your dashboard for the payment.`,
-            }"
-          />
+          <template v-if="$route.query.type === 'funding'">
+            <SuccessItemCard
+              :info="{
+                icon: 'SuccessIcon',
+                title: 'Funding made successfully',
+                description: `Your funding of <b>${getTransactionAmount}</b> has been made sucessfully, Please check your wallet balance on your dashboard.`,
+              }"
+            />
+          </template>
 
-          <SuccessItemCard
-            :info="{
-              icon: 'SuccessIcon',
-              title: 'Users invited successfully',
-              description: `${$route.query.parties} ${
-                $route.query.parties === 'All' ? 'parties have' : 'has'
-              } been invited sucessfully into transaction for ${
-                $route.query.name
-              }.`,
-            }"
-          />
+          <template v-if="$route.query.type === 'seller_escrow'">
+            <SuccessItemCard
+              :info="{
+                icon: 'SuccessIcon',
+                title: `${
+                  $route.query.parties === 'All' ? 'Users' : 'User'
+                } invited successfully`,
+                description: `${$route.query.parties} ${
+                  $route.query.parties === 'All' ? 'parties have' : 'has'
+                } been sucessfully invited into the escrow transaction for ${
+                  $route.query.name
+                }.`,
+              }"
+            />
+          </template>
+
+          <template v-else>
+            <SuccessItemCard
+              :info="{
+                icon: 'SuccessIcon',
+                title: 'Payment made successfully',
+                description: `Your payment of <b>${getTransactionAmount}</b> has been made sucessfully, Please check your escrow account on your dashboard for the payment.`,
+              }"
+            />
+
+            <SuccessItemCard
+              :info="{
+                icon: 'SuccessIcon',
+                title: 'Users invited successfully',
+                description: `${$route.query.parties} ${
+                  $route.query.parties === 'All' ? 'parties have' : 'has'
+                } been sucessfully invited into the escrow transaction for ${
+                  $route.query.name
+                }.`,
+              }"
+            />
+          </template>
         </div>
 
         <!-- BUTTON AREA -->
@@ -87,11 +115,11 @@ export default {
       let sliced_currency = amount_data.slice(0, 3);
 
       if (currencies.includes(sliced_currency)) {
-        return `${this.$money.getSign(sliced_currency)}${this.$money.addComma(
-          amount_data.slice(3)
-        )}`;
+        return `${this.$money.getSign(
+          sliced_currency
+        )}${this.$utils.formatCurrencyWithComma(amount_data.slice(3))}`;
       } else {
-        return `${this.$money.addComma(amount_data.slice(3))}`;
+        return `${this.$utils.formatCurrencyWithComma(amount_data.slice(3))}`;
       }
     },
   },
@@ -131,7 +159,7 @@ export default {
 
         this.hidePageLoader();
 
-        if (response.code === 200) this.payment_confirmed = true;
+        if (response?.code === 200) this.payment_confirmed = true;
         else {
           // this.pushToast(response.message || "Payment failed", "error");
 

@@ -1,160 +1,167 @@
-import $api from "@/services/service-api";
+import {
+  getRequest,
+  postRequest,
+  patchRequest,
+  deleteRequest,
+} from "@/utilities/micro-services";
 
 const routes = {
-    user_banks: "/admin/user/fetch/bank/",
-    update_user_banks: "/admin/user/update/bank",
-    remove_user_bank: "/admin/user/remove/bank/",
-    fetch_connected_users: "/admin/fetch-users-by-business",
-    delete_connected_user: "/admin/user/delete",
+  user_banks: "user/fetch/bank?array=true",
+  add_user_bank: "user/bank_details",
+  update_user_banks: "user/bank_details/update",
+  remove_user_bank: "user/remove/bank/",
+  fetch_connected_users: "user/fetch-users-by-business",
+  delete_connected_user: "user/delete",
 
-    request_otp: "/verification/phone/send-code",
-    verify_otp: "/verification/phone/verify",
-    request_email_otp: "/verification/email",
-    verify_email_otp: "/verification/email/verify",
+  request_phone_otp: "phone",
+  verify_phone_otp: "phone/verify",
+  request_email_otp: "email",
+  verify_email_otp: "email/verify",
 
-    update_user_password: "/auth/user/security/update_password",
-    update_profile: "/admin/user/update/account",
-    update_business_info: "/admin/business/profile/update",
+  update_user_password: "user/security/update_password",
+  update_profile: "user/account/update",
+  update_business_info: "user/business/profile/update",
 
-    fetch_verifications: "/verification/fetch",
+  fetch_verifications: "fetch",
 
-    verify_document: "/verification/id/verify",
-    verify_bvn: "/verification/bvn/verify",
-
-    generate_api_keys: "/admin/tokens/generate",
+  verify_document: "id/verify",
+  verify_bvn: "bvn/verify",
 };
 
 export default {
-    // ==============================
-    // FETCH BANK ACCOUNTS
-    // ==============================
+  // ==============================
+  // FETCH USER BANK ACCOUNTS
+  // ==============================
+  async fetchAllBanks({ commit }) {
+    const response = await getRequest("auth", routes.user_banks, {});
 
-    async fetchAllBanks({ commit }, account_id) {
-        const response = await $api.push(
-            `${routes.user_banks}${account_id}?array=true`, {}
-        );
+    if (response?.code === 200) commit("SET_BANK_ACCOUNTS", response.data);
+    else commit("SET_BANK_ACCOUNTS", []);
 
-        if (response.code === 200) commit("SET_BANK_ACCOUNTS", response.data);
-        if (response.code === 404) commit("SET_BANK_ACCOUNTS", []);
+    return response;
+  },
 
-        return response;
-    },
+  // ==============================
+  // ADD BANK ACCOUNT
+  // ==============================
+  async addNewBank(_, payload) {
+    return await postRequest("auth", routes.add_user_bank, payload);
+  },
 
-    // ==============================
-    // ADD BANK ACCOUNT
-    // ==============================
+  // ==============================
+  // REMOVE BANK ACCOUNT
+  // ==============================
 
-    async addNewBank(_, payload) {
-        return await $api.push(routes.update_user_banks, { payload });
-    },
+  async removeUserBank(_, payload) {
+    return await deleteRequest("auth", routes.remove_user_bank, payload);
+  },
 
-    // ==============================
-    // REMOVE BANK ACCOUNT
-    // ==============================
+  // ==============================
+  // UPDATE PASSWORD
+  // ==============================
+  async updateUserPassword(_, payload) {
+    return await postRequest("auth", routes.update_user_password, payload);
+  },
 
-    async removeUserBank(_, payload) {
-        return await $api.push(routes.remove_user_bank, { payload });
-    },
+  // ==============================
+  // REQUEST PHONE OTP
+  // ==============================
+  async requestOTP(_, payload) {
+    return await postRequest("verification", routes.request_phone_otp, payload);
+  },
 
-    // ==============================
-    // UPDATE PASSWORD
-    // ==============================
-    async updateUserPassword(_, payload) {
-        return await $api.push(routes.update_user_password, { payload });
-    },
+  // ==============================
+  // VERIFY PHONE OTP
+  // ==============================
+  async verifyOTP(_, payload) {
+    return await postRequest("verification", routes.verify_phone_otp, payload);
+  },
 
-    // ==============================
-    // REQUEST PHONE OTP
-    // ==============================
-    async requestOTP(_, payload) {
-        return await $api.push(routes.request_otp, { payload });
-    },
+  // ==============================
+  // REQUEST EMAIL OTP
+  // ==============================
+  async requestEmailOTP(_, payload) {
+    return await postRequest("verification", routes.request_email_otp, payload);
+  },
 
-    // ==============================
-    // REQUEST EMAIL OTP
-    // ==============================
-    async requestEmailOTP(_, payload) {
-        return await $api.push(routes.request_email_otp, { payload });
-    },
+  // ==============================
+  // VERIFY EMAIL OTP
+  // ==============================
+  async verifyEmailOTP(_, payload) {
+    return await postRequest("verification", routes.verify_email_otp, payload);
+  },
 
-    // ==============================
-    // VERIFY PHONE OTP
-    // ==============================
-    async verifyOTP(_, payload) {
-        return await $api.push(routes.verify_otp, { payload });
-    },
+  // ==============================
+  // UPDATE PROFILE
+  // ==============================
+  async saveUserProfile(_, payload) {
+    return await patchRequest("auth", routes.update_profile, payload);
+  },
 
-    // ==============================
-    // VERIFY EMAIL OTP
-    // ==============================
-    async verifyEmailOTP(_, payload) {
-        return await $api.push(routes.verify_email_otp, { payload });
-    },
+  // ==============================
+  // FETCH USER VERIFICATIONS
+  // ==============================
+  async fetchUserVerifications({ commit, getters }, payload) {
+    if (getters.getUserVerifications?.length) {
+      return {
+        code: 200,
+        data: getters.getUserVerifications,
+      };
+    } else {
+      const response = await getRequest(
+        "verification",
+        routes.fetch_verifications,
+        payload
+      );
 
-    // ==============================
-    // UPDATE PROFILE
-    // ==============================
-    async saveUserProfile(_, payload) {
-        return await $api.push(routes.update_profile, { payload });
-    },
+      if (response?.code == 200) commit("SET_VERIFICATIONS", response.data);
+      return response;
+    }
+  },
 
-    // ==============================
-    // GENERATE API KEYS
-    // ==============================
-    async generateAPIkeys({ commit }, payload) {
-        const response = await $api.push(routes.generate_api_keys, { payload });
-        if ([201, 200].includes(response.code))
-            commit("SET_API_KEYS", response.data.V_PUBLIC_KEY);
-        return response;
-    },
+  // ==============================
+  // VERIFY DOCUMENT
+  // ==============================
+  async verfiyUserDocument(_, payload) {
+    return await postRequest("verification", routes.verify_document, payload);
+  },
 
-    // ==============================
-    // FETCH USER VERIFICATIONS
-    // ==============================
-    async fetchUserVerifications({ commit }, payload) {
-        const response = await $api.push(routes.fetch_verifications, { payload });
-        if (response.code == 200) commit("SET_VERIFICATIONS", response.data);
-        return response;
-    },
+  // ==============================
+  // VERIFY BVN
+  // ==============================
+  async verfiyUserBVN(_, payload) {
+    return await postRequest("verification", routes.verify_bvn, payload);
+  },
 
-    // ==============================
-    // VERIFY DOCUMENT
-    // ==============================
-    async verfiyUserDocument(_, payload) {
-        const response = await $api.push(routes.verify_document, { payload });
-        return response;
-    },
+  // ==============================
+  // UPDATE BUSINESS INFO
+  // ==============================
+  async updateUserBusinessInfo(_, payload) {
+    return await patchRequest("auth", routes.update_business_info, payload);
+  },
 
-    // ==============================
-    // VERIFY BVN
-    // ==============================
-    async verfiyUserBVN(_, payload) {
-        const response = await $api.push(routes.verify_bvn, { payload });
-        return response;
-    },
+  // ==============================
+  // FETCH CONNECTED USERS
+  // ==============================
+  async fetchConnectedUsers({ commit }, payload) {
+    const response = await getRequest(
+      "auth",
+      `${routes.fetch_connected_users}/${payload.business_id}`,
+      {}
+    );
 
-    // ==============================
-    // UPDATE BUSINESS INFO
-    // ==============================
-    async updateUserBusinessInfo(_, payload) {
-        const response = await $api.push(routes.update_business_info, { payload });
-        return response;
-    },
+    response?.code === 200 && commit("SAVE_CONNECTED_USERS", response.data);
+    return response;
+  },
 
-    // ==============================
-    // FETCH CONNECTED USERS
-    // ==============================
-    async fetchConnectedUsers({ commit }, payload) {
-        const response = await $api.push(routes.fetch_connected_users, { payload });
-        if (response.code === 200) commit("SAVE_CONNECTED_USERS", response.data);
-        return response;
-    },
-
-    // ==============================
-    // DELETE CONNECTED USER
-    // ==============================
-    async deleteConnectedUser(_, payload) {
-        const response = await $api.push(routes.delete_connected_user, { payload });
-        return response;
-    },
+  // ==============================
+  // DELETE CONNECTED USER
+  // ==============================
+  async deleteConnectedUser(_, payload) {
+    return await deleteRequest(
+      "auth",
+      `${routes.delete_connected_user}/${payload.account_id}`,
+      {}
+    );
+  },
 };

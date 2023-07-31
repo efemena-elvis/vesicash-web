@@ -33,7 +33,7 @@
 
 <script>
 import { mapMutations, mapGetters } from "vuex";
-import { countries } from "@/utilities/countries.json";
+import countries from "@/utilities/countries";
 import {
   SINGLE_ROLE_OPTIONS,
   MULTIPLE_ROLE_OPTIONS,
@@ -186,6 +186,9 @@ export default {
             "Transaction should contain a single buyer party",
             "error"
           );
+          return false;
+        } else if (buyers[0].recipient.name === "Yes") {
+          this.pushToast("A buyer cannot be a recipient party", "error");
           return false;
         } else if (sellers.length > 1) {
           this.pushToast(

@@ -19,7 +19,7 @@
 
     <!-- ACCOUNT CONFIRM CARD -->
     <div
-      class="account-confirm-card grey-10-bg rounded-12 mgt--10"
+      class="account-confirm-card grey-10-bg rounded-12 mgt--10 mgb-20"
       v-if="account_details?.account_name || verification_message"
     >
       <div
@@ -36,26 +36,18 @@
 
 <script>
 import { mapActions } from "vuex";
-import FormHelper from "@/modules/auth/mixins/auth-helper";
 
 export default {
   name: "NewWalletAccount",
 
-  mixins: [FormHelper],
-
-  components: {
-    BasicInput: () =>
-      import(
-        /* webpackChunkName: 'shared-module' */ "@/shared/components/form-comps/basic-input"
-      ),
-  },
+  components: {},
 
   watch: {
     "form.account_id": {
       async handler(state) {
         this.account_details = null;
 
-        if (state.length >= 10) await this.verifyAccount(state);
+        if (state.length >= 10) await this.verifyWalletID(state);
       },
     },
   },
@@ -76,25 +68,38 @@ export default {
 
   methods: {
     ...mapActions({
-      verifyBankAccount: "general/verifyBankAccount",
+      verifyWalletAccountID: "general/verifyWalletAccountID",
     }),
 
-    async verifyAccount(account_number, bank_code) {
+    async verifyWalletID(account_id) {
       this.invalid_account = false;
       this.verification_message = "Verifying account...";
 
-      const payload = {
-        bank_code,
-        account_number,
-      };
+      const response = await this.handleDataRequest({
+        action: "verifyWalletAccountID",
+        payload: account_id,
+        alert_handler: {
+          error: "Please check account details",
+          request_error: "Account details was not found",
+          not_found_error: "Account details was not found",
+        },
+      });
 
-      const response = await this.verifyBankAccount(payload);
-
-      if (response?.status === "ok") {
+      if (response.code === 200) {
         this.verification_message = "";
-        this.account_details = response.data;
 
-        this.$emit("bankDetailsUpdated", this.getNairaBankDetails);
+        let response_payload = {
+          account_name: response.data.firstname
+            ? `${response.data.firstname} ${response.data.lastname}`
+            : response.data.email_address,
+          account_no: "" + response.data.account_id,
+          category: "wallet",
+          bank_name: "Vesicash",
+        };
+
+        this.account_details = response_payload;
+
+        this.$emit("bankDetailsUpdated", response_payload);
       } else {
         this.verification_message =
           response?.message || "Please check account details";

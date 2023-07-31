@@ -1,12 +1,6 @@
 <template>
   <div
-    class="
-      onboarding-card
-      position-relative
-      pointer
-      rounded-8
-      smooth-transition
-    "
+    class="onboarding-card position-relative pointer rounded-8 smooth-transition"
     :class="account.selected && 'onboarding-card-active'"
     @click="$emit('select-onboarding-card', index)"
   >
@@ -72,7 +66,7 @@ export default {
 .onboarding-card {
   border: toRem(1) solid getColor("grey-100");
   padding: toRem(30) toRem(18) toRem(24);
-  @include flex-column-center;
+  @include flex-column("center", "center");
   width: toRem(220);
 
   @include breakpoint-down(xxs) {

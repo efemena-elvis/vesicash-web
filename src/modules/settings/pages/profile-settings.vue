@@ -4,7 +4,9 @@
     <div class="page-title primary-1-text grey-900 mgb-4">Profile</div>
 
     <!-- PAGE META -->
-    <div class="page-meta tertiary-2-text grey-600">Update your profile and personal info here.</div>
+    <div class="page-meta tertiary-2-text grey-600">
+      Update your profile and personal info here.
+    </div>
 
     <!-- FORM AREA -->
     <div class="settings-form-area mgt-20">
@@ -12,17 +14,23 @@
       <div class="page-input-block row">
         <div class="col-12 col-sm-4">
           <label for="logo" class="form-label fw-bold">
-            {{
-            isBusiness ? "Business logo" : "Profile picture"
-            }}
+            {{ isBusiness ? "Business logo" : "Profile picture" }}
           </label>
         </div>
 
         <div class="col-12 col-sm-8 logo-block">
           <div class="profile-avatar position-relative">
-            <div class="icon-spinner f-size-19 animate position-absolute" v-if="uploading_file"></div>
+            <div
+              class="icon-spinner f-size-19 animate position-absolute"
+              v-if="uploading_file"
+            ></div>
 
-            <img :src="uploaded_pic" alt="logo" ref="logoImage" v-if="uploaded_pic" />
+            <img
+              :src="uploaded_pic"
+              alt="logo"
+              ref="logoImage"
+              v-if="uploaded_pic"
+            />
             <ProfileAvatarIcon v-else />
           </div>
 
@@ -41,11 +49,11 @@
             :for="uploading_file ? '' : 'fileUpload'"
           >
             {{
-            uploading_file
-            ? "Uploading..."
-            : isBusiness
-            ? "Upload business logo"
-            : "Upload profile pic"
+              uploading_file
+                ? "Uploading..."
+                : isBusiness
+                ? "Upload business logo"
+                : "Upload profile pic"
             }}
           </label>
         </div>
@@ -58,25 +66,27 @@
         </div>
 
         <div class="col-12 col-sm-8 two-columns-row">
-          <BasicInput
+          <FormFieldInput
+            label_id="firstName"
             is_required
-            placeholder="Enter your last name "
-            :input_value="form.last_name"
-            @getInputState="updateFormState($event, 'last_name')"
-            :error_handler="{
-              type: 'single',
-              message: 'Last name should contain at least two characters',
-            }"
-          />
-
-          <BasicInput
-            is_required
-            placeholder="Enter your first name "
-            :input_value="form.first_name"
-            @getInputState="updateFormState($event, 'first_name')"
+            placeholder="Enter your first name"
+            :input_value="getFormFieldValueMx(form, 'first_name')"
+            @getInputState="updateFormFieldMx($event, 'first_name')"
             :error_handler="{
               type: 'single',
               message: 'First name should contain at least two characters',
+            }"
+          />
+
+          <FormFieldInput
+            label_id="lastName"
+            is_required
+            placeholder="Enter your last name"
+            :input_value="getFormFieldValueMx(form, 'last_name')"
+            @getInputState="updateFormFieldMx($event, 'last_name')"
+            :error_handler="{
+              type: 'single',
+              message: 'Last name should contain at least two characters',
             }"
           />
         </div>
@@ -89,15 +99,11 @@
         </div>
 
         <div class="col-12 col-sm-8">
-          <BasicInput
-            is_required
-            placeholder="Enter your username "
-            :input_value="form.username"
-            @getInputState="updateFormState($event, 'username')"
-            :error_handler="{
-              type: 'required',
-              message: 'Enter a username',
-            }"
+          <FormFieldInput
+            label_id="userName"
+            placeholder="Enter your username"
+            :input_value="getFormFieldValueMx(form, 'username')"
+            @getInputState="updateFormFieldMx($event, 'username')"
           />
         </div>
       </div>
@@ -109,17 +115,15 @@
         </div>
 
         <div class="col-12 col-sm-8 position-relative">
-          <div ref="show" class="show-input">-------.</div>
-          <BasicInput
-            is_required
+          <div ref="show" class="show-input">-------</div>
+
+          <FormFieldInput
+            label_id="merchantId"
             placeholder="Enter your flutterwave merchant id"
-            :input_value="form.flutterwave_merchant_id"
-            :custom_style="{input_style:'profile_merchant_id_field'}"
-            @getInputState="updateFormState($event, 'flutterwave_merchant_id')"
-            :error_handler="{
-              type: 'required',
-              message: 'Enter a valid flutterwave merchant id',
-            }"
+            :input_value="getFormFieldValueMx(form, 'flutterwave_merchant_id')"
+            @getInputState="
+              updateFormFieldMx($event, 'flutterwave_merchant_id')
+            "
           />
         </div>
       </div>
@@ -138,7 +142,7 @@
             rows="4"
             placeholder="Write about your company "
             class="form-control"
-            v-model="bio"
+            v-model="form.bio.value"
           ></textarea>
         </div>
       </div>
@@ -150,16 +154,17 @@
         </div>
 
         <div class="col-12 col-sm-8 two-columns-row two-columns-row--tight">
-          <BasicInput
-            is_required
+          <FormFieldInput
+            label_id="emailAddress"
             input_type="email"
-            placeholder="Enter your email"
-            :input_value="form.email"
+            is_required
+            placeholder="Enter your email address"
             :is_disabled="isEmailVerified"
-            @getInputState="updateFormState($event, 'email')"
+            :input_value="getFormFieldValueMx(form, 'email_address')"
+            @getInputState="updateFormFieldMx($event, 'email_address')"
             :error_handler="{
               type: 'email',
-              message: 'Enter a valid email address',
+              message: 'Email address is not valid',
             }"
           />
 
@@ -173,9 +178,11 @@
           <button
             class="btn btn-secondary btn-sm fw-semibold"
             v-else
-            :disabled="validity.email"
-            @click="toggleInputModal('email')"
-          >Verify</button>
+            :disabled="!isEmailValidated"
+            @click="toggleInputModal('email_address')"
+          >
+            Verify
+          </button>
         </div>
       </div>
 
@@ -189,15 +196,16 @@
           class="col-12 col-sm-8 two-columns-row two-columns-row--tight two-columns-row--phone-variant"
         >
           <div class="position-relative">
-            <BasicInput
+            <FormFieldInput
+              label_id="phoneNumber"
               input_type="number"
-              :input_value="form.phone_number"
               is_phone_type
-              :is_disabled="isPhoneVerified"
               is_required
+              :is_disabled="isPhoneVerified"
               placeholder="Enter your phone number"
               :custom_style="{ input_wrapper_style: 'form-prefix' }"
-              @getInputState="updateFormState($event, 'phone_number')"
+              :input_value="getFormFieldValueMx(form, 'phone_number')"
+              @getInputState="updateFormFieldMx($event, 'phone_number')"
               :error_handler="{
                 type: 'phone',
                 message: 'Phone number is not valid',
@@ -205,7 +213,10 @@
             />
           </div>
 
-          <div class="verify-skeleton skeleton-loader" v-if="loading_verification"></div>
+          <div
+            class="verify-skeleton skeleton-loader"
+            v-if="loading_verification"
+          ></div>
 
           <TagCard
             card_text="Phone verified"
@@ -214,12 +225,25 @@
             class="slim-app-chip"
           />
 
-          <button
-            class="btn btn-secondary btn-sm fw-semibold"
-            v-else
-            :disabled="validity.phone_number"
-            @click="toggleInputModal('phone_number')"
-          >Verify</button>
+          <template v-else>
+            <button
+              v-if="is_phone_changed"
+              class="btn btn-secondary btn-sm fw-semibold"
+              :disabled="!isPhoneValidated"
+              @click="updateUserPhone()"
+            >
+              Update phone
+            </button>
+
+            <button
+              v-else
+              class="btn btn-secondary btn-sm fw-semibold"
+              :disabled="!isPhoneValidated"
+              @click="toggleInputModal('phone_number')"
+            >
+              Verify
+            </button>
+          </template>
         </div>
       </div>
 
@@ -232,8 +256,10 @@
             class="btn btn-primary btn-md"
             @click="saveProfile"
             :disabled="isDisabled"
-            ref="save"
-          >Save profile</button>
+            ref="btnRef"
+          >
+            Save profile
+          </button>
         </div>
       </div>
     </div>
@@ -243,18 +269,18 @@
       <transition name="fade" v-if="show_input_modal">
         <VerifyInputModal
           @continue="initiateOTPRequest"
-          :input="form[input_type]"
+          :input="form[input_type].value"
           @closeTriggered="toggleInputModal"
-          :email="input_type === 'email'"
+          :email="input_type === 'email_address'"
         />
       </transition>
 
       <transition name="fade" v-if="show_otp_modal">
         <VerifyOtpModal
           @closeTriggered="toggleOtpModal"
-          :input="form[input_type]"
-          :email="input_type === 'email'"
-          @done="updateUserPhone"
+          :input="form[input_type].value"
+          :email="input_type === 'email_address'"
+          @done="updatePhoneVerificationState"
         />
       </transition>
     </portal>
@@ -262,8 +288,8 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from "vuex";
-import BasicInput from "@/shared/components/form-comps/basic-input";
+import { mapActions, mapMutations } from "vuex";
+import countries from "@/utilities/countries";
 import TagCard from "@/shared/components/card-comps/tag-card";
 import ProfileAvatarIcon from "@/shared/components/icon-comps/profile-avatar-icon";
 import VerifyInputModal from "@/modules/settings/modals/verify-input-modal";
@@ -273,57 +299,35 @@ export default {
   name: "ProfileSettings",
 
   components: {
-    BasicInput,
     TagCard,
     ProfileAvatarIcon,
     VerifyInputModal,
     VerifyOtpModal,
   },
 
-  mounted() {
-    this.updateSavedProfile();
-    if (!this.getUserVerifications) this.fetchVerifications();
-  },
-
-  updated() {
-    const merchantInput = document.querySelector(".profile_merchant_id_field");
-    if (merchantInput && this.$route?.query?.focus_merchant) {
-      merchantInput.focus();
-      this.$refs?.show?.scrollIntoView();
-      this.$router.replace({ name: this.$route.name });
-    }
-  },
-
   computed: {
-    ...mapGetters({ getUserVerifications: "settings/getUserVerifications" }),
-
     isBusiness() {
       return this.getAccountType === "business" ? true : false;
     },
 
     isPhoneVerified() {
-      if (!this.getUserVerifications) return false;
-      const phone_verification = this.getUserVerifications.find(
-        (type) => type.verification_type === "phone"
-      );
-      return phone_verification ? phone_verification?.is_verified : false;
+      return this.getUser?.verifications?.phone ?? false;
     },
 
     isEmailVerified() {
-      if (!this.getUserVerifications) return false;
-      const email_verification = this.getUserVerifications.find(
-        (type) => type.verification_type === "email"
-      );
-      return email_verification ? email_verification?.is_verified : false;
+      return this.getUser?.verifications?.email ?? false;
+    },
+
+    isPhoneValidated() {
+      return this.form.phone_number?.validated;
+    },
+
+    isEmailValidated() {
+      return this.form.email?.validated;
     },
 
     isDisabled() {
-      return (
-        this.validity.last_name ||
-        this.validity.first_name ||
-        this.validity.email ||
-        !this.isEmailVerified
-      );
+      return this.validateFormFieldMx(this.form) && !this.isEmailVerified;
     },
 
     userProfileUpdate() {
@@ -331,22 +335,32 @@ export default {
         account_id: this.getAccountId,
         updates: {
           account_type: this.getAccountType,
-          firstname: this.form.first_name,
+          firstname: this.form.first_name.value,
           middlename: "",
-          lastname: this.form.last_name,
-          phone_number: this.form.phone_number,
-          email_address: this.form.email,
-          username: this.form.username,
+          lastname: this.form.last_name.value,
+          phone_number: this.form.phone_number.value,
+          email_address: this.form.email_address.value,
+          username: this.form.username.value,
           meta: this.uploaded_pic,
-          bio: this.bio,
-          flutterwave_merchant_id: this.form.flutterwave_merchant_id,
+          bio: this.form.bio.value,
+          flutterwave_merchant_id: this.form.flutterwave_merchant_id.value,
         },
       };
 
       if (!this.isBusiness) delete profile_updates.updates.username;
-      if (!this.isBusiness || !profile_updates.updates?.flutterwave_merchant_id)
+      if (!this.isBusiness)
         delete profile_updates.updates?.flutterwave_merchant_id;
+
       return profile_updates;
+    },
+  },
+
+  watch: {
+    "form.phone_number.value": {
+      handler(value) {
+        this.is_phone_changed =
+          this.initial_phone_value !== value ? true : false;
+      },
     },
   },
 
@@ -357,57 +371,96 @@ export default {
       uploaded_pic: "",
       uploading_file: false,
       loading_verification: false,
-      bio: "",
       input_type: "phone_number",
 
-      form: {
-        username: "",
-        last_name: "",
-        first_name: "",
-        email: "",
-        phone_number: "",
-        flutterwave_merchant_id: "",
-      },
+      country_code: "",
+      initial_phone_value: false,
+      is_phone_changed: false,
 
-      validity: {
-        username: true,
-        last_name: true,
-        first_name: true,
-        email: true,
-        phone_number: true,
-        flutterwave_merchant_id: true,
+      form: {
+        first_name: {
+          validated: false,
+          value: "",
+        },
+        last_name: {
+          validated: false,
+          value: "",
+        },
+        username: {
+          validated: true,
+          value: "",
+        },
+        flutterwave_merchant_id: {
+          validated: true,
+          value: "",
+        },
+        bio: {
+          validated: true,
+          value: "",
+        },
+        email_address: {
+          validated: false,
+          value: "",
+        },
+        phone_number: {
+          validated: false,
+          value: "",
+        },
       },
     };
+  },
+
+  created() {
+    // ==========================================
+    // UPDATE USER SELECTED COUNTRY STATE
+    // ==========================================
+    this.$bus.$on("update-country-state", (country) =>
+      this.extractCountryCode(country)
+    );
+  },
+
+  mounted() {
+    this.updateSavedProfile();
+  },
+
+  updated() {
+    const merchantInput = document.querySelector(".profile_merchant_id_field");
+
+    if (merchantInput && this.$route?.query?.focus_merchant) {
+      merchantInput.focus();
+      this.$refs?.show?.scrollIntoView();
+      this.$router.replace({ name: this.$route.name });
+    }
   },
 
   methods: {
     ...mapActions({
       saveUserProfile: "settings/saveUserProfile",
       uploadToSpace: "general/uploadToSpace",
-      fetchUserVerifications: "settings/fetchUserVerifications",
     }),
 
     ...mapMutations({ UPDATE_AUTH_USER: "auth/UPDATE_AUTH_USER" }),
-
-    async fetchVerifications() {
-      this.loading_verification = true;
-      await this.fetchUserVerifications({ account_id: this.getAccountId });
-      this.loading_verification = false;
-    },
 
     toggleInputModal(type) {
       this.input_type = type;
       this.show_input_modal = !this.show_input_modal;
     },
 
-    toggleOtpModal() {
+    toggleOtpModal(type) {
+      this.input_type = type;
       this.show_otp_modal = !this.show_otp_modal;
     },
 
     initiateOTPRequest(input) {
-      this.form[this.input_type] = input;
+      this.form[this.input_type].value = input;
       this.toggleInputModal(this.input_type);
-      this.toggleOtpModal();
+      this.toggleOtpModal(this.input_type);
+    },
+
+    extractCountryCode(country_name) {
+      this.country_code = countries.find(
+        (country) => country.country === country_name
+      ).dialing_code;
     },
 
     async uploadPic(event) {
@@ -435,9 +488,9 @@ export default {
       this.uploading_file = false;
 
       this.uploaded_pic =
-        loadedImage.code === 200 ? loadedImage.data.urls[0] : "";
+        loadedImage.code === 201 ? loadedImage.data[0].file_url : "";
 
-      if (loadedImage.code !== 200)
+      if (loadedImage.code !== 201)
         this.pushToast("File upload failed", "error");
     },
 
@@ -450,100 +503,121 @@ export default {
     },
 
     updateSavedProfile() {
-      const user = this.getUser;
-      const last_name = user?.fullname?.split(" ")[0];
-      const first_name = user?.fullname?.split(" ")[1];
-      const email = user?.email;
-      const username = user?.username;
-      const phone_number = user?.phone;
-      const flutterwave_merchant_id = user?.flutterwave_merchant_id;
-      this.bio = user?.bio;
-      this.uploaded_pic = user?.meta;
-
-      this.form = {
-        ...this.form,
-        last_name,
-        first_name,
-        username,
+      const {
+        fullname,
         email,
-        phone_number,
+        username,
+        phone,
         flutterwave_merchant_id,
-      };
+        bio,
+        meta,
+      } = this.getUser;
 
-      this.validity = {
-        ...this.validity,
-        username: !username,
-        last_name: !last_name,
-        first_name: !first_name,
-        email: !email,
-        phone_number: !phone_number,
-        flutterwave_merchant_id: !flutterwave_merchant_id,
-      };
+      this.uploaded_pic = meta;
+
+      const [firstname, lastname] = fullname.split(" ");
+
+      this.form.first_name.value = firstname;
+      this.form.first_name.validated = !!firstname;
+
+      this.form.last_name.value = lastname;
+      this.form.last_name.validated = !!lastname;
+
+      this.form.username.value = username;
+      this.form.flutterwave_merchant_id.value = flutterwave_merchant_id;
+      this.form.bio.value = bio;
+
+      this.form.email_address.value = email;
+      this.form.email_address.validated = !!email;
+
+      this.form.phone_number.value = phone;
+      this.form.phone_number.validated = !!phone;
+      this.initial_phone_value = phone;
+      this.is_phone_changed = false;
     },
 
     updateProfile() {
       const updatedUser = {
         ...this.getUser,
-        email: this.form.email,
-        phone: this.form.phone_number,
-        bio: this.bio,
+        email: this.form.email_address.value,
+        phone: this.form.phone_number.value,
+        bio: this.form.bio.value,
         meta: this.uploaded_pic,
-        fullname: `${this.form.last_name} ${this.form.first_name}`,
-        username: this.form?.username,
-        flutterwave_merchant_id: this.form?.flutterwave_merchant_id,
+        fullname: `${this.form.last_name.value} ${this.form.first_name.value}`,
+        username: this.form?.username.value,
+        flutterwave_merchant_id: this.form?.flutterwave_merchant_id.value,
       };
 
       this.UPDATE_AUTH_USER(updatedUser);
     },
 
     async saveProfile() {
-      this.handleClick("save");
-      try {
-        const response = await this.saveUserProfile(this.userProfileUpdate);
-        this.handleClick("save", "Save profile", false);
-        const type = response.code === 200 ? "success" : "error";
-        let message =
-          response.code === 200 ? "Profile saved" : response.message;
+      const response = await this.handleDataRequest({
+        action: "saveUserProfile",
+        payload: this.userProfileUpdate,
+        btn_text: "Save profile",
+        alert_handler: {
+          success: "User profile was updated successfully",
+          error: "Failed to save profile",
+          request_error: "Unable to save user profile",
+          not_found_error: "Unable to save user profile",
+        },
+      });
 
-        if (
-          response.code === 400 &&
-          response?.data["updates[username]"] &&
-          response?.data["updates[username]"][0]
-        ) {
-          message = response.data["updates[username]"][0];
-        }
-        if (
-          response.code === 400 &&
-          response?.data["updates[username]"] &&
-          response?.data["updates[username]"][0]
-        ) {
-          message = response.data["updates[username]"][0];
-        }
-        this.pushToast(message, type);
-
-        if (response.code === 200) this.updateProfile();
-      } catch (err) {
-        this.handleClick("save", "Save profile", false);
-        console.log("Failed to save profile", err);
-      }
+      if (response?.code === 200) this.updateProfile();
     },
 
-    updateUserPhone() {
+    updatePhoneVerificationState() {
       const updatedUser = {
         ...this.getUser,
-        phone: this.form.phone_number,
+        verifications: {
+          email: this.getUser.verifications.email,
+          phone: true,
+        },
       };
 
       this.UPDATE_AUTH_USER(updatedUser);
+      this.handleToastPushMx(
+        "Phone number was verified successfully",
+        "success"
+      );
+    },
 
-      this.fetchVerifications();
+    async updateUserPhone() {
+      const user_phone = this.$validate.validatePhoneNumber(
+        this.form.phone_number.value,
+        this.country_code
+      );
 
-      this.saveUserProfile({
-        account_id: this.getAccountId,
-        updates: {
-          phone_number: this.form.phone_number,
-        },
-      });
+      if (user_phone) {
+        const updatedUser = {
+          ...this.getUser,
+          phone: user_phone,
+        };
+
+        this.UPDATE_AUTH_USER(updatedUser);
+
+        const response = await this.handleDataRequest({
+          action: "saveUserProfile",
+          payload: {
+            account_id: this.getAccountId,
+            updates: {
+              phone_number: user_phone,
+            },
+          },
+          alert_handler: {
+            success: "User phone number updated successfully",
+            error: "Failed to save user phone number",
+          },
+        });
+
+        console.log("EMITTED", response);
+
+        if (response?.code === 200)
+          setTimeout(() => this.updateSavedProfile(), 1000);
+      } else {
+        this.handleToastPushMx("Phone number is not valid!", "error");
+      }
     },
   },
 };
@@ -569,7 +643,7 @@ export default {
     border: toRem(0.5) solid getColor("teal-200");
     border-radius: 50%;
     @include draw-shape(56);
-    @include flex-row-center-nowrap;
+    @include flex-row-nowrap("center", "center");
 
     img {
       width: 100%;

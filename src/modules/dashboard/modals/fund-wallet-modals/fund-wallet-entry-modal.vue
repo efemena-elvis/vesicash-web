@@ -1,144 +1,122 @@
 <template>
-  <ModalCover
-    @closeModal="$emit('closeTriggered')"
-    :modal_style="{ size: 'modal-sm' }"
-    :show_close_btn="false"
-    :trigger_self_close="false"
-  >
-    <!-- MODAL COVER HEADER -->
-    <template slot="modal-cover-header">
-      <div class="modal-cover-header">
-        <!-- BACK BUTTON -->
-        <PageBackBtn custom_mode @clicked="$emit('goBackWalletSelection')" />
-
-        <div class="modal-cover-title h5-text mgt--4">
-          {{ payment_type.title }}
-        </div>
-      </div>
-    </template>
-
+  <div>
     <!-- MODAL COVER BODY -->
-    <template slot="modal-cover-body">
-      <div class="modal-cover-body">
-        <!-- CURRENCY SELECTION -->
-        <div class="mgb-24">
-          <div class="form-label">Select wallet type</div>
+    <div>
+      <!-- CURRENCY SELECTION -->
+      <div class="mgb-24">
+        <div class="form-label">Select wallet type</div>
 
-          <DropSelectInput
-            placeholder="Select wallet"
-            :options="currency_options"
-            @selectedOption="selectDropdownOption($event)"
+        <DropSelectInput
+          placeholder="Select wallet"
+          :options="getCurrencyOptions"
+          @selectedOption="selectDropdownOption($event)"
+        />
+      </div>
+
+      <!-- CARD OPTION VIEW -->
+      <template v-if="selected_currency.slug">
+        <!-- AMOUNT TO WITHDRAW -->
+        <div class="form-group">
+          <BasicInput
+            label_title="Amount to fund"
+            label_id="amount"
+            :input_value="form.amount"
+            input_type="number"
+            is_required
+            placeholder="0.00"
+            :custom_style="{ input_wrapper_style: 'form-prefix' }"
+            :currency="`${selected_currency.short} (${$money.getSign(
+              selected_currency.slug
+            )})`"
+            class="form-prefix-right"
+            @getInputState="updateFormState($event, 'amount')"
+            :error_handler="{
+              type: 'required',
+              message: 'Enter a minimum amount of 1000',
+            }"
           />
-        </div>
 
-        <!-- CARD OPTION VIEW -->
-        <template v-if="selected_currency.slug">
-          <!-- AMOUNT TO WITHDRAW -->
-          <div class="form-group">
-            <BasicInput
-              label_title="Amount to fund"
-              label_id="amount"
-              :input_value="form.amount"
-              input_type="number"
-              is_required
-              placeholder="0.00"
-              :custom_style="{ input_wrapper_style: 'form-prefix' }"
-              :currency="`${selected_currency.short} (${$money.getSign(
-                selected_currency.slug
-              )})`"
-              class="form-prefix-right"
-              @getInputState="updateFormState($event, 'amount')"
-              :error_handler="{
-                type: 'required',
-                message: 'Enter a minimum amount of 1000',
-              }"
-            />
+          <!-- AMOUNT DATA -->
+          <div class="amount-meta mgt-8 tertiary-2-text grey-600">
+            <div>
+              Minimum amount:
+              <span class="fw-bold"
+                >{{ $money.getSign(selected_currency.slug)
+                }}{{
+                  $utils.formatCurrencyWithComma(selected_currency.min_amount)
+                }}</span
+              >
+            </div>
 
-            <!-- AMOUNT DATA -->
-            <div class="amount-meta mgt-8 tertiary-2-text grey-600">
-              <div>
-                Minimum amount:
-                <span class="fw-bold"
-                  >{{ $money.getSign(selected_currency.slug)
-                  }}{{ $money.addComma(selected_currency.min_amount) }}</span
-                >
-              </div>
-
-              <div class="green-500">
-                Charges:
-                <span class="fw-bold"
-                  >{{ $money.getSign(selected_currency.slug)
-                  }}{{ $money.addComma(getFundingCharge) }}</span
-                >
-              </div>
+            <div class="green-500">
+              Charges:
+              <span class="fw-bold"
+                >{{ $money.getSign(selected_currency.slug)
+                }}{{ $utils.formatCurrencyWithComma(getFundingCharge) }}</span
+              >
             </div>
           </div>
-        </template>
+        </div>
+      </template>
 
-        <!-- TRANSFER OPTION VIEW -->
-        <template
-          v-if="payment_type.slug === 'transfer' && selected_currency.slug"
-        >
-          <!-- TITLE TEXT -->
-          <div class="description-text mgb-10 grey-600 tertiary-2-text">
-            Please send the amount to fund to the bank account below.
-          </div>
+      <!-- TRANSFER OPTION VIEW -->
+      <template
+        v-if="payment_type.slug === 'transfer' && selected_currency.slug"
+      >
+        <!-- TITLE TEXT -->
+        <div class="description-text mgb-10 grey-600 tertiary-2-text">
+          Please send the amount to fund to the bank account below.
+        </div>
 
-          <!-- LOADING TRANSFER DETAILS -->
-          <div class="modal-items-wrapper rounded-4 green-50-bg">
-            <template v-if="info_loading">
-              <ModalListItem v-for="(_, index) in 3" :key="index" loading />
-            </template>
+        <!-- LOADING TRANSFER DETAILS -->
+        <div class="modal-items-wrapper rounded-4 green-50-bg mgb-20">
+          <template v-if="info_loading">
+            <ModalListItem v-for="(_, index) in 3" :key="index" loading />
+          </template>
 
-            <template v-else>
-              <ModalListItem
-                v-for="(data, index) in transfer_info"
-                :title="data.title"
-                :value="data.value"
-                :key="index"
-              />
-            </template>
-          </div>
-        </template>
-      </div>
-    </template>
+          <template v-else>
+            <ModalListItem
+              v-for="(data, index) in transfer_info"
+              :title="data.title"
+              :value="data.value"
+              :key="index"
+            />
+          </template>
+        </div>
+      </template>
+    </div>
 
     <!-- MODAL COVER FOOTER -->
-    <template slot="modal-cover-footer">
-      <div class="modal-cover-footer">
-        <template v-if="payment_type.slug === 'card'">
-          <button class="btn btn-primary btn-md wt-100">Fund Wallet</button>
-        </template>
+    <div class="pdb-30">
+      <template v-if="payment_type.slug === 'card'">
+        <button
+          class="btn btn-primary btn-md wt-100"
+          @click="handleCardFunding"
+        >
+          Fund Wallet
+        </button>
+      </template>
 
-        <template v-else>
-          <button
-            class="btn btn-primary btn-md wt-100"
-            @click="handleFundSuccess"
-          >
-            I have funded
-          </button>
-        </template>
-      </div>
-    </template>
-  </ModalCover>
+      <template v-else>
+        <button
+          class="btn btn-primary btn-md wt-100"
+          @click="handleFundSuccess"
+        >
+          I have funded
+        </button>
+      </template>
+    </div>
+  </div>
 </template>
 
 <script>
-import { mapActions } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
-import PageBackBtn from "@/shared/components/page-back-btn";
-import BasicInput from "@/shared/components/form-comps/basic-input";
-import DropSelectInput from "@/shared/components/drop-select-input";
-import { VESICASH_APP_URL } from "@/utilities/constant";
+import { mapActions, mapGetters } from "vuex";
+import { constants } from "@/utilities";
 
 export default {
   name: "FundWalletEntryModal",
 
   components: {
-    ModalCover,
-    PageBackBtn,
-    BasicInput,
-    DropSelectInput,
     ModalListItem: () =>
       import(
         /* webpackChunkName: "dashboard-modal-module" */ "@/modules/dashboard/components/modal-comps/modal-list-item"
@@ -157,16 +135,24 @@ export default {
 
     gateway: {
       type: String,
-      default: "",
+      default: "monnify",
     },
   },
 
   computed: {
+    ...mapGetters({ getWalletSize: "general/getWalletSize" }),
+
     // CHECK FORM BUTTON VALIDITY STATE
     isValidState() {
       return Object.values(this.validity).every((valid) => !valid)
         ? false
         : true;
+    },
+
+    getCurrencyOptions() {
+      return this.payment_type.slug === "transfer"
+        ? this.currency_options.slice(0, 1)
+        : this.currency_options;
     },
 
     getFundingCharge() {
@@ -178,27 +164,19 @@ export default {
       else if (amount > 1000000) return 2000;
       else return 0;
     },
+
+    getFundingSuccessRoute() {
+      return `${constants.VESICASH_APP_URL}/fund-wallet-success?type=funding&currency=${this.selected_currency.short}&amount=${this.form.amount}`;
+    },
+
+    getFundingErrorRoute() {
+      return `${constants.VESICASH_APP_URL}/fund-wallet-error?type=funding&currency=${this.selected_currency.short}&amount=${this.form.amount}`;
+    },
   },
 
   data() {
     return {
-      currency_options: [
-        {
-          id: 1,
-          name: "Naira wallet (NGN)",
-          slug: "naira",
-          short: "NGN",
-          min_amount: 1000,
-        },
-        {
-          id: 2,
-          name: "Dollar wallet (USD)",
-          slug: "dollar",
-          short: "USD",
-          min_amount: 100,
-        },
-        // { id: 3, name: "GBP (£)", slug: "pound", short: "GPB" },
-      ],
+      currency_options: [],
 
       selected_currency: {
         slug: "", // naira
@@ -222,6 +200,7 @@ export default {
   },
 
   mounted() {
+    this.loadWalletCurrencyOptions();
     this.handleFetchingOfTransferDetails();
   },
 
@@ -231,8 +210,26 @@ export default {
       verifyPaymentAccount: "dashboard/verifyPaymentAccount",
       fetchTransferAccountBankDetails:
         "dashboard/fetchTransferAccountBankDetails",
-      startCardPayment: "transactions/startCardPayment",
+      initiateHeadlessPayment: "transactions/initiateHeadlessPayment",
     }),
+
+    loadWalletCurrencyOptions() {
+      this.getWalletSize
+        .filter(
+          (wallet) =>
+            wallet.enabled && !wallet.short.includes("ESCROW") && !wallet?.mor
+        )
+        .map((wallet_type) => {
+          this.currency_options.push({
+            id: wallet_type.id,
+            name: `${wallet_type.description} (${wallet_type.short})`,
+            slug: wallet_type.long.toLowerCase(),
+            short: wallet_type.short,
+            country: wallet_type.code.toUpperCase(),
+            min_amount: wallet_type.short === "USD" ? 100 : 1000,
+          });
+        });
+    },
 
     // ========================================
     // SELECT OPTION FROM OPTION LIST
@@ -262,8 +259,8 @@ export default {
         .then((response) => {
           this.info_loading = false;
 
-          if (response.code === 200) {
-            let account = response?.data?.payment_account ?? {};
+          if (response?.code === 200) {
+            let account = response?.data ?? {};
             this.account_reference_id = account.payment_account_id;
 
             for (const prop in account) {
@@ -280,9 +277,10 @@ export default {
 
             let account_name = this.transfer_info.at(-1).value;
             this.transfer_info.at(-1).value = `Vesicash-${account_name}`;
-          } else if (response.code === 500) {
-            this.handleFetchingOfTransferDetails();
           }
+          // else if (response?.code === 500) {
+          //   this.handleFetchingOfTransferDetails();
+          // }
         })
         .catch(() => (this.info_loading = false));
     },
@@ -293,25 +291,41 @@ export default {
     handleCardFunding() {
       let request_payload = {
         currency: this.selected_currency.short,
-        transaction_id: "",
+        amount: +this.form.amount,
+        account_id: this.getAccountId,
         payment_gateway: "rave",
-        success_page: "",
+        success_url: this.getFundingSuccessRoute,
+        fail_url: this.getFundingErrorRoute,
+        fund_wallet: true,
       };
 
-      this.startCardPayment(request_payload)
-        .then()
-        .catch((err) => {});
+      this.initiateHeadlessPayment(request_payload).then((response) => {
+        if (response?.code === 200) location.href = response?.data?.link;
+      });
     },
 
     // ===============================
     // VERIFY USER WALLET PAYMENT
     // ===============================
-    handleFundSuccess() {
-      this.verifyPaymentAccount({
-        reference: this.account_reference_id,
+    async handleFundSuccess() {
+      const response = await this.handleDataRequest({
+        action: "verifyPaymentAccount",
+        payload: { reference: this.account_reference_id },
+        alert_handler: {
+          error: "Unable to verify account payment",
+        },
       });
 
-      setTimeout(() => this.$emit("walletFunded"), 1500);
+      if (response.code === 200) {
+        this.$router.push({
+          name: "SuccessfulWalletFund",
+          query: {
+            type: "transfer",
+            currency: this.selected_currency.short,
+            amount: +this.form.amount,
+          },
+        });
+      }
     },
 
     // =======================================
@@ -326,13 +340,13 @@ export default {
         country: "US",
         amount: this.form.dollar_amount,
         fund_wallet: true,
-        success_url: `${VESICASH_APP_URL}/fund-wallet-success`,
-        fail_url: `${VESICASH_APP_URL}/fund-wallet-error`,
+        success_url: `${constants.VESICASH_APP_URL}/fund-wallet-success`,
+        fail_url: `${constants.VESICASH_APP_URL}/fund-wallet-error`,
       };
 
       this.initiateDollarFunds(request_payload)
         .then((response) => {
-          if (response.code === 200) {
+          if (response?.code === 200) {
             // REDIRECT USER TO PAYMENT GATEWAY
             this.handleClick("fundBtn", "Make payment", false);
             location.href = response.data.link;
@@ -355,17 +369,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.modal-cover-body {
-  min-height: toRem(110);
-  height: auto;
+.amount-meta {
+  @include flex-row-nowrap("space-between", "center");
+}
 
-  .amount-meta {
-    @include flex-row-between-nowrap;
-  }
-
-  .modal-items-wrapper {
-    border: toRem(1) dashed getColor("green-500");
-    padding: toRem(2) toRem(18);
-  }
+.modal-items-wrapper {
+  border: toRem(1) dashed getColor("green-500");
+  padding: toRem(2) toRem(18);
 }
 </style>

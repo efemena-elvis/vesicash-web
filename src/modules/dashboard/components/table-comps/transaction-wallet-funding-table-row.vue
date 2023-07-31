@@ -16,7 +16,7 @@
 
     <td class="body-data" :class="`${table_name}-4`">
       {{ $money.getSign(data.currency)
-      }}{{ $money.addComma(data.total_amount) }}
+      }}{{ $utils.formatCurrencyWithComma(data.total_amount) }}
     </td>
 
     <td class="body-data" :class="`${table_name}-5`">
@@ -101,13 +101,15 @@ export default {
           title: "Total amount",
           value: `${this.$money.getSign(
             this.data.currency
-          )}${this.$money.addComma(Number(this.data.total_amount))}`,
+          )}${this.$utils.formatCurrencyWithComma(
+            Number(this.data.total_amount)
+          )}`,
         },
         {
           title: "Amount funded",
           value: `${this.$money.getSign(
             this.data.currency
-          )}${this.$money.addComma(
+          )}${this.$utils.formatCurrencyWithComma(
             Number(this.data.total_amount) - Number(this.data.escrow_charge)
           )}`,
         },
@@ -115,7 +117,7 @@ export default {
           title: "Funding charge",
           value: `${this.$money.getSign(
             this.data.currency
-          )}${this.$money.addComma(this.data.escrow_charge)}`,
+          )}${this.$utils.formatCurrencyWithComma(this.data.escrow_charge)}`,
         },
         {
           title: "Account email",
@@ -146,5 +148,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

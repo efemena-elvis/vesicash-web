@@ -113,7 +113,7 @@
 
 <script>
 import { mapActions } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "VerifyOTPModal",
@@ -204,7 +204,7 @@ export default {
       handler(value) {
         if (value.length === 1) {
           this.$nextTick(() => this.$refs.otpSix.blur());
-          this.handleUserOTPVerification();
+          // this.handleUserOTPVerification();
         }
       },
     },
@@ -240,9 +240,7 @@ export default {
       sendUserOTP: "settings/requestOTP",
       verifyUserOTP: "settings/verifyOTP",
       verifyEmailOTP: "settings/verifyEmailOTP",
-      // sendEmailOTP: "auth/sendUserOTP",
       sendEmailOTP: "settings/requestEmailOTP",
-      // verifyEmailOTP: "auth/verifyUserOTP",
     }),
     // ===============================
     // CLEAR OUT ALL OTP INPUTS
@@ -278,13 +276,12 @@ export default {
     handleUserOTPVerification() {
       let request_payload = {
         account_id: this.getAccountId,
-        code: this.getOTPToken,
+        code: +this.getOTPToken,
       };
 
       let request_email_payload = {
         account_id: this.getAccountId,
-        code: this.getOTPToken,
-        // otp_token: this.getOTPToken,
+        code: +this.getOTPToken,
       };
 
       const payload = this.email ? request_email_payload : request_payload;
@@ -293,10 +290,10 @@ export default {
 
       this[action](payload)
         .then((response) => {
-          if (response.code === 200) {
-            this.pushToast("OTP was verified successfully", "success");
-            this.$emit("closeTriggered");
+          if (response?.code === 200) {
+            this.handleToastPushMx("OTP was verified successfully", "success");
             this.$emit("done");
+            this.$emit("closeTriggered");
           }
 
           // HANDLE NON 200 RESPONSE
@@ -316,13 +313,11 @@ export default {
     // ===================================
     sendOutOTPVerificationCode() {
       let request_payload = {
-        account_id: this.getAccountId,
-        phone_number: this.input,
+        phone_number: `+${this.input}`,
       };
 
       let request_email_otp_payload = {
         account_id: this.getAccountId,
-        email: this.email,
         email_address: this.email,
       };
 
@@ -331,11 +326,8 @@ export default {
 
       this[action](payload)
         .then((response) => {
-          if (response.code === 200)
-            this.pushToast(
-              `An OTP code has been sent to ${this.input}`,
-              "success"
-            );
+          if (response?.code === 200)
+            this.pushToast(`An OTP code has been sent to you`, "success");
         })
         .catch(() => this.pushToast("Unable to generate an OTP code", "error"));
     },
@@ -366,7 +358,7 @@ export default {
 <style lang="scss" scoped>
 .auth-page {
   .form-group {
-    @include flex-row-center-nowrap;
+    @include flex-row-nowrap("center", "center");
 
     .form-control {
       padding: toRem(8) toRem(10);

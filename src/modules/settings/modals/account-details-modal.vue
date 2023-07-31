@@ -1,5 +1,8 @@
 <template>
-  <ModalCover @closeModal="$emit('closeTriggered')" :modal_style="{ size: 'modal-sm' }">
+  <ModalCover
+    @closeModal="$emit('closeTriggered')"
+    :modal_style="{ size: 'modal-sm' }"
+  >
     <!-- MODAL COVER HEADER -->
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
@@ -10,7 +13,7 @@
     <!-- MODAL COVER BODY -->
     <template slot="modal-cover-body">
       <div class="modal-cover-body">
-        <template v-if="account.currency==='NGN'">
+        <template v-if="account.currency === 'NGN'">
           <ModalListItem title="Bank" :value="account.bank_name" />
           <ModalListItem title="Account number" :value="account.account_no" />
           <ModalListItem title="Account name" :value="account.account_name" />
@@ -31,7 +34,11 @@
     <template slot="modal-cover-footer">
       <div class="modal-cover-footer">
         <div class="btn-wrapper mgt-17">
-          <button ref="delete" class="btn btn-secondary btn-md wt-100" @click="deleteAccount">
+          <button
+            ref="delete"
+            class="btn btn-secondary btn-md wt-100"
+            @click="deleteAccount"
+          >
             <span class="icon icon-trash mgr-11"></span>
             Delete account
           </button>
@@ -39,7 +46,7 @@
           <button
             ref="save"
             class="btn btn-primary btn-md wt-100 text-white"
-            v-if="account.currency==='USD'"
+            v-if="account.currency === 'USD'"
             @click="$emit('edit')"
           >
             <span class="icon icon-edit-pen neutral-10 mgr-11"></span>
@@ -53,7 +60,7 @@
 
 <script>
 import { mapActions } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 import ModalListItem from "@/modules/dashboard/components/modal-comps/modal-list-item";
 
 export default {
@@ -91,10 +98,10 @@ export default {
       try {
         const response = await this.removeUserBank(this.deleteUpdate);
 
-        const type = response.code === 200 ? "success" : "error";
+        const type = response?.code === 200 ? "success" : "error";
 
         const message =
-          response.code === 200 ? "Account deleted" : response.message;
+          response?.code === 200 ? "Account deleted" : response.message;
 
         this.pushToast(message, type);
 
@@ -115,7 +122,7 @@ export default {
 
 <style lang="scss" scoped>
 .btn-wrapper {
-  @include flex-row-start-nowrap;
+  @include flex-row-nowrap("flex-start", "center");
   gap: toRem(24);
 
   .btn {
@@ -123,7 +130,7 @@ export default {
   }
 
   @include breakpoint-custom-down(780) {
-    @include flex-row-start-wrap;
+    @include flex-row-wrap("flex-start", "center");
 
     .btn-primary {
       order: 1;
@@ -135,4 +142,3 @@ export default {
   }
 }
 </style>
-

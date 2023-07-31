@@ -97,7 +97,7 @@
     </template>
 
     <!-- TRANSACTIONS SECTION -->
-    <template name="transactions-section" v-if="false">
+    <template v-if="false">
       <div class="section-wrapper">
         <div class="section-title">Transactions</div>
 
@@ -107,7 +107,7 @@
     </template>
 
     <!-- ACTIVITY SECTION -->
-    <template name="activity-section" v-if="getTransactionActivities.length">
+    <template v-if="getTransactionActivities.length">
       <div class="section-wrapper">
         <div class="section-title">Activity</div>
 
@@ -153,11 +153,14 @@
           @paid="closeWireAndOpenSuccess"
         />
       </transition>
+
       <transition name="fade" v-if="show_naira_transfer_modal">
         <WalletDetailsModal
           @closeTriggered="toggleNairaTransferModal"
           @goBackWalletSelection="closeNairaPaymentOpenPayment"
           @walletFunded="closeFundDetailsAndOpenSuccess"
+          :amount="+getTransaction.total_amount - +getTransaction.amount_paid"
+          :currency="getTransaction.currency"
         />
       </transition>
 
@@ -167,9 +170,7 @@
           @goBackWalletSelection="closeFWBizOpenPayment"
           @walletFunded="closeFundDetailsAndOpenSuccess"
           :gateway="gateway"
-          :amount="
-            getTransaction.totalAmount ? getTransaction.totalAmount : '0'
-          "
+          :amount="+getTransaction.total_amount - +getTransaction.amount_paid"
         />
       </transition>
 
@@ -194,6 +195,7 @@
           @goBackOptionSelection="toggleWalletTransferModal"
           @transfer="transferFromWallet"
           :currency="getCurrency"
+          :amount="+getTransaction.total_amount - +getTransaction.amount_paid"
         />
       </transition>
     </portal>
@@ -202,7 +204,7 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import PageBackBtn from "@/shared/components/page-back-btn";
+import PageBackBtn from "@/shared/components/util-comps/page-back-btn";
 import paymentHelper from "@/modules/transactions/mixins/payment-mixins";
 
 export default {
@@ -211,7 +213,7 @@ export default {
   mixins: [paymentHelper],
 
   metaInfo: {
-    title: "Disbursement Details",
+    title: "Transaction Details",
     titleTemplate: "%s - Vesicash",
   },
 
@@ -284,20 +286,26 @@ export default {
     },
 
     getSortedMilestones() {
-      return this.getTransaction?.milestones?.sort((a, b) =>
-        Number(a.index) < Number(b.index)
-          ? -1
-          : Number(a.index) > Number(b.index)
-          ? 1
-          : 0
-      );
+      return this.getTransaction?.milestones;
+
+      // return sortMilestones.call();
+
+      // function sortMilestones() {
+      //   return this.getTransaction?.milestones?.sort((a, b) =>
+      //     Number(a.index) < Number(b.index)
+      //       ? -1
+      //       : Number(a.index) > Number(b.index)
+      //       ? 1
+      //       : 0
+      //   );
+      // }
     },
 
     getTransactionModalProps() {
       let transaction_owner = this.getTransaction?.members[0]?.email ?? "Owner";
       let transaction_title = this.getTransaction.title;
       let transaction_amount =
-        this.getTransaction?.totalAmount ??
+        this.getTransaction?.total_amount ??
         Number(this.getTransaction?.amount) ??
         0;
       let transaction_amount_paid =
@@ -308,15 +316,12 @@ export default {
       return {
         owner: transaction_owner,
         title: transaction_title,
-        amount_paid:
-          transaction_amount_paid > 0
-            ? transaction_amount_paid + escrow_charge
-            : transaction_amount_paid,
+        amount_paid: transaction_amount_paid,
         currency: this.$money.getSign(transaction_currency),
         currency_value: transaction_currency,
         total_amount: `${this.$money.getSign(
           transaction_currency
-        )}${this.$money.addComma(transaction_amount)}`,
+        )}${this.$utils.formatCurrencyWithComma(transaction_amount)}`,
       };
     },
 
@@ -346,15 +351,17 @@ export default {
         value?.milestones.length && this.checkIfTransactionCanStart();
 
         // CHECK IF EXCESS FUNDS WAS PAID
-        if (
-          Number(value.amount_paid) + Number(value.escrow_charge) >
-            value.totalAmount ??
-          Number(value.amount)
-        ) {
-          this.togglePaymentModal();
+        let current_user = value.members?.find(
+          (party) => party.account_id === this.getAccountId
+        );
+
+        if (current_user.role?.toLowerCase() === "buyer") {
+          if (+value.amount_paid < value.total_amount) {
+            this.togglePaymentModal();
+          }
         }
       },
-      immediate: true,
+      // immediate: true,
     },
 
     show_accept_modal: {
@@ -459,8 +466,8 @@ export default {
 
       this.fetchTransactionById({ transaction_id: this.$route.params.id })
         .then((response) => {
-          if (response.code === 200) {
-            this.transaction_details = response?.data?.transaction;
+          if (response?.code === 200) {
+            this.transaction_details = response?.data;
 
             this.togglePageLoader();
           }
@@ -475,7 +482,7 @@ export default {
         title,
         amount_paid,
         escrow_charge,
-        totalAmount,
+        total_amount,
         amount,
         type,
       } = this.getTransaction;
@@ -500,10 +507,7 @@ export default {
           } else if (current_user.status?.toLowerCase() === "accepted") {
             // CHECK PAYMENT
             if (Number(amount_paid > 0)) {
-              if (
-                Number(amount_paid) + Number(escrow_charge) <
-                Number(totalAmount ?? amount)
-              ) {
+              if (Number(amount_paid) < Number(total_amount ?? amount)) {
                 this.togglePaymentModal();
               } else {
                 if (!all_accepted)
@@ -525,9 +529,7 @@ export default {
             if (all_accepted) {
               // CHECK IF FUNDS HAS BEEN PAID
               let payment_complete =
-                Number(amount_paid) + Number(escrow_charge) >= totalAmount
-                  ? true
-                  : false;
+                Number(amount_paid) >= total_amount ? true : false;
 
               if (!payment_complete) {
                 this.pushToast(
@@ -629,7 +631,7 @@ export default {
         milestones,
         amount_paid,
         escrow_charge,
-        totalAmount,
+        total_amount,
       } = this.getTransaction;
 
       // GET FIRST MILESTONE STATUS
@@ -646,10 +648,7 @@ export default {
       );
 
       // CHECK IF PAYMENT HAS BEEN MADE
-      let payment_complete =
-        Number(amount_paid) + Number(escrow_charge) >= totalAmount
-          ? true
-          : false;
+      let payment_complete = +amount_paid >= +total_amount ? true : false;
 
       // FOR ALL ACCEPTED AND COMPLETE PAYMENT
       if (
@@ -710,9 +709,7 @@ export default {
         status,
       })
         .then((response) => {
-          if (response.code === 200) {
-            console.log(response);
-
+          if (response?.code === 200) {
             this.pushToast(
               `${milestone.title} milestone is now in progress`,
               "success"
@@ -738,9 +735,8 @@ export default {
               : status,
         })
           .then((response) => {
-            if (response.code === 200) {
+            if (response?.code === 200) {
               if (milestones.length === index + 1) {
-                // this.pushToast("Transaction has started", "success");
                 setTimeout(() => this.fetchSingleTransaction(), 2000);
               }
             }
@@ -767,7 +763,7 @@ export default {
   }
 
   .fund-details-section {
-    @include flex-row-start-wrap;
+    @include flex-row-wrap("flex-start", "center");
   }
 
   .section-wrapper {
@@ -795,4 +791,4 @@ export default {
     }
   }
 }
-</style>  
+</style>

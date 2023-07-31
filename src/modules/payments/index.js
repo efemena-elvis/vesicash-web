@@ -1,20 +1,24 @@
-const paymentsRoutes = [{
+const paymentsRoutes = [
+  {
     path: "/payments",
     component: () =>
-        import ( /* webpackChunkName: "base-layout" */ "@/layouts/layout-base"),
+      import(/* webpackChunkName: "base-layout" */ "@/layouts/layout-base"),
 
-    children: [{
+    children: [
+      {
         path: "",
         name: "PaymentsPage",
         component: () =>
-            import (
-                /* webpackChunkName: "transactions-module" */
-                "@/modules/payments/pages/payments"
-            ),
+          import(
+            /* webpackChunkName: "transactions-module" */
+            "@/modules/payments/pages/payments"
+          ),
         meta: {
-            requiresAuth: true,
+          requiresAuth: true,
         },
-    }, ],
-}, ];
+      },
+    ],
+  },
+];
 
 export default paymentsRoutes;

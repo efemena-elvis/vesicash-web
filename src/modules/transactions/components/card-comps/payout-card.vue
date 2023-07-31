@@ -8,6 +8,16 @@
       {{ getMilestoneName }}
     </div>
 
+    <div class="close-wrapper" v-if="index > 1">
+      <div
+        class="close-btn rounded-16 pointer smooth-transition"
+        title="Remove milestone"
+        @click="removeSelectedMilestone"
+      >
+        <div class="icon icon-close grey-600"></div>
+      </div>
+    </div>
+
     <!-- PAYOUT INPUTS -->
     <div class="payout-inputs">
       <div class="row" style="align-items: flex-start">
@@ -126,21 +136,13 @@
 </template>
 
 <script>
-import {
-  CURRENCY_OPTIONS,
-  INSPECTION_OPTIONS,
-} from "@/modules/transactions/constants";
+import { INSPECTION_OPTIONS } from "@/modules/transactions/constants";
 import { mapGetters, mapMutations } from "vuex";
-import BasicInput from "@/shared/components/form-comps/basic-input";
-import DropSelectInput from "@/shared/components/drop-select-input";
 
 export default {
   name: "PayoutCard",
 
-  components: {
-    BasicInput,
-    DropSelectInput,
-  },
+  components: {},
 
   props: {
     index: {
@@ -160,7 +162,9 @@ export default {
 
   computed: {
     ...mapGetters({
+      getTransactionMilestones: "transactions/getTransactionMilestones",
       getMilestoneRecipients: "transactions/getMilestoneRecipients",
+      getWalletSize: "general/getWalletSize",
     }),
 
     // =============================================
@@ -194,7 +198,7 @@ export default {
   },
 
   data: () => ({
-    currency_options: CURRENCY_OPTIONS,
+    currency_options: [],
     inspection_options: INSPECTION_OPTIONS,
     min_date: "",
 
@@ -205,12 +209,31 @@ export default {
     },
   }),
 
+  created() {
+    // GET WALLET OPTIONS
+    this.getWalletSize
+      .filter(
+        (wallet) =>
+          wallet.enabled && !wallet.short.includes("ESCROW") && !wallet?.mor
+      )
+      .map((wallet_type) => {
+        this.currency_options.push({
+          id: wallet_type.id,
+          name: `${wallet_type.short} (${wallet_type.sign})`,
+          slug: wallet_type.long.toLowerCase(),
+          short: wallet_type.short,
+        });
+      });
+  },
+
   mounted() {
     this.hidePastDate();
   },
 
   methods: {
     ...mapMutations({
+      UPDATE_TRANSACTION_MILESTONE: "transactions/UPDATE_TRANSACTION_MILESTONE",
+      UPDATE_MILESTONE_RECIPIENT: "transactions/UPDATE_MILESTONE_RECIPIENT",
       UPDATE_MILESTONE_DATA: "transactions/UPDATE_MILESTONE_DATA",
       UPDATE_RECIPIENT_AMOUNT: "transactions/UPDATE_RECIPIENT_AMOUNT",
       EVALUATE_TRANSACTION_FEES: "transactions/EVALUATE_TRANSACTION_FEES",
@@ -268,12 +291,29 @@ export default {
       // RE-EVALUATE TOTAL FEE
       this.EVALUATE_TRANSACTION_FEES();
     },
+
+    // REMOVE SELECTED MILESTONE DATA
+    removeSelectedMilestone() {
+      // UPDATE TRANSACTION MILESTONE LIST
+      let updated_milestone = this.getTransactionMilestones.filter(
+        (milestone) => milestone.id !== this.milestone.id
+      );
+
+      // UPDATE TRANSACTION RECIPIENT LIST
+      let updated_recipients = this.getMilestoneRecipients.filter(
+        (recipient) => recipient.milestone_id !== this.milestone.id
+      );
+
+      this.UPDATE_TRANSACTION_MILESTONE(updated_milestone);
+      this.UPDATE_MILESTONE_RECIPIENT(updated_recipients);
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
 .payout-card {
+  position: relative;
   margin-bottom: toRem(15);
   padding: toRem(24);
   padding-bottom: toRem(5);
@@ -286,9 +326,29 @@ export default {
     margin-bottom: toRem(32);
   }
 
+  .close-wrapper {
+    position: absolute;
+    top: toRem(28);
+    right: toRem(24);
+
+    .close-btn {
+      background: getColor("grey-50");
+      @include draw-shape(24);
+
+      .icon {
+        @include center-placement;
+        font-size: toRem(18);
+      }
+
+      &:hover {
+        background: getColor("red-100");
+      }
+    }
+  }
+
   .payout-inputs {
     .row {
-      @include flex-row-between-wrap;
+      @include flex-row-wrap("space-between", "center");
     }
   }
 }

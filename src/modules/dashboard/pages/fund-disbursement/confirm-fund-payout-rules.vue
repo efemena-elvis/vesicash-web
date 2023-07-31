@@ -120,7 +120,7 @@ export default {
   }
 
   .fund-details-section {
-    @include flex-row-start-wrap;
+    @include flex-row-wrap("flex-start", "center");
   }
 
   .section-wrapper {

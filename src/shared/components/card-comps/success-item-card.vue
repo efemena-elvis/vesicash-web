@@ -9,7 +9,10 @@
       <div class="title primary-1-text grey-900 mgb-4">{{ info.title }}</div>
 
       <!-- DESCRIPTION TEXT -->
-      <div class="description tertiary-2-text grey-600" v-html="info.description"></div>
+      <div
+        class="description tertiary-2-text grey-600"
+        v-html="info.description"
+      ></div>
     </div>
   </div>
 </template>
@@ -39,9 +42,8 @@ export default {
 
 <style lang="scss" scoped>
 .success-item-card {
-  @include flex-row-start-nowrap;
+  @include flex-row-nowrap("flex-start", "flex-start");
   margin-bottom: toRem(40);
-  align-items: flex-start;
 
   .icon-wrapper {
     margin-right: toRem(16);

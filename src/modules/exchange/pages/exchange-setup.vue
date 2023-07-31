@@ -18,7 +18,7 @@
             :currency_type="initial_currency"
             is_currency_type
             :currency_options="initialCurrencyOptions"
-            @currencyUpdated="initial_currency = $event"
+            @update-currency-state="initial_currency = $event"
             class="form-prefix-right"
             @getInputState="updateFormState($event, 'initial_currency')"
             :validity="!validity.initial_currency"
@@ -50,7 +50,7 @@
             is_currency_type
             :currency_type="final_currency"
             :currency_options="finalCurrencyOptions"
-            @currencyUpdated="final_currency = $event"
+            @update-currency-state="final_currency = $event"
             class="form-prefix-right"
             @getInputState="updateFormState($event, 'final_currency')"
             :validity="!validity.final_currency"
@@ -119,8 +119,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import BasicInput from "@/shared/components/form-comps/basic-input";
-import PageBackBtn from "@/shared/components/page-back-btn";
+import PageBackBtn from "@/shared/components/util-comps/page-back-btn";
 import SwapIcon from "@/shared/components/icon-comps/swap-icon";
 import SumTotalDisplayCard from "@/shared/components/card-comps/sum-total-display-card";
 
@@ -129,7 +128,6 @@ export default {
 
   components: {
     PageBackBtn,
-    BasicInput,
     SumTotalDisplayCard,
     SwapIcon,
 
@@ -154,7 +152,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters({ getFxRates: "fx/getFxRates" }),
+    ...mapGetters({ getFxRates: "exchange/getFxRates" }),
 
     isDisabled() {
       return Object.values(this.validity).some((valid) => valid);
@@ -237,20 +235,24 @@ export default {
 
     successMessage() {
       const initial_currency = this.initialCurrencyMeta.currency;
-      const initial_amount = this.$money.addComma(
+      const initial_amount = this.$utils.formatCurrencyWithComma(
         this.initialCurrencyMeta.amount
       );
       const final_currency = this.finalCurrencyMeta.currency;
-      const final_amount = this.$money.addComma(this.finalCurrencyMeta.amount);
+      const final_amount = this.$utils.formatCurrencyWithComma(
+        this.finalCurrencyMeta.amount
+      );
 
       return `Your currency swap of ${initial_currency}${initial_amount} to ${final_currency}${final_amount} is successful.`;
     },
 
     transactionSummary() {
-      const initial_amount = this.$money.addComma(
+      const initial_amount = this.$utils.formatCurrencyWithComma(
         this.initialCurrencyMeta.amount
       );
-      const final_amount = this.$money.addComma(this.finalCurrencyMeta.amount);
+      const final_amount = this.$utils.formatCurrencyWithComma(
+        this.finalCurrencyMeta.amount
+      );
 
       return {
         name: `${this.initialCurrencyMeta.code}-${this.finalCurrencyMeta.code}`,
@@ -353,22 +355,20 @@ export default {
           country: "Nigeria",
           dialing_code: "234",
           code: "ng",
-          flag: "https://dyclassroom.com/image/flags/ng.png",
+          flag: "https://flagsapi.com/NG/flat/64.png",
         },
-
         {
           country: "United States",
           dialing_code: "1",
           code: "us",
-          flag: "https://dyclassroom.com/image/flags/us.png",
+          flag: "https://flagsapi.com/US/flat/64.png",
         },
-
-        {
-          country: "United Kingdom",
-          dialing_code: "44",
-          code: "gb",
-          flag: "https://dyclassroom.com/image/flags/gb.png",
-        },
+        // {
+        //   country: "United Kingdom",
+        //   dialing_code: "44",
+        //   code: "gb",
+        //   flag: "https://dyclassroom.com/image/flags/gb.png",
+        // },
       ],
 
       form: {
@@ -385,21 +385,21 @@ export default {
         country: "Nigeria",
         dialing_code: "234",
         code: "ng",
-        flag: "https://dyclassroom.com/image/flags/ng.png",
+        flag: "https://flagsapi.com/NG/flat/64.png",
       },
 
       initial_currency: {
         country: "United States",
         dialing_code: "1",
         code: "us",
-        flag: "https://dyclassroom.com/image/flags/us.png",
+        flag: "https://flagsapi.com/US/flat/64.png",
       },
     };
   },
 
   methods: {
     ...mapActions({
-      fetchAllFxRates: "fx/fetchAllFxRates",
+      fetchAllFxRates: "exchange/fetchAllFxRates",
       walletToWalletTransfer: "transactions/walletToWalletTransfer",
     }),
 
@@ -431,7 +431,7 @@ export default {
         const response = await this.fetchAllFxRates();
         this.loading_rates_skeleton = false;
 
-        if (response.code !== 200)
+        if (response?.code !== 200)
           this.pushToast("Failed to load FX rates", "error");
       } catch (err) {
         console.log("FAILED TO FETCH FX RATES", err);
@@ -450,7 +450,7 @@ export default {
 
         this.handleClick("swap", "Continue", false);
 
-        if (response.code === 200) {
+        if (response?.code === 200) {
           this.toggleSuccessModal();
         } else {
           if (response?.message?.includes("Insufficient")) {
@@ -506,7 +506,7 @@ export default {
   @include draw-shape(48);
   // @include center-placement;
   margin: auto;
-  @include flex-column-center;
+  @include flex-column("center", "center");
   background: getColor("teal-50");
   border-radius: 50%;
   border: toRem(4) solid #fff;

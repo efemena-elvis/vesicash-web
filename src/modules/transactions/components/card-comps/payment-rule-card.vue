@@ -1,7 +1,7 @@
 <template>
   <div
     class="payment-rule-card rounded-16 teal-10-bg border-grey-100"
-    :class="!has_actions && 'pb-4'"
+    :class="!showBottomPaddingSpace && 'pb-0'"
   >
     <!-- CARD TITLE -->
     <div
@@ -36,7 +36,7 @@
       :class="addBottomMargin ? 'mgb-24' : null"
     >
       <div
-        class="wrapper"
+        class="wrapper border"
         v-for="(user, index) in loadCurrentMilestoneRecipients"
         :key="index"
       >
@@ -58,7 +58,12 @@
     <template v-if="has_actions">
       <div
         class="actions-row"
-        :class="$string.isOddNumber(user_details.length) && 'mgt-24'"
+        :class="[
+          $utils.isOddNumber(user_details.length) && 'mgt-24',
+          !['in progress', 'delivered', 'delivered - rejected'].includes(
+            getMilestoneStatus
+          ) && 'pdb--24',
+        ]"
       >
         <!-- APPROVAL ROLE -->
         <template v-if="userAccess.approve">
@@ -119,8 +124,7 @@
             <button
               class="btn btn-secondary btn-md"
               ref="rejectBtn"
-              @click="closeAllMilestoneTransaction"
-              v-if="false"
+              @click="closeMilestoneTransaction"
             >
               Reject
             </button>
@@ -193,6 +197,20 @@ export default {
       getMilestoneRecipients: "transactions/getMilestoneRecipients",
     }),
 
+    showBottomPaddingSpace() {
+      if (this.$route.name !== "TransactionDetails") {
+        return false;
+      } else if (
+        ["in progress", "delivered", "delivered - rejected"].includes(
+          this.getMilestoneStatus
+        )
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
     // =============================================
     // GET THE TRANSACTION PARTY TYPE FROM ROUTE
     // =============================================
@@ -212,7 +230,9 @@ export default {
     // ===================================================
     getMilestoneName() {
       return this.milestone.name || this.milestone.title
-        ? this.milestone.name || this.milestone.title
+        ? `Milestone ${this.index + 1} : ${
+            this.milestone.name || this.milestone.title
+          }`
         : `Milestone ${this.index + 1}`;
     },
 
@@ -238,9 +258,25 @@ export default {
     // GET PAYMENT RULES FOR CURRENT MILESTONE
     // ===================================================
     loadPaymentRules() {
-      let milestone_date = `${this.milestone?.due_date.split(" ")[0]} 00:00:00`;
+      let milestone_date = this.milestone?.due_date;
+      let formatted_date = {
+        date: "",
+        timestamp: false,
+      };
 
-      let { d3, m4, y1 } = this.$date.formatDate(milestone_date).getAll();
+      if (milestone_date.includes("-")) {
+        formatted_date.date = `${
+          this.milestone?.due_date.split(" ")[0]
+        } 00:00:00`;
+        formatted_date.timestamp = false;
+      } else {
+        formatted_date.date = milestone_date;
+        formatted_date.timestamp = true;
+      }
+
+      let { d3, m4, y1 } = formatted_date.timestamp
+        ? this.$date.formatTimestamp(formatted_date.date).getAll()
+        : this.$date.formatDate(formatted_date.date).getAll();
 
       if (this.getTransactionParty === "single") {
         return [
@@ -254,8 +290,8 @@ export default {
             title: "Amount",
             value: `${this.$money.getSign(
               this.currency?.slug ?? this.currency
-            )}${this.$money.addComma(
-              this.loadCurrentMilestoneRecipients[0].amount
+            )}${this.$utils.formatCurrencyWithComma(
+              this.loadCurrentMilestoneRecipients[0].amount.toString()
             )}`,
           },
           {
@@ -443,8 +479,10 @@ export default {
       );
     },
 
-    // CLOSE ALL OCCURING TRANSACTIONS
-    closeAllMilestoneTransaction() {},
+    // CLOSE MILESTONE TRANSACTION
+    closeMilestoneTransaction() {
+      this.updateStatus(this.ms_key["closed-refunded"], "rejectBtn", "Reject");
+    },
 
     // UPDATE TRANSACTION STATUS
     updateStatus(status, ref, btn_text) {
@@ -459,7 +497,7 @@ export default {
         .then((response) => {
           this.handleClick(ref, btn_text, false);
 
-          if (response.code === 200) {
+          if (response?.code === 200) {
             this.pushToast("Transaction status has been updated", "success");
             setTimeout(
               () => this.$bus.$emit("refetchTransactionDetails"),
@@ -493,8 +531,7 @@ export default {
   }
 
   .payment-items {
-    @include flex-row-start-wrap;
-    align-items: flex-start;
+    @include flex-row-wrap("flex-start", "flex-start");
 
     .item {
       margin-bottom: toRem(26);
@@ -545,8 +582,7 @@ export default {
   }
 
   .user-payment-details {
-    @include flex-row-between-wrap;
-    align-items: flex-start;
+    @include flex-row-wrap("space-between", "flex-start");
 
     .wrapper {
       margin-bottom: toRem(24);
@@ -563,8 +599,7 @@ export default {
   }
 
   .actions-row {
-    @include flex-row-start-wrap;
-    // margin-top: toRem(24);
+    @include flex-row-wrap("flex-start", "center");
 
     .btn {
       &:first-of-type {

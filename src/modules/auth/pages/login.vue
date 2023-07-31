@@ -4,14 +4,14 @@
     <form @submit.prevent="handleUserLogIn" class="auth-page">
       <!-- EMAIL ADDRESS INPUT -->
       <div class="form-group">
-        <BasicInput
+        <FormFieldInput
           label_title="Email address"
           label_id="emailAddress"
           input_type="email"
           is_required
           placeholder="Enter email address"
-          :input_value="form.email_address"
-          @getInputState="updateFormState($event, 'email_address')"
+          :input_value="getFormFieldValueMx(form, 'email_address')"
+          @getInputState="updateFormFieldMx($event, 'email_address')"
           :error_handler="{
             type: 'email',
             message: 'Email address is not valid',
@@ -21,15 +21,15 @@
 
       <!-- PASSWORD INPUT -->
       <div class="form-group mgb-13">
-        <BasicInput
+        <FormFieldInput
           label_title="Password"
           label_id="password"
           input_type="password"
           is_required
           placeholder="Enter password"
           :custom_style="{ input_wrapper_style: 'form-suffix' }"
-          :input_value="form.password"
-          @getInputState="updateFormState($event, 'password')"
+          :input_value="getFormFieldValueMx(form, 'password')"
+          @getInputState="updateFormFieldMx($event, 'password')"
           :error_handler="{
             type: 'password',
             message: 'Password should contain at least 4 characters',
@@ -42,22 +42,25 @@
         <router-link
           :to="{ name: 'VesicashForgotPassword' }"
           class="tertiary-2-text"
-        >Forgot Password?</router-link>
+          >Forgot Password?</router-link
+        >
       </div>
 
       <!-- BUTTON AREA -->
-      <div class="btn-area mgt-30 mgb-10">
+      <div class="btn-area mgt-25 mgb-10">
         <button
           class="btn btn-primary btn-md w-100"
-          ref="loginBtn"
-          :disabled="isValidState"
-        >Login to account</button>
+          ref="btnRef"
+          :disabled="isFormValidated"
+        >
+          Login to account
+        </button>
       </div>
 
       <!-- HELP BLOCK TEXT -->
       <div class="help-block text-center">
         Don’t have an account?
-        <router-link to="/register-lander" class="fw-medium">Register</router-link>
+        <router-link to="/register" class="fw-medium">Register</router-link>
       </div>
     </form>
   </AuthWrapper>
@@ -65,11 +68,13 @@
 
 <script>
 import { mapActions } from "vuex";
+import authMixin from "@/modules/auth/mixins/auth-mixin";
 import AuthWrapper from "@/modules/auth/components/auth-wrapper";
-import BasicInput from "@/shared/components/form-comps/basic-input";
 
 export default {
-  name: "Login",
+  name: "LoginPage",
+
+  mixins: [authMixin],
 
   metaInfo: {
     title: "Login",
@@ -78,29 +83,29 @@ export default {
 
   components: {
     AuthWrapper,
-    BasicInput,
   },
 
   computed: {
-    // CHECK FORM BUTTON VALIDITY STATE
-    isValidState() {
-      return Object.values(this.validity).every((valid) => !valid)
-        ? false
-        : true;
+    isFormValidated() {
+      return this.validateFormFieldMx(this.form);
+    },
+
+    getRequestPayload() {
+      return this.getFormPayloadMx(this.form);
     },
   },
 
   data() {
     return {
       form: {
-        email_address: "",
-        password: "",
+        email_address: {
+          validated: false,
+          value: "",
+        },
+        password: { validated: false, value: "" },
       },
 
-      validity: {
-        email_address: true,
-        password: true,
-      },
+      user_details: {},
     };
   },
 
@@ -110,43 +115,36 @@ export default {
     // ============================
     // HANDLE USER CLIENT LOGIN
     // ============================
-    handleUserLogIn() {
-      this.handleClick("loginBtn");
+    async handleUserLogIn() {
+      const response = await this.handleDataRequest({
+        action: "loginUser",
+        payload: this.getRequestPayload,
+        btn_text: "Login to account",
+        alert_handler: {
+          success: "User login was successful",
+          error: "Unable to login to your account",
+          request_error: "Login credentials is not valid",
+          not_found_error: "User account is not registered.",
+        },
+      });
 
-      let request_payload = {
-        username: this.form?.email_address,
-        password: this.form?.password,
-      };
+      // REDIRECT USER ON SUCCESS RESPONSE
+      if (response?.code === 200) {
+        // CHECK IF USER EMAIL IS VERIFIED
+        const is_email_verified = this.getUser?.verifications?.email;
 
-      this.loginUser(request_payload)
-        .then((response) => {
-          if (response.code === 200) {
-            this.pushToast("User login was successful", "success");
-            this.handleClick("loginBtn", "Login to account", false);
-            // console.log("login response", response);
-
-            // REDIRECT TO DASHBOARD
-            setTimeout(() => (location.href = "/dashboard"), 2000);
-          }
-
-          // HANDLE NON 200 RESPONSE
-          else this.handleLoginError(response.message);
-        })
-        .catch(() => {
-          this.handleLoginError("Unable to login to your account");
-        });
-    },
-
-    // ============================
-    // HANDLE USER LOGIN ERROR
-    // ============================
-    handleLoginError(message) {
-      this.pushToast(message, "error");
-      this.handleClick("loginBtn", "Login to account", false);
+        if (is_email_verified) {
+          setTimeout(() => (location.href = "/dashboard"), 2000);
+        }
+        // REDIRECT USER TO OTP VERIFICATION
+        else {
+          this.user_details = response.data.user;
+          this.handleOTPInitiation();
+        }
+      }
     },
   },
 };
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

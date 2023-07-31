@@ -3,7 +3,7 @@
     class="contract-upload-card rounded-12 border-grey-100 smooth-transition"
   >
     <!-- CONTENT STATE -->
-    <template name="content-state" v-if="getFileName">
+    <template v-if="getFileName">
       <div class="content-state wt-100">
         <!-- LEFT SECTION -->
         <div class="left-section wt-100">
@@ -54,7 +54,7 @@
     </template>
 
     <!-- NO CONTENT STATE -->
-    <template name="no-content-state" v-else>
+    <template v-else>
       <label class="no-content-state pointer" for="fileUpload">
         <!-- ICON HOLDER -->
         <div class="icon-holder mgb-8">
@@ -68,7 +68,7 @@
 
         <!-- DESCRIPTION TEXT -->
         <div class="description-text tertiary-2-text grey-600 text-center">
-          You can upload a doc or a PDF file
+          {{ descriptionText }}
         </div>
       </label>
 
@@ -79,14 +79,14 @@
         ref="fileUpload"
         @change="handleFileUpload"
         class="position-absolute invisible"
-        accept=".doc, .docx, .pdf"
+        accept=".doc, .docx, .pdf, .jpeg, .jpg"
       />
     </template>
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import FileIcon from "@/shared/components/icon-comps/file-icon";
 
 export default {
@@ -101,6 +101,16 @@ export default {
       type: String,
       default: "Click to upload agreement file",
     },
+
+    descriptionText: {
+      type: String,
+      default: "You can upload a doc, jpg or a PDF file",
+    },
+
+    upload_type: {
+      type: String,
+      default: null,
+    },
   },
 
   computed: {
@@ -112,17 +122,14 @@ export default {
   },
 
   data: () => ({
-    acceptable_filetypes: ["doc", "docx", "pdf"],
+    acceptable_filetypes: ["doc", "docx", "pdf", "jpeg", "jpg"],
   }),
 
   methods: {
     ...mapActions({
-      uploadFile: "general/uploadFile",
       uploadToSpace: "general/uploadToSpace",
       clearAttachedFile: "general/clearAttachedFile",
     }),
-
-    ...mapMutations({ UPDATE_FILE_PROGRESS: "general/UPDATE_FILE_PROGRESS" }),
 
     handleFileUpload($event) {
       $event.preventDefault();
@@ -142,11 +149,10 @@ export default {
       this.uploadToSpace({
         file: uploaded_file,
         formatted_size: this.processFileSize(uploaded_file.size),
-        type: "escrow",
+        type: this.upload_type,
       })
         .then((response) => {
-          if (response.code === 200)
-            this.$emit("contractUploaded", response.data);
+          if (response?.code === 201) this.$emit("fileUploaded", response.data);
         })
         .catch((err) => console.log(err));
     },
@@ -166,6 +172,7 @@ export default {
 
     removeAttachedFile() {
       this.clearAttachedFile();
+      this.$emit("clearTransactionFile");
     },
   },
 };
@@ -177,7 +184,7 @@ export default {
 
   .no-content-state {
     padding: toRem(17) toRem(16);
-    @include flex-column-center;
+    @include flex-column("center", "center");
 
     &:hover {
       background: getColor("grey-10");
@@ -223,11 +230,11 @@ export default {
   }
 
   .content-state {
-    @include flex-row-between-nowrap;
+    @include flex-row-nowrap("space-between", "center");
     padding: toRem(17) toRem(16);
 
     .left-section {
-      @include flex-row-start-nowrap;
+      @include flex-row-nowrap("flex-start", "center");
 
       .icon-card {
         position: relative;

@@ -3,7 +3,9 @@
     <div :class="getGroupStyle">
       <!-- INPUT LABEL -->
       <template v-if="label_title">
-        <label class="form-label" :for="label_id" :class="getLabelStyle">{{ label_title }}</label>
+        <label class="form-label" :for="label_id" :class="getLabelStyle">{{
+          label_title
+        }}</label>
       </template>
 
       <!-- INPUT WRAPPER AREA -->
@@ -44,8 +46,14 @@
             @click="toggleDropdown"
           >
             <img
-              v-lazy="is_currency_type ? currency_country.flag : current_country.flag"
-              :alt="is_currency_type ? currency_country.country : current_country.country"
+              v-lazy="
+                is_currency_type ? currency_country.flag : current_country.flag
+              "
+              :alt="
+                is_currency_type
+                  ? currency_country.country
+                  : current_country.country
+              "
             />
             <div
               class="icon icon-caret-fill-down smooth-transition"
@@ -63,24 +71,35 @@
 
     <!-- DROP DOWN SELECT AREA -->
     <template v-if="is_phone_type">
-      <template name="drop-select-area" v-if="show_dropdown">
-        <CountryDropSelect :countries="countries_data" @countrySelected="current_country = $event" />
+      <template v-if="show_dropdown">
+        <CountryDropSelect
+          :countries="countries_data"
+          @countrySelected="current_country = $event"
+        />
       </template>
     </template>
 
     <template v-if="is_currency_type">
-      <template name="drop-select-area" v-if="show_dropdown">
+      <template v-if="show_dropdown">
         <CountryDropSelect
-          :allow_search="currency_options.length ? currency_options.length > 5 : countries_data.length > 5"
+          :allow_search="
+            currency_options.length
+              ? currency_options.length > 5
+              : countries_data.length > 5
+          "
           is_currency_type
-          :countries="currency_options.length ? currency_options : countries_data"
+          :countries="
+            currency_options.length ? currency_options : countries_data
+          "
           @countrySelected="currency_country = $event"
         />
       </template>
     </template>
 
     <!-- MESSAGE TEXT -->
-    <div class="error-message-text" v-if="error_message">{{ error_message }}</div>
+    <div class="error-message-text" v-if="error_message">
+      {{ error_message }}
+    </div>
   </div>
 </template>
 
@@ -91,13 +110,6 @@ export default {
   name: "BasicInput",
 
   mixins: [CountryHelper],
-
-  components: {
-    CountryDropSelect: () =>
-      import(
-        /* webpackChunkName: 'shared-module' */ "@/shared/components/country-drop-select"
-      ),
-  },
 
   props: {
     label_title: {
@@ -229,6 +241,7 @@ export default {
         this.form_value = value;
       },
       immediate: true,
+      deep: true,
     },
 
     current_country: {
@@ -240,7 +253,7 @@ export default {
 
     currency_country: {
       handler(value) {
-        this.$emit("currencyUpdated", value);
+        this.$emit("update-currency-state", value);
       },
       immediate: true,
     },
@@ -267,18 +280,19 @@ export default {
       passwordType: true,
       error_message: "",
       form_value: "",
+
       currency_country: {
         country: "Nigeria",
         dialing_code: "234",
         code: "ng",
-        flag: "https://dyclassroom.com/image/flags/ng.png",
+        flag: "https://flagsapi.com/NG/flat/64.png",
       },
     };
   },
 
   created() {
     // LOAD MY CURRENT COUNTRY
-    this.is_phone_type && this.loadCurrentUserLocation();
+    // this.is_phone_type && this.loadCurrentUserLocation();
   },
 
   methods: {
@@ -287,11 +301,10 @@ export default {
       this.passwordType = !this.passwordType;
     },
 
-    validateInputType(
-      value = this.form_value,
-      type = this.error_handler?.type,
-      message = this.error_handler?.message
-    ) {
+    validateInputType() {
+      const value = this.form_value;
+      const { type, message, minimum } = this.error_handler;
+
       switch (type) {
         case "single":
           this.error_message =
@@ -318,7 +331,6 @@ export default {
           break;
 
         case "minimum":
-          const minimum = this.error_handler?.minimum;
           this.error_message = value.length < minimum && message;
           break;
 
@@ -332,12 +344,11 @@ export default {
     // VALIDATE USER ENTRY INPUT DATA
     // =================================
     validateAndEmitUserInput() {
-      // CHECK INPUT VALIDITY
       this.validateInputType();
 
       // EMIT CLIENT ENTERED VALUE
       this.$emit("getInputState", {
-        validity: this.error_message ? true : false,
+        validity: this.error_message.length ? false : true,
         value: this.form_value,
       });
     },
@@ -345,5 +356,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

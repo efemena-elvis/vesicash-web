@@ -47,15 +47,17 @@
               {{ transaction.title }} transaction of
 
               {{ transaction.currency
-              }}{{ $money.addComma(isLessAmountPaid.amount) }}
+              }}{{ $utils.formatCurrencyWithComma(isLessAmountPaid.amount) }}
 
               is currently pending.
             </template>
 
             <template v-else>
               An excess amount of {{ transaction.currency
-              }}{{ $money.addComma(isExcessAmountPaid.amount) }} was paid for
-              {{ transaction.title }} transaction.
+              }}{{
+                $utils.formatCurrencyWithComma(isExcessAmountPaid.amount)
+              }}
+              was paid for {{ transaction.title }} transaction.
               <br />
               Initiate an immediate reversal of excess fund to your wallet.
             </template>
@@ -100,7 +102,7 @@
 <script>
 import { mapActions } from "vuex";
 import MoneyIcon from "@/shared/components/icon-comps/money-icon";
-import ModalCover from "@/shared/components/modal-cover";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "PaymentActionModal",
@@ -195,7 +197,7 @@ export default {
         .then((response) => {
           this.handleClick("refundBtn", "Initiate Reversal", false);
 
-          if (response.code === 200) {
+          if (response?.code === 200) {
             this.pushToast(
               "Excess funds has been reversed to your wallet.",
               "success"
@@ -212,10 +214,10 @@ export default {
 
 <style lang="scss" scoped>
 .modal-cover-body {
-  @include flex-column-center;
+  @include flex-column("center", "center");
 
   .icon-wrapper {
-    @include flex-column-center;
+    @include flex-column("center", "center");
     @include draw-shape(115);
     position: relative;
 
