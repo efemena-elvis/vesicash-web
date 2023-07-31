@@ -267,8 +267,6 @@ export default {
       );
 
       if (cac_verification) {
-        console.log(this.getVerificationState(cac_verification));
-
         return {
           is_verified: cac_verification?.is_verified,
           verification_state: this.getVerificationState(cac_verification),
