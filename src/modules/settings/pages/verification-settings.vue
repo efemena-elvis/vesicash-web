@@ -266,7 +266,7 @@ export default {
         (type) => type.verification_type === "cac"
       );
 
-      if (cac_verification !== -1) {
+      if (cac_verification) {
         return {
           is_verified: cac_verification?.is_verified,
           verification_state: this.getVerificationState(cac_verification),
@@ -378,15 +378,14 @@ export default {
       this.loading_verification = false;
 
       if (response.code === 200) {
-        console.log(response);
         this.user_verifications = response.data;
       }
     },
 
     getVerificationState(payload) {
-      if (payload.is_verified) return "verified";
+      if (payload?.is_verified) return "verified";
       else {
-        if (this.base_timestamp === payload.verified_at) return "pending";
+        if (this.base_timestamp === payload?.verified_at) return "pending";
         else return "declined";
       }
     },
