@@ -32,11 +32,10 @@
           />
         </div>
 
-        <DocUploadCard
-          @uploaded="uploaded_doc = $event"
+        <ContractUploadCard
           titleText="Select company registration document"
-          docID="cac_document"
-          @upload="handleAlert"
+          @fileUploaded="uploaded_doc = $event"
+          @clearTransactionFile="uploaded_doc = null"
         />
       </div>
     </template>
@@ -58,89 +57,54 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
-import DocUploadCard from "@/shared/components/form-comps/doc-upload-card";
-import DropSelectInput from "@/shared/components/drop-select-input";
-import BasicInput from "@/shared/components/form-comps/basic-input";
+import { mapActions } from "vuex";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "CoporationVerificationModal",
 
   components: {
     ModalCover,
-    DropSelectInput,
-    BasicInput,
-    DocUploadCard,
-  },
-
-  mounted() {
-    this.clearAttachedFile();
   },
 
   computed: {
-    ...mapGetters({
-      getFileData: "general/getFileData",
-      getAllFilesData: "general/getAllFilesData",
-    }),
-
-    directorsRange() {
-      return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => ({ name: i, id: i }));
-    },
-
     isBusiness() {
       return this.getAccountType === "business" ? true : false;
     },
 
-    getVerificationDoc() {
-      const file_data = this.getAllFilesData.find(
-        (doc) => doc.id === "cac_document"
-      );
-      return file_data === undefined ? null : file_data;
-    },
-
-    VerificationDocExist() {
-      return this.getVerificationDoc?.files?.length ? true : false;
-    },
-
-    getDirectorDoc() {
-      const file_data = this.getAllFilesData.find(
-        (doc) => doc.id === "director_documents"
-      );
-      return file_data === undefined ? null : file_data;
-    },
-
-    directorDocExist() {
-      return this.getDirectorDoc?.files?.length ? true : false;
-    },
-
     isDisabled() {
-      //   if (this.isBusiness)
-      // !this.form.doc_number ||
-      //   !this.document ||
-      //   !this.VerificationDocExist ||
-      //   !this.directorDocExist;
-      return !this.form.doc_number || !this.VerificationDocExist;
+      return this.form.doc_number && this.form.file_url ? false : true;
     },
 
     verfiyDocPayload() {
       return {
-        account_id: this.getAccountId,
-        type: "cac",
+        type: this.form.type,
         id: this.form.doc_number,
-        meta: this.getVerificationDoc?.files[0]?.url,
+        meta: this.form.file_url,
       };
+    },
+  },
+
+  watch: {
+    uploaded_doc: {
+      handler(value) {
+        if (Array.isArray(value)) {
+          this.form.file_url = value[0].file_url;
+        } else {
+          this.form.file_url = value.file_url;
+        }
+      },
     },
   },
 
   data() {
     return {
-      director_count: 0,
-
       uploaded_doc: null,
 
       form: {
+        type: "cac",
         doc_number: "",
+        file_url: "",
       },
 
       validity: {
@@ -149,35 +113,33 @@ export default {
     };
   },
 
+  mounted() {
+    this.clearAttachedFile();
+  },
+
   methods: {
     ...mapActions({
       clearAttachedFile: "general/clearAttachedFile",
       verfiyUserDocument: "settings/verfiyUserDocument",
     }),
 
-    handleAlert(message) {
-      if (this.director_count < 1)
-        this.pushToast("Select number of directors", "error");
-      if (message) this.pushToast(message, "error");
-    },
-
     async save() {
       this.handleClick("save");
-      console.log("PAYLOAD", this.verfiyDocPayload);
 
       try {
         const response = await this.verfiyUserDocument(this.verfiyDocPayload);
 
         this.handleClick("save", "Submit", false);
 
-        if (response.code === 200) {
+        if (response?.code === 200) {
           this.pushToast(response.message, "success");
           this.$emit("saved", "Your document has been uploaded successfully");
+
+          setTimeout(() => this.$emit("closeTriggered"), 3000);
         } else {
           this.pushToast(response.message, "error");
         }
       } catch (err) {
-        console.log("ERROR SAVING DOCUMENT", err);
         this.handleClick("save", "Submit", false);
         this.pushToast("Failed to verify document", "error");
       }

@@ -1,63 +1,53 @@
 <template>
   <div class="dashboard-view">
     <transition name="fade" mode="out-in">
-      <div class="alert-wrapper" v-if="getUserVerifications && !isDocVerified">
+      <div class="alert-wrapper" v-if="!isPhoneNumberVerified">
         <UpgradeAlertCard />
       </div>
     </transition>
 
-    <div class="welcome-row">
-      <!-- WELCOME MESSAGE -->
-      <div class="welcome-message h5-text grey-900">
-        Welcome
-        <span>{{ displayUserFirstname }}</span>
-      </div>
+    <!-- TITLE TOP BLOCK -->
+    <TitleTopBlock type="escrow" />
 
-      <!-- DISBURSE MONEY BUTTON -->
-      <router-link
-        :to="{ name: 'TransactionSetup' }"
-        class="btn btn-primary btn-md"
-        :class="show_escrow_btn ? 'tour-index' : null"
-        >Create Escrow</router-link
-      >
-    </div>
+    <!-- WALLET BALANCE SECTION -->
+    <WalletBlock />
 
-    <!-- METRICS SECTION -->
-    <div class="metrics-section mgb-40">
-      <!-- NAIRA DOLLAR SECTION -->
-      <NairaDollarMetricCard
-        :wallet_balance="naira_dollar_wallet"
-        :loading_wallet="loading_wallet"
-      />
-
-      <!-- ESCROW SECTION -->
-      <EscrowMetricCard
-        :escrow_balance="escrow_wallet"
-        :loading_wallet="loading_wallet"
-      />
-
-      <!-- DISBURSE MONEY BUTTON -->
-      <!-- <router-link :to="{ name: 'TransactionSetup' }" class="btn btn-primary btn-md">Create Escrow</router-link> -->
-    </div>
-
-    <!-- TRANSACTION SECTION -->
-    <template>
-      <div class="section-title mgb-18 h5-text grey-900">Transactions</div>
-
-      <!-- TRANSACTION TABLE DATA -->
-      <div class="disbursement-table-wrapper">
-        <TransactionTable />
-      </div>
+    <template v-if="isMoRSetupEnabled">
+      <MoRDashboard />
     </template>
 
-    <!-- TRANSACTION SECTION -->
-    <template>
-      <div class="section-title mgb-8 h5-text grey-900">Payments</div>
+    <template v-else>
+      <!-- ESCROW TRANSACTION SECTION -->
+      <template>
+        <div class="section-row mgb-20">
+          <div class="section-title h5-text grey-900">Escrow Transactions</div>
 
-      <!-- DASHBOARD TRANSACTIONS -->
-      <div class="wrapper pdb-30">
-        <DashboardTransactions />
-      </div>
+          <router-link to="/transactions" class="btn btn-secondary btn-sm"
+            >View all</router-link
+          >
+        </div>
+
+        <!-- TRANSACTION TABLE DATA -->
+        <div class="disbursement-table-wrapper">
+          <TransactionTable />
+        </div>
+      </template>
+
+      <!-- PAYMENT SECTION -->
+      <template>
+        <div class="section-row mgb-16">
+          <div class="section-title h5-text grey-900">Payments</div>
+
+          <!-- <router-link to="/payments" class="btn btn-secondary btn-sm"
+          >View all</router-link
+        > -->
+        </div>
+
+        <!-- DASHBOARD TRANSACTIONS -->
+        <div class="wrapper pdb-30">
+          <DashboardTransactions />
+        </div>
+      </template>
     </template>
 
     <!-- MODALS -->
@@ -120,9 +110,11 @@
 
 <script>
 import { mapActions, mapMutations, mapGetters } from "vuex";
+import TitleTopBlock from "@/shared/components/block-comps/title-top-block";
+import WalletBlock from "@/shared/components/block-comps/wallet-block";
 
 export default {
-  name: "Dashboard",
+  name: "DashboardPage",
 
   metaInfo: {
     title: "Dashboard",
@@ -130,13 +122,11 @@ export default {
   },
 
   components: {
-    NairaDollarMetricCard: () =>
+    TitleTopBlock,
+    WalletBlock,
+    MoRDashboard: () =>
       import(
-        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/card-comps/naira-dollar-metric-card"
-      ),
-    EscrowMetricCard: () =>
-      import(
-        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/card-comps/escrow-metric-card"
+        /* webpackChunkName: "MoR-module" */ "@/modules/merchant-of-records/modules/dashboard/components/mor-dashboard"
       ),
     TransactionTable: () =>
       import(
@@ -176,7 +166,7 @@ export default {
       ),
     tourCover: () =>
       import(
-        /* webpackChunkName: "shared-module" */ "@/shared/components/tour-cover"
+        /* webpackChunkName: "shared-module" */ "@/shared/components/util-comps/tour-cover"
       ),
   },
 
@@ -188,16 +178,16 @@ export default {
       hasUserSeenTour: "auth/hasUserSeenTour",
     }),
 
-    displayUserFirstname() {
-      return this.getUser?.fullname?.split(" ")[0] ?? this.getUser.email;
-    },
+    // isDocVerified() {
+    //   if (!this.getUserVerifications) return false;
+    //   const doc_verification = this.getUserVerifications.find(
+    //     (type) => type.verification_type === "cac"
+    //   );
+    //   return doc_verification ? doc_verification?.is_verified : false;
+    // },
 
-    isDocVerified() {
-      if (!this.getUserVerifications) return false;
-      const doc_verification = this.getUserVerifications.find(
-        (type) => type.verification_type === "cac"
-      );
-      return doc_verification ? doc_verification?.is_verified : false;
+    isPhoneNumberVerified() {
+      return this.getUser?.verifications?.phone ?? false;
     },
 
     isPhoneVerified() {
@@ -214,41 +204,37 @@ export default {
   },
 
   watch: {
-    getTourData: {
-      handler(value) {
-        if (!value.ongoing) {
-          // SCROLL TO TOP
-          window.scrollTo(0, 0);
-
-          if (this.getTourData.count === 0 && !this.getUser.has_seen_tour) {
-            if (window.innerWidth > 1024)
-              this.show_start_walkthrough_modal = true;
-            // else this.show_phone_entry = true;
-          } else if (this.getTourData.count === this.getTourData.total + 1)
-            this.show_end_walkthrough_modal = true;
-        }
-      },
-      immediate: true,
-      deep: true,
-    },
-
-    "getTourData.count": {
-      handler(value) {
-        this.show_walkthrough_card = false;
-        this.show_escrow_btn = false;
-
-        if (this.getTourData.ongoing) {
-          if (value > 0 && value < this.getTourData.total + 1) {
-            setTimeout(() => (this.show_walkthrough_card = true), 300);
-
-            if (value === 4) {
-              this.show_escrow_btn = true;
-            }
-          }
-        }
-      },
-      immediate: true,
-    },
+    // getTourData: {
+    //   handler(value) {
+    //     if (!value.ongoing) {
+    //       // SCROLL TO TOP
+    //       window.scrollTo(0, 0);
+    //       if (this.getTourData.count === 0 && !this.getUser.has_seen_tour) {
+    //         if (window.innerWidth > 1024)
+    //           this.show_start_walkthrough_modal = true;
+    //         // else this.show_phone_entry = true;
+    //       } else if (this.getTourData.count === this.getTourData.total + 1)
+    //         this.show_end_walkthrough_modal = true;
+    //     }
+    //   },
+    //   immediate: true,
+    //   deep: true,
+    // },
+    // "getTourData.count": {
+    //   handler(value) {
+    //     this.show_walkthrough_card = false;
+    //     this.show_escrow_btn = false;
+    //     if (this.getTourData.ongoing) {
+    //       if (value > 0 && value < this.getTourData.total + 1) {
+    //         setTimeout(() => (this.show_walkthrough_card = true), 300);
+    //         if (value === 4) {
+    //           this.show_escrow_btn = true;
+    //         }
+    //       }
+    //     }
+    //   },
+    //   immediate: true,
+    // },
   },
 
   data() {
@@ -261,7 +247,7 @@ export default {
       show_phone_entry: false,
       show_phone_otp_entry: false,
       show_success: false,
-      verify_phone_number: this.getUserPhone,
+      verify_phone_number: this.getUser?.phone,
 
       tour_data: [
         {
@@ -302,51 +288,11 @@ export default {
           position: "tour-eight-position",
         },
       ],
-
-      naira_dollar_wallet: [
-        {
-          title: "NGN",
-          value: "0.00",
-          sign: "naira",
-        },
-        {
-          title: "USD",
-          value: "0.00",
-          sign: "dollar",
-        },
-        {
-          title: "GBP",
-          value: "0.00",
-          sign: "pound",
-        },
-      ],
-
-      escrow_wallet: [
-        {
-          title: "DOLLAR",
-          value: "0.00",
-          sign: "dollar",
-        },
-        {
-          title: "NAIRA",
-          value: "0.00",
-          sign: "naira",
-        },
-        {
-          title: "POUND",
-          value: "0.00",
-          sign: "pound",
-        },
-      ],
-
-      loading_wallet: true,
     };
   },
 
   mounted() {
-    this.fetchUserWalletBalance();
-
-    if (!this.getUserVerifications) this.fetchVerifications();
+    // if (!this.getUserVerifications) this.fetchVerifications();
 
     // CLEAR OUT TRANSACTION STORE
     if (this.getTransactions?.name?.length) {
@@ -357,7 +303,6 @@ export default {
 
   methods: {
     ...mapActions({
-      getWalletBalance: "dashboard/getWalletBalance",
       clearAttachedFile: "general/clearAttachedFile",
       fetchUserVerifications: "settings/fetchUserVerifications",
       updateUserTourStatus: "auth/updateUserTourStatus",
@@ -447,54 +392,9 @@ export default {
       this.show_end_walkthrough_modal = !this.show_end_walkthrough_modal;
     },
 
-    async fetchVerifications() {
-      await this.fetchUserVerifications({ account_id: this.getAccountId });
-    },
-
-    // =============================================
-    // FETCH ALL WALLET BALANCE OF CURRENT USER
-    // =============================================
-    fetchUserWalletBalance() {
-      let request_payload = {
-        account_id: this.getAccountId,
-      };
-
-      this.getWalletBalance(request_payload)
-        .then((response) => {
-          if (response.code === 200) {
-            let { wallets } = response?.data;
-            // DOLLAR BALANCE
-            let dollar_balance = wallets.find(
-              (wallet) => wallet.currency == "USD"
-            );
-
-            // NAIRA BALANCE
-            let naira_balance = wallets.find(
-              (wallet) => wallet.currency == "NGN"
-            );
-
-            // ESCROW NAIRA BALANCE
-            let escrow_naira_balance = wallets.find(
-              (wallet) => wallet.currency == "ESCROW_NGN"
-            );
-
-            // ESCROW DOLLAR BALANCE
-            let escrow_dollar_balance = wallets.find(
-              (wallet) => wallet.currency == "ESCROW_USD"
-            );
-
-            this.naira_dollar_wallet[0].value = naira_balance.available;
-            this.naira_dollar_wallet[1].value = dollar_balance.available;
-            this.escrow_wallet[0].value = escrow_naira_balance.available;
-            this.escrow_wallet[1].value = escrow_dollar_balance.available;
-
-            this.loading_wallet = false;
-          } else {
-            this.loading_wallet = false;
-          }
-        })
-        .catch(() => (this.loading_wallet = false));
-    },
+    // async fetchVerifications() {
+    //   await this.fetchUserVerifications({ account_id: this.getAccountId });
+    // },
   },
 };
 </script>
@@ -509,17 +409,10 @@ export default {
     margin-bottom: toRem(24);
   }
 
-  .welcome-row {
-    @include flex-row-between-wrap;
-    align-items: center;
-    gap: toRem(24);
-    margin-bottom: toRem(24);
+  .section-row {
+    @include flex-row-nowrap("space-between", "center");
 
-    @include breakpoint-down(lg) {
-      margin-bottom: toRem(16);
-    }
-
-    .welcome-message {
+    .section-title {
       @include breakpoint-down(sm) {
         font-size: toRem(18.75);
       }
@@ -527,38 +420,6 @@ export default {
       @include breakpoint-down(xs) {
         font-size: toRem(18.5);
       }
-    }
-
-    .btn {
-      padding: toRem(10) toRem(19.5);
-      font-size: toRem(14.5);
-
-      @include breakpoint-custom-down(1220) {
-        @include get-btn-size("md");
-        margin-top: toRem(16);
-      }
-
-      @include breakpoint-down(sm) {
-        padding: toRem(8.5) toRem(19);
-        font-size: toRem(13.5);
-        margin-top: toRem(16);
-      }
-    }
-  }
-
-  .metrics-section {
-    @include flex-row-start-wrap;
-    align-items: stretch;
-    gap: toRem(32);
-  }
-
-  .section-title {
-    @include breakpoint-down(sm) {
-      font-size: toRem(18.75);
-    }
-
-    @include breakpoint-down(xs) {
-      font-size: toRem(18.5);
     }
   }
 

@@ -72,7 +72,11 @@
       </div>
 
       <div class="col-12 col-lg-10 col-xl-8 mgb-40">
-        <ContractUploadCard />
+        <ContractUploadCard
+          upload_type="escrow"
+          @fileUploaded="updateTransactionFile"
+          @clearTransactionFile="removeUploadedFile"
+        />
       </div>
     </template>
 
@@ -91,20 +95,14 @@
 
 <script>
 import { mapMutations, mapGetters } from "vuex";
-import BasicInput from "@/shared/components/form-comps/basic-input";
 
 export default {
   name: "TransactionSetup",
 
   components: {
-    BasicInput,
     FundDisburseTypeCard: () =>
       import(
         /* webpackChunkName: "transactions-module" */ "@/modules/transactions/components/card-comps/fund-disburse-type-card"
-      ),
-    ContractUploadCard: () =>
-      import(
-        /* webpackChunkName: "transactions-module" */ "@/modules/transactions/components/card-comps/contract-upload-card"
       ),
   },
 
@@ -112,7 +110,9 @@ export default {
     ...mapGetters({ getTransactionSetup: "transactions/getTransactionSetup" }),
 
     isDisabled() {
-      return Object.values(this.form).every((valid) => valid?.length)
+      return this.form.transaction_name &&
+        this.form.transaction_party &&
+        this.form.transaction_type
         ? false
         : true;
     },
@@ -188,6 +188,7 @@ export default {
         transaction_name: "",
         transaction_party: "",
         transaction_type: "",
+        transaction_files: [],
       },
 
       validity: {
@@ -202,6 +203,15 @@ export default {
     ...mapMutations({
       UPDATE_TRANSACTION_SETUP: "transactions/UPDATE_TRANSACTION_SETUP",
     }),
+
+    updateTransactionFile(file) {
+      this.form.transaction_files = file;
+    },
+
+    removeUploadedFile() {
+      this.form.transaction_files = [];
+      this.UPDATE_TRANSACTION_SETUP(this.form);
+    },
 
     nextProgressFlow() {
       this.UPDATE_TRANSACTION_SETUP(this.form);
@@ -245,8 +255,7 @@ export default {
 }
 
 .disbursement-type-selections {
-  @include flex-row-start-wrap;
-  align-items: flex-start;
+  @include flex-row-wrap("flex-start", "flex-start");
 
   .col-4 {
     margin-right: toRem(20);

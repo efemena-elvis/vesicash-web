@@ -18,7 +18,7 @@
         <div class="mgb-40">
           <SumTotalDisplayCard
             total_text="Total amount to pay"
-            :total_value="`${getCurrencySign} ${$money.addComma(
+            :total_value="`${getCurrencySign} ${$utils.formatCurrencyWithComma(
               getTransactionAmount.total_fee
             )}`"
           />
@@ -32,7 +32,9 @@
         ref="pay"
         class="btn btn-primary btn-md"
         @click="togglePaymentOptionModal"
-      >Make Payment</button>
+      >
+        Make Payment
+      </button>
     </div>
 
     <!-- MODALS -->
@@ -63,6 +65,8 @@
           @goBackWalletSelection="closeNairaPaymentOpenPayment"
           @walletFunded="closeFundDetailsAndOpenSuccess"
           :gateway="gateway"
+          :amount="getTransactionAmount.total_fee"
+          :currency="getTransactionAmount.currency.short"
         />
       </transition>
 
@@ -75,13 +79,6 @@
           :amount="getTransactionAmount || '0'"
         />
       </transition>
-
-      <!-- <transition name="fade" v-if="show_fw_biz_modal">
-        <FWBizModal
-          @closeTriggered="toggleFWBizModal"
-          @goBackPaymentSelection="closeFWBizOpenPayment"
-        />
-      </transition>-->
 
       <transition name="fade" v-if="show_failed_wallet_transfer">
         <FailedWalletTransferModal
@@ -108,7 +105,7 @@ import { mapGetters } from "vuex";
 import paymentHelper from "@/modules/transactions/mixins/payment-mixins";
 
 export default {
-  name: "TrasactionPayment",
+  name: "TransactionPayment",
 
   mixins: [paymentHelper],
 
@@ -129,6 +126,10 @@ export default {
       getTransactionSetup: "transactions/getTransactionSetup",
       getTransactionAmount: "transactions/getTransactionAmount",
     }),
+  },
+
+  mounted() {
+    console.log("----", this.getTransactionAmount);
   },
 };
 </script>

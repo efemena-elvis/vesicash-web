@@ -12,7 +12,9 @@
         </div>
 
         <div class="h4-text text-center mgb-8">Failed transaction</div>
-        <div class="tertiary-1-text text-center grey-900 mgb-40">{{message}}</div>
+        <div class="tertiary-1-text text-center grey-900 mgb-40">
+          {{ message }}
+        </div>
       </div>
     </template>
 
@@ -20,23 +22,26 @@
     <template slot="modal-cover-footer">
       <div class="modal-cover-footer">
         <router-link
-          :to="{name:'VesicashDashboard',query:{fund_wallet:true}}"
+          :to="{ name: 'VesicashDashboard', query: { fund_wallet: true } }"
           class="btn btn-md wt-100 mgb-24"
-          :class="swap?'btn-primary':'btn-secondary'"
-        >Fund your wallet</router-link>
+          :class="swap ? 'btn-primary' : 'btn-secondary'"
+          >Fund your wallet</router-link
+        >
 
         <button
           v-if="!swap"
           class="btn btn-primary btn-md wt-100"
           @click="$emit('goBackPaymentSelection')"
-        >Use other payment options</button>
+        >
+          Use other payment options
+        </button>
       </div>
     </template>
   </ModalCover>
 </template>
 
 <script>
-import ModalCover from "@/shared/components/modal-cover";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 import CrossIcon from "@/shared/components/icon-comps/cross-icon";
 
 export default {
@@ -76,7 +81,7 @@ export default {
 <style lang="scss" scoped>
 .cross-wrapper {
   @include draw-shape(120);
-  @include flex-column-center;
+  @include flex-column("center", "center");
   border-radius: 50%;
   background: getColor("red-50");
   margin: auto;

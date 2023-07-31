@@ -1,7 +1,7 @@
 <template>
   <div class="escrow-page">
     <!-- PAGE TITILE -->
-    <div class="page-title grey-900 h4-text mgb-25">Escrow Transactions</div>
+    <TitleTopBlock title="Escrow Transactions" type="escrow" />
 
     <!-- DISBURSEMENT TABLE DATA -->
     <div class="escrow-table-wrapper">
@@ -23,11 +23,13 @@
 
 <script>
 import { mapGetters } from "vuex";
+import TitleTopBlock from "@/shared/components/block-comps/title-top-block";
 
 export default {
   name: "EscrowTransactions",
 
   components: {
+    TitleTopBlock,
     TransactionTable: () =>
       import(
         /* webpackChunkName: "transactions-module" */ "@/modules/transactions/components/table-comps/transaction-table"
@@ -38,7 +40,7 @@ export default {
       ),
     tourCover: () =>
       import(
-        /* webpackChunkName: "shared-module" */ "@/shared/components/tour-cover"
+        /* webpackChunkName: "shared-module" */ "@/shared/components/util-comps/tour-cover"
       ),
   },
 

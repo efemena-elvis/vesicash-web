@@ -1,8 +1,15 @@
-import { getStorage } from "@/utilities/auth-utils";
-import { VESICASH_AUTH_TOKEN, VESICASH_AUTH_USER } from "@/utilities/constant";
+import { serviceStorage } from "@/shared/services";
+import { constants } from "@/utilities";
 
 export default () => ({
-    authToken: getStorage(VESICASH_AUTH_TOKEN) || "",
-    authUser: getStorage(VESICASH_AUTH_USER, 'object') || "",
+  authToken:
+    serviceStorage.getStorage({
+      storage_name: constants.VESICASH_AUTH_TOKEN,
+    }) || "",
+
+  authUser:
+    serviceStorage.getStorage({
+      storage_name: constants.VESICASH_AUTH_USER,
+      storage_type: "object",
+    }) || "",
 });
-  

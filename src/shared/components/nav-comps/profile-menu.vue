@@ -1,11 +1,16 @@
 <template>
-  <div class="profile-menu-wrapper" :class="show_profile_menu ? 'tour-index' : null">
+  <div
+    class="profile-menu-wrapper"
+    :class="show_profile_menu ? 'tour-index' : null"
+  >
     <div class="user-icon-wrapper">
       <UserIcon profileMenu />
     </div>
 
     <div>
-      <div class="grey-900 primary-2-text mgb-4">{{ getUser.fullname || getUser.email }}</div>
+      <div class="grey-900 primary-2-text mgb-4">
+        {{ getUser.fullname || getUser.email }}
+      </div>
       <div class="tertiary-3-text green-500">ID: {{ getAccountId }}</div>
     </div>
 
@@ -17,7 +22,10 @@
         v-if="show_menu"
         v-on-clickaway="toggleMenu"
       >
-        <div class="profile-menu-item border-bottom-grey-100" @click="copyMerchantID">
+        <div
+          class="profile-menu-item border-bottom-grey-100"
+          @click="copyMerchantID"
+        >
           <CopyIcon />
           <span class="tertiary-2-text grey-900" v-if="copied">ID Copied!</span>
           <span class="tertiary-2-text grey-900" v-else>Copy Account ID</span>
@@ -89,7 +97,7 @@ export default {
 <style lang="scss" scoped>
 .profile-menu-wrapper {
   position: relative;
-  @include flex-row-start-nowrap;
+  @include flex-row-nowrap("flex-start", "center");
   gap: 0 toRem(16);
   background: getColor("neutral-10");
   padding: toRem(8);
@@ -99,7 +107,7 @@ export default {
 
   .user-icon-wrapper {
     @include draw-shape(40);
-    @include flex-column-center;
+    @include flex-column("center", "center");
     border: toRem(0.715) solid getColor("teal-200");
     border-radius: toRem(8.57);
     background: getColor("teal-50");
@@ -131,7 +139,7 @@ export default {
       animation: panel-slide-up 0.4s ease-in-out;
 
       .profile-menu-item {
-        @include flex-row-start-nowrap;
+        @include flex-row-nowrap("flex-start", "center");
         background: getColor("neutral-10");
         padding: toRem(12) toRem(12);
         @include transition(0.3s);

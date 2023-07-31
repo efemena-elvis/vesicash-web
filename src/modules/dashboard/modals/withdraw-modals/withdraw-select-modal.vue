@@ -1,75 +1,22 @@
 <template>
-  <ModalCover
-    class="withdraw-select-modal"
-    @closeModal="$emit('closeTriggered')"
-    :modal_style="{ size: 'modal-sm' }"
-  >
-    <!-- MODAL COVER HEADER -->
-    <template slot="modal-cover-header">
-      <div class="modal-cover-header">
-        <div class="modal-cover-title">Select wallet to withdraw</div>
-
-        <div class="modal-cover-meta">
-          Please select the wallet you wish to withdraw
-        </div>
-      </div>
-    </template>
-
-    <!-- MODAL COVER BODY -->
-    <template slot="modal-cover-body">
-      <div class="modal-cover-body mgb--10 mgb-hack">
-        <!-- DOLLAR WITHDRAWAL -->
-        <div class="mgb-20" v-if="false">
-          <RadioSelectCard
-            card_name="wallet"
-            label_id="walletCard1"
-            :label_text="dollarBalanceText"
-            @clicked="updateWalletSelection('dollar')"
-            :is_checked="wallet_type === 'dollar'"
-          />
-        </div>
-
-        <!-- NAIRA WITHDRAWAL -->
-        <div>
-          <RadioSelectCard
-            card_name="wallet"
-            label_id="walletCard2"
-            :label_text="nairaBalanceText"
-            :tooltip_text="tool_tip"
-            @clicked="updateWalletSelection('naira')"
-            :is_checked="wallet_type === 'naira'"
-          />
-        </div>
-      </div>
-    </template>
-
-    <!-- MODAL COVER FOOTER -->
-    <template slot="modal-cover-footer">
-      <div class="modal-cover-footer">
-        <button
-          class="btn btn-primary btn-md wt-100"
-          @click="handleWalletSelection"
-          :disabled="!wallet_type"
-        >
-          Continue
-        </button>
-      </div>
-    </template>
-  </ModalCover>
+  <div class="mgb-30 mgb-hack">
+    <PayTypeCard
+      v-for="(data, index) in getWithdrawalOptions"
+      :key="index"
+      :payment="data"
+      @payTypeClicked="$emit('accountTypeSelected', data)"
+    />
+  </div>
 </template>
 
 <script>
-import { mapMutations, mapGetters } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
-
 export default {
   name: "WithdrawSelectModal",
 
   components: {
-    ModalCover,
-    RadioSelectCard: () =>
+    PayTypeCard: () =>
       import(
-        /* webpackChunkName: "shared-module" */ "@/shared/components/card-comps/radio-select-card"
+        /* webpackChunkName: 'modal-comps-module' */ "@/modules/dashboard/components/modal-comps/pay-type-card"
       ),
   },
 
@@ -81,48 +28,58 @@ export default {
   },
 
   computed: {
-    ...mapGetters({
-      getNairaBalance: "dashboard/getNairaBalance",
-      getDollarBalance: "dashboard/getDollarBalance",
-    }),
-
-    nairaBalanceText() {
-      return `Naira wallet (&#8358;${this.$money.addComma(
-        this.getNairaBalance
-      )})`;
+    isBusinessAccount() {
+      return this.getAccountType === "business" ? true : false;
     },
 
-    dollarBalanceText() {
-      return `Dollar wallet (&#36;${this.$money.addComma(
-        this.getDollarBalance
-      )})`;
+    getWithdrawalOptions() {
+      return this.isMoRSetupEnabled
+        ? this.withdraw_options
+        : this.withdraw_options.slice(1);
     },
   },
 
-  data: () => ({
-    wallet_type: "naira",
-    // tool_tip:
-    //   "Wallet Withdrawal Fees <br> ₦500 for ₦0 - ₦500,000 <br> ₦1,000 for #500,001 - ₦1,000,000  <br> ₦2,000 (capped) for ₦1,000,001 and above",
-    tool_tip: "<b>#50.00</b> will be charged for this withdrawal.",
-  }),
-
-  methods: {
-    ...mapMutations({ setWalletType: "dashboard/SET_WALLET_TYPE" }),
-
-    updateWalletSelection(type) {
-      this.wallet_type = type;
-      this.setWalletType(type);
-    },
-
-    handleWalletSelection() {
-      this.$emit("walletSelected");
-    },
+  data() {
+    return {
+      withdraw_options: [
+        {
+          id: 1,
+          icon: "MoneyIcon",
+          title: "MoR transfer request",
+          slug: "transfer_request",
+          description: "Initiate an assisted transfer from your MoR wallet(s)",
+        },
+        {
+          id: 2,
+          icon: "BusinessIcon",
+          title: "Settlement account",
+          slug: "settlement",
+          description: this.isBusinessAccount
+            ? "Transfer funds to your business accounts."
+            : "Transfer funds to your personal accounts.",
+        },
+        {
+          id: 2,
+          icon: "ArrowRightIcon",
+          title: "3rd party account",
+          slug: "third_party",
+          description: "Transfer funds to a 3rd party account.",
+        },
+        {
+          id: 4,
+          icon: "WalletIcon",
+          title: "Vesicash wallet",
+          slug: "wallet",
+          description: "Transfer funds to a Vesicash user wallet.",
+        },
+      ],
+    };
   },
 };
 </script>
 
-<style  lang="scss" scoped>
+<style lang="scss" scoped>
 .mgb-hack {
-  margin-bottom: toRem(-80) !important;
+  border: toRem(1) solid transparent;
 }
 </style>

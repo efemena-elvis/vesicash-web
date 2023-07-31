@@ -45,7 +45,7 @@ export default {
 
 <style lang="scss" scoped>
 .auth-page-success {
-  @include flex-column-center;
+  @include flex-column("center", "center");
 
   svg {
     @include draw-shape(120);

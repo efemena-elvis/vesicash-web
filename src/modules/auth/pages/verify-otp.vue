@@ -54,6 +54,7 @@
       <div class="btn-area mgt-35 mgb-10">
         <button
           class="btn btn-primary btn-md w-100"
+          ref="btnRef"
           :disabled="getOTPToken.length === 6 ? false : true"
           @click="handleUserOTPVerification"
         >
@@ -112,9 +113,12 @@ export default {
 
   methods: {
     ...mapActions({
-      sendUserOTP: "auth/sendUserOTP",
-      verifyUserOTP: "auth/verifyUserOTP",
+      // sendUserOTP: "auth/sendUserOTP",
+      // verifyUserOTP: "auth/verifyUserOTP",
+      sendEmailOTP: "settings/requestEmailOTP",
+      verifyEmailOTP: "settings/verifyEmailOTP",
     }),
+
     // ===============================
     // CLEAR OUT ALL OTP INPUTS
     // ===============================
@@ -146,67 +150,59 @@ export default {
     // ===================================
     // VERIFY USER ACCOUNT OTP ENTRY
     // ===================================
-    handleUserOTPVerification() {
+    async handleUserOTPVerification() {
+      this.togglePageLoader();
+
       let request_payload = {
         account_id: this.user_details?.account_id,
-        otp_token: this.getOTPToken,
+        code: +this.getOTPToken,
       };
 
-      this.verifyUserOTP(request_payload)
-        .then((response) => {
-          if (response.code === 200) {
-            this.togglePageLoader();
-            setTimeout(() => this.togglePageLoader(), 1500);
+      const response = await this.handleDataRequest({
+        action: "verifyEmailOTP",
+        payload: request_payload,
+        btn_text: "Verify OTP code",
+        alert_handler: {
+          success: "Email OTP was successfully verified.",
+          error: "You entered an invalid OTP token",
+          request_error: "Your OTP token has expired",
+        },
+      });
 
-            setTimeout(
-              () =>
-                this.pushToast(
-                  "OTP was verified successfully, Login to account now",
-                  "success"
-                ),
-              2000
-            );
+      this.togglePageLoader();
+      this.clearOutInput();
 
-            setTimeout(
-              () => this.$router.push({ name: "VesicashLogin" }),
-              4500
-            );
-          }
+      if (response?.code === 200) {
+        setTimeout(() => {
+          this.handleToastPushMx("Email OTP was successfully verified.");
+        }, 1000);
 
-          // HANDLE NON 200 RESPONSE
-          else {
-            this.pushToast("You entered an invalid OTP token", "error");
-            this.clearOutInput();
-          }
-        })
-        .catch(() => {
-          this.pushToast("Unable to verify OTP token", "error");
-          this.clearOutInput();
-        });
+        setTimeout(() => (location.href = "/dashboard"), 1500);
+      }
     },
 
     // ===================================
     // SEND OUT OTP VERIFICATION CODE
     // ===================================
-    sendOutOTPVerificationCode() {
-      let request_payload = { account_id: this.user_details?.account_id };
-
-      this.sendUserOTP(request_payload)
-        .then((response) => {
-          if (response.code === 200)
-            this.pushToast(
-              "An OTP code has been sent to your email",
-              "success"
-            );
-        })
-        .catch(() => this.pushToast("Unable to generate an OTP code", "error"));
+    async sendOutOTPVerificationCode() {
+      await this.handleDataRequest({
+        action: "sendEmailOTP",
+        payload: {
+          account_id: +this.user_details?.account_id,
+          email_address: this.user_details?.email_address,
+        },
+        alert_handler: {
+          success: "An OTP code has been sent to your email",
+          error: "Unable to generate an OTP code",
+        },
+      });
     },
 
     // ===================================
     // RESEND USER OTP CODE
     // ===================================
     resendOTPCode() {
-      this.triggerResetCountdown(30);
+      this.triggerResetCountdown(15);
       this.sendOutOTPVerificationCode();
     },
 
@@ -228,7 +224,7 @@ export default {
 <style lang="scss" scoped>
 .auth-page {
   .form-group {
-    @include flex-row-center-nowrap;
+    @include flex-row-nowrap("center", "center");
 
     .form-control {
       padding: toRem(8) toRem(10);

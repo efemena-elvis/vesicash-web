@@ -1,30 +1,10 @@
 <template>
   <div class="dashboard-view">
-    <div class="welcome-row">
-      <!-- WELCOME MESSAGE -->
-      <div class="welcome-message h5-text grey-900">
-        Welcome
-        <span>{{ displayUserFirstname }}</span>
-      </div>
-    </div>
+    <!-- TITLE TOP BLOCK -->
+    <TitleTopBlock title="Foreign Exchange" />
 
-    <!-- METRICS SECTION -->
-    <div class="metrics-section mgb-40">
-      <!-- NAIRA DOLLAR SECTION -->
-      <NairaDollarMetricCard
-        :wallet_balance="naira_dollar_wallet"
-        :loading_wallet="loading_wallet"
-        :show_actions="false"
-      />
-
-      <!-- DISBURSE MONEY BUTTON -->
-      <router-link
-        :to="{ name: 'VesicashEchangeSetup' }"
-        class="btn btn-primary btn-md"
-        :class="show_exchange_btn ? 'tour-index' : null"
-        >Exchange Money</router-link
-      >
-    </div>
+    <!-- WALLET BALANCE SECTION -->
+    <WalletBlock card_type="exchange" />
 
     <!-- TRANSACTION SECTION -->
     <template>
@@ -53,6 +33,8 @@
 
 <script>
 import { mapActions, mapMutations, mapGetters } from "vuex";
+import TitleTopBlock from "@/shared/components/block-comps/title-top-block";
+import WalletBlock from "@/shared/components/block-comps/wallet-block";
 
 export default {
   name: "ExchangeDashboard",
@@ -63,24 +45,19 @@ export default {
   },
 
   components: {
-    NairaDollarMetricCard: () =>
-      import(
-        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/card-comps/naira-dollar-metric-card"
-      ),
-
+    TitleTopBlock,
+    WalletBlock,
     ExchangeTable: () =>
       import(
         /* webpackChunkName: "exchange-module" */ "@/modules/exchange/components/table-comps/exchange-table"
       ),
-
     walkthroughModal: () =>
       import(
         /* webpackChunkName: "shared-module" */ "@/shared/modals/app-walkthrough/walkthrough-modal"
       ),
-
     tourCover: () =>
       import(
-        /* webpackChunkName: "shared-module" */ "@/shared/components/tour-cover"
+        /* webpackChunkName: "shared-module" */ "@/shared/components/util-comps/tour-cover"
       ),
   },
 
@@ -88,10 +65,6 @@ export default {
     ...mapGetters({
       getTourData: "general/getTourData",
     }),
-
-    displayUserFirstname() {
-      return this.getUser?.fullname?.split(" ")[0] ?? this.getUser.email;
-    },
 
     successActions() {
       return [
@@ -162,8 +135,6 @@ export default {
   },
 
   mounted() {
-    this.fetchUserWalletBalance();
-
     // CLEAR OUT TRANSAACTION STORE
     this.RESET_TRANSACTION();
     this.clearAttachedFile();
@@ -171,45 +142,11 @@ export default {
 
   methods: {
     ...mapActions({
-      getWalletBalance: "dashboard/getWalletBalance",
       clearAttachedFile: "general/clearAttachedFile",
     }),
     ...mapMutations({
       RESET_TRANSACTION: "transactions/RESET_TRANSACTION",
     }),
-
-    // =============================================
-    // FETCH ALL WALLET BALANCE OF CURRENT USER
-    // =============================================
-    fetchUserWalletBalance() {
-      let request_payload = {
-        account_id: this.getAccountId,
-      };
-
-      this.getWalletBalance(request_payload)
-        .then((response) => {
-          if (response.code === 200) {
-            let { wallets } = response?.data;
-            // DOLLAR BALANCE
-            let dollar_balance = wallets.find(
-              (wallet) => wallet.currency == "USD"
-            );
-
-            // NAIRA BALANCE
-            let naira_balance = wallets.find(
-              (wallet) => wallet.currency == "NGN"
-            );
-
-            this.naira_dollar_wallet[0].value = naira_balance.available;
-            this.naira_dollar_wallet[1].value = dollar_balance.available;
-
-            this.loading_wallet = false;
-          } else {
-            this.loading_wallet = false;
-          }
-        })
-        .catch(() => (this.loading_wallet = false));
-    },
   },
 };
 </script>
@@ -217,9 +154,8 @@ export default {
 <style lang="scss" scoped>
 .dashboard-view {
   .welcome-row {
-    @include flex-row-between-wrap;
+    @include flex-row-wrap("space-between", "center");
     gap: toRem(24);
-
     margin-bottom: toRem(24);
 
     @include breakpoint-down(lg) {
@@ -238,7 +174,7 @@ export default {
   }
 
   .metrics-section {
-    @include flex-row-start-wrap;
+    @include flex-row-wrap("flex-start", "center");
     gap: toRem(32);
 
     .btn {

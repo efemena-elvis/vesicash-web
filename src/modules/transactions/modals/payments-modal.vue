@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import ModalCover from "@/shared/components/modal-cover";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "MakePaymentModal",
@@ -52,7 +52,7 @@ export default {
   },
 
   computed: {
-    isBusiness() {
+    isBusinessAccount() {
       return this.getAccountType === "business" ? true : false;
     },
 
@@ -81,7 +81,7 @@ export default {
         wallet_description = "Make payment from your pound wallet";
       }
 
-      return this.isBusiness
+      return this.isBusinessAccount
         ? [
             {
               id: 1,
@@ -89,7 +89,6 @@ export default {
               title: card_title,
               description: card_description,
               action_type: "modal",
-              // action: "SuccessfulPayment",
               action: "toggleCardPayment",
             },
             {
@@ -177,6 +176,10 @@ export default {
     ],
   }),
 
+  mounted() {
+    console.log("...", this.paymentDetails);
+  },
+
   methods: {
     handleModalClick(action) {
       this[action]();
@@ -208,4 +211,3 @@ export default {
   },
 };
 </script>
-

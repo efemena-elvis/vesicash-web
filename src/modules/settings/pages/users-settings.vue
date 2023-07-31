@@ -121,7 +121,7 @@ export default {
 }
 
 .users-empty-state {
-  @include flex-column-center;
+  @include flex-column("center", "center");
   margin-top: toRem(37.5);
   padding-bottom: toRem(130);
 

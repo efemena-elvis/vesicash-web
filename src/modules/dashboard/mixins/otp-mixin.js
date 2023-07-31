@@ -64,7 +64,7 @@ const OTPMixin = {
       handler(value) {
         if (value.length === 1) {
           this.$nextTick(() => this.$refs.otpSix.blur());
-          this.handleUserOTPVerification();
+          // this.handleUserOTPVerification();
         }
       },
     },

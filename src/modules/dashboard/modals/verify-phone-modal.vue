@@ -51,20 +51,13 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import BasicInput from "@/shared/components/form-comps/basic-input";
-import ModalCover from "@/shared/components/modal-cover";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "verifyPhoneModal",
 
   components: {
     ModalCover,
-    BasicInput,
-  },
-
-  computed: {
-    ...mapGetters({}),
   },
 
   data: () => ({
@@ -92,7 +85,7 @@ export default {
 
 .modal-cover-body {
   min-height: toRem(35);
-  @include flex-row-center-wrap;
+  @include flex-row-wrap("center", "center");
 
   p {
     @include generate-font-type("tertiary-2");

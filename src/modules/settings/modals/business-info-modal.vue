@@ -8,7 +8,9 @@
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
         <div class="modal-cover-title">Business information</div>
-        <div class="tertiary-2-text grey-600">Tell us more about your business</div>
+        <div class="tertiary-2-text grey-600">
+          Tell us more about your business
+        </div>
       </div>
     </template>
 
@@ -24,10 +26,10 @@
             placeholder="Enter your business name"
             @getInputState="updateFormState($event, 'business_name')"
             :error_handler="{
-            type: 'minimum',
-            message: 'Business name should be at least four characters long',
-            minimum:4
-          }"
+              type: 'minimum',
+              message: 'Business name should be at least four characters long',
+              minimum: 4,
+            }"
           />
         </div>
 
@@ -52,10 +54,11 @@
             placeholder="Enter business address"
             @getInputState="updateFormState($event, 'business_address')"
             :error_handler="{
-            type: 'minimum',
-            message: 'Business address should be at least four characters long',
-            minimum:4
-          }"
+              type: 'minimum',
+              message:
+                'Business address should be at least four characters long',
+              minimum: 4,
+            }"
           />
         </div>
 
@@ -68,10 +71,10 @@
             placeholder="Enter website address"
             @getInputState="updateFormState($event, 'business_website')"
             :error_handler="{
-            type: 'minimum',
-            message: 'Enter your business website',
-            minimum:4
-          }"
+              type: 'minimum',
+              message: 'Enter your business website',
+              minimum: 4,
+            }"
           />
         </div>
 
@@ -84,9 +87,9 @@
             placeholder="Enter email address"
             @getInputState="updateFormState($event, 'business_email')"
             :error_handler="{
-            type: 'email',
-            message: 'Enter a valid email'
-          }"
+              type: 'email',
+              message: 'Enter a valid email',
+            }"
           />
         </div>
       </div>
@@ -95,7 +98,13 @@
     <!-- MODAL COVER FOOTER -->
     <template slot="modal-cover-footer">
       <div class="modal-cover-footer">
-        <button ref="save" class="btn btn-primary btn-md wt-100 mgt-5" @click="save">Submit</button>
+        <button
+          ref="save"
+          class="btn btn-primary btn-md wt-100 mgt-5"
+          @click="save"
+        >
+          Submit
+        </button>
       </div>
     </template>
   </ModalCover>
@@ -103,15 +112,13 @@
 
 <script>
 import { mapActions, mapMutations } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
-import BasicInput from "@/shared/components/form-comps/basic-input";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "BusinessInfoModal",
 
   components: {
     ModalCover,
-    BasicInput,
   },
 
   mounted() {
@@ -202,7 +209,7 @@ export default {
         );
         this.handleClick("save", "Submit", false);
 
-        if (response.code === 200) {
+        if (response?.code === 200) {
           this.$emit(
             "saved",
             "Your Business information has been updated successfully"

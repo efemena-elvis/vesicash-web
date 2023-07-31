@@ -72,18 +72,6 @@ const settingsRoutes = [
               requiresAuth: true,
             },
           },
-
-          {
-            path: "/settings/api",
-            name: "APISettings",
-            component: () =>
-              import(
-                /* webpackChunkName: "settings-module" */ "@/modules/settings/pages/api-settings"
-              ),
-            meta: {
-              requiresAuth: true,
-            },
-          },
         ],
       },
     ],

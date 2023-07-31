@@ -7,28 +7,36 @@ Vue.use(VueRouter);
 // =======================================================
 // IMPORTED ROUTES FROM RESPECTIVE APPLICATION MODULES
 // =======================================================
-// import landingRoutes from "@/modules/landing";
 import authRoutes from "@/modules/auth";
 import dashboardRoutes from "@/modules/dashboard";
 import exchangeRoutes from "@/modules/exchange";
 import transactionsRoutes from "@/modules/transactions";
+import developerRoute from "@/modules/developer";
 import paymentsRoutes from "@/modules/payments";
 import settingsRoutes from "@/modules/settings";
-import morRoutes from "@/modules/mor";
+
+// MERCHANTS OF RECORDS ROUTES
+import {
+  merchantConfigRoutes,
+  merchantDeveloperRoutes,
+  merchantTransactionRoutes,
+} from "@/modules/merchant-of-records";
 
 // =======================================================
 // SETTING UP A ROUTES ARRAY TO HOLD ALL ROUTE MODULES
 // INCLUDING A FALLBACK ERROR (404) PAGE
 // =======================================================
 const routes = [
-  // ...landingRoutes,
   ...authRoutes,
   ...dashboardRoutes,
   ...transactionsRoutes,
   ...exchangeRoutes,
   ...paymentsRoutes,
+  ...developerRoute,
   ...settingsRoutes,
-  ...morRoutes,
+  ...merchantConfigRoutes,
+  ...merchantDeveloperRoutes,
+  ...merchantTransactionRoutes,
   {
     path: "/*",
     name: "NotFoundError",
@@ -39,7 +47,6 @@ const routes = [
       ),
     meta: {
       guest: true,
-      access: ["all"],
     },
   },
 ];

@@ -2,7 +2,7 @@
   <AuthWrapper title_text>
     <!-- AUTH PAGE -->
     <div class="auth-page auth-page-success">
-      <WarningIcon v-if="$route.query.currency === 'NGN'" />
+      <WarningIcon v-if="funding_type === 'transfer'" />
       <SuccessIcon backgroundColor="#043B56" v-else />
 
       <!-- TITLE TEXT -->
@@ -11,9 +11,10 @@
       </div>
 
       <!-- DESCRIPTION TEXT -->
-      <div class="description-text tertiary-2-text grey-600 text-center">
-        {{ getDescription }}
-      </div>
+      <div
+        class="description-text tertiary-2-text grey-600 text-center"
+        v-html="getDescription"
+      ></div>
 
       <!-- BUTTON AREA -->
       <div class="btn-area mgt-30 mgb-10 wt-100">
@@ -49,30 +50,54 @@ export default {
 
   computed: {
     getTitle() {
-      return this.$route.query.currency === "NGN"
+      return this.funding_type === "transfer"
         ? "Confirming your payment"
         : "Payment confirmed";
     },
 
+    getFormattedAmount() {
+      const currency_sign = this.$utils.formatCurrency({
+        input: this.currency,
+        output: "sign",
+      });
+
+      const amount = this.$utils.formatCurrencyWithComma(this.amount);
+
+      return `${currency_sign}${amount}`;
+    },
+
     getDescription() {
-      return this.$route.query.currency === "NGN"
-        ? `Please wait while we confirm the payment that you have made, if your payment is sucessful, it will reflect on your dashboard`
-        : `Your dollar wallet funding was completed successfully`;
+      return this.funding_type === "transfer"
+        ? `Please wait while we confirm your payment of <span class=fw-bold>${this.getFormattedAmount}</span>, if your payment is sucessful, it will reflect on your dashboard`
+        : `Your card funding of <span class=fw-bold>${this.getFormattedAmount}</span> has been confirmed, your funds should reflect on your wallet soon`;
     },
   },
 
+  data() {
+    return {
+      funding_type: "",
+      amount: "",
+      currency: "",
+    };
+  },
+
+  mounted() {
+    this.getRouteData();
+  },
+
   methods: {
+    getRouteData() {
+      const { type, amount, currency } = this.$route.query;
+      this.funding_type = type;
+      this.amount = amount;
+      this.currency = currency;
+    },
+
     // ===============================
     // HANDLE DASHBOARD REDIRECT
     // ===============================
     handleGoToDashboard() {
-      // CHECK IF ROUTE HAS A CURRENCY TYPE OF NGN AND VERIFY
-      if (this.$route?.query?.currency === "NGN") {
-        this.$router.push("/dashboard");
-      }
-
-      // MOVE TO DASHBOARD
-      else this.$router.push("/dashboard");
+      this.$router.push("/dashboard");
     },
   },
 };
@@ -80,7 +105,7 @@ export default {
 
 <style lang="scss" scoped>
 .auth-page-success {
-  @include flex-column-center;
+  @include flex-column("center", "center");
 
   svg {
     @include draw-shape(120);

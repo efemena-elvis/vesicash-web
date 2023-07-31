@@ -9,7 +9,8 @@
       <div class="modal-cover-header">
         <div class="modal-cover-title">Other documents</div>
         <div class="tertiary-2-text grey-600">
-          Choose any document type you wish to upload
+          Choose any document type you wish to upload. Upload multiple documents
+          to access more account features.
         </div>
       </div>
     </template>
@@ -24,7 +25,7 @@
           <DropSelectInput
             placeholder="Choose verificatiom file"
             :options="verification_docs"
-            @optionSelected="document = $event"
+            @optionSelected="updateSelectedDocument"
           />
         </div>
 
@@ -43,34 +44,11 @@
           />
         </div>
 
-        <DocUploadCard
-          @uploaded="uploaded_doc = $event"
-          titleText="Select document(s) to upload"
-          docID="verification_documents"
-          @upload="handleAlert"
+        <ContractUploadCard
+          titleText="Select document to upload"
+          @fileUploaded="uploaded_doc = $event"
+          @clearTransactionFile="uploaded_doc = null"
         />
-
-        <template v-if="false">
-          <div class="form-group mgt-24">
-            <div class="form-label">How many directors do you have?</div>
-
-            <!-- SELECT INPUT FIELD -->
-            <DropSelectInput
-              placeholder="Select number of directors"
-              :options="directorsRange"
-              @optionSelected="director_count = Number($event.id)"
-            />
-          </div>
-
-          <DocUploadCard
-            titleText="Select document(s) to upload"
-            :fileCount="director_count"
-            controlCount
-            docID="director_documents"
-            :isDisabled="director_count < 1"
-            @upload="handleAlert"
-          />
-        </template>
       </div>
     </template>
 
@@ -92,24 +70,13 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-
-import ModalCover from "@/shared/components/modal-cover";
-import DocUploadCard from "@/shared/components/form-comps/doc-upload-card";
-import DropSelectInput from "@/shared/components/drop-select-input";
-import BasicInput from "@/shared/components/form-comps/basic-input";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "VerificationDocModal",
 
   components: {
     ModalCover,
-    DropSelectInput,
-    BasicInput,
-    DocUploadCard,
-  },
-
-  mounted() {
-    this.clearAttachedFile();
   },
 
   computed: {
@@ -118,61 +85,39 @@ export default {
       getAllFilesData: "general/getAllFilesData",
     }),
 
-    directorsRange() {
-      return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => ({ name: i, id: i }));
-    },
-
     isBusiness() {
       return this.getAccountType === "business" ? true : false;
     },
 
-    getVerificationDoc() {
-      const file_data = this.getAllFilesData.find(
-        (doc) => doc.id === "verification_documents"
-      );
-      return file_data === undefined ? null : file_data;
-    },
-
-    VerificationDocExist() {
-      return this.getVerificationDoc?.files?.length ? true : false;
-    },
-
-    getDirectorDoc() {
-      const file_data = this.getAllFilesData.find(
-        (doc) => doc.id === "director_documents"
-      );
-      return file_data === undefined ? null : file_data;
-    },
-
-    directorDocExist() {
-      return this.getDirectorDoc?.files?.length ? true : false;
-    },
-
     isDisabled() {
-      // if (this.isBusiness)
-      //   !this.form.doc_number ||
-      //     !this.document ||
-      //     !this.VerificationDocExist ||
-      //     !this.directorDocExist;
-
-      return (
-        !this.form.doc_number || !this.document || !this.VerificationDocExist
-      );
+      return this.form.type && this.form.doc_number && this.form.file_url
+        ? false
+        : true;
     },
 
     verfiyDocPayload() {
       return {
-        account_id: this.getAccountId,
-        type: this.document?.id,
+        type: this.form.type,
         id: this.form.doc_number,
-        meta: this.getVerificationDoc?.files[0]?.url,
+        meta: this.form.file_url,
       };
+    },
+  },
+
+  watch: {
+    uploaded_doc: {
+      handler(value) {
+        if (Array.isArray(value)) {
+          this.form.file_url = value[0].file_url;
+        } else {
+          this.form.file_url = value.file_url;
+        }
+      },
     },
   },
 
   data() {
     return {
-      director_count: 0,
       verification_docs: [
         {
           name: "Passport",
@@ -186,17 +131,14 @@ export default {
           name: "National ID",
           id: "national_id",
         },
-        // {
-        //   name: "Utility Bill",
-        //   id: "utilitybill",
-        // },
       ],
 
-      document: null,
       uploaded_doc: null,
 
       form: {
+        type: "",
         doc_number: "",
+        file_url: "",
       },
 
       validity: {
@@ -205,16 +147,18 @@ export default {
     };
   },
 
+  mounted() {
+    this.clearAttachedFile();
+  },
+
   methods: {
     ...mapActions({
       clearAttachedFile: "general/clearAttachedFile",
       verfiyUserDocument: "settings/verfiyUserDocument",
     }),
 
-    handleAlert(message) {
-      if (this.director_count < 1)
-        this.pushToast("Select number of directors", "error");
-      if (message) this.pushToast(message, "error");
+    updateSelectedDocument(document) {
+      this.form.type = document.id;
     },
 
     async save() {
@@ -225,14 +169,15 @@ export default {
 
         this.handleClick("save", "Submit", false);
 
-        if (response.code === 200) {
+        if (response?.code === 200) {
           this.pushToast(response.message, "success");
           this.$emit("saved", "Your document has been uploaded successfully");
+
+          setTimeout(() => this.$emit("closeTriggered"), 3000);
         } else {
           this.pushToast(response.message, "error");
         }
       } catch (err) {
-        console.log("ERROR SAVING DOCUMENT", err);
         this.handleClick("save", "Submit", false);
         this.pushToast("Failed to verify document", "error");
       }

@@ -9,8 +9,13 @@ import auth from "@/modules/auth/store";
 import dashboard from "@/modules/dashboard/store";
 import transactions from "@/modules/transactions/store";
 import settings from "@/modules/settings/store";
-import fx from "@/modules/exchange/store";
-import mor from "@/modules/mor/store";
+import exchange from "@/modules/exchange/store";
+import developer from "@/modules/developer/store";
+
+// MERCHANT OF RECORD STORE
+import merchant from "@/modules/merchant-of-records/modules/config/store";
+import merchantDashboard from "@/modules/merchant-of-records/modules/dashboard/store";
+import merchantTransactions from "@/modules/merchant-of-records/modules/transactions/store";
 
 Vue.use(Vuex);
 
@@ -21,7 +26,10 @@ export default new Vuex.Store({
     dashboard,
     transactions,
     settings,
-    fx,
-    mor,
+    exchange,
+    developer,
+    merchant,
+    merchantDashboard,
+    merchantTransactions,
   },
 });

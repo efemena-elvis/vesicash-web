@@ -1,7 +1,9 @@
 export default {
   getWallet: (state) => state.wallet,
 
-  getWalletType:(state) => state.wallet.type,
+  getWalletType: (state) => state.wallet.type,
+
+  getWalletBalances: (state) => state.wallet.balances,
 
   getNairaBalance: (state) => {
     const naira_balance = state.wallet.balances.find(
@@ -17,19 +19,6 @@ export default {
     return dollar_balance ? dollar_balance?.available : "0.00";
   },
 
-  getNairaEscrowBalance: (state) => {
-    const naira_escrow_balance = state.wallet.balances.find(
-      (balance) => balance.currency === "ESCROW_NGN"
-    );
-    return naira_escrow_balance ? naira_escrow_balance?.available : "0.00";
-  },
-
-  getDollarEscrowBalance: (state) => {
-    const dollar_escrow_balance = state.wallet.balances.find(
-      (balance) => balance.currency === "ESCROW_USD"
-    );
-    return dollar_escrow_balance ? dollar_escrow_balance?.available : "0.00";
-  },
-
-  getWithdrawalMeta:(state)=> state.withdrawal_meta
+  getWithdrawalMeta: (state) => state.withdrawal_meta,
+  getWithdrawalRequest: (state) => state.withdrawal_request ?? {},
 };

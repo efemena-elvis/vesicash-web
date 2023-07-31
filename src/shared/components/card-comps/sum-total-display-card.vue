@@ -4,7 +4,9 @@
     :class="use_custom_style && 'custom-text-style'"
   >
     <!-- TOTAL TEXT VALUE -->
-    <div class="title grey-600 tertiary-1-text">{{ total_text }}</div>
+    <div class="title grey-600 tertiary-1-text text-capitalize">
+      {{ total_text }}
+    </div>
 
     <!-- TOTAL AMOUNT VALUE -->
     <div class="value grey-900 primary-1-text" v-html="total_value"></div>
@@ -37,7 +39,7 @@ export default {
 <style lang="scss" scoped>
 .sum-total-card {
   border: toRem(1) dashed getColor("green-500");
-  @include flex-row-between-nowrap;
+  @include flex-row-nowrap("space-between", "center");
   padding: toRem(14) toRem(16);
 
   @include breakpoint-down(sm) {

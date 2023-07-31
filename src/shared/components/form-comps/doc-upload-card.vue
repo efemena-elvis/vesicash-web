@@ -85,7 +85,7 @@
         ref="fileUpload"
         @change="handleFileUpload"
         class="position-absolute invisible"
-        accept=".doc, .docx, .pdf"
+        accept=".jpg, .jpeg, .png, .pdf"
         :multiple="fileCount > 1"
         :disabled="isDisabled"
       />
@@ -146,14 +146,13 @@ export default {
     },
   },
 
-  data() {
-    return {};
-  },
+  data: () => ({
+    acceptable_filetypes: ["doc", "docx", "pdf"],
+  }),
 
   methods: {
     ...mapActions({
-      uploadFile: "general/uploadFile",
-      uploadToCloud: "general/uploadToCloud",
+      uploadToSpace: "general/uploadToSpace",
       clearAttachedFile: "general/clearAllAttachedFiles",
     }),
 
@@ -165,6 +164,13 @@ export default {
         : [...$event.target.files];
 
       this.$refs.fileUpload.value = ""; // CLEAR OUT FILE CACHE
+
+      uploaded_files.map((file) => {
+        if (!this.processFileType(file.name)) {
+          this.pushToast("Upload a file of type doc or pdf", "error");
+          return false;
+        }
+      });
 
       if (uploaded_files.length < this.fileCount && this.controlCount) {
         this.$emit("upload", `Upload at least ${this.fileCount} files`);
@@ -183,11 +189,16 @@ export default {
         id: this.docID,
       };
 
-      this.uploadToCloud(payload)
+      this.uploadToSpace(payload)
         .then((response) => {
-          if (response.code) this.$emit("uploaded", response.data);
+          if (response?.code) this.$emit("uploaded", response.data);
         })
         .catch((err) => console.log(err));
+    },
+
+    processFileType(name) {
+      let file_type = name.split(".").at(-1);
+      return this.acceptable_filetypes.includes(file_type) ? true : false;
     },
 
     processFileSize(size) {
@@ -223,7 +234,7 @@ export default {
 
   .no-content-state {
     padding: toRem(17) toRem(16);
-    @include flex-column-center;
+    @include flex-column("center", "center");
 
     &:hover {
       background: getColor("grey-10");
@@ -269,11 +280,11 @@ export default {
   }
 
   .content-state {
-    @include flex-row-between-nowrap;
+    @include flex-row-nowrap("space-between", "center");
     padding: toRem(17) toRem(16);
 
     .left-section {
-      @include flex-row-start-nowrap;
+      @include flex-row-nowrap("flex-start", "center");
 
       .icon-card {
         position: relative;

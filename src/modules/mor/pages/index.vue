@@ -97,12 +97,12 @@ export default {
 }
 
 .empty-state {
-  @include flex-column-center;
+  @include flex-column("center", "center");
   padding-top: toRem(80);
 
   .icon-wrapper {
     @include draw-shape(100);
-    @include flex-column-center;
+    @include flex-column("center", "center");
     border-radius: 50%;
     background: getColor("teal-50");
   }

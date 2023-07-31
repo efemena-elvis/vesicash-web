@@ -1,7 +1,9 @@
 <template>
-  <div class="contract-upload-card rounded-12 border-grey-100 smooth-transition">
+  <div
+    class="contract-upload-card rounded-12 border-grey-100 smooth-transition"
+  >
     <!-- CONTENT STATE -->
-    <template name="content-state" v-if="getFileName">
+    <template v-if="getFileName">
       <div class="content-state wt-100">
         <!-- LEFT SECTION -->
         <div class="left-section wt-100">
@@ -17,7 +19,8 @@
               <span
                 class="tertiary-2-text green-500"
                 v-if="getFileData.uploading"
-              >({{ getFileData.progress }}%)</span>
+                >({{ getFileData.progress }}%)</span
+              >
             </div>
 
             <!-- FILE PROGRESS -->
@@ -32,7 +35,9 @@
 
             <!-- FILE SIZE -->
             <template v-else>
-              <div class="file-size tertiary-2-text grey-600">{{ getFileData.size }}</div>
+              <div class="file-size tertiary-2-text grey-600">
+                {{ getFileData.size }}
+              </div>
             </template>
           </div>
         </div>
@@ -49,7 +54,7 @@
     </template>
 
     <!-- NO CONTENT STATE -->
-    <template name="no-content-state" v-else>
+    <template v-else>
       <label class="no-content-state pointer" for="fileUpload">
         <!-- ICON HOLDER -->
         <div class="icon-holder mgb-8">
@@ -57,12 +62,14 @@
         </div>
 
         <!-- TITLE TEXT -->
-        <div class="title-text grey-900 primary-1-text text-center mgb-4">{{ titleText }}</div>
+        <div class="title-text grey-900 primary-1-text text-center mgb-4">
+          {{ titleText }}
+        </div>
 
         <!-- DESCRIPTION TEXT -->
-        <div
-          class="description-text tertiary-2-text grey-600 text-center"
-        >You can upload a doc or a PDF file</div>
+        <div class="description-text tertiary-2-text grey-600 text-center">
+          {{ descriptionText }}
+        </div>
       </label>
 
       <!-- FILE INPUT FIELD -->
@@ -72,14 +79,14 @@
         ref="fileUpload"
         @change="handleFileUpload"
         class="position-absolute invisible"
-        accept=".doc, .docx, .pdf"
+        accept=".doc, .docx, .pdf, .jpeg, .jpg"
       />
     </template>
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import FileIcon from "@/shared/components/icon-comps/file-icon";
 
 export default {
@@ -94,6 +101,16 @@ export default {
       type: String,
       default: "Click to upload agreement file",
     },
+
+    descriptionText: {
+      type: String,
+      default: "You can upload a doc, jpg or a PDF file",
+    },
+
+    upload_type: {
+      type: String,
+      default: null,
+    },
   },
 
   computed: {
@@ -104,20 +121,25 @@ export default {
     },
   },
 
-  data: () => ({}),
+  data: () => ({
+    acceptable_filetypes: ["doc", "docx", "pdf", "jpeg", "jpg"],
+  }),
 
   methods: {
     ...mapActions({
-      uploadFile: "general/uploadFile",
       uploadToSpace: "general/uploadToSpace",
       clearAttachedFile: "general/clearAttachedFile",
     }),
 
-    ...mapMutations({ UPDATE_FILE_PROGRESS: "general/UPDATE_FILE_PROGRESS" }),
-
     handleFileUpload($event) {
+      $event.preventDefault();
       let uploaded_file = [...$event.target.files][0];
       this.$refs.fileUpload.value = ""; // CLEAR OUT FILE CACHE
+
+      if (!this.processFileType(uploaded_file.name)) {
+        this.pushToast("Upload an agreement file of type doc or pdf", "error");
+        return false;
+      }
 
       if (!this.processFileSize(uploaded_file.size)) {
         this.pushToast("Upload a maximum file size of 1mb", "error");
@@ -127,11 +149,17 @@ export default {
       this.uploadToSpace({
         file: uploaded_file,
         formatted_size: this.processFileSize(uploaded_file.size),
+        type: this.upload_type,
       })
         .then((response) => {
-          if (response.code) this.$emit("uploaded", response.data);
+          if (response?.code === 201) this.$emit("fileUploaded", response.data);
         })
         .catch((err) => console.log(err));
+    },
+
+    processFileType(name) {
+      let file_type = name.split(".").at(-1);
+      return this.acceptable_filetypes.includes(file_type) ? true : false;
     },
 
     processFileSize(size) {
@@ -144,6 +172,7 @@ export default {
 
     removeAttachedFile() {
       this.clearAttachedFile();
+      this.$emit("clearTransactionFile");
     },
   },
 };
@@ -155,7 +184,7 @@ export default {
 
   .no-content-state {
     padding: toRem(17) toRem(16);
-    @include flex-column-center;
+    @include flex-column("center", "center");
 
     &:hover {
       background: getColor("grey-10");
@@ -201,11 +230,11 @@ export default {
   }
 
   .content-state {
-    @include flex-row-between-nowrap;
+    @include flex-row-nowrap("space-between", "center");
     padding: toRem(17) toRem(16);
 
     .left-section {
-      @include flex-row-start-nowrap;
+      @include flex-row-nowrap("flex-start", "center");
 
       .icon-card {
         position: relative;

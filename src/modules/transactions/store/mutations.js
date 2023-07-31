@@ -9,6 +9,7 @@ export default {
     state.transaction.name = payload.transaction_name;
     state.transaction.type = payload.transaction_type;
     state.transaction.parties = payload.transaction_party;
+    state.transaction.files = payload?.transaction_files ?? [];
   },
 
   UPDATE_TRANSACTION_ATTACHMENT: (state, payload) => {
@@ -57,7 +58,7 @@ export default {
 
       state.transaction.milestone_recipients.map((user) => {
         if (user.milestone_id === milestone.id)
-          amount.push(Number(user.amount));
+          amount.push(Number(user?.amount ?? 0));
       });
 
       // REDUCE AMOUNT

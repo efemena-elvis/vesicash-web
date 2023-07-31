@@ -8,7 +8,9 @@
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
         <div class="modal-cover-title">Update dollar account</div>
-        <div class="tertiary-2-text grey-600 wt-75">Update your dollar account</div>
+        <div class="tertiary-2-text grey-600 wt-75">
+          Update your dollar account
+        </div>
       </div>
     </template>
 
@@ -37,10 +39,10 @@
             placeholder="Enter account first name"
             @getInputState="updateFormState($event, 'account_first_name')"
             :error_handler="{
-            type: 'minimum',
-            message: 'Name should be at least two characters long',
-            minimum:2
-          }"
+              type: 'minimum',
+              message: 'Name should be at least two characters long',
+              minimum: 2,
+            }"
           />
 
           <BasicInput
@@ -52,10 +54,10 @@
             placeholder="Enter account last name"
             @getInputState="updateFormState($event, 'account_last_name')"
             :error_handler="{
-            type: 'minimum',
-            message: 'Name should be at least two characters long',
-            minimum:2
-          }"
+              type: 'minimum',
+              message: 'Name should be at least two characters long',
+              minimum: 2,
+            }"
           />
         </div>
 
@@ -78,9 +80,9 @@
             placeholder="Enter bank name"
             @getInputState="updateFormState($event, 'account_bank_name')"
             :error_handler="{
-            type: 'required',
-            message: 'Bank name is required'
-          }"
+              type: 'required',
+              message: 'Bank name is required',
+            }"
           />
         </div>
 
@@ -93,9 +95,9 @@
             placeholder="Enter Iban/Account number"
             @getInputState="updateFormState($event, 'account_number')"
             :error_handler="{
-            type: 'required',
-            message: 'Enter Iban/Account number'
-          }"
+              type: 'required',
+              message: 'Enter Iban/Account number',
+            }"
           />
         </div>
 
@@ -109,9 +111,9 @@
             placeholder="Enter account swift code"
             @getInputState="updateFormState($event, 'account_swift_code')"
             :error_handler="{
-            type: 'required',
-            message: 'Enter account swift code'
-          }"
+              type: 'required',
+              message: 'Enter account swift code',
+            }"
           />
 
           <BasicInput
@@ -123,9 +125,9 @@
             placeholder="Enter account routing/sort code"
             @getInputState="updateFormState($event, 'account_sort_code')"
             :error_handler="{
-            type: 'required',
-            message: 'Enter account sort code'
-          }"
+              type: 'required',
+              message: 'Enter account sort code',
+            }"
           />
         </div>
 
@@ -138,9 +140,9 @@
             placeholder="Enter bank address"
             @getInputState="updateFormState($event, 'account_bank_address')"
             :error_handler="{
-            type: 'required',
-            message: 'Enter bank address'
-          }"
+              type: 'required',
+              message: 'Enter bank address',
+            }"
           />
         </div>
       </div>
@@ -154,7 +156,9 @@
           class="btn btn-primary btn-md wt-100"
           :disabled="isDisabled"
           @click="updateNewDollarAccount"
-        >Update account</button>
+        >
+          Update account
+        </button>
       </div>
     </template>
   </ModalCover>
@@ -162,9 +166,7 @@
 
 <script>
 import { mapActions } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
-import BasicInput from "@/shared/components/form-comps/basic-input";
-import DropSelectInput from "@/shared/components/drop-select-input";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "UpdateDollarAccountModal",
@@ -178,8 +180,6 @@ export default {
 
   components: {
     ModalCover,
-    BasicInput,
-    DropSelectInput,
   },
 
   computed: {
@@ -196,7 +196,7 @@ export default {
         account_id: this.getAccountId,
         updates: {
           account_name: `${this.form.account_last_name} ${this.form.account_first_name}`,
-          account_no: this.form.account_number,
+          account_no: "" + this.form.account_number,
           swift_code: this.form.account_swift_code,
           sort_code: this.form.account_sort_code,
           bank_address: this.form.account_bank_address,
@@ -294,7 +294,7 @@ export default {
       try {
         const response = await this.addNewBank(this.getNewDollarAccountDetails);
 
-        if (response.code === 200) {
+        if ([200, 201].includes(response.code)) {
           this.handleClick("save", "Updating bank list...");
           await this.fetchAllBanks(this.getAccountId);
           this.handleClick("save", "Update account", false);
@@ -321,11 +321,11 @@ export default {
 
 <style lang="scss" scoped>
 .inline-group {
-  @include flex-row-start-nowrap;
+  @include flex-row-nowrap("flex-start", "center");
   gap: toRem(16);
 
   @include breakpoint-custom-down(776) {
-    @include flex-row-start-wrap;
+    @include flex-row-wrap("flex-start", "center");
   }
 }
 </style>
@@ -338,4 +338,3 @@ export default {
   }
 }
 </style>
-

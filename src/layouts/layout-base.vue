@@ -49,7 +49,7 @@ export default {
   },
 
   mounted() {
-    this.$color.setPageBackgroundColor("#ffffff");
+    this.$utils.setPageBackgroundColor("#ffffff");
   },
 
   methods: {
@@ -63,8 +63,7 @@ export default {
 
 <style lang="scss" scoped>
 .layout-base {
-  @include flex-row-between-nowrap;
-  align-items: flex-start;
+  @include flex-row-nowrap("space-between", "flex-start");
 
   .sidebar-build {
     width: 19%;

@@ -2,7 +2,6 @@
 // A SIMPLE APPLICATION LEVEL MIXIN TO HANDLE
 // BUTTON CLICKS AND PUSH ALERTS MESSAGES
 // ==================================================
-
 const MixinEvents = {
   methods: {
     handleClick(ref, text = "Please wait...", processing = true) {
@@ -42,7 +41,7 @@ const MixinEvents = {
       this.$bus.$emit("hide-page-loader");
     },
 
-    // ===========================================
+    // ============================================
     // UPDATE USER INPUT FORM AND VALIDITY STATE
     // ===========================================
     updateFormState(data, type) {
@@ -52,4 +51,4 @@ const MixinEvents = {
   },
 };
 
-export { MixinEvents };
+export default MixinEvents;

@@ -10,16 +10,20 @@
     <div class="left-section">
       <!-- ICON CARD -->
       <div class="icon-card position-relative rounded-circle teal-50-bg">
-        <component :is="payment.icon" />
+        <component :is="payment.icon" fill />
       </div>
 
       <!-- CARD INFO -->
       <div class="card-info">
         <!-- CARD TITLE -->
-        <div class="card-title primary-1-text grey-900 mgb-4">{{ payment.title }}</div>
+        <div class="card-title primary-1-text grey-900 mgb-4">
+          {{ payment.title }}
+        </div>
 
         <!-- CARD DESCRIPTION -->
-        <div class="card-description tertiary-2-text grey-600">{{ payment.description }}</div>
+        <div class="card-description tertiary-2-text grey-600">
+          {{ payment.description }}
+        </div>
       </div>
 
       <!-- v-if="payment.id===3" -->
@@ -49,6 +53,7 @@
 import CreditCardIcon from "@/shared/components/icon-comps/credit-card-icon";
 import ArrowRightIcon from "@/shared/components/icon-comps/arrow-right-icon";
 import BusinessIcon from "@/shared/components/icon-comps/business-icon";
+import MoneyIcon from "@/shared/components/icon-comps/money-icon";
 import EmptyWalletIcon from "@/shared/components/icon-comps/empty-wallet-icon";
 
 export default {
@@ -58,6 +63,7 @@ export default {
     CreditCardIcon,
     ArrowRightIcon,
     BusinessIcon,
+    MoneyIcon,
     WalletIcon: EmptyWalletIcon,
   },
 
@@ -68,9 +74,8 @@ export default {
         id: 1,
         icon: "CreditCardIcon",
         title: "Pay with card",
-        description:
-          "Lorem ipsum, dolor sit amet consectetur adipisicing elit consectetur.",
-        action_type: "route",
+        description: "",
+        action_type: "",
         action: "",
       }),
     },
@@ -88,7 +93,7 @@ export default {
 
 <style lang="scss" scoped>
 .pay-type-card {
-  @include flex-row-between-nowrap;
+  @include flex-row-nowrap("space-between", "center");
   padding: toRem(14) toRem(16);
   margin-bottom: toRem(24);
   position: relative;
@@ -98,13 +103,11 @@ export default {
   }
 
   &:hover {
-    background: rgba(getColor("grey-10"), 0.85);
-    transform: scale(1.02);
+    background: rgba(getColor("grey-10"), 0.95);
   }
 
   .left-section {
-    @include flex-row-start-nowrap;
-    align-items: flex-start;
+    @include flex-row-nowrap("flex-start", "flex-start");
 
     .icon-card {
       @include draw-shape(48);

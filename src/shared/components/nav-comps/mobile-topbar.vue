@@ -41,7 +41,7 @@ export default {
   display: none;
 
   @include breakpoint-down(lg) {
-    @include flex-row-start-nowrap;
+    @include flex-row-nowrap("flex-start", "center");
     padding: toRem(16) toRem(24);
   }
 

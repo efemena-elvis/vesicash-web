@@ -32,7 +32,7 @@
           <Pagination
             :pagination="pagination"
             v-if="show_paging && pagination.last_page > 1"
-            @goToPage="$emit('goToPage',$event)"
+            @goToPage="$emit('goToPage', $event)"
           />
         </div>
       </template>
@@ -64,7 +64,7 @@ export default {
       ),
     Pagination: () =>
       import(
-        /* webpackChunkname:"shared-table-module" */ "@/shared/components/pagination"
+        /* webpackChunkname:"shared-table-module" */ "@/shared/components/util-comps/pagination"
       ),
   },
 

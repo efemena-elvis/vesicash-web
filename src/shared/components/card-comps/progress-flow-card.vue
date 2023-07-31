@@ -84,9 +84,9 @@ export default {
       );
 
       this.page_flows.map((flow) => {
-        if (flow.id < this.page_flows[active_flow_index].id)
+        if (flow?.id < this.page_flows[active_flow_index]?.id)
           flow.state = "previous";
-        else if (flow.id > this.page_flows[active_flow_index].id)
+        else if (flow?.id > this.page_flows[active_flow_index]?.id)
           flow.state = "next";
         else flow.state = "current";
       });
@@ -97,13 +97,12 @@ export default {
 
 <style lang="scss" scoped>
 .progress-flow {
-  @include flex-row-start-nowrap;
-  align-items: flex-start;
+  @include flex-row-nowrap("flex-start", "flex-start");
   padding: toRem(8) toRem(16);
   width: max-content;
 
   .item-flow {
-    @include flex-row-start-nowrap;
+    @include flex-row-nowrap("flex-start", "center");
     margin-right: toRem(16);
 
     &:last-of-type {

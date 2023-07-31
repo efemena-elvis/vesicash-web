@@ -27,7 +27,9 @@
           class="btn btn-primary btn-md mx-auto"
           ref="end"
           @click="upateTourStatus"
-        >Get started</button>
+        >
+          Get started
+        </button>
       </div>
     </template>
   </ModalCover>
@@ -35,7 +37,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
   name: "endWalkthroughModal",
@@ -65,7 +67,7 @@ export default {
 
       this.handleClick("end", "Get started", false);
 
-      if (response.code === 200) this.$emit("endTour");
+      if (response?.code === 200) this.$emit("endTour");
     },
   },
 };
@@ -78,7 +80,7 @@ export default {
 
 .modal-cover-body {
   min-height: toRem(35);
-  @include flex-row-center-wrap;
+  @include flex-row-wrap("center", "center");
 
   p {
     @include generate-font-type("tertiary-1");

@@ -7,14 +7,14 @@
     <form @submit.prevent="handleUserForgotPassword" class="auth-page">
       <!-- EMAIL ADDRESS INPUT -->
       <div class="form-group">
-        <BasicInput
+        <FormFieldInput
           label_title="Email address"
           label_id="emailAddress"
           input_type="email"
           is_required
           placeholder="Enter email address"
-          :input_value="form.email_address"
-          @getInputState="updateFormState($event, 'email_address')"
+          :input_value="getFormFieldValueMx(form, 'email_address')"
+          @getInputState="updateFormFieldMx($event, 'email_address')"
           :error_handler="{
             type: 'email',
             message: 'Email address is not valid',
@@ -26,8 +26,8 @@
       <div class="btn-area mgt-30 mgb-10">
         <button
           class="btn btn-primary btn-md w-100"
-          ref="forgotPasswordBtn"
-          :disabled="isValidState"
+          ref="btnRef"
+          :disabled="isFormValidated"
         >
           Continue
         </button>
@@ -39,7 +39,6 @@
 <script>
 import { mapActions } from "vuex";
 import AuthWrapper from "@/modules/auth/components/auth-wrapper";
-import BasicInput from "@/shared/components/form-comps/basic-input";
 
 export default {
   name: "ForgotPassword",
@@ -51,26 +50,25 @@ export default {
 
   components: {
     AuthWrapper,
-    BasicInput,
   },
 
   computed: {
-    // CHECK FORM BUTTON VALIDITY STATE
-    isValidState() {
-      return Object.values(this.validity).every((valid) => !valid)
-        ? false
-        : true;
+    isFormValidated() {
+      return this.validateFormFieldMx(this.form);
+    },
+
+    getRequestPayload() {
+      return this.getFormPayloadMx(this.form);
     },
   },
 
   data() {
     return {
       form: {
-        email_address: "",
-      },
-
-      validity: {
-        email_address: true,
+        email_address: {
+          validated: false,
+          value: "",
+        },
       },
     };
   },
@@ -81,41 +79,24 @@ export default {
     // =========================================
     // HANDLE USER CLIENT FORGOT PASSWORD BTN
     // =========================================
-    handleUserForgotPassword() {
-      this.handleClick("forgotPasswordBtn");
+    async handleUserForgotPassword() {
+      const response = await this.handleDataRequest({
+        action: "requestUserPassword",
+        payload: this.getRequestPayload,
+        btn_text: "Continue",
+        alert_handler: {
+          success: "Password reset link has been sent to your email",
+          error: "Email address provided, is not valid",
+          request_error: "Provided email address is not registered.",
+        },
+      });
 
-      this.requestUserPassword(this.form)
-        .then((response) => {
-          console.log(response);
-          if (response.code === 200) {
-            this.handleResponse(
-              "A password reset link has been sent to your email",
-              "success"
-            );
-
-            // RESET EMAIL FIELD
-            this.form.email_address = "";
-            setTimeout(() => this.$router.push("/login"), 2500);
-          }
-
-          // HANDLE NON 200 RESPONSE
-          else this.handleResponse("Email address provided, is not valid");
-        })
-        .catch(() =>
-          this.handleResponse("Unable to reset password at this time")
-        );
-    },
-
-    // ============================
-    // HANDLE USER ERROR STATE
-    // ============================
-    handleResponse(message, state = "error") {
-      this.pushToast(message, state);
-      this.handleClick("forgotPasswordBtn", "Continue", false);
+      if (response?.code === 200) {
+        setTimeout(() => this.$router.push("/login"), 2000);
+      }
     },
   },
 };
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

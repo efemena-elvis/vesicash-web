@@ -15,10 +15,14 @@
     <template slot="modal-cover-body">
       <div class="modal-cover-body">
         <ModalListItem title="Transaction name" :value="summary.name" />
-        <ModalListItem title="Initial currency" :value="summary.initial_currency" />
-        <ModalListItem title="Final currency" :value="summary.final_currency" />
+        <ModalListItem title="Initial amount" :value="summary.initial_amount" />
+        <ModalListItem title="Final amount" :value="summary.final_amount" />
         <ModalListItem title="Exchange rate" :value="summary.rate" />
-        <ModalListItem v-if="summary.date" title="Exchange rate" :value="summary.date" />
+        <ModalListItem
+          v-if="summary.date"
+          title="Exchange date"
+          :value="summary.date"
+        />
       </div>
     </template>
 
@@ -30,21 +34,25 @@
           class="btn btn-primary btn-md wt-100"
           ref="swap"
           @click="$emit('close')"
-        >Back to exchange</button>
+        >
+          Back to exchange
+        </button>
 
         <button
           v-else
           class="btn btn-primary btn-md wt-100"
           ref="swap"
           @click="$emit('swap')"
-        >Swap currency</button>
+        >
+          Swap currency
+        </button>
       </div>
     </template>
   </ModalCover>
 </template>
 
 <script>
-import ModalCover from "@/shared/components/modal-cover";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 import ModalListItem from "@/modules/dashboard/components/modal-comps/modal-list-item";
 export default {
   name: "ExchangeSummaryModal",
@@ -73,5 +81,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

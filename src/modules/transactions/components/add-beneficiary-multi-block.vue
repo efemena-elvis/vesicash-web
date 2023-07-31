@@ -6,13 +6,13 @@
         <!-- USER EMAIL ADDRESS -->
         <BasicInput
           input_type="email"
-          :input_value="form.email_address"
           is_required
           placeholder="Enter email address"
           :custom_style="{
             group_wrapper_style: 'input-field',
           }"
-          @getInputState="updateFormState($event, 'email_address')"
+          :input_value="getFormFieldValueMx(form, 'email_address')"
+          @getInputState="updateFormFieldMx($event, 'email_address')"
           :error_handler="{
             type: 'email',
             message: 'Email address is not valid',
@@ -22,7 +22,6 @@
         <!-- USER PHONE NUMBER -->
         <BasicInput
           input_type="number"
-          :input_value="form.phone_number"
           is_phone_type
           is_required
           placeholder="Enter phone number"
@@ -31,7 +30,8 @@
               'input-field input-field-phone position-relative',
             input_wrapper_style: 'form-prefix',
           }"
-          @getInputState="updateFormState($event, 'phone_number')"
+          :input_value="getFormFieldValueMx(form, 'phone_number')"
+          @getInputState="updateFormFieldMx($event, 'phone_number')"
           :error_handler="{
             type: 'phone',
             message: 'Phone number is not valid',
@@ -64,7 +64,8 @@
 
       <button
         class="btn btn-primary btn-md"
-        :disabled="isValidState"
+        ref="btnRef"
+        :disabled="isFormValidated"
         @click="handleAddUser"
       >
         Add User
@@ -80,49 +81,47 @@ import {
   USER_ACCESS_OPTIONS,
   USER_PAYOUT_OPTIONS,
 } from "@/modules/transactions/constants";
-import BasicInput from "@/shared/components/form-comps/basic-input";
-import DropSelectInput from "@/shared/components/drop-select-input";
-
 export default {
   name: "AddBeneficiaryMultiBlock",
 
-  components: {
-    BasicInput,
-    DropSelectInput,
-  },
+  components: {},
 
   computed: {
     ...mapGetters({
       getTransactionBeneficiaries: "transactions/getTransactionBeneficiaries",
     }),
 
-    // CHECK FORM BUTTON VALIDITY STATE
-    isValidState() {
-      return Object.values(this.validity).every((valid) => !valid) &&
-        Object.values(this.form.user_role).length &&
-        Object.values(this.form.user_access).length
-        ? false
-        : true;
+    isFormValidated() {
+      return this.validateFormFieldMx(this.form);
     },
   },
 
   data: () => ({
     form: {
-      email_address: "",
-      phone_number: "",
-      country: "",
-      user_role: "",
-      user_access: "",
+      email_address: {
+        validated: false,
+        value: "",
+      },
+      phone_number: {
+        validated: false,
+        value: "",
+      },
+      country: {
+        validated: true,
+        value: "",
+      },
+      user_role: {
+        validated: false,
+        value: "",
+      },
+      user_access: {
+        validated: false,
+        value: "",
+      },
     },
 
     pre_select_role: null,
     pre_select_access: null,
-
-    validity: {
-      email_address: true,
-      phone_number: true,
-      country: false,
-    },
 
     user_multiple_role_options: MULTIPLE_ROLE_OPTIONS,
     user_access_options: USER_ACCESS_OPTIONS,
@@ -131,7 +130,7 @@ export default {
   created() {
     this.$bus.$on(
       "update-country-state",
-      (value) => (this.form.country = value)
+      (value) => (this.form.country.value = value)
     );
   },
 
@@ -146,13 +145,15 @@ export default {
     // ====================================
     selectUserOption(type, selected_id) {
       if (type === "role") {
-        this.form.user_role = this.user_multiple_role_options.find(
+        this.form.user_role.value = this.user_multiple_role_options.find(
           (user) => user.id === selected_id
         );
+        this.form.user_role.validated = true;
       } else if (type === "access") {
-        this.form.user_access = this.user_access_options.find(
+        this.form.user_access.value = this.user_access_options.find(
           (user) => user.id === selected_id
         );
+        this.form.user_access.validated = true;
       }
     },
 
@@ -161,8 +162,8 @@ export default {
     // ====================================================
     checkPartyState() {
       // BUYER CHECKS
-      if (this.form.user_role?.name === "Buyer") {
-        if (this.form.user_access?.name === "Mark as done") {
+      if (this.form.user_role?.value?.name === "Buyer") {
+        if (this.form.user_access?.value?.name === "Mark as done") {
           this.pushToast(
             "A buyer cannot be assigned a 'Mark as done' access",
             "error"
@@ -172,8 +173,8 @@ export default {
       }
 
       // SELLER CHECKS
-      else if (this.form.user_role?.name === "Seller") {
-        if (this.form.user_access.name === "Approve") {
+      else if (this.form.user_role?.value?.name === "Seller") {
+        if (this.form.user_access?.value?.name === "Approve") {
           this.pushToast(
             "A seller cannot be assigned an 'Approval' access",
             "error"
@@ -191,15 +192,15 @@ export default {
 
       let user_data = {};
 
-      user_data.id = this.$string.getRandomString(12);
+      user_data.id = this.$utils.getRandomString(12);
       user_data.account_id = "";
-      user_data.email_address = this.form.email_address;
-      user_data.phone_number = this.form.phone_number;
-      user_data.country = this.form.country;
-      user_data.role = this.form.user_role;
-      user_data.access = this.form.user_access;
+      user_data.email_address = this.form.email_address.value;
+      user_data.phone_number = this.form.phone_number.value;
+      user_data.country = this.form.country.value;
+      user_data.role = this.form.user_role.value;
+      user_data.access = this.form.user_access.value;
       user_data.recipient = USER_PAYOUT_OPTIONS[1];
-      user_data.amount = 0;
+      user_data.amount = "";
       user_data.status = "Created";
 
       this.UPDATE_TRANSACTION_BENEFICIARIES([
@@ -215,13 +216,15 @@ export default {
     // CLEAR OUT ALL NEW USER INPUT
     // ===============================
     clearOutInput() {
-      this.form.phone_number = "";
-      this.form.email_address = "";
-      this.form.user_role = "";
-      this.form.user_access = "";
+      this.form.phone_number.value = "";
+      this.form.email_address.value = "";
+      this.form.user_role.value = "";
+      this.form.user_access.value = "";
 
-      this.validity.phone_number = true;
-      this.validity.email_address = true;
+      this.form.phone_number.validated = false;
+      this.form.email_address.validated = false;
+      this.form.user_role.validated = false;
+      this.form.user_access.validated = false;
 
       this.pre_select_role = {};
       this.pre_select_access = {};
@@ -239,12 +242,10 @@ export default {
   }
 
   .input-rows {
-    @include flex-row-between-wrap;
-    align-items: flex-start;
+    @include flex-row-wrap("space-between", "flex-start");
 
     .input-block {
-      @include flex-row-between-wrap;
-      align-items: flex-start;
+      @include flex-row-wrap("space-between", "flex-start");
       width: 48%;
 
       @include breakpoint-down(xl) {
@@ -271,8 +272,7 @@ export default {
     }
 
     .select-block {
-      @include flex-row-between-wrap;
-      align-items: flex-start;
+      @include flex-row-wrap("space-between", "flex-start");
       width: 38%;
 
       @include breakpoint-down(xl) {

@@ -6,8 +6,13 @@
     </template>
 
     <template v-else>
-      <div class="item tertiary-2-text grey-600 text-capitalize">{{ title }}</div>
-      <div class="value secondary-2-text grey-900 text-wrap" v-html="value"></div>
+      <div class="item tertiary-2-text grey-600 text-capitalize">
+        {{ title }}
+      </div>
+      <div
+        class="value secondary-2-text grey-900 text-wrap"
+        v-html="value"
+      ></div>
     </template>
   </div>
 </template>
@@ -36,7 +41,7 @@ export default {
 .modal-list-item {
   border-bottom: toRem(0.5) solid rgba(getColor("grey-100"), 0.8);
   border-top: toRem(0.5) solid rgba(getColor("grey-100"), 0.8);
-  @include flex-row-between-nowrap;
+  @include flex-row-nowrap("space-between", "center");
   padding: toRem(14) toRem(4);
 
   &:first-of-type {

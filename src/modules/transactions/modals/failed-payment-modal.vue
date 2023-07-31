@@ -10,7 +10,8 @@
         <div class="h4-text text-center mgb-8">Failed transaction</div>
         <div class="tertiary-1-text text-center grey-900 mgb-40">
           Your transaction of
-          <b>{{$route.query.fee}}</b> could not be confirmed, please confirm again.
+          <b>{{ $route.query.fee }}</b> could not be confirmed, please confirm
+          again.
         </div>
       </div>
     </template>
@@ -22,9 +23,13 @@
           class="btn btn-secondary btn-md wt-100 mgb-24"
           ref="confirm"
           @click="confirmPayment"
-        >Confirm again</button>
+        >
+          Confirm again
+        </button>
 
-        <router-link class="btn btn-primary btn-md wt-100" to="/dashboard">Go to dashboard</router-link>
+        <router-link class="btn btn-primary btn-md wt-100" to="/dashboard"
+          >Go to dashboard</router-link
+        >
       </div>
     </template>
   </ModalCover>
@@ -32,7 +37,7 @@
 
 <script>
 import { mapActions } from "vuex";
-import ModalCover from "@/shared/components/modal-cover";
+import ModalCover from "@/shared/components/util-comps/modal-cover";
 import CrossIcon from "@/shared/components/icon-comps/cross-icon";
 
 export default {
@@ -68,7 +73,7 @@ export default {
 
         this.handleClick("confirm", "Confirm again", false);
 
-        if (response.code === 200) this.$emit("confirmed");
+        if (response?.code === 200) this.$emit("confirmed");
         else {
           this.pushToast(response.message || "Payment failed", "error");
         }
@@ -89,7 +94,7 @@ export default {
 <style lang="scss" scoped>
 .cross-wrapper {
   @include draw-shape(120);
-  @include flex-column-center;
+  @include flex-column("center", "center");
   border-radius: 50%;
   background: getColor("red-50");
   margin: auto;
