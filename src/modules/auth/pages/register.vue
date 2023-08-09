@@ -282,6 +282,16 @@ export default {
           error: "Unable to create your account at this time",
         },
       });
+
+      const status = [200, 201].includes(response?.code);
+      const data = status ? response?.data : this.getRequestPayload;
+
+      window?.fbq("track", "CompleteRegistration", {
+        customer_name: `${data?.lastname} ${data?.firstname}`,
+        customer_email: data.email_address,
+        status,
+      });
+
       if (response.code === 201) {
         this.user_details = response.data;
         this.handleOTPInitiation(); // SEND USER OTP
