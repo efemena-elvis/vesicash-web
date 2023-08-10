@@ -23,7 +23,8 @@
         title="Business information"
         subtitle="Provide information about your business."
         cta_title="Update business information"
-        :verified="false"
+        :verified="isBusinessVerified"
+        :check_verification_state="true"
         @action="toggleBusinessInfoModal"
       >
         <BusinessIcon />
@@ -43,10 +44,22 @@
       </verification-card>
 
       <verification-card
+        v-if="isBusiness"
+        title="Tax identification number"
+        subtitle="Validate your business tax identification."
+        cta_title="Verify TIN"
+        :verified="isTinVerified.is_verified"
+        :verification_state="isTinVerified.verification_state"
+        :check_verification_state="true"
+        @action="toggleTinVerificationModal"
+      >
+        <FileIcon active />
+      </verification-card>
+
+      <verification-card
         title="Other documents"
         subtitle="Choose and upload a document for verification."
         cta_title="Verify document"
-        :verified="isDocVerified"
         :verified_docs="getOtherDocuments"
         @action="toggleDocUploadModal"
       >
@@ -59,7 +72,7 @@
           title="Directors information"
           subtitle="Confirm current number of directors and identification details."
           cta_title="Verify directors"
-          :verified="isDocVerified"
+          :verified="false"
           :check_verification_state="true"
           @action="toggleDirectorVerifyModal"
         >
@@ -113,53 +126,42 @@
 
       <transition name="fade" v-if="show_business_info_modal">
         <BusinessInfoModal
-          @saved="
-            showSuccessModal(
-              'show_business_info_modal',
-              'business_info_verified',
-              $event
-            )
-          "
+          @saved="showSuccessModal('show_business_info_modal', $event)"
           @closeTriggered="toggleBusinessInfoModal"
         />
       </transition>
 
       <transition name="fade" v-if="show_doc_upload_modal">
         <VerificationDocumentModal
-          @saved="
-            showSuccessModal(
-              'show_doc_upload_modal',
-              'document_verified',
-              $event
-            )
-          "
+          @saved="showSuccessModal('show_doc_upload_modal', $event)"
           @closeTriggered="toggleDocUploadModal"
         />
       </transition>
 
       <transition name="fade" v-if="show_director_verify_modal">
         <DirectorVerificationModal
-          @saved="showSuccessModal('show_doc_upload_modal', '_', $event)"
+          @saved="showSuccessModal('show_doc_upload_modal', $event)"
           @closeTriggered="toggleDirectorVerifyModal"
         />
       </transition>
 
       <transition name="fade" v-if="show_cac_registration_modal">
         <CoporationVerificationModal
-          @saved="
-            showSuccessModal(
-              'show_doc_upload_modal',
-              'document_verified',
-              $event
-            )
-          "
+          @saved="showSuccessModal('show_cac_registration_modal', $event)"
           @closeTriggered="toggleCACRegistrationModal"
+        />
+      </transition>
+
+      <transition name="fade" v-if="show_tin_verification_modal">
+        <TinVerificationModal
+          @saved="showSuccessModal('show_tin_verification_modal', $event)"
+          @closeTriggered="toggleTinVerificationModal"
         />
       </transition>
 
       <transition name="fade" v-if="show_bvn_modal">
         <VerificationBvnModal
-          @saved="showSuccessModal('show_bvn_modal', 'bvn_verified', $event)"
+          @saved="showSuccessModal('show_bvn_modal', $event)"
           @closeTriggered="toggleBvnModal"
         />
       </transition>
@@ -184,6 +186,7 @@ import BusinessInfoModal from "@/modules/settings/modals/business-info-modal";
 import VerificationDocumentModal from "@/modules/settings/modals/verification-document-modal";
 import DirectorVerificationModal from "@/modules/settings/modals/director-verification-modal";
 import CoporationVerificationModal from "@/modules/settings/modals/coporation-verification-modal";
+import TinVerificationModal from "@/modules/settings/modals/tin-verification-modal";
 import VerificationBvnModal from "@/modules/settings/modals/verification-bvn-modal";
 import SuccessModal from "@/shared/modals/success-modal";
 
@@ -198,6 +201,7 @@ export default {
     DirectorVerificationModal,
     VerificationDocumentModal,
     CoporationVerificationModal,
+    TinVerificationModal,
     VerificationBvnModal,
     SuccessModal,
 
@@ -232,6 +236,12 @@ export default {
       return this.getAccountType === "business" ? true : false;
     },
 
+    isBusinessVerified() {
+      return this.getUser.business_name && this.getUser.business_address
+        ? true
+        : false;
+    },
+
     isPhoneVerified() {
       if (!this.user_verifications) return false;
       const phone_verification = this.user_verifications.find(
@@ -246,14 +256,6 @@ export default {
         (type) => type.verification_type === "bvn"
       );
       return bvn_verification ? bvn_verification?.is_verified : false;
-    },
-
-    isDocVerified() {
-      if (!this.user_verifications) return false;
-      const doc_verification = this.user_verifications.find(
-        (type) => type.verification_type === "cac"
-      );
-      return doc_verification ? doc_verification?.is_verified : false;
     },
 
     hasSettlementAccount() {
@@ -274,6 +276,24 @@ export default {
       } else
         return {
           is_verified: cac_verification?.is_verified,
+          verification_state: "not_uploaded",
+        };
+    },
+
+    isTinVerified() {
+      if (!this.user_verifications) return false;
+      const tin_verification = this.user_verifications.find(
+        (type) => type.verification_type === "tin"
+      );
+
+      if (tin_verification) {
+        return {
+          is_verified: tin_verification?.is_verified,
+          verification_state: this.getVerificationState(tin_verification),
+        };
+      } else
+        return {
+          is_verified: tin_verification?.is_verified,
           verification_state: "not_uploaded",
         };
     },
@@ -317,6 +337,7 @@ export default {
       show_doc_upload_modal: false,
       show_director_verify_modal: false,
       show_cac_registration_modal: false,
+      show_tin_verification_modal: false,
       show_bvn_modal: false,
       show_business_info_modal: false,
 
@@ -341,7 +362,7 @@ export default {
       ],
 
       base_timestamp: "0001-01-01T00:00:00Z",
-      other_documents: ["passport", "drivers_license", "national_id"],
+      other_documents: ["passport", "drivers_license", "nin"],
     };
   },
 
@@ -428,10 +449,13 @@ export default {
       this.show_cac_registration_modal = !this.show_cac_registration_modal;
     },
 
-    async showSuccessModal(modal, verified, message) {
-      await this.fetchVerifications();
+    toggleTinVerificationModal() {
+      this.show_tin_verification_modal = !this.show_tin_verification_modal;
+    },
+
+    showSuccessModal(modal, message) {
+      this.fetchVerifications();
       this[modal] = false;
-      // this[verified] = true;
       this.response_message = message;
       this.show_success_modal = true;
     },

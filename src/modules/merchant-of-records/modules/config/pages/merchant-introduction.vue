@@ -29,7 +29,7 @@
         </button>
 
         <button class="btn btn-md btn-primary" @click="enableMoR">
-          Enable MoR
+          Upgrade to MoR
         </button>
       </div>
     </div>
@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import { mapActions, mapMutations } from "vuex";
 import MerchantHeader from "@/modules/merchant-of-records/modules/config/components/merchant-header";
 import FeatureCard from "@/modules/merchant-of-records/modules/config/components/feature-card";
 
@@ -77,13 +78,44 @@ export default {
     ],
   }),
 
+  mounted() {
+    this.updateMoRIntroductionState();
+  },
+
   methods: {
+    ...mapActions({
+      saveUserProfile: "settings/saveUserProfile",
+    }),
+
+    ...mapMutations({ UPDATE_AUTH_USER: "auth/UPDATE_AUTH_USER" }),
+
     remindMeLater() {
       this.$router.push({ name: "VesicashDashboard" });
     },
 
     enableMoR() {
-      this.$router.push({ name: "MerchantConfig" });
+      this.$router.push({ name: "MerchantUpgrade" });
+    },
+
+    async updateMoRIntroductionState() {
+      const response = await this.handleDataRequest({
+        action: "saveUserProfile",
+        payload: { has_seen_mor_introduction: true },
+        alert_handler: {
+          error: "Failed to update mor introduction",
+        },
+      });
+
+      if (response?.code === 200) this.updateProfile();
+    },
+
+    updateProfile() {
+      const updatedUser = {
+        ...this.getUser,
+        has_seen_mor_introduction: true,
+      };
+
+      this.UPDATE_AUTH_USER(updatedUser);
     },
   },
 };

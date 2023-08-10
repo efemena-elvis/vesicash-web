@@ -6,9 +6,9 @@
     <!-- MODAL COVER HEADER -->
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
-        <div class="modal-cover-title">Company Verification</div>
-        <div class="tertiary-2-text grey-600">
-          Upload your company registration document
+        <div class="modal-cover-title">Tax Identification</div>
+        <div class="tertiary-2-text grey-600 mgt-4">
+          Verify your company tax identification registration number
         </div>
       </div>
     </template>
@@ -18,24 +18,18 @@
       <div class="modal-cover-body">
         <div class="form-group">
           <BasicInput
-            label_title="Company registration number"
+            label_title="Tax identification number"
             label_id="doc-number"
             :input_value="form.doc_number"
             is_required
-            placeholder="Enter registration number"
+            placeholder="Enter identification number"
             @getInputState="updateFormState($event, 'doc_number')"
             :error_handler="{
               type: 'required',
-              message: 'Enter company registration number',
+              message: 'Enter tax identification number',
             }"
           />
         </div>
-
-        <ContractUploadCard
-          titleText="Select company registration document"
-          @fileUploaded="uploaded_doc = $event"
-          @clearTransactionFile="uploaded_doc = null"
-        />
       </div>
     </template>
 
@@ -44,7 +38,7 @@
       <div class="modal-cover-footer">
         <button
           ref="save"
-          class="btn btn-primary btn-md wt-100 mgt-17"
+          class="btn btn-primary btn-md wt-100"
           :disabled="isDisabled"
           @click="save"
         >
@@ -60,7 +54,7 @@ import { mapActions } from "vuex";
 import ModalCover from "@/shared/components/util-comps/modal-cover";
 
 export default {
-  name: "CoporationVerificationModal",
+  name: "TinVerificationModal",
 
   components: {
     ModalCover,
@@ -68,38 +62,22 @@ export default {
 
   computed: {
     isDisabled() {
-      return this.form.doc_number && this.form.file_url ? false : true;
+      return this.form.doc_number ? false : true;
     },
 
     verfiyDocPayload() {
       return {
         type: this.form.type,
         id: this.form.doc_number,
-        meta: this.form.file_url,
       };
-    },
-  },
-
-  watch: {
-    uploaded_doc: {
-      handler(value) {
-        if (Array.isArray(value)) {
-          this.form.file_url = value[0].file_url;
-        } else {
-          this.form.file_url = value.file_url;
-        }
-      },
     },
   },
 
   data() {
     return {
-      uploaded_doc: null,
-
       form: {
-        type: "cac",
+        type: "tin",
         doc_number: "",
-        file_url: "",
       },
 
       validity: {
@@ -108,13 +86,8 @@ export default {
     };
   },
 
-  mounted() {
-    this.clearAttachedFile();
-  },
-
   methods: {
     ...mapActions({
-      clearAttachedFile: "general/clearAttachedFile",
       verfiyUserDocument: "settings/verfiyUserDocument",
     }),
 
@@ -128,7 +101,7 @@ export default {
 
         if (response?.code === 200) {
           this.pushToast(response.message, "success");
-          this.$emit("saved", "Your document has been uploaded successfully");
+          this.$emit("saved", "Your TIN has been submitted successfully");
 
           setTimeout(() => this.$emit("closeTriggered"), 3000);
         } else {
@@ -136,15 +109,16 @@ export default {
         }
       } catch (err) {
         this.handleClick("save", "Submit", false);
-        this.pushToast("Failed to verify document", "error");
+        this.pushToast("Failed to submit TIN", "error");
       }
     },
   },
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .modal-cover-body {
+  min-height: 6vh !important;
   max-height: 65vh;
   overflow-y: auto;
 
