@@ -19,7 +19,7 @@
       <div class="modal-cover-body">
         <div class="form-group">
           <BasicInput
-            label_title="Business name"
+            label_title="Business name *"
             label_id="business-name"
             :input_value="form.business_name"
             is_required
@@ -47,7 +47,7 @@
 
         <div class="form-group">
           <BasicInput
-            label_title="Address"
+            label_title="Address *"
             label_id="business-address"
             :input_value="form.business_address"
             is_required
@@ -102,6 +102,7 @@
           ref="save"
           class="btn btn-primary btn-md wt-100 mgt-5"
           @click="save"
+          :disabled="isDisabled"
         >
           Submit
         </button>
@@ -126,6 +127,12 @@ export default {
   },
 
   computed: {
+    isDisabled() {
+      return this.form.business_name && this.form.business_address
+        ? false
+        : true;
+    },
+
     getUpdatePayload() {
       return {
         business_id: this.getAccountId,
@@ -227,10 +234,4 @@ export default {
 };
 </script>
 
-<style lang="scss">
-.business-info-modal.modal-overlay {
-  .modal-outer-container {
-    top: toRem(10);
-  }
-}
-</style>
+<style lang="scss"></style>

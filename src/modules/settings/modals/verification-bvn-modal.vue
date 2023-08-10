@@ -1,7 +1,7 @@
 <template>
   <ModalCover
     @closeModal="$emit('closeTriggered')"
-    :modal_style="{ size: 'modal-xs' }"
+    :modal_style="{ size: 'modal-sm' }"
     class="bvn-form-modal"
   >
     <!-- MODAL COVER HEADER -->

@@ -18,6 +18,18 @@ const merchantConfigRoutes = [
         },
       },
       {
+        path: "/merchant/document-upgrade",
+        name: "MerchantUpgrade",
+        component: () =>
+          import(
+            /* webpackChunkName: "merchant-module" */
+            "@/modules/merchant-of-records/modules/config/pages/merchant-upgrade"
+          ),
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
         path: "/settings/mor-setup",
         component: () =>
           import(

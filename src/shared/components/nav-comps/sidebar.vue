@@ -33,6 +33,7 @@
 
 <script>
 import { mapActions } from "vuex";
+import MoRDocValidate from "@/modules/merchant-of-records/modules/config/mixins/mor-docs-mixin";
 import { escrowRoutes, merchantRoutes } from "@/shared/nav-routes";
 import VesicashBrandLogo from "@/shared/components/icon-comps/vesicash-brand-logo";
 import ExitIcon from "@/shared/components/icon-comps/exit-icon";
@@ -41,6 +42,8 @@ import ProfileMenu from "@/shared/components/nav-comps/profile-menu";
 
 export default {
   name: "SidebarComp",
+
+  mixins: [MoRDocValidate],
 
   components: {
     VesicashBrandLogo,
@@ -68,14 +71,37 @@ export default {
     this.sidebar_routes = this.isMoRSetupEnabled
       ? merchantRoutes
       : escrowRoutes;
+
+    this.checkMoRVerficationState();
+
+    if (this.getAccountType === "business" && !this.isMoRSetupEnabled) {
+      this.fetchVerifications();
+    }
   },
 
   methods: {
-    ...mapActions({ logOutUser: "auth/logOutUser" }),
+    ...mapActions({
+      logOutUser: "auth/logOutUser",
+    }),
 
     handleUserlogOut() {
       this.togglePageLoader();
       setTimeout(() => this.logOutUser(), 2000);
+    },
+
+    checkMoRVerficationState() {
+      let has_seen_mor_intro = this.getUser.has_seen_mor_introduction;
+
+      if (has_seen_mor_intro) {
+        // CHECK VERIFICATION UPGRADE
+        if (this.validateMoRVerification) {
+          this.merchant_of_record.link = "/settings/mor-setup";
+        } else {
+          this.merchant_of_record.link = "/merchant/document-upgrade";
+        }
+      } else {
+        this.merchant_of_record.link = "/merchant/introduction";
+      }
     },
   },
 };

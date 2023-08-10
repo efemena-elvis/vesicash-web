@@ -102,21 +102,14 @@ export default {
   // FETCH USER VERIFICATIONS
   // ==============================
   async fetchUserVerifications({ commit, getters }, payload) {
-    if (getters.getUserVerifications?.length) {
-      return {
-        code: 200,
-        data: getters.getUserVerifications,
-      };
-    } else {
-      const response = await getRequest(
-        "verification",
-        routes.fetch_verifications,
-        payload
-      );
+    const response = await getRequest(
+      "verification",
+      routes.fetch_verifications,
+      payload
+    );
 
-      if (response?.code == 200) commit("SET_VERIFICATIONS", response.data);
-      return response;
-    }
+    if (response?.code == 200) commit("SET_VERIFICATIONS", response.data);
+    return response;
   },
 
   // ==============================
