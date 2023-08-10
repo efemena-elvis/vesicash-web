@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard-view">
     <transition name="fade" mode="out-in">
-      <div class="alert-wrapper" v-if="!isPhoneNumberVerified">
+      <div class="alert-wrapper" v-if="!validateUserAccount">
         <UpgradeAlertCard />
       </div>
     </transition>
@@ -110,11 +110,14 @@
 
 <script>
 import { mapActions, mapMutations, mapGetters } from "vuex";
+import MoRDocValidate from "@/modules/merchant-of-records/modules/config/mixins/mor-docs-mixin";
 import TitleTopBlock from "@/shared/components/block-comps/title-top-block";
 import WalletBlock from "@/shared/components/block-comps/wallet-block";
 
 export default {
   name: "DashboardPage",
+
+  mixins: [MoRDocValidate],
 
   metaInfo: {
     title: "Dashboard",

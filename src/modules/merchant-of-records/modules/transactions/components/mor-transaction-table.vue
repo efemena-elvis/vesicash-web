@@ -106,9 +106,13 @@ export default {
         },
       });
 
+      console.log("RESPONSE", response);
+
       if (response?.code === 200 && response.data?.length) {
         this.table_data = response?.data ?? [];
         this.sortTransactionByCountry(response?.data ?? []);
+      } else if (response?.code === 200) {
+        this.sortTransactionByCountry([]);
       }
 
       this.table_loading = false;

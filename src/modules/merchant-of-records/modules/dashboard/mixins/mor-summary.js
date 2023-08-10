@@ -9,7 +9,7 @@ const MoRSummary = {
     },
 
     getTransactionVolume() {
-      return this.wallet_transaction_volume;
+      return this.wallet_transaction_volume ?? 0;
     },
   },
 
@@ -23,7 +23,6 @@ const MoRSummary = {
         });
 
         this.wallet_revenue_metrics = this.wallet_size;
-        // this.wallet_transaction_volume = this.wallet_size;
 
         if (this.wallet_size.length) {
           this.fetchMoRSummary();
@@ -90,8 +89,6 @@ const MoRSummary = {
           request_error: "Unable to fetch MoR metric",
         },
       });
-
-      console.log("RESPONSE", response);
     },
   },
 };

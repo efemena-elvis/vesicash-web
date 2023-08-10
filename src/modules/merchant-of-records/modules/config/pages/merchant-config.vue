@@ -131,11 +131,14 @@
 
 <script>
 import { mapActions, mapMutations, mapGetters } from "vuex";
+import MoRDocValidate from "@/modules/merchant-of-records/modules/config/mixins/mor-docs-mixin";
 import countries from "@/utilities/countries";
 import FieldSetup from "@/modules/merchant-of-records/modules/config/components/field-setup";
 
 export default {
   name: "MerchantConfig",
+
+  mixins: [MoRDocValidate],
 
   metaInfo: {
     title: "MoR Setup",
@@ -251,7 +254,9 @@ export default {
     this.$bus.$emit("toggle-page-loader");
     this.loadMoRWalletSize();
 
-    console.log(this.getUser.business_type);
+    if (!this.validateMoRVerification) {
+      this.$router.push("/merchant/document-upgrade");
+    }
   },
 
   methods: {

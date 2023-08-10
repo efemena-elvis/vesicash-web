@@ -79,7 +79,6 @@ const MixinAuthUser = {
 
     isMoRSetupEnabled() {
       return this.getAuthUser.is_merchant ?? false;
-      // return false;
     },
   },
 };
