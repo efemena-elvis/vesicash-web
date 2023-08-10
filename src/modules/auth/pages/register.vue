@@ -17,6 +17,16 @@
         />
       </div>
 
+      <!-- BUSINESS TYPE -->
+      <div class="form-group">
+        <div class="form-label">Business type</div>
+        <DropSelectInput
+          placeholder="Select business type"
+          @selectedOption="selectBusinessType($event)"
+          :options="business_type_options"
+        />
+      </div>
+
       <!-- FULLNAME INPUT -->
       <div class="form-group">
         <FormFieldInput
@@ -30,33 +40,6 @@
             type: 'minimum',
             minimum: 2,
             message: 'Full name should contain 2 words',
-          }"
-        />
-      </div>
-
-      <!-- BUSINESS TYPE -->
-      <div class="form-group">
-        <div class="form-label">Business type</div>
-        <DropSelectInput
-          placeholder="Select business type"
-          @selectedOption="selectBusinessType($event)"
-          :options="business_type_options"
-        />
-      </div>
-
-      <!-- EMAIL ADDRESS INPUT -->
-      <div class="form-group">
-        <FormFieldInput
-          label_title="Email address"
-          label_id="emailAddress"
-          input_type="email"
-          is_required
-          placeholder="Enter email address"
-          :input_value="getFormFieldValueMx(form, 'email_address')"
-          @getInputState="updateFormFieldMx($event, 'email_address')"
-          :error_handler="{
-            type: 'email',
-            message: 'Email address is not valid',
           }"
         />
       </div>
@@ -76,6 +59,23 @@
           :error_handler="{
             type: 'phone',
             message: 'Phone number is not valid',
+          }"
+        />
+      </div>
+
+      <!-- EMAIL ADDRESS INPUT -->
+      <div class="form-group">
+        <FormFieldInput
+          label_title="Email address"
+          label_id="emailAddress"
+          input_type="email"
+          is_required
+          placeholder="Enter email address"
+          :input_value="getFormFieldValueMx(form, 'email_address')"
+          @getInputState="updateFormFieldMx($event, 'email_address')"
+          :error_handler="{
+            type: 'email',
+            message: 'Email address is not valid',
           }"
         />
       </div>
