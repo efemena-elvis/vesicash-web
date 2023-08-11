@@ -111,6 +111,10 @@ export default {
     };
   },
 
+  mounted() {
+    this.trackRegistration();
+  },
+
   methods: {
     ...mapActions({
       // sendUserOTP: "auth/sendUserOTP",
@@ -118,6 +122,15 @@ export default {
       sendEmailOTP: "settings/requestEmailOTP",
       verifyEmailOTP: "settings/verifyEmailOTP",
     }),
+
+    trackRegistration() {
+      const saved_account = `TRACKED_USER_${this.$route?.params?.account_id}`;
+      const saved_track = localStorage.getItem(saved_account);
+      if (!saved_track) {
+        window?.fbq("track", "CompleteRegistration");
+        localStorage.setItem(saved_account, true);
+      }
+    },
 
     // ===============================
     // CLEAR OUT ALL OTP INPUTS
