@@ -12,10 +12,12 @@ const morDocValidate = {
           ? true
           : false;
 
-      return mor_verifications.every((item) => item.is_verified) &&
-        business_verified
-        ? true
-        : false;
+      if (mor_verifications.length === 3) {
+        return mor_verifications.every((item) => item.is_verified) &&
+          business_verified
+          ? true
+          : false;
+      } else return false;
     },
 
     validateUserAccount() {
@@ -23,8 +25,9 @@ const morDocValidate = {
         ["cac", "bvn", "tin"].includes(data.verification_type)
       );
 
-      return mor_verifications.every((item) => item.is_verified);
-      business_verified ? true : false;
+      if (mor_verifications.length === 3) {
+        return mor_verifications.every((item) => item.is_verified);
+      } else return false;
     },
   },
 

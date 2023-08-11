@@ -295,7 +295,7 @@ export default {
   },
 
   mounted() {
-    // if (!this.getUserVerifications) this.fetchVerifications();
+    this.fetchVerifications();
 
     // CLEAR OUT TRANSACTION STORE
     if (this.getTransactions?.name?.length) {
