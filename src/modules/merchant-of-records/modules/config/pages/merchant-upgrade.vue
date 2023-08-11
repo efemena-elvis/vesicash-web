@@ -135,6 +135,7 @@ import VerificationCard from "@/modules/settings/components/card-comps/verificat
 import BusinessInfoModal from "@/modules/settings/modals/business-info-modal";
 import VerificationDocumentModal from "@/modules/settings/modals/verification-document-modal";
 import CoporationVerificationModal from "@/modules/settings/modals/coporation-verification-modal";
+import TinVerificationModal from "@/modules/settings/modals/tin-verification-modal";
 import VerificationBvnModal from "@/modules/settings/modals/verification-bvn-modal";
 import SuccessModal from "@/shared/modals/success-modal";
 
@@ -149,6 +150,7 @@ export default {
     BusinessInfoModal,
     VerificationDocumentModal,
     CoporationVerificationModal,
+    TinVerificationModal,
     VerificationBvnModal,
     SuccessModal,
     BusinessIcon: () =>
