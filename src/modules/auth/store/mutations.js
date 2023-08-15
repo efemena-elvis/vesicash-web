@@ -43,6 +43,9 @@ export default {
       response_payload.profile?.business?.business_name ?? null;
     userData.business_address =
       response_payload.profile?.business?.business_address ?? null;
+    userData.business_email =
+      response_payload.profile?.business?.business_email ?? null;
+    userData.website = response_payload.profile?.business?.website ?? null;
     userData.business_type =
       response_payload.profile?.business?.business_type ?? null;
     userData.business_charge = response_payload.profile?.business
