@@ -330,10 +330,7 @@ export default {
       this.UPDATE_AUTH_USER(updatedUser);
 
       this.saveUserProfile({
-        account_id: this.getAccountId,
-        updates: {
-          phone_number: this.verify_phone_number,
-        },
+        phone_number: this.verify_phone_number,
       });
     },
 

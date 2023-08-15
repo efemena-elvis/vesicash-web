@@ -135,13 +135,10 @@ export default {
 
     getUpdatePayload() {
       return {
-        business_id: this.getAccountId,
-        updates: {
-          business_name: this.form.business_name,
-          business_address: this.form.business_address,
-          website: this.form.business_website,
-          business_email: this.form.business_email,
-        },
+        business_name: this.form.business_name,
+        business_address: this.form.business_address,
+        website: this.form.business_website,
+        business_email: this.form.business_email,
       };
     },
   },
