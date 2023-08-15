@@ -117,11 +117,17 @@
         <VerifyInputModal
           @continue="initiateOTPRequest"
           @closeTriggered="toggleInputModal"
+          :email="false"
         />
       </transition>
 
       <transition name="fade" v-if="show_otp_modal">
-        <VerifyOtpModal @done="updateUserProfile" />
+        <VerifyOtpModal
+          :input="updated_phone"
+          :email="false"
+          @done="updateUserProfile"
+          @closeTriggered="toggleOtpModal"
+        />
       </transition>
 
       <transition name="fade" v-if="show_business_info_modal">

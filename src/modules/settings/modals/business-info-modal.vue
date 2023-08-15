@@ -122,10 +122,6 @@ export default {
     ModalCover,
   },
 
-  mounted() {
-    this.updateSavedProfile();
-  },
-
   computed: {
     isDisabled() {
       return this.form.business_name && this.form.business_address
@@ -161,6 +157,10 @@ export default {
     };
   },
 
+  mounted() {
+    this.updateSavedProfile();
+  },
+
   methods: {
     ...mapActions({
       updateUserBusinessInfo: "settings/updateUserBusinessInfo",
@@ -170,25 +170,20 @@ export default {
 
     updateSavedProfile() {
       const user = this.getUser;
-      const {
-        business_name,
-        business_email,
-        business_address,
-        business_website,
-      } = user;
+      const { business_name, business_email, business_address, website } = user;
 
       this.form = {
         business_name,
         business_email,
         business_address,
-        business_website,
+        business_website: website,
       };
 
       this.validity = {
         business_name: !business_name,
         business_email: !business_email,
         business_address: !business_address,
-        business_website: !business_website,
+        business_website: !website,
       };
     },
 
