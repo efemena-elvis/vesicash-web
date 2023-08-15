@@ -164,7 +164,8 @@ export default {
       this.handleClick("continue");
 
       let request_payload = {
-        phone_number: `+${this.form.phone_number.value}`,
+        account_id: this.getAccountId,
+        // phone_number: this.form.phone_number.value,
       };
 
       let request_email_otp_payload = {
@@ -174,6 +175,7 @@ export default {
 
       const payload = this.email ? request_email_otp_payload : request_payload;
       const action = this.email ? "sendEmailOTP" : "sendUserOTP";
+
       const input_type = this.email
         ? this.form.email_address.value
         : this.form.phone_number.value;
