@@ -246,6 +246,7 @@ export default {
 
     current_country: {
       handler(value) {
+        this.country_dialing_code = value.dialing_code;
         this.$bus.$emit("update-country-state", value?.country);
       },
       immediate: true,
@@ -287,6 +288,8 @@ export default {
         code: "ng",
         flag: "https://flagsapi.com/NG/flat/64.png",
       },
+
+      country_dialing_code: "",
     };
   },
 
@@ -318,7 +321,10 @@ export default {
 
         case "phone":
           this.error_message =
-            !this.$validate.validatePhoneInput(value) && message;
+            !this.$validate.validatePhoneInput(
+              value,
+              this.country_dialing_code
+            ) && message;
           break;
 
         case "password":

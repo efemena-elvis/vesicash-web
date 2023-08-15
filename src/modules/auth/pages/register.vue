@@ -138,6 +138,7 @@
 import { mapActions } from "vuex";
 import authMixin from "@/modules/auth/mixins/auth-mixin";
 import AuthWrapper from "@/modules/auth/components/auth-wrapper";
+import countries from "@/utilities/countries";
 
 export default {
   name: "RegisterPage",
@@ -171,6 +172,8 @@ export default {
       delete request_payload.fullname;
       return request_payload;
     },
+
+    getPhonePlaceholder() {},
   },
 
   watch: {
@@ -224,6 +227,8 @@ export default {
 
       business_type_options: [],
       user_details: {},
+
+      country_selected_code: "+234",
     };
   },
 
@@ -231,10 +236,15 @@ export default {
     // ==========================================
     // UPDATE USER SELECTED COUNTRY STATE
     // ==========================================
-    this.$bus.$on(
-      "update-country-state",
-      (country) => (this.form.country.value = country.toLowerCase())
-    );
+    this.$bus.$on("update-country-state", (country) => {
+      this.country_selected_code = countries.find(
+        (data) => data.country === country
+      ).dialing_code;
+
+      console.log("CODE", this.country_selected_code);
+
+      this.form.country.value = country.toLowerCase();
+    });
   },
 
   mounted() {

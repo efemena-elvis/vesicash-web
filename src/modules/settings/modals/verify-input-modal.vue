@@ -1,9 +1,9 @@
 <template>
   <ModalCover
     @closeModal="$emit('closeTriggered')"
-    :modal_style="{ size: 'modal-xs' }"
+    :modal_style="{ size: 'modal-sm' }"
     show_close_btn
-    :place_center="true"
+    place_center
     class="verify-input-modal"
   >
     <!-- MODAL COVER HEADER -->
@@ -24,33 +24,38 @@
     <template slot="modal-cover-body">
       <div class="modal-cover-body">
         <div class="position-relative">
-          <BasicInput
-            v-if="email"
-            input_type="email"
-            is_required
-            placeholder="Enter your email address"
-            :input_value="form.email_address"
-            @getInputState="updateFormState($event, 'email_address')"
-            :error_handler="{
-              type: 'email',
-              message: 'Email address is not valid',
-            }"
-          />
+          <template v-if="email">
+            <FormFieldInput
+              label_id="emailAddress"
+              input_type="email"
+              is_required
+              placeholder="Enter your email address"
+              :is_disabled="isEmailVerified"
+              :input_value="getFormFieldValueMx(form, 'email_address')"
+              @getInputState="updateFormFieldMx($event, 'email_address')"
+              :error_handler="{
+                type: 'email',
+                message: 'Email address is not valid',
+              }"
+            />
+          </template>
 
-          <BasicInput
-            v-else
-            input_type="number"
-            :input_value="form.phone_number"
-            is_phone_type
-            is_required
-            placeholder="Enter your phone number"
-            :custom_style="{ input_wrapper_style: 'form-prefix' }"
-            @getInputState="updateFormState($event, 'phone_number')"
-            :error_handler="{
-              type: 'phone',
-              message: 'Phone number is not valid',
-            }"
-          />
+          <template v-else>
+            <FormFieldInput
+              label_id="phoneNumber"
+              input_type="number"
+              is_phone_type
+              is_required
+              placeholder="Enter your phone number"
+              :custom_style="{ input_wrapper_style: 'form-prefix' }"
+              :input_value="getFormFieldValueMx(form, 'phone_number')"
+              @getInputState="updateFormFieldMx($event, 'phone_number')"
+              :error_handler="{
+                type: 'phone',
+                message: 'Phone number is not valid',
+              }"
+            />
+          </template>
         </div>
       </div>
     </template>
@@ -62,7 +67,7 @@
           ref="continue"
           class="btn btn-primary btn-md wt-100"
           @click="requestOTP"
-          :disabled="isDisabled"
+          :disabled="!isDisabled"
         >
           Continue
         </button>
@@ -97,9 +102,8 @@ export default {
 
   computed: {
     isDisabled() {
-      return this.email
-        ? this.validity.email_address
-        : this.validity.phone_number;
+      let { email_address, phone_number } = this.getFormPayloadMx(this.form);
+      return this.email ? !!email_address : !!phone_number;
     },
   },
 
@@ -107,11 +111,11 @@ export default {
     input: {
       handler(data) {
         if (this.email) {
-          this.form.email_address = data;
-          this.validity.email_address = !data;
+          this.form.email_address.value = data;
+          this.form.email_address.validated = !data;
         } else {
-          this.form.phone_number = data;
-          this.validity.phone_number = !data;
+          this.form.phone_number.value = data;
+          this.form.phone_number.validated = !data;
         }
       },
       immediate: true,
@@ -123,13 +127,14 @@ export default {
       country_code: "",
 
       form: {
-        email_address: "",
-        phone_number: "",
-      },
-
-      validity: {
-        email_address: true,
-        phone_number: true,
+        email_address: {
+          validated: false,
+          value: "",
+        },
+        phone_number: {
+          validated: false,
+          value: "",
+        },
       },
     };
   },
@@ -157,25 +162,21 @@ export default {
 
     requestOTP() {
       this.handleClick("continue");
-      // const user_phone = this.$validate.validatePhoneNumber(
-      //   this.form.phone_number,
-      //   this.country_code
-      // );
 
       let request_payload = {
-        phone_number: `+${this.form.phone_number}`,
+        phone_number: `+${this.form.phone_number.value}`,
       };
 
       let request_email_otp_payload = {
         account_id: this.getAccountId,
-        email_address: this.form.email_address,
+        email_address: this.form.email_address.value,
       };
 
       const payload = this.email ? request_email_otp_payload : request_payload;
       const action = this.email ? "sendEmailOTP" : "sendUserOTP";
       const input_type = this.email
-        ? this.form.email_address
-        : this.form.phone_number;
+        ? this.form.email_address.value
+        : this.form.phone_number.value;
 
       this[action](payload)
         .then((response) => {
@@ -188,7 +189,9 @@ export default {
             );
             this.$emit(
               "continue",
-              this.email ? this.form.email_address : this.form.phone_number
+              this.email
+                ? this.form.email_address.value
+                : this.form.phone_number.value
             );
           } else {
             this.pushToast(response.message, "error");

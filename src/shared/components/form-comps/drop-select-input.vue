@@ -38,10 +38,7 @@
     </div>
 
     <!-- BOTTOM OPTIONS -->
-    <div
-      class="drop-option-wrapper w-100 mgt-7 smooth-animation"
-      v-if="option_select"
-    >
+    <div class="drop-option-wrapper w-100 mgt-7" v-if="option_select">
       <div class="inner-wrapper rounded-8">
         <!-- SEARCH BAR -->
         <div class="search-bar mgb-4 mgt-10" v-if="allow_search">
