@@ -469,10 +469,7 @@ export default {
       this.UPDATE_AUTH_USER(updatedUser);
 
       this.saveUserProfile({
-        account_id: this.getAccountId,
-        updates: {
-          phone_number: this.updated_phone,
-        },
+        phone_number: this.updated_phone,
       });
     },
 

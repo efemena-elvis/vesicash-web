@@ -8,7 +8,7 @@ class serviceValidators {
   // =========================================
   #email_regex =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  #phone_regex = /(^[0]\d{10}$)|(^[+]?[234]\d{12}$)/;
+  #phone_regex = /(^[0]\d{10}$)|(^[+]?[234]\d{12,14}$)/;
 
   // =========================================
   // A SIMPLE METHOD TO TRIM FORM INPUT
@@ -29,8 +29,18 @@ class serviceValidators {
   // ============================================
   // VALIDATE USER ENTERED PHONE INPUT VALUE
   // ============================================
-  validatePhoneInput(input) {
-    return this.#phone_regex.test(this.trimInput(input)) ? true : false;
+  validatePhoneInput(input, countryCode) {
+    const countryCodeRegex = new RegExp(
+      `(^[0]\\d{10}$)|(^[${countryCode}]\\d{12,14}$)`
+    );
+
+    const trimmed = this.trimInput(input);
+    const validated =
+      countryCodeRegex.test(trimmed) && !trimmed.startsWith("+");
+
+    return validated;
+
+    // return this.#phone_regex.test(this.trimInput(input)) ? true : false;
   }
 
   // =============================================

@@ -18,7 +18,11 @@
           :disabled="is_disabled"
           class="form-control"
           :class="[getInputStyle, error_message && 'form-control-error']"
-          :placeholder="placeholder"
+          :placeholder="
+            is_phone_type
+              ? `Eg. ${country_dialing_code} 123 4567 890`
+              : placeholder
+          "
           :min="getInputType === 'date' ? minimum_date : 0"
           @input="validateAndEmitUserInput"
           @paste="validateAndEmitUserInput"
@@ -46,6 +50,11 @@
             @click="toggleDropdown"
           >
             <img v-lazy="current_country.flag" :alt="current_country.country" />
+
+            <div class="country-code smooth-transition">
+              +{{ country_dialing_code }}
+            </div>
+
             <div
               class="icon icon-caret-fill-down smooth-transition"
               :class="show_dropdown && 'rotate-180'"
@@ -199,6 +208,7 @@ export default {
 
     current_country: {
       handler(value) {
+        this.country_dialing_code = value.dialing_code;
         this.$bus.$emit("update-country-state", value?.country);
       },
       immediate: true,
@@ -210,6 +220,7 @@ export default {
       password_type: true,
       error_message: "",
       form_value: "",
+      country_dialing_code: "",
     };
   },
 
@@ -236,7 +247,10 @@ export default {
 
         case "phone":
           this.error_message =
-            !this.$validate.validatePhoneInput(value) && message;
+            !this.$validate.validatePhoneInput(
+              value,
+              this.country_dialing_code
+            ) && message;
           break;
 
         case "password":

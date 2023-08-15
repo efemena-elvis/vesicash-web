@@ -109,7 +109,7 @@
       </div>
 
       <!-- DOB BLOCK -->
-      <div class="page-input-block row" v-if="isBusiness">
+      <div class="page-input-block row">
         <div class="col-12 col-sm-4">
           <label for="logo" class="form-label fw-bold">Date of Birth</label>
         </div>
@@ -288,7 +288,7 @@
           @continue="initiateOTPRequest"
           :input="form[input_type].value"
           @closeTriggered="toggleInputModal"
-          :email="input_type === 'email_address'"
+          :email="input_type === 'email_address' ? true : false"
         />
       </transition>
 
@@ -296,7 +296,7 @@
         <VerifyOtpModal
           @closeTriggered="toggleOtpModal"
           :input="form[input_type].value"
-          :email="input_type === 'email_address'"
+          :email="input_type === 'email_address' ? true : false"
           @done="updatePhoneVerificationState"
         />
       </transition>
@@ -622,18 +622,13 @@ export default {
         const response = await this.handleDataRequest({
           action: "saveUserProfile",
           payload: {
-            account_id: this.getAccountId,
-            updates: {
-              phone_number: user_phone,
-            },
+            phone_number: user_phone,
           },
           alert_handler: {
             success: "User phone number updated successfully",
             error: "Failed to save user phone number",
           },
         });
-
-        console.log("EMITTED", response);
 
         if (response?.code === 200)
           setTimeout(() => this.updateSavedProfile(), 1000);
