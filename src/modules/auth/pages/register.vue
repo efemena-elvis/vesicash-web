@@ -167,13 +167,17 @@ export default {
         ...form_payload,
         firstname,
         lastname,
+        phone_number: this.sanitizeUserPhoneNumber(form_payload.phone_number),
       };
 
       delete request_payload.fullname;
       return request_payload;
     },
 
-    getPhonePlaceholder() {},
+    isBusinessEmail() {
+      const { email_address } = this.getFormPayloadMx(this.form);
+      return this.validateUserEmailAddress(email_address);
+    },
   },
 
   watch: {
@@ -228,7 +232,7 @@ export default {
       business_type_options: [],
       user_details: {},
 
-      country_selected_code: "+234",
+      country_selected_code: "234",
     };
   },
 
@@ -240,8 +244,6 @@ export default {
       this.country_selected_code = countries.find(
         (data) => data.country === country
       ).dialing_code;
-
-      console.log("CODE", this.country_selected_code);
 
       this.form.country.value = country.toLowerCase();
     });
@@ -268,6 +270,10 @@ export default {
       this.business_type_options = response?.code === 200 ? response.data : [];
     },
 
+    sanitizeUserPhoneNumber(phone_number) {
+      return this.sanitizePhone(this.country_selected_code, phone_number);
+    },
+
     // ===========================================
     // HANDLE BUSINESS TYPE USER SELECTION
     // ===========================================
@@ -276,13 +282,21 @@ export default {
         (business) => business.id === selected_id
       ).name;
       this.form.business_type.validated = true;
-      console.log(this.form.business_type);
     },
 
     // ===========================================
     // HANDLE USER CLIENT REGISTRATION
     // ===========================================
     async handleUserRegister() {
+      if (!this.isBusinessEmail) {
+        this.handleToastPushMx(
+          "Email address is not a business email",
+          "error"
+        );
+
+        return;
+      }
+
       const response = await this.handleDataRequest({
         action: "registerUser",
         payload: this.getRequestPayload,

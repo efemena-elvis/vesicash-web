@@ -77,6 +77,28 @@ const MixinGlobal = {
     },
 
     /*****************************************
+     * VALIDATE USER PHONE NUMBER
+     *****************************************/
+    sanitizePhone(country_code, phone) {
+      if (phone.startsWith("+" || country_code)) return phone;
+      else {
+        if (phone.startsWith("0")) return `${country_code}${phone.slice(1)}`;
+        else return `${country_code}${phone}`;
+      }
+    },
+
+    /*****************************************
+     * VALIDATE USER EMAIL ADDRESS
+     *****************************************/
+    validateUserEmailAddress(email_address) {
+      const forbiddenDomains = ["gmail.com", "hotmail.com", "yahoo.com"];
+
+      const domain = email_address.split("@")[1];
+
+      return forbiddenDomains.includes(domain) ? false : true;
+    },
+
+    /*****************************************
      * REQUEST MIXIN GROUP
      *****************************************/
     async handleDataRequest({

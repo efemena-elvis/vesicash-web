@@ -24,7 +24,7 @@ export default {
   },
 
   data: () => ({
-    payment_view: "PaymentModuleContent",
+    payment_view: "PaymentModuleEmpty",
   }),
 };
 </script>

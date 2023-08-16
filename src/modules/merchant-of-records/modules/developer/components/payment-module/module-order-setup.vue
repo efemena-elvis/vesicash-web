@@ -30,7 +30,7 @@
     </template>
 
     <!-- PROMO CODE -->
-    <template>
+    <template v-if="false">
       <div class="setup-wrapper">
         <div class="title-text">PROMO CODE</div>
 
