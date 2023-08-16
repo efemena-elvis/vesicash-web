@@ -30,17 +30,19 @@ class serviceValidators {
   // VALIDATE USER ENTERED PHONE INPUT VALUE
   // ============================================
   validatePhoneInput(input, countryCode) {
-    const countryCodeRegex = new RegExp(
-      `(^[0]\\d{10}$)|(^[${countryCode}]\\d{12,14}$)`
-    );
+    const trimmedInput = this.trimInput(input);
+    let is_validated = false;
 
-    const trimmed = this.trimInput(input);
-    const validated =
-      countryCodeRegex.test(trimmed) && !trimmed.startsWith("+");
-
-    return validated;
-
-    // return this.#phone_regex.test(this.trimInput(input)) ? true : false;
+    // check for dialling code
+    if (trimmedInput.startsWith(countryCode || `+${countryCode}`)) {
+      // check for phone length
+      let phone_length = trimmedInput.length - countryCode.length;
+      is_validated = phone_length >= 9 && phone_length <= 11 ? true : false;
+    } else {
+      is_validated =
+        trimmedInput.length >= 10 && trimmedInput.length <= 12 ? true : false;
+    }
+    return is_validated;
   }
 
   // =============================================

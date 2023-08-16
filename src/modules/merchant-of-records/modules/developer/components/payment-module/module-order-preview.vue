@@ -4,9 +4,6 @@
       <div class="wrapper mgb-24">
         <div class="title-text">ORDER SUMMARY</div>
 
-        <OrderDisplayCard />
-        <OrderDisplayCard />
-
         <!-- PRODUCT DETAILS -->
         <div class="product-details mgb-24">
           <div class="product-list">
@@ -36,7 +33,7 @@
       </div>
     </template>
 
-    <template>
+    <template v-if="false">
       <div class="wrapper pdb-24 mgb-24 border-bottom-grey-100">
         <div class="title-text">PROMO CODE</div>
 
@@ -72,9 +69,7 @@
     </template>
 
     <div class="mgt-24">
-      <button class="btn btn-md w-100 teal-800-bg neutral-10 pdy-10">
-        Make payment
-      </button>
+      <button class="btn btn-md w-100 pdy-10">Make payment</button>
     </div>
   </div>
 </template>
@@ -131,6 +126,15 @@ export default {
       padding: toRem(16.5) 0;
       border-top: toRem(0.5) solid getColor("grey-200");
       border-bottom: toRem(0.5) solid getColor("grey-200");
+    }
+  }
+
+  .btn {
+    background: getColor("teal-800");
+    color: getColor("neutral-10");
+
+    &:hover {
+      background: darken(getColor("teal-800"), 6%);
     }
   }
 }

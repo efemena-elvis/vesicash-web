@@ -19,9 +19,7 @@
           class="form-control"
           :class="[getInputStyle, error_message && 'form-control-error']"
           :placeholder="
-            is_phone_type
-              ? `Eg. ${country_dialing_code} 123 4567 890`
-              : placeholder
+            is_phone_type ? `${country_dialing_code}0000000000` : placeholder
           "
           :min="getInputType === 'date' ? minimum_date : 0"
           @input="validateAndEmitUserInput"
