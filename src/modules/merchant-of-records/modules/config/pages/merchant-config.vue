@@ -195,6 +195,14 @@ export default {
       },
       deep: true,
     },
+
+    user_verifications: {
+      handler() {
+        if (!this.validateMoRVerification) {
+          this.$router.push("/merchant/document-upgrade");
+        }
+      },
+    },
   },
 
   data() {
@@ -246,6 +254,7 @@ export default {
   created() {
     this.loadMoRBusinessTypes();
     this.loadMoRCountries();
+    this.fetchVerifications();
 
     this.$bus.$on("signedMoR", (data) => this.signMoRContract(data));
   },
@@ -253,10 +262,6 @@ export default {
   mounted() {
     this.$bus.$emit("toggle-page-loader");
     this.loadMoRWalletSize();
-
-    if (!this.validateMoRVerification) {
-      this.$router.push("/merchant/document-upgrade");
-    }
   },
 
   methods: {

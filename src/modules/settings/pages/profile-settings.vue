@@ -606,9 +606,9 @@ export default {
     },
 
     async updateUserPhone() {
-      const user_phone = this.$validate.validatePhoneNumber(
-        this.form.phone_number.value,
-        this.country_code
+      const user_phone = this.sanitizePhone(
+        this.country_code,
+        this.form.phone_number.value
       );
 
       if (user_phone) {
