@@ -1,10 +1,9 @@
 <template>
   <ModalCover
     @closeModal="$emit('closeTriggered')"
-    :modal_style="{ size: 'modal-sm' }"
+    :modal_style="{ size: 'modal-xs' }"
     show_close_btn
-    place_center
-    class="verify-input-modal"
+    :place_center="true"
   >
     <!-- MODAL COVER HEADER -->
     <template slot="modal-cover-header">
@@ -23,39 +22,37 @@
     <!-- MODAL COVER BODY -->
     <template slot="modal-cover-body">
       <div class="modal-cover-body">
-        <div class="position-relative">
-          <template v-if="email">
-            <FormFieldInput
-              label_id="emailAddress"
-              input_type="email"
-              is_required
-              placeholder="Enter your email address"
-              :is_disabled="isEmailVerified"
-              :input_value="getFormFieldValueMx(form, 'email_address')"
-              @getInputState="updateFormFieldMx($event, 'email_address')"
-              :error_handler="{
-                type: 'email',
-                message: 'Email address is not valid',
-              }"
-            />
-          </template>
+        <div class="form-group" v-if="email">
+          <FormFieldInput
+            label_id="emailAddress"
+            input_type="email"
+            is_required
+            placeholder="Enter your email address"
+            :is_disabled="isEmailVerified"
+            :input_value="getFormFieldValueMx(form, 'email_address')"
+            @getInputState="updateFormFieldMx($event, 'email_address')"
+            :error_handler="{
+              type: 'email',
+              message: 'Email address is not valid',
+            }"
+          />
+        </div>
 
-          <template v-else>
-            <FormFieldInput
-              label_id="phoneNumber"
-              input_type="number"
-              is_phone_type
-              is_required
-              placeholder="Enter your phone number"
-              :custom_style="{ input_wrapper_style: 'form-prefix' }"
-              :input_value="getFormFieldValueMx(form, 'phone_number')"
-              @getInputState="updateFormFieldMx($event, 'phone_number')"
-              :error_handler="{
-                type: 'phone',
-                message: 'Phone number is not valid',
-              }"
-            />
-          </template>
+        <div class="form-group" v-else>
+          <FormFieldInput
+            label_id="phoneNumber"
+            input_type="number"
+            is_phone_type
+            is_required
+            placeholder="Enter your phone number"
+            :custom_style="{ input_wrapper_style: 'form-prefix' }"
+            :input_value="getFormFieldValueMx(form, 'phone_number')"
+            @getInputState="updateFormFieldMx($event, 'phone_number')"
+            :error_handler="{
+              type: 'phone',
+              message: 'Phone number is not valid',
+            }"
+          />
         </div>
       </div>
     </template>
@@ -208,10 +205,9 @@ export default {
 };
 </script>
 
-<style lang="scss">
-.verify-input-modal {
-  .modal-cover-body {
-    min-height: 12vh;
-  }
+<style lang="scss" scoped>
+.modal-cover-body {
+  overflow: unset;
+  min-height: 12vh;
 }
 </style>
