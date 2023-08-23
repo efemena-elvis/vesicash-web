@@ -21,7 +21,7 @@
       <verification-card
         v-if="isBusiness"
         title="Business information"
-        subtitle="Provide information about your business."
+        subtitle="Provide some information about your business."
         cta_title="Update business information"
         :verified="isBusinessVerified"
         :check_verification_state="true"
@@ -46,7 +46,7 @@
       <verification-card
         v-if="isBusiness"
         title="Tax identification number"
-        subtitle="Validate your business tax identification."
+        subtitle="Validate your business tax identification number."
         cta_title="Verify TIN"
         :verified="isTinVerified.is_verified"
         :verification_state="isTinVerified.verification_state"
@@ -57,7 +57,7 @@
       </verification-card>
 
       <verification-card
-        title="Other documents"
+        title="Government ID"
         subtitle="Choose and upload a document for verification."
         cta_title="Verify document"
         :verified_docs="getOtherDocuments"
@@ -91,8 +91,8 @@
       </verification-card>
 
       <verification-card
-        title="BVN details"
-        subtitle="Confirm your BVN details."
+        title="Bank Verification"
+        subtitle="Verify your BVN details"
         cta_title="Verify BVN details"
         :verified="isBvnVerified"
         @action="toggleBvnModal"
@@ -106,6 +106,7 @@
         cta_title="Add bank account"
         @action="$router.push({ name: 'AccountSettings' })"
         :verified="hasSettlementAccount"
+        v-if="false"
       >
         <SettlementIcon />
       </verification-card>
@@ -117,6 +118,7 @@
         <VerifyInputModal
           @continue="initiateOTPRequest"
           @closeTriggered="toggleInputModal"
+          :input="userPhone"
           :email="false"
         />
       </transition>
@@ -240,6 +242,14 @@ export default {
   computed: {
     isBusiness() {
       return this.getAccountType === "business" ? true : false;
+    },
+
+    userPhone() {
+      return this.getUser?.phone || "";
+    },
+
+    userEmail() {
+      return this.getUser?.email || "";
     },
 
     isBusinessVerified() {

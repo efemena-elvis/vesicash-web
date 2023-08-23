@@ -18,7 +18,7 @@
       <div class="modal-cover-body">
         <div class="form-group">
           <BasicInput
-            label_title="Company registration number"
+            label_title="Business verification number"
             label_id="doc-number"
             :input_value="form.doc_number"
             is_required
@@ -26,7 +26,7 @@
             @getInputState="updateFormState($event, 'doc_number')"
             :error_handler="{
               type: 'required',
-              message: 'Enter company registration number',
+              message: 'Enter business verification number',
             }"
           />
         </div>

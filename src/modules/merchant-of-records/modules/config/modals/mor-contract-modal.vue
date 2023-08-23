@@ -421,7 +421,7 @@
                 <li>
                   <div class="counter">4.2.9.</div>
                   <div>
-                    keep and maintain accurate records of all MoR Transactions;
+                    keep and maintain accurate record of all MoR Transactions;
                   </div>
                 </li>
 

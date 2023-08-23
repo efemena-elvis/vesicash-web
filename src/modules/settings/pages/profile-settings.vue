@@ -93,7 +93,7 @@
       </div>
 
       <!-- USERNAME BLOCK -->
-      <div class="page-input-block row" v-if="isBusiness">
+      <div class="page-input-block row" v-if="isBusiness && false">
         <div class="col-12 col-sm-4">
           <label for="logo" class="form-label fw-bold">Username</label>
         </div>
@@ -109,7 +109,7 @@
       </div>
 
       <!-- DOB BLOCK -->
-      <div class="page-input-block row">
+      <div class="page-input-block row" v-if="false">
         <div class="col-12 col-sm-4">
           <label for="logo" class="form-label fw-bold">Date of Birth</label>
         </div>
@@ -146,7 +146,7 @@
       </div>
 
       <!-- BIO BLOCK -->
-      <div class="page-input-block row" v-if="isBusiness">
+      <div class="page-input-block row" v-if="isBusiness && false">
         <div class="col-12 col-sm-4">
           <label for="logo" class="form-label fw-bold">Bio</label>
         </div>
@@ -355,10 +355,10 @@ export default {
         lastname: this.form.last_name.value,
         phone_number: this.form.phone_number.value,
         email_address: this.form.email_address.value,
-        username: this.form.username.value,
-        dob: this.form.dob.value,
+        // username: this.form.username.value,
+        // dob: this.form.dob.value,
         meta: this.uploaded_pic,
-        bio: this.form.bio.value,
+        // bio: this.form.bio.value,
         flutterwave_merchant_id: this.form.flutterwave_merchant_id.value,
       };
 
@@ -401,22 +401,22 @@ export default {
           validated: false,
           value: "",
         },
-        username: {
-          validated: true,
-          value: "",
-        },
-        dob: {
-          validated: true,
-          value: "",
-        },
+        // username: {
+        //   validated: true,
+        //   value: "",
+        // },
+        // dob: {
+        //   validated: true,
+        //   value: "",
+        // },
         flutterwave_merchant_id: {
           validated: true,
           value: "",
         },
-        bio: {
-          validated: true,
-          value: "",
-        },
+        // bio: {
+        //   validated: true,
+        //   value: "",
+        // },
         email_address: {
           validated: false,
           value: "",
@@ -525,11 +525,11 @@ export default {
       const {
         fullname,
         email,
-        username,
-        dob,
+        // username,
+        // dob,
         phone,
         flutterwave_merchant_id,
-        bio,
+        // bio,
         meta,
       } = this.getUser;
 
@@ -543,10 +543,10 @@ export default {
       this.form.last_name.value = lastname;
       this.form.last_name.validated = !!lastname;
 
-      this.form.username.value = username;
-      this.form.dob.value = dob;
+      // this.form.username.value = username;
+      // this.form.dob.value = dob;
       this.form.flutterwave_merchant_id.value = flutterwave_merchant_id;
-      this.form.bio.value = bio;
+      // this.form.bio.value = bio;
 
       this.form.email_address.value = email;
       this.form.email_address.validated = !!email;
@@ -562,11 +562,11 @@ export default {
         ...this.getUser,
         email: this.form.email_address.value,
         phone: this.form.phone_number.value,
-        bio: this.form.bio.value,
+        // bio: this.form.bio.value,
         meta: this.uploaded_pic,
         fullname: `${this.form.last_name.value} ${this.form.first_name.value}`,
-        username: this.form?.username.value,
-        dob: this.form?.dob.value,
+        // username: this.form?.username.value,
+        // dob: this.form?.dob.value,
         flutterwave_merchant_id: this.form?.flutterwave_merchant_id.value,
       };
 

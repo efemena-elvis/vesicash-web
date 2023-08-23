@@ -57,7 +57,7 @@ export default {
       sidebar_routes: "",
       merchant_of_record: {
         id: 5,
-        title: "Merchant of Records",
+        title: "Merchant of Record",
         icon: "MORIcon",
         link: "/merchant/introduction",
         slug: "mor",
