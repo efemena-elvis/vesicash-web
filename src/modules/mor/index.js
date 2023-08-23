@@ -15,7 +15,7 @@ const morRoutes = [
           ),
         meta: {
           requiresAuth: true,
-          name: "Merchants of Records",
+          name: "Merchants of Record",
         },
       },
     ],

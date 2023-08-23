@@ -16,7 +16,7 @@
       <!-- MOR COUNTRIES -->
       <FieldSetup
         title="Select countries to deploy MoR for"
-        description="Select the countries you wish to deploy Merchant of Records for."
+        description="Select the countries you wish to deploy Merchant of Record for."
       >
         <template slot="form-area">
           <div class="form-area">

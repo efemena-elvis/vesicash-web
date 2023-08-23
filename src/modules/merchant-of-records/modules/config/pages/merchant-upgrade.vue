@@ -1,15 +1,14 @@
 <template>
-  <div class="merchant-upgrade">
+  <div class="merchant-upgrade pdb-40">
     <PageBackBtn history_mode />
 
     <div class="vesicash-container mgt-24">
       <div class="title-text h4-text mgb-8 grey-900 text-center">
-        Upgrade your account
+        Verify your account
       </div>
 
       <div class="description-text h7-text grey-800 text-center mgb-40">
-        Let’s help you upgrade your account so you can succesfully deploy your
-        business to new markets across the world
+        Complete your business account verification in the following steps.
       </div>
     </div>
 
@@ -32,7 +31,7 @@
             <div class="mgb-24">
               <verification-card
                 title="Business information"
-                subtitle="Provide information about your business."
+                subtitle="Provide some information about your business."
                 cta_title="Update business information"
                 :verified="isBusinessVerified"
                 :check_verification_state="true"
@@ -59,7 +58,7 @@
             <div class="mgb-24">
               <verification-card
                 title="Tax identification number"
-                subtitle="Validate your business tax identification."
+                subtitle="Validate your business tax identification number."
                 cta_title="Verify TIN"
                 :verified="isTinVerified.is_verified"
                 :verification_state="isTinVerified.verification_state"
@@ -72,13 +71,25 @@
 
             <div class="mgb-24">
               <verification-card
-                title="BVN details"
-                subtitle="Confirm your BVN details."
+                title="Bank Verification"
+                subtitle="Verify your BVN details"
                 cta_title="Verify BVN details"
                 :verified="isBvnVerified"
                 @action="toggleBvnModal"
               >
                 <BvnIcon />
+              </verification-card>
+            </div>
+
+            <div class="mgb-24">
+              <verification-card
+                title="Government ID"
+                subtitle="Choose and upload a document for verification."
+                cta_title="Verify document"
+                :verified_docs="getOtherDocuments"
+                @action="toggleDocUploadModal"
+              >
+                <FileIcon active />
               </verification-card>
             </div>
           </div>
@@ -99,6 +110,13 @@
         <CoporationVerificationModal
           @saved="showSuccessModal('show_doc_upload_modal', $event)"
           @closeTriggered="toggleCACRegistrationModal"
+        />
+      </transition>
+
+      <transition name="fade" v-if="show_doc_upload_modal">
+        <VerificationDocumentModal
+          @saved="showSuccessModal('show_doc_upload_modal', $event)"
+          @closeTriggered="toggleDocUploadModal"
         />
       </transition>
 
@@ -174,6 +192,24 @@ export default {
         : false;
     },
 
+    getOtherDocuments() {
+      if (!this.user_verifications) return [];
+
+      let doc_verifications = [];
+
+      this.user_verifications.map((doc) => {
+        if (this.other_documents.includes(doc.verification_type)) {
+          doc_verifications.push(doc);
+        }
+      });
+
+      doc_verifications = doc_verifications.map((doc) => {
+        return { ...doc, verification_state: this.getVerificationState(doc) };
+      });
+
+      return doc_verifications;
+    },
+
     isBvnVerified() {
       if (!this.user_verifications) return false;
       const bvn_verification = this.user_verifications.find(
@@ -225,6 +261,7 @@ export default {
     show_bvn_modal: false,
     show_business_info_modal: false,
     show_tin_verification_modal: false,
+    show_doc_upload_modal: false,
 
     business_info_verified: false,
     document_verified: false,
@@ -234,6 +271,7 @@ export default {
     response_message: "",
     loading_verification: true,
     base_timestamp: "0001-01-01T00:00:00Z",
+    other_documents: ["passport", "drivers_license", "nin"],
   }),
 
   mounted() {
@@ -279,6 +317,10 @@ export default {
 
     toggleBvnModal() {
       this.show_bvn_modal = !this.show_bvn_modal;
+    },
+
+    toggleDocUploadModal() {
+      this.show_doc_upload_modal = !this.show_doc_upload_modal;
     },
 
     toggleSuccessModal() {

@@ -7,7 +7,7 @@
     <!-- MODAL COVER HEADER -->
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
-        <div class="modal-cover-title">BVN details</div>
+        <div class="modal-cover-title">Bank Verification</div>
         <div class="tertiary-2-text grey-600 wt-75">
           Enter Your bank verificaton number to verify your identity
         </div>
