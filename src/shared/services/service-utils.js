@@ -9,6 +9,15 @@ class serviceUtils {
     location.href = "/login";
   }
 
+  checkAccountStatus(verifications) {
+     const required_types = ['tax','document','id', 'business', 'bvn'];
+
+     return required_types?.every(type=>{
+       const doc = verifications?.find(verification=>verification?.verification_type===type);
+       return doc && doc?.is_verified
+     })
+  }
+
   checkAuthTimeout(minutes) {
     const timeout = Number(minutes) * 60000;
     const entry_time = Number(localStorage.timestamp ?? 0);

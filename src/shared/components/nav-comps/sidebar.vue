@@ -9,19 +9,22 @@
     </router-link>
 
     <!-- SIDE NAV ITEMS -->
-    <div class="sidebar-item-list">
+    <div
+      :class="
+        isMoRSetupEnabled
+          ? 'sidebar-item-list sidebar-item-list__long'
+          : 'sidebar-item-list'
+      "
+    >
       <SidebarItem
         v-for="(nav, index) in sidebar_routes"
         :key="index"
         :nav="nav"
       />
+    </div>
 
-      <div
-        class="fixed-sidebar"
-        v-if="!isMoRSetupEnabled && getAccountType === 'business'"
-      >
-        <SidebarItem is_active :nav="merchant_of_record" />
-      </div>
+    <div class="fixed-sidebar" v-if="!isMoRSetupEnabled">
+      <SidebarItem is_active :nav="merchant_of_record" />
     </div>
 
     <!-- LOG OUT ACCOUNT SECTION -->
@@ -125,6 +128,23 @@ export default {
     width: 75%;
   }
 
+  .sidebar-item-list {
+    max-height: 60vh !important;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+      width: 5px;
+      background-color: getColor("grey-300");
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: getColor("grey-400");
+    }
+  }
+
+  .sidebar-item-list__long {
+    max-height: 85vh !important;
+  }
+
   .brand-logo {
     svg {
       width: toRem(146);
@@ -133,12 +153,12 @@ export default {
   }
 
   .fixed-sidebar {
-    margin-top: toRem(50);
+    margin-top: toRem(10);
   }
 
   .wrapper {
     padding: 0 toRem(16);
-    bottom: toRem(24);
+    bottom: toRem(14);
     left: 0;
 
     .log-out-section {

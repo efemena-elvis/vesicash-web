@@ -4,14 +4,14 @@
     <div>
       <div class="secondary-1-text grey-900"></div>
       <div class="tertiary-2-text grey-600 mgb-8">
-        Your account is limited, Please upgrade your account to enjoy vesicash
+        Your account is limited, please verify your account to enjoy vesicash
         without limits
       </div>
 
       <router-link
         class="btn btn-sm btn-secondary d-inline-block"
-        to="/settings/verification?verify_doc=true"
-        >Upgrade Account</router-link
+        to="/merchant/document-upgrade"
+        >Verify Account</router-link
       >
     </div>
   </div>
