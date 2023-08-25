@@ -15,7 +15,7 @@
     <!-- MODAL COVER BODY -->
     <template slot="modal-cover-body">
       <div class="modal-cover-body">
-        <div class="form-group inline-group">
+        <div class="form-group inline-group" v-if="false">
           <BasicInput
             label_title="First name"
             label_id="first-name"
@@ -60,7 +60,7 @@
           />
         </div>
 
-        <div class="form-group">
+        <div class="form-group" v-if="false">
           <BasicInput
             label_title="Phone number"
             label_id="phoneNumber"
@@ -89,7 +89,7 @@
           />
         </div>
 
-        <div class="form-group">
+        <div class="form-group" v-if="false">
           <BasicInput
             label_title="Business Name"
             label_id="businessName"
@@ -128,7 +128,7 @@
           :disabled="isDisabled"
           @click="joinMORWaitlist"
         >
-          Join Waitlist
+          Get started
         </button>
       </div>
     </template>
@@ -174,19 +174,27 @@ export default {
 
     userPayload() {
       return {
-        firstname: this.form.first_name,
-        lastname: this.form.last_name,
+        // firstname: this.form.first_name,
+        // lastname: this.form.last_name,
         email_address: this.form.email_address,
-        phone_number: this.form.phone_number,
-        business_name: this.form.business_name,
+        // phone_number: this.form.phone_number,
+        // business_name: this.form.business_name,
         business_type_id: this.selected_business_type,
         country_id: this.selected_countries,
       };
     },
 
+    eventPayload() {
+      return {
+        email: this.form.email_address,
+        business_type: this.selected_business_type_string,
+        countries: this.selected_countries_string,
+      };
+    },
+
     isDisabled() {
       return (
-        Object.values(this.validity).some((valid) => valid) ||
+        !this.form?.email_address ||
         !this.selected_countries?.length ||
         !this.selected_business_type
       );
@@ -196,7 +204,9 @@ export default {
   data() {
     return {
       selected_business_type: null,
+      selected_business_type_string: "",
       selected_countries: [],
+      selected_countries_string: "",
 
       business_type_options: [
         { name: "Test 1", id: 1 },
@@ -214,19 +224,19 @@ export default {
       search_type: "",
 
       form: {
-        first_name: "",
-        last_name: "",
+        // first_name: "",
+        // last_name: "",
         email_address: "",
-        phone_number: "",
-        business_name: "",
+        // phone_number: "",
+        // business_name: "",
       },
 
       validity: {
-        first_name: true,
-        last_name: true,
+        // first_name: true,
+        // last_name: true,
         email_address: true,
-        phone_number: true,
-        business_name: true,
+        // phone_number: true,
+        // business_name: true,
       },
     };
   },
@@ -240,10 +250,16 @@ export default {
 
     selectBusinessType(type) {
       this.selected_business_type = type.id;
+      this.selected_business_type_string = type.name;
     },
 
     selectCountry(countries) {
-      this.selected_countries = countries
+      this.selected_countries_string = [...countries]
+        ?.filter((ct) => ct.selected)
+        ?.map((ct) => ct.name)
+        ?.join("_");
+
+      this.selected_countries = [...countries]
         ?.filter((ct) => ct.selected)
         ?.map((ct) => ct.id);
     },
@@ -258,11 +274,14 @@ export default {
         const type = response?.code === 200 ? "success" : "error";
         const message =
           response?.code === 200
-            ? "You've been added to our MOR waitlist..Cheers"
+            ? "A member of the team will reach out to fully onboard your business in the country of interest."
             : response.message;
         this.pushToast(message, type);
 
-        if (response?.code === 200) this.$emit("closeTriggered");
+        if (response?.code === 200) {
+          window?.fbq("trackCustom", "MOR-Interest", this.eventPayload);
+          this.$emit("closeTriggered");
+        }
       } catch (err) {
         console.log("ERROR ADDING USER", err);
         this.pushToast("Failed to join waitlist", "error");

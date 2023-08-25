@@ -82,6 +82,8 @@ export default {
     );
 
     userData.verifications = user_verifications;
+    const is_upgraded = serviceUtils.checkAccountStatus(response_payload.profile?.verifications);
+    userData.is_upgraded = is_upgraded;
 
     // UPDATE AUTH STATE
     state.authUser = userData;
