@@ -8,7 +8,10 @@
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
         <div class="modal-cover-title">Merchant of Record</div>
-        <div class="tertiary-2-text grey-600">Create and manage your MOR</div>
+        <div class="tertiary-2-text grey-600">
+          Fill these details below to get you onboarded in your country of
+          interest.
+        </div>
       </div>
     </template>
 
