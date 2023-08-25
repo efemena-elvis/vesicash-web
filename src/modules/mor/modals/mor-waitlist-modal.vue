@@ -184,6 +184,14 @@ export default {
       };
     },
 
+    eventPayload() {
+      return {
+        email: this.form.email_address,
+        business_type: this.selected_business_type_string,
+        countries: this.selected_countries_string,
+      };
+    },
+
     isDisabled() {
       return (
         !this.form?.email_address ||
@@ -196,7 +204,9 @@ export default {
   data() {
     return {
       selected_business_type: null,
+      selected_business_type_string: "",
       selected_countries: [],
+      selected_countries_string: "",
 
       business_type_options: [
         { name: "Test 1", id: 1 },
@@ -240,10 +250,16 @@ export default {
 
     selectBusinessType(type) {
       this.selected_business_type = type.id;
+      this.selected_business_type_string = type.name;
     },
 
     selectCountry(countries) {
-      this.selected_countries = countries
+      this.selected_countries_string = [...countries]
+        ?.filter((ct) => ct.selected)
+        ?.map((ct) => ct.name)
+        ?.join("_");
+
+      this.selected_countries = [...countries]
         ?.filter((ct) => ct.selected)
         ?.map((ct) => ct.id);
     },
@@ -262,7 +278,10 @@ export default {
             : response.message;
         this.pushToast(message, type);
 
-        if (response?.code === 200) this.$emit("closeTriggered");
+        if (response?.code === 200) {
+          window?.fbq("trackCustom", "MOR-Interest", this.eventPayload);
+          this.$emit("closeTriggered");
+        }
       } catch (err) {
         console.log("ERROR ADDING USER", err);
         this.pushToast("Failed to join waitlist", "error");

@@ -10,7 +10,8 @@ class serviceUtils {
   }
 
   checkAccountStatus(verifications) {
-     const required_types = ['tax','document','id', 'business', 'bvn'];
+     //WAITING ON BACKEND TO GIVE UPDATED LIST
+     const required_types = ['tin','cac','bvn'];
 
      return required_types?.every(type=>{
        const doc = verifications?.find(verification=>verification?.verification_type===type);
