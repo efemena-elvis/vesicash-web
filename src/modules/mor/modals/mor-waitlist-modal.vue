@@ -12,6 +12,14 @@
           Fill these details below to get you onboarded in your country of
           interest.
         </div>
+        <div class="success-wrapper smooth-transition" v-if="show_success">
+          <div class="text-neutral-10">
+            A member of the team will reach out to fully onboard your business
+            in the country of interest. <br />
+            You will be redirected to the account verification page to continue
+            using Vesicash
+          </div>
+        </div>
       </div>
     </template>
 
@@ -223,6 +231,7 @@ export default {
       selected_business_type_string: "",
       selected_countries: [],
       selected_countries_string: "",
+      show_success: false,
 
       business_type_options: [
         { name: "Test 1", id: 1 },
@@ -288,16 +297,21 @@ export default {
         this.handleClick("save", "Join Waitlist", false);
 
         const type = response?.code === 200 ? "success" : "error";
-        const message =
-          response?.code === 200
-            ? "A member of the team will reach out to fully onboard your business in the country of interest."
-            : response.message;
-        this.pushToast(message, type);
+        // const message =
+        //   response?.code === 200
+        //     ? "A member of the team will reach out to fully onboard your business in the country of interest."
+        //     : response.message;
+        this.pushToast(response?.message, type);
 
         if (response?.code === 200) {
+          this.show_success = true;
           window?.fbq("trackCustom", "MOR-Interest", this.eventPayload);
-          this.$emit("closeTriggered");
-          this.$emit("done");
+
+          setTimeout(() => {
+            this.show_success = false;
+            this.$emit("closeTriggered");
+            this.$emit("done");
+          }, 5000);
         }
       } catch (err) {
         console.log("ERROR ADDING USER", err);
@@ -310,6 +324,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.success-wrapper {
+  padding: 15px;
+  background-color: getColor("green-500");
+  color: getColor("neutral-10");
+  margin: 20px 0;
+  font-size: 0.9rem;
+}
+
 .inline-group {
   display: grid;
   grid-template-columns: 1fr 1fr;
