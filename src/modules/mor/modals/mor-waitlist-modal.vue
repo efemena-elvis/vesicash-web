@@ -49,7 +49,7 @@
           <BasicInput
             label_title="Email address"
             label_id="email-address"
-            :input_value="form.email_address"
+            :input_value="form.email_address || userEmail"
             is_required
             placeholder="Enter email address"
             @getInputState="updateFormState($event, 'email_address')"
@@ -114,6 +114,7 @@
             :options="businessType"
             allow_search
             @searchItem="search_type = $event"
+            :pre_select="preSelectBusinessType"
           />
         </div>
       </div>
@@ -172,14 +173,26 @@ export default {
       );
     },
 
+    preSelectBusinessType() {
+      return {
+        id: this.getUser?.business_id,
+        name: this.getUser?.business_type,
+      };
+    },
+
+    userEmail() {
+      return this.getUser?.email || "";
+    },
+
     userPayload() {
       return {
         // firstname: this.form.first_name,
         // lastname: this.form.last_name,
-        email_address: this.form.email_address,
+        email_address: this.form.email_address || this.getUser?.email,
         // phone_number: this.form.phone_number,
         // business_name: this.form.business_name,
-        business_type_id: this.selected_business_type,
+        business_type_id:
+          this.selected_business_type || this.getUser?.business_id,
         country_id: this.selected_countries,
       };
     },
@@ -194,9 +207,9 @@ export default {
 
     isDisabled() {
       return (
-        !this.form?.email_address ||
+        !this.userPayload?.email_address ||
         !this.selected_countries?.length ||
-        !this.selected_business_type
+        !this.userPayload.business_type_id
       );
     },
   },
@@ -281,6 +294,7 @@ export default {
         if (response?.code === 200) {
           window?.fbq("trackCustom", "MOR-Interest", this.eventPayload);
           this.$emit("closeTriggered");
+          this.$emit("done");
         }
       } catch (err) {
         console.log("ERROR ADDING USER", err);
