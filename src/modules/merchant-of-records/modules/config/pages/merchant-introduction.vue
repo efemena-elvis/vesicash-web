@@ -129,10 +129,9 @@ export default {
 
       if (response?.code === 200) {
         this.updateProfile();
-
-        setTimeout(() => {
-          location.href = "/dashboard";
-        }, 1000);
+        location.href = this.getUser?.is_upgraded
+          ? "/dashboard"
+          : "/merchant/document-upgrade";
       }
     },
 
