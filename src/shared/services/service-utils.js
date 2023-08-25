@@ -11,7 +11,7 @@ class serviceUtils {
 
   checkAccountStatus(verifications) {
      //WAITING ON BACKEND TO GIVE UPDATED LIST
-     const required_types = ['tin','cac','bvn'];
+     const required_types = ['tin','cac','bvn','nin'];
 
      return required_types?.every(type=>{
        const doc = verifications?.find(verification=>verification?.verification_type===type);
