@@ -74,7 +74,7 @@ export default {
       this.feather_loader_msg = message;
     });
 
-    this.$bus.$on("show-page-loader", (message) => {
+    this.$bus.$on("show-page-loader", (message = "") => {
       this.show_feather_loader = true;
       this.feather_loader_msg = message;
     });

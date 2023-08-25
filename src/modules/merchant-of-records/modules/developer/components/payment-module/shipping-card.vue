@@ -35,7 +35,7 @@
           input_type="number"
           is_required
           placeholder="0.00"
-          prefix_value="NGN (₦)"
+          :prefix_value="currency"
           :custom_style="{
             input_wrapper_style: 'form-prefix form-prefix-right',
           }"
@@ -60,6 +60,21 @@
 export default {
   name: "ShippingCard",
 
+  props: {
+    currency: {
+      type: String,
+      default: "NGN (₦)",
+    },
+  },
+
+  watch: {
+    form: {
+      handler(form) {
+        this.$emit("change", form);
+      },
+    },
+  },
+
   data: () => ({
     form: {
       shipping_type: {
@@ -76,10 +91,6 @@ export default {
       },
     },
   }),
-
-  methods: {
-    updateShippingAmount(value) {},
-  },
 };
 </script>
 

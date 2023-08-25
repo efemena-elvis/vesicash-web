@@ -37,11 +37,32 @@
           <FormColorInput color_id="backgroundColor" default_color="#F6FAF9" />
         </div>
 
-        <div class="form-group mgb-0">
+        <div class="form-group">
           <label class="form-label" for="buttonColor"
             >Checkout button color</label
           >
           <FormColorInput color_id="buttonColor" default_color="#043B56" />
+        </div>
+
+        <div class="form-group mgb-0">
+          <label for="otherRequirement" class="form-label">
+            Add other requirements
+          </label>
+
+          <FormCheckCard
+            check_id="requirePhoneNumber"
+            primary_text="Collect phone number"
+          />
+
+          <FormCheckCard
+            check_id="requireCountry"
+            primary_text="Collect country"
+          />
+
+          <FormCheckCard
+            check_id="requireStreetAddress"
+            primary_text="Collect street address"
+          />
         </div>
       </div>
     </template>
@@ -49,18 +70,18 @@
     <!-- CUSTOMER LOCATION AND SETTINGS -->
     <template>
       <div class="setup-wrapper">
-        <div class="title-text">CUSTOMER LOCATION AND SETTINGS</div>
+        <div class="title-text">CUSTOMER LOCATION</div>
 
         <div class="form-group">
           <div class="form-label">Select location</div>
           <DropSelectInput
             placeholder="Select location"
-            @selectedOption="selectUserLocation($event)"
-            :options="location_options"
+            @optionSelected="selectUserLocation($event)"
+            :options="morCountries"
           />
         </div>
 
-        <div class="form-group mgb-0">
+        <div class="form-group mgb-0" v-if="false">
           <div class="form-label">Select currency</div>
           <DropSelectInput
             placeholder="Select currency"
@@ -88,8 +109,7 @@
           />
         </div>
 
-        <ShippingCard />
-        <ShippingCard />
+        <ShippingCard :currency="shippingCurency" />
 
         <button class="btn btn-md btn-secondary">
           <span class="icon-plus mgr-8"></span> Add a new delivery
@@ -111,8 +131,10 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from "vuex";
 import FormColorInput from "@/shared/components/form-comps/form-color-input";
 import FormToggler from "@/shared/components/form-comps/form-toggler";
+import FormCheckCard from "../../../../../../shared/components/form-comps/form-check-card.vue";
 
 export default {
   name: "CustomerSetup",
@@ -120,10 +142,25 @@ export default {
   components: {
     FormColorInput,
     FormToggler,
+    FormCheckCard,
     ShippingCard: () =>
       import(
         /* webpackChunkName: 'MoR-module' */ "@/modules/merchant-of-records/modules/developer/components/payment-module/shipping-card"
       ),
+  },
+
+  computed: {
+    ...mapGetters({
+      getMorCountries: "merchant/getMorCountries",
+    }),
+
+    morCountries() {
+      return [...this.getMorCountries];
+    },
+
+    shippingCurency() {
+      return this.selected_country?.currency_code || "NGN";
+    },
   },
 
   data: () => ({
@@ -134,14 +171,26 @@ export default {
       },
     },
 
+    selected_country: null,
+
     location_options: [],
     currency_options: [],
 
     shipping_active: false,
   }),
 
+  mounted() {
+    if (!this.getMorCountries.length) this.fetchMoRCountries();
+  },
+
   methods: {
-    selectUserLocation() {},
+    ...mapActions({
+      fetchMoRCountries: "merchant/fetchMoRCountries",
+    }),
+
+    selectUserLocation(location) {
+      this.selected_country = location;
+    },
 
     selectUserCurrency() {},
   },
