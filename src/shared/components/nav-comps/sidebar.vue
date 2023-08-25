@@ -129,7 +129,7 @@ export default {
   }
 
   .sidebar-item-list {
-    max-height: 60vh !important;
+    max-height: 65vh !important;
     overflow-y: auto;
 
     &::-webkit-scrollbar {

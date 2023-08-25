@@ -48,6 +48,8 @@ export default {
     userData.website = response_payload.profile?.business?.website ?? null;
     userData.business_type =
       response_payload.profile?.business?.business_type ?? null;
+    userData.business_id =
+      response_payload.profile?.business?.id ?? null;  
     userData.business_charge = response_payload.profile?.business
       ?.escrow_charge ?? { type: "percentage", value: "0.05" };
 

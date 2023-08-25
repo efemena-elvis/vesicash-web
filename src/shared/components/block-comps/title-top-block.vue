@@ -4,7 +4,7 @@
     <div class="welcome-message h4-text grey-900">
       <template v-if="title.length">{{ title }}</template>
       <template v-else>
-        Welcome <span>{{ displayUserFirstname }}</span>
+        Welcome <span>{{ businessName }}</span>
       </template>
     </div>
 
@@ -38,6 +38,10 @@ export default {
   computed: {
     displayUserFirstname() {
       return this.getUser?.fullname?.split(" ")[0] ?? this.getUser.email;
+    },
+
+    businessName() {
+      return this.getUser?.business_name || this.displayUserFirstname;
     },
   },
 };

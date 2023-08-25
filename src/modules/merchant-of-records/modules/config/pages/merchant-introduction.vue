@@ -37,7 +37,10 @@
     <!-- MODALS -->
     <portal to="vesicash-modals">
       <transition name="fade" v-if="show_waitlist_modal">
-        <MorWaitlistModal @closeTriggered="toggleWaitlistModal" />
+        <MorWaitlistModal
+          @closeTriggered="toggleWaitlistModal"
+          @done="updateMoRIntroductionState"
+        />
       </transition>
     </portal>
   </div>
@@ -89,7 +92,7 @@ export default {
   }),
 
   mounted() {
-    this.updateMoRIntroductionState();
+    // this.updateMoRIntroductionState();
     this.fetchMORBusinessTypes();
     this.fetchMORCountries();
   },
@@ -124,7 +127,13 @@ export default {
         },
       });
 
-      if (response?.code === 200) this.updateProfile();
+      if (response?.code === 200) {
+        this.updateProfile();
+
+        setTimeout(() => {
+          location.href = "/dashboard";
+        }, 1000);
+      }
     },
 
     updateProfile() {
