@@ -11,6 +11,7 @@ import transactions from "@/modules/transactions/store";
 import settings from "@/modules/settings/store";
 import exchange from "@/modules/exchange/store";
 import developer from "@/modules/developer/store";
+import mor from "@/modules/mor/store";
 
 // MERCHANT OF RECORD STORE
 import merchant from "@/modules/merchant-of-records/modules/config/store";
@@ -28,6 +29,7 @@ export default new Vuex.Store({
     settings,
     exchange,
     developer,
+    mor,
     merchant,
     merchantDashboard,
     merchantTransactions,

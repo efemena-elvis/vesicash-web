@@ -101,7 +101,7 @@ export default {
   // ==============================
   // FETCH USER VERIFICATIONS
   // ==============================
-  async fetchUserVerifications({ commit, getters }, payload) {
+  async fetchUserVerifications({ commit }, payload) {
     const response = await getRequest(
       "verification",
       routes.fetch_verifications,
