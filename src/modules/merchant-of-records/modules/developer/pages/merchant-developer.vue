@@ -36,17 +36,17 @@ export default {
   },
 
   data: () => ({
-    developer_view: "PaymentModule",
+    developer_view: "APIModule",
 
     pages: [
       {
-        title: "Payment Modules",
-        value: "PaymentModule",
+        title: "API Keys",
+        value: "APIModule",
         active: true,
       },
       {
-        title: "API Keys",
-        value: "APIModule",
+        title: "Payment Modules",
+        value: "PaymentModule",
         active: false,
       },
     ],

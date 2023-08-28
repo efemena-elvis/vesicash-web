@@ -276,6 +276,7 @@ export default {
 
   mounted() {
     this.fetchVerifications();
+    this.hidePageLoader();
   },
 
   methods: {
