@@ -9,19 +9,22 @@
     </router-link>
 
     <!-- SIDE NAV ITEMS -->
-    <div class="sidebar-item-list">
+    <div
+      :class="
+        isMoRSetupEnabled
+          ? 'sidebar-item-list sidebar-item-list__long'
+          : 'sidebar-item-list'
+      "
+    >
       <SidebarItem
         v-for="(nav, index) in sidebar_routes"
         :key="index"
         :nav="nav"
       />
+    </div>
 
-      <div
-        class="fixed-sidebar"
-        v-if="!isMoRSetupEnabled && getAccountType === 'business'"
-      >
-        <SidebarItem is_active :nav="merchant_of_record" />
-      </div>
+    <div class="fixed-sidebar" v-if="!isMoRSetupEnabled">
+      <SidebarItem is_active :nav="merchant_of_record" />
     </div>
 
     <!-- LOG OUT ACCOUNT SECTION -->
@@ -33,6 +36,7 @@
 
 <script>
 import { mapActions } from "vuex";
+import MoRDocValidate from "@/modules/merchant-of-records/modules/config/mixins/mor-docs-mixin";
 import { escrowRoutes, merchantRoutes } from "@/shared/nav-routes";
 import VesicashBrandLogo from "@/shared/components/icon-comps/vesicash-brand-logo";
 import ExitIcon from "@/shared/components/icon-comps/exit-icon";
@@ -41,6 +45,8 @@ import ProfileMenu from "@/shared/components/nav-comps/profile-menu";
 
 export default {
   name: "SidebarComp",
+
+  mixins: [MoRDocValidate],
 
   components: {
     VesicashBrandLogo,
@@ -54,7 +60,7 @@ export default {
       sidebar_routes: "",
       merchant_of_record: {
         id: 5,
-        title: "Merchant of Records",
+        title: "Merchant of Record",
         icon: "MORIcon",
         link: "/merchant/introduction",
         slug: "mor",
@@ -68,14 +74,37 @@ export default {
     this.sidebar_routes = this.isMoRSetupEnabled
       ? merchantRoutes
       : escrowRoutes;
+
+    this.checkMoRVerficationState();
+
+    if (this.getAccountType === "business" && !this.isMoRSetupEnabled) {
+      this.fetchVerifications();
+    }
   },
 
   methods: {
-    ...mapActions({ logOutUser: "auth/logOutUser" }),
+    ...mapActions({
+      logOutUser: "auth/logOutUser",
+    }),
 
     handleUserlogOut() {
       this.togglePageLoader();
       setTimeout(() => this.logOutUser(), 2000);
+    },
+
+    checkMoRVerficationState() {
+      let has_seen_mor_intro = this.getUser.has_seen_mor_introduction;
+
+      if (has_seen_mor_intro) {
+        // CHECK VERIFICATION UPGRADE
+        if (this.validateMoRVerification) {
+          this.merchant_of_record.link = "/settings/mor-setup";
+        } else {
+          this.merchant_of_record.link = "/merchant/document-upgrade";
+        }
+      } else {
+        this.merchant_of_record.link = "/merchant/introduction";
+      }
     },
   },
 };
@@ -99,6 +128,23 @@ export default {
     width: 75%;
   }
 
+  .sidebar-item-list {
+    max-height: 65vh !important;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+      width: 5px;
+      background-color: getColor("grey-300");
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: getColor("grey-400");
+    }
+  }
+
+  .sidebar-item-list__long {
+    max-height: 85vh !important;
+  }
+
   .brand-logo {
     svg {
       width: toRem(146);
@@ -107,12 +153,12 @@ export default {
   }
 
   .fixed-sidebar {
-    margin-top: toRem(50);
+    margin-top: toRem(10);
   }
 
   .wrapper {
     padding: 0 toRem(16);
-    bottom: toRem(24);
+    bottom: toRem(14);
     left: 0;
 
     .log-out-section {

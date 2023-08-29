@@ -8,14 +8,25 @@
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
         <div class="modal-cover-title">Merchant of Record</div>
-        <div class="tertiary-2-text grey-600">Create and manage your MOR</div>
+        <div class="tertiary-2-text grey-600">
+          Fill these details below to get you onboarded in your country of
+          interest.
+        </div>
+        <div class="success-wrapper smooth-transition" v-if="show_success">
+          <div class="text-neutral-10">
+            A member of the team will reach out to fully onboard your business
+            in the country of interest. <br />
+            You will be redirected to the account verification page to continue
+            using Vesicash
+          </div>
+        </div>
       </div>
     </template>
 
     <!-- MODAL COVER BODY -->
     <template slot="modal-cover-body">
       <div class="modal-cover-body">
-        <div class="form-group inline-group">
+        <div class="form-group inline-group" v-if="false">
           <BasicInput
             label_title="First name"
             label_id="first-name"
@@ -49,7 +60,7 @@
           <BasicInput
             label_title="Email address"
             label_id="email-address"
-            :input_value="form.email_address"
+            :input_value="form.email_address || userEmail"
             is_required
             placeholder="Enter email address"
             @getInputState="updateFormState($event, 'email_address')"
@@ -60,7 +71,7 @@
           />
         </div>
 
-        <div class="form-group">
+        <div class="form-group" v-if="false">
           <BasicInput
             label_title="Phone number"
             label_id="phoneNumber"
@@ -89,7 +100,7 @@
           />
         </div>
 
-        <div class="form-group">
+        <div class="form-group" v-if="false">
           <BasicInput
             label_title="Business Name"
             label_id="businessName"
@@ -114,6 +125,7 @@
             :options="businessType"
             allow_search
             @searchItem="search_type = $event"
+            :pre_select="preSelectBusinessType"
           />
         </div>
       </div>
@@ -128,7 +140,7 @@
           :disabled="isDisabled"
           @click="joinMORWaitlist"
         >
-          Join Waitlist
+          Get started
         </button>
       </div>
     </template>
@@ -172,23 +184,43 @@ export default {
       );
     },
 
+    preSelectBusinessType() {
+      return {
+        id: this.getUser?.business_id,
+        name: this.getUser?.business_type,
+      };
+    },
+
+    userEmail() {
+      return this.getUser?.email || "";
+    },
+
     userPayload() {
       return {
-        firstname: this.form.first_name,
-        lastname: this.form.last_name,
-        email_address: this.form.email_address,
-        phone_number: this.form.phone_number,
-        business_name: this.form.business_name,
-        business_type_id: this.selected_business_type,
+        // firstname: this.form.first_name,
+        // lastname: this.form.last_name,
+        email_address: this.form.email_address || this.getUser?.email,
+        // phone_number: this.form.phone_number,
+        // business_name: this.form.business_name,
+        business_type_id:
+          this.selected_business_type || this.getUser?.business_id,
         country_id: this.selected_countries,
+      };
+    },
+
+    eventPayload() {
+      return {
+        email: this.form.email_address,
+        business_type: this.selected_business_type_string,
+        countries: this.selected_countries_string,
       };
     },
 
     isDisabled() {
       return (
-        Object.values(this.validity).some((valid) => valid) ||
+        !this.userPayload?.email_address ||
         !this.selected_countries?.length ||
-        !this.selected_business_type
+        !this.userPayload.business_type_id
       );
     },
   },
@@ -196,7 +228,10 @@ export default {
   data() {
     return {
       selected_business_type: null,
+      selected_business_type_string: "",
       selected_countries: [],
+      selected_countries_string: "",
+      show_success: false,
 
       business_type_options: [
         { name: "Test 1", id: 1 },
@@ -214,19 +249,19 @@ export default {
       search_type: "",
 
       form: {
-        first_name: "",
-        last_name: "",
+        // first_name: "",
+        // last_name: "",
         email_address: "",
-        phone_number: "",
-        business_name: "",
+        // phone_number: "",
+        // business_name: "",
       },
 
       validity: {
-        first_name: true,
-        last_name: true,
+        // first_name: true,
+        // last_name: true,
         email_address: true,
-        phone_number: true,
-        business_name: true,
+        // phone_number: true,
+        // business_name: true,
       },
     };
   },
@@ -240,10 +275,16 @@ export default {
 
     selectBusinessType(type) {
       this.selected_business_type = type.id;
+      this.selected_business_type_string = type.name;
     },
 
     selectCountry(countries) {
-      this.selected_countries = countries
+      this.selected_countries_string = [...countries]
+        ?.filter((ct) => ct.selected)
+        ?.map((ct) => ct.name)
+        ?.join("_");
+
+      this.selected_countries = [...countries]
         ?.filter((ct) => ct.selected)
         ?.map((ct) => ct.id);
     },
@@ -256,13 +297,22 @@ export default {
         this.handleClick("save", "Join Waitlist", false);
 
         const type = response?.code === 200 ? "success" : "error";
-        const message =
-          response?.code === 200
-            ? "You've been added to our MOR waitlist..Cheers"
-            : response.message;
-        this.pushToast(message, type);
+        // const message =
+        //   response?.code === 200
+        //     ? "A member of the team will reach out to fully onboard your business in the country of interest."
+        //     : response.message;
+        this.pushToast(response?.message, type);
 
-        if (response?.code === 200) this.$emit("closeTriggered");
+        if (response?.code === 200) {
+          this.show_success = true;
+          window?.fbq("trackCustom", "MOR-Interest", this.eventPayload);
+
+          setTimeout(() => {
+            this.show_success = false;
+            this.$emit("closeTriggered");
+            this.$emit("done");
+          }, 5000);
+        }
       } catch (err) {
         console.log("ERROR ADDING USER", err);
         this.pushToast("Failed to join waitlist", "error");
@@ -274,6 +324,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.success-wrapper {
+  padding: 15px;
+  background-color: getColor("green-500");
+  color: getColor("neutral-10");
+  margin: 20px 0;
+  font-size: 0.9rem;
+}
+
 .inline-group {
   display: grid;
   grid-template-columns: 1fr 1fr;

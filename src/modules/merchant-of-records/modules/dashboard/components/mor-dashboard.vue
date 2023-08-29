@@ -93,7 +93,7 @@ export default {
 
       pages: [
         {
-          title: "Merchant of Records",
+          title: "Merchant of Record",
           value: "merchant",
           active: true,
         },

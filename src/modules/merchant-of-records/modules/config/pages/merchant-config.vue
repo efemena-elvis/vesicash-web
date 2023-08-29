@@ -16,7 +16,7 @@
       <!-- MOR COUNTRIES -->
       <FieldSetup
         title="Select countries to deploy MoR for"
-        description="Select the countries you wish to deploy Merchant of Records for."
+        description="Select the countries you wish to deploy Merchant of Record for."
       >
         <template slot="form-area">
           <div class="form-area">
@@ -131,11 +131,14 @@
 
 <script>
 import { mapActions, mapMutations, mapGetters } from "vuex";
+import MoRDocValidate from "@/modules/merchant-of-records/modules/config/mixins/mor-docs-mixin";
 import countries from "@/utilities/countries";
 import FieldSetup from "@/modules/merchant-of-records/modules/config/components/field-setup";
 
 export default {
   name: "MerchantConfig",
+
+  mixins: [MoRDocValidate],
 
   metaInfo: {
     title: "MoR Setup",
@@ -192,6 +195,14 @@ export default {
       },
       deep: true,
     },
+
+    user_verifications: {
+      handler() {
+        if (!this.validateMoRVerification) {
+          this.$router.push("/merchant/document-upgrade");
+        }
+      },
+    },
   },
 
   data() {
@@ -243,6 +254,7 @@ export default {
   created() {
     this.loadMoRBusinessTypes();
     this.loadMoRCountries();
+    this.fetchVerifications();
 
     this.$bus.$on("signedMoR", (data) => this.signMoRContract(data));
   },
@@ -250,8 +262,6 @@ export default {
   mounted() {
     this.$bus.$emit("toggle-page-loader");
     this.loadMoRWalletSize();
-
-    console.log(this.getUser.business_type);
   },
 
   methods: {

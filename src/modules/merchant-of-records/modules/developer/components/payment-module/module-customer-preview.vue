@@ -208,5 +208,14 @@ export default {
 <style lang="scss" scoped>
 .customer-preview {
   padding: toRem(24);
+
+  .btn {
+    background: getColor("teal-800");
+    color: getColor("neutral-10");
+
+    &:hover {
+      background: darken(getColor("teal-800"), 6%);
+    }
+  }
 }
 </style>

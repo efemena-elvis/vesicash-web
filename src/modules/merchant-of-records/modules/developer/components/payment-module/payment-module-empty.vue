@@ -15,7 +15,11 @@
       You dont have any payment modules created, Please create a payment module
     </div>
 
-    <button class="btn btn-md btn-primary">Create a payment module</button>
+    <router-link
+      :to="{ name: 'MerchantModuleCustomer' }"
+      class="btn btn-md btn-primary"
+      >Create a payment module</router-link
+    >
   </div>
 </template>
 

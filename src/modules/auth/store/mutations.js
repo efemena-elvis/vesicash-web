@@ -26,6 +26,7 @@ export default {
     userData.email = response_payload.user.email_address;
     userData.phone = response_payload.user.phone_number;
     userData.username = response_payload.user.username;
+    userData.dob = response_payload.profile.user.dob;
     userData.flutterwave_merchant_id =
       response_payload?.profile?.business?.flutterwave_merchant_id;
     userData.country = response_payload.profile.user.country ?? "NG";
@@ -33,13 +34,22 @@ export default {
     userData.meta = response_payload.user.meta;
     userData.bio = response_payload.profile.user.bio;
     userData.has_seen_tour = response_payload.user.has_seen_tour;
+    userData.has_seen_mor_introduction =
+      response_payload.user.has_seen_mor_introduction;
     userData.is_merchant = response_payload.user.is_mor_enabled;
 
     // BUSINESS ACCOUNT DATA
     userData.business_name =
       response_payload.profile?.business?.business_name ?? null;
+    userData.business_address =
+      response_payload.profile?.business?.business_address ?? null;
+    userData.business_email =
+      response_payload.profile?.business?.business_email ?? null;
+    userData.website = response_payload.profile?.business?.website ?? null;
     userData.business_type =
       response_payload.profile?.business?.business_type ?? null;
+    userData.business_id =
+      response_payload.profile?.business?.id ?? null;  
     userData.business_charge = response_payload.profile?.business
       ?.escrow_charge ?? { type: "percentage", value: "0.05" };
 
@@ -74,6 +84,8 @@ export default {
     );
 
     userData.verifications = user_verifications;
+    const is_upgraded = serviceUtils.checkAccountStatus(response_payload.profile?.verifications);
+    userData.is_upgraded = is_upgraded;
 
     // UPDATE AUTH STATE
     state.authUser = userData;

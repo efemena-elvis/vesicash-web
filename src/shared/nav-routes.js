@@ -114,14 +114,14 @@ const merchantRoutes = [
   //   slug: "payments",
   //   tour_id: [],
   // },
-  // {
-  //   id: 9,
-  //   title: "Developers",
-  //   icon: "DeveloperIcon",
-  //   link: "/merchant/developer",
-  //   slug: "developer",
-  //   tour_id: [],
-  // },
+  {
+    id: 9,
+    title: "Developers",
+    icon: "DeveloperIcon",
+    link: "/merchant/developer",
+    slug: "developer",
+    tour_id: [],
+  },
   {
     id: 10,
     title: "Settings",

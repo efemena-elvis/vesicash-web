@@ -129,7 +129,7 @@ export default {
         },
         {
           name: "National ID",
-          id: "national_id",
+          id: "nin",
         },
       ],
 

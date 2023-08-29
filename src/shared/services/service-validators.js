@@ -8,7 +8,7 @@ class serviceValidators {
   // =========================================
   #email_regex =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  #phone_regex = /(^[0]\d{10}$)|(^[+]?[234]\d{12}$)/;
+  #phone_regex = /(^[0]\d{10}$)|(^[+]?[234]\d{12,14}$)/;
 
   // =========================================
   // A SIMPLE METHOD TO TRIM FORM INPUT
@@ -29,8 +29,20 @@ class serviceValidators {
   // ============================================
   // VALIDATE USER ENTERED PHONE INPUT VALUE
   // ============================================
-  validatePhoneInput(input) {
-    return this.#phone_regex.test(this.trimInput(input)) ? true : false;
+  validatePhoneInput(input, countryCode) {
+    const trimmedInput = this.trimInput(input);
+    let is_validated = false;
+
+    // check for dialling code
+    if (trimmedInput.startsWith(countryCode || `+${countryCode}`)) {
+      // check for phone length
+      let phone_length = trimmedInput.length - countryCode.length;
+      is_validated = phone_length >= 9 && phone_length <= 11 ? true : false;
+    } else {
+      is_validated =
+        trimmedInput.length >= 10 && trimmedInput.length <= 12 ? true : false;
+    }
+    return is_validated;
   }
 
   // =============================================

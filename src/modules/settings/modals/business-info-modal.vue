@@ -19,7 +19,7 @@
       <div class="modal-cover-body">
         <div class="form-group">
           <BasicInput
-            label_title="Business name"
+            label_title="Business name *"
             label_id="business-name"
             :input_value="form.business_name"
             is_required
@@ -47,7 +47,7 @@
 
         <div class="form-group">
           <BasicInput
-            label_title="Address"
+            label_title="Address *"
             label_id="business-address"
             :input_value="form.business_address"
             is_required
@@ -102,6 +102,7 @@
           ref="save"
           class="btn btn-primary btn-md wt-100 mgt-5"
           @click="save"
+          :disabled="isDisabled"
         >
           Submit
         </button>
@@ -121,20 +122,19 @@ export default {
     ModalCover,
   },
 
-  mounted() {
-    this.updateSavedProfile();
-  },
-
   computed: {
+    isDisabled() {
+      return this.form.business_name && this.form.business_address
+        ? false
+        : true;
+    },
+
     getUpdatePayload() {
       return {
-        business_id: this.getAccountId,
-        updates: {
-          business_name: this.form.business_name,
-          business_address: this.form.business_address,
-          website: this.form.business_website,
-          business_email: this.form.business_email,
-        },
+        business_name: this.form.business_name,
+        business_address: this.form.business_address,
+        website: this.form.business_website,
+        business_email: this.form.business_email,
       };
     },
   },
@@ -157,6 +157,10 @@ export default {
     };
   },
 
+  mounted() {
+    this.updateSavedProfile();
+  },
+
   methods: {
     ...mapActions({
       updateUserBusinessInfo: "settings/updateUserBusinessInfo",
@@ -166,25 +170,20 @@ export default {
 
     updateSavedProfile() {
       const user = this.getUser;
-      const {
-        business_name,
-        business_email,
-        business_address,
-        business_website,
-      } = user;
+      const { business_name, business_email, business_address, website } = user;
 
       this.form = {
         business_name,
         business_email,
         business_address,
-        business_website,
+        business_website: website,
       };
 
       this.validity = {
         business_name: !business_name,
         business_email: !business_email,
         business_address: !business_address,
-        business_website: !business_website,
+        business_website: !website,
       };
     },
 
@@ -227,10 +226,4 @@ export default {
 };
 </script>
 
-<style lang="scss">
-.business-info-modal.modal-overlay {
-  .modal-outer-container {
-    top: toRem(10);
-  }
-}
-</style>
+<style lang="scss"></style>

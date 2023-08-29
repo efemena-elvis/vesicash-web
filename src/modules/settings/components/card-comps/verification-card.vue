@@ -7,8 +7,10 @@
       </div>
 
       <div>
-        <div class="primary-2-text grey-900 mgb-4">{{ title }}</div>
-        <div class="tertiary-3-text grey-600">{{ subtitle }}</div>
+        <div class="card-title primary-2-text grey-900 mgb-4">{{ title }}</div>
+        <div class="card-description tertiary-3-text grey-600">
+          {{ subtitle }}
+        </div>
 
         <!-- VERIFIED DOC ROW -->
         <div class="verified-doc-row mgt-10" v-if="verified_docs.length">
@@ -122,6 +124,7 @@ export default {
 
   filters: {
     removeUnderscore(value) {
+      if (value === "nin") return "National Id";
       return value.split("_").join(" ");
     },
   },
@@ -152,6 +155,14 @@ export default {
 
     .icon-wrapper--verified {
       background: getColor("green-500");
+    }
+
+    .card-title {
+      font-size: toRem(14.5);
+    }
+
+    .card-description {
+      font-size: toRem(13.45);
     }
   }
 

@@ -1,10 +1,10 @@
 <template>
   <ModalCover
-    :show_close_btn="true"
     @closeModal="$emit('closeTriggered')"
     :modal_style="{ size: 'modal-xs' }"
     :trigger_self_close="false"
     :place_center="true"
+    show_close_btn
     class="verify-otp-modal"
   >
     <!-- MODAL COVER HEADER -->
@@ -313,7 +313,8 @@ export default {
     // ===================================
     sendOutOTPVerificationCode() {
       let request_payload = {
-        phone_number: `+${this.input}`,
+        account_id: this.getAccountId,
+        // phone_number: `+${this.input}`,
       };
 
       let request_email_otp_payload = {

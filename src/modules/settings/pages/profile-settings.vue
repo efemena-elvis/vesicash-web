@@ -93,7 +93,7 @@
       </div>
 
       <!-- USERNAME BLOCK -->
-      <div class="page-input-block row" v-if="isBusiness">
+      <div class="page-input-block row" v-if="isBusiness && false">
         <div class="col-12 col-sm-4">
           <label for="logo" class="form-label fw-bold">Username</label>
         </div>
@@ -108,8 +108,25 @@
         </div>
       </div>
 
+      <!-- DOB BLOCK -->
+      <div class="page-input-block row" v-if="false">
+        <div class="col-12 col-sm-4">
+          <label for="logo" class="form-label fw-bold">Date of Birth</label>
+        </div>
+
+        <div class="col-12 col-sm-8">
+          <FormFieldInput
+            label_id="dob"
+            input_type="date"
+            placeholder="Select date of birth"
+            :input_value="getFormFieldValueMx(form, 'dob')"
+            @getInputState="updateFormFieldMx($event, 'dob')"
+          />
+        </div>
+      </div>
+
       <!-- FLUTTERWAVE MERCHANT ID BLOCK -->
-      <div class="page-input-block row" v-if="isBusiness">
+      <div class="page-input-block row" v-if="isBusiness && false">
         <div class="col-12 col-sm-4">
           <label for="logo" class="form-label fw-bold">Merchant ID</label>
         </div>
@@ -129,7 +146,7 @@
       </div>
 
       <!-- BIO BLOCK -->
-      <div class="page-input-block row" v-if="isBusiness">
+      <div class="page-input-block row" v-if="isBusiness && false">
         <div class="col-12 col-sm-4">
           <label for="logo" class="form-label fw-bold">Bio</label>
         </div>
@@ -271,7 +288,7 @@
           @continue="initiateOTPRequest"
           :input="form[input_type].value"
           @closeTriggered="toggleInputModal"
-          :email="input_type === 'email_address'"
+          :email="input_type === 'email_address' ? true : false"
         />
       </transition>
 
@@ -279,7 +296,7 @@
         <VerifyOtpModal
           @closeTriggered="toggleOtpModal"
           :input="form[input_type].value"
-          :email="input_type === 'email_address'"
+          :email="input_type === 'email_address' ? true : false"
           @done="updatePhoneVerificationState"
         />
       </transition>
@@ -332,24 +349,22 @@ export default {
 
     userProfileUpdate() {
       let profile_updates = {
-        account_id: this.getAccountId,
-        updates: {
-          account_type: this.getAccountType,
-          firstname: this.form.first_name.value,
-          middlename: "",
-          lastname: this.form.last_name.value,
-          phone_number: this.form.phone_number.value,
-          email_address: this.form.email_address.value,
-          username: this.form.username.value,
-          meta: this.uploaded_pic,
-          bio: this.form.bio.value,
-          flutterwave_merchant_id: this.form.flutterwave_merchant_id.value,
-        },
+        account_type: this.getAccountType,
+        firstname: this.form.first_name.value,
+        middlename: "",
+        lastname: this.form.last_name.value,
+        phone_number: this.form.phone_number.value,
+        email_address: this.form.email_address.value,
+        // username: this.form.username.value,
+        // dob: this.form.dob.value,
+        meta: this.uploaded_pic,
+        // bio: this.form.bio.value,
+        // flutterwave_merchant_id: this.form.flutterwave_merchant_id.value,
       };
 
       if (!this.isBusiness) delete profile_updates.updates.username;
-      if (!this.isBusiness)
-        delete profile_updates.updates?.flutterwave_merchant_id;
+      // if (!this.isBusiness)
+      // delete profile_updates.updates?.flutterwave_merchant_id;
 
       return profile_updates;
     },
@@ -386,18 +401,22 @@ export default {
           validated: false,
           value: "",
         },
-        username: {
-          validated: true,
-          value: "",
-        },
-        flutterwave_merchant_id: {
-          validated: true,
-          value: "",
-        },
-        bio: {
-          validated: true,
-          value: "",
-        },
+        // username: {
+        //   validated: true,
+        //   value: "",
+        // },
+        // dob: {
+        //   validated: true,
+        //   value: "",
+        // },
+        // flutterwave_merchant_id: {
+        //   validated: true,
+        //   value: "",
+        // },
+        // bio: {
+        //   validated: true,
+        //   value: "",
+        // },
         email_address: {
           validated: false,
           value: "",
@@ -506,10 +525,11 @@ export default {
       const {
         fullname,
         email,
-        username,
+        // username,
+        // dob,
         phone,
-        flutterwave_merchant_id,
-        bio,
+        // flutterwave_merchant_id,
+        // bio,
         meta,
       } = this.getUser;
 
@@ -523,9 +543,10 @@ export default {
       this.form.last_name.value = lastname;
       this.form.last_name.validated = !!lastname;
 
-      this.form.username.value = username;
-      this.form.flutterwave_merchant_id.value = flutterwave_merchant_id;
-      this.form.bio.value = bio;
+      // this.form.username.value = username;
+      // this.form.dob.value = dob;
+      // this.form.flutterwave_merchant_id.value = flutterwave_merchant_id;
+      // this.form.bio.value = bio;
 
       this.form.email_address.value = email;
       this.form.email_address.validated = !!email;
@@ -541,11 +562,12 @@ export default {
         ...this.getUser,
         email: this.form.email_address.value,
         phone: this.form.phone_number.value,
-        bio: this.form.bio.value,
+        // bio: this.form.bio.value,
         meta: this.uploaded_pic,
         fullname: `${this.form.last_name.value} ${this.form.first_name.value}`,
-        username: this.form?.username.value,
-        flutterwave_merchant_id: this.form?.flutterwave_merchant_id.value,
+        // username: this.form?.username.value,
+        // dob: this.form?.dob.value,
+        // flutterwave_merchant_id: this.form?.flutterwave_merchant_id.value,
       };
 
       this.UPDATE_AUTH_USER(updatedUser);
@@ -584,9 +606,9 @@ export default {
     },
 
     async updateUserPhone() {
-      const user_phone = this.$validate.validatePhoneNumber(
-        this.form.phone_number.value,
-        this.country_code
+      const user_phone = this.sanitizePhone(
+        this.country_code,
+        this.form.phone_number.value
       );
 
       if (user_phone) {
@@ -600,18 +622,13 @@ export default {
         const response = await this.handleDataRequest({
           action: "saveUserProfile",
           payload: {
-            account_id: this.getAccountId,
-            updates: {
-              phone_number: user_phone,
-            },
+            phone_number: user_phone,
           },
           alert_handler: {
             success: "User phone number updated successfully",
             error: "Failed to save user phone number",
           },
         });
-
-        console.log("EMITTED", response);
 
         if (response?.code === 200)
           setTimeout(() => this.updateSavedProfile(), 1000);

@@ -17,6 +17,16 @@
         />
       </div>
 
+      <!-- BUSINESS TYPE -->
+      <div class="form-group">
+        <div class="form-label">Business type</div>
+        <DropSelectInput
+          placeholder="Select business type"
+          @selectedOption="selectBusinessType($event)"
+          :options="business_type_options"
+        />
+      </div>
+
       <!-- FULLNAME INPUT -->
       <div class="form-group">
         <FormFieldInput
@@ -30,33 +40,6 @@
             type: 'minimum',
             minimum: 2,
             message: 'Full name should contain 2 words',
-          }"
-        />
-      </div>
-
-      <!-- BUSINESS TYPE -->
-      <div class="form-group">
-        <div class="form-label">Business type</div>
-        <DropSelectInput
-          placeholder="Select business type"
-          @selectedOption="selectBusinessType($event)"
-          :options="business_type_options"
-        />
-      </div>
-
-      <!-- EMAIL ADDRESS INPUT -->
-      <div class="form-group">
-        <FormFieldInput
-          label_title="Email address"
-          label_id="emailAddress"
-          input_type="email"
-          is_required
-          placeholder="Enter email address"
-          :input_value="getFormFieldValueMx(form, 'email_address')"
-          @getInputState="updateFormFieldMx($event, 'email_address')"
-          :error_handler="{
-            type: 'email',
-            message: 'Email address is not valid',
           }"
         />
       </div>
@@ -76,6 +59,23 @@
           :error_handler="{
             type: 'phone',
             message: 'Phone number is not valid',
+          }"
+        />
+      </div>
+
+      <!-- EMAIL ADDRESS INPUT -->
+      <div class="form-group">
+        <FormFieldInput
+          label_title="Email address"
+          label_id="emailAddress"
+          input_type="email"
+          is_required
+          placeholder="Enter email address"
+          :input_value="getFormFieldValueMx(form, 'email_address')"
+          @getInputState="updateFormFieldMx($event, 'email_address')"
+          :error_handler="{
+            type: 'email',
+            message: 'Email address is not valid',
           }"
         />
       </div>
@@ -138,6 +138,7 @@
 import { mapActions } from "vuex";
 import authMixin from "@/modules/auth/mixins/auth-mixin";
 import AuthWrapper from "@/modules/auth/components/auth-wrapper";
+import countries from "@/utilities/countries";
 
 export default {
   name: "RegisterPage",
@@ -166,10 +167,16 @@ export default {
         ...form_payload,
         firstname,
         lastname,
+        phone_number: this.sanitizeUserPhoneNumber(form_payload.phone_number),
       };
 
       delete request_payload.fullname;
       return request_payload;
+    },
+
+    isBusinessEmail() {
+      const { email_address } = this.getFormPayloadMx(this.form);
+      return this.validateUserEmailAddress(email_address);
     },
   },
 
@@ -224,6 +231,8 @@ export default {
 
       business_type_options: [],
       user_details: {},
+
+      country_selected_code: "234",
     };
   },
 
@@ -231,10 +240,13 @@ export default {
     // ==========================================
     // UPDATE USER SELECTED COUNTRY STATE
     // ==========================================
-    this.$bus.$on(
-      "update-country-state",
-      (country) => (this.form.country.value = country.toLowerCase())
-    );
+    this.$bus.$on("update-country-state", (country) => {
+      this.country_selected_code = countries.find(
+        (data) => data.country === country
+      ).dialing_code;
+
+      this.form.country.value = country.toLowerCase();
+    });
   },
 
   mounted() {
@@ -258,6 +270,10 @@ export default {
       this.business_type_options = response?.code === 200 ? response.data : [];
     },
 
+    sanitizeUserPhoneNumber(phone_number) {
+      return this.sanitizePhone(this.country_selected_code, phone_number);
+    },
+
     // ===========================================
     // HANDLE BUSINESS TYPE USER SELECTION
     // ===========================================
@@ -266,13 +282,21 @@ export default {
         (business) => business.id === selected_id
       ).name;
       this.form.business_type.validated = true;
-      console.log(this.form.business_type);
     },
 
     // ===========================================
     // HANDLE USER CLIENT REGISTRATION
     // ===========================================
     async handleUserRegister() {
+      if (!this.isBusinessEmail) {
+        this.handleToastPushMx(
+          "Email address is not a business email",
+          "error"
+        );
+
+        return;
+      }
+
       const response = await this.handleDataRequest({
         action: "registerUser",
         payload: this.getRequestPayload,
@@ -282,6 +306,16 @@ export default {
           error: "Unable to create your account at this time",
         },
       });
+
+      // const status = [200, 201].includes(response?.code);
+      // const data = status ? response?.data : this.getRequestPayload;
+
+      // window?.fbq("track", "CompleteRegistration", {
+      //   customer_name: `${data?.lastname} ${data?.firstname}`,
+      //   customer_email: data.email_address,
+      //   status,
+      // });
+
       if (response.code === 201) {
         this.user_details = response.data;
         this.handleOTPInitiation(); // SEND USER OTP

@@ -22,7 +22,8 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { serviceUtils } from "@/shared/services";
+import { mapActions, mapGetters, mapMutations } from "vuex";
 
 export default {
   name: "App",
@@ -54,6 +55,19 @@ export default {
         this.show_feather_loader = false;
       },
     },
+
+    getUserVerifications: {
+      handler(verifications) {
+        const is_upgraded = serviceUtils.checkAccountStatus(verifications);
+        const user = this.getUser || {};
+        this.UPDATE_AUTH_USER({ ...user, is_upgraded });
+      },
+      deep: true,
+    },
+  },
+
+  computed: {
+    ...mapGetters({ getUserVerifications: "settings/getUserVerifications" }),
   },
 
   data: () => ({
@@ -95,6 +109,8 @@ export default {
     ...mapActions({
       verifyEmailOTP: "settings/verifyEmailOTP",
     }),
+
+    ...mapMutations({ UPDATE_AUTH_USER: "auth/UPDATE_AUTH_USER" }),
 
     toggleAlert(data) {
       this.alert = data;

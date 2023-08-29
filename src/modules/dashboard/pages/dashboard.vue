@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard-view">
     <transition name="fade" mode="out-in">
-      <div class="alert-wrapper" v-if="!isPhoneNumberVerified">
+      <div class="alert-wrapper" v-if="!validateUserAccount">
         <UpgradeAlertCard />
       </div>
     </transition>
@@ -110,11 +110,14 @@
 
 <script>
 import { mapActions, mapMutations, mapGetters } from "vuex";
+import MoRDocValidate from "@/modules/merchant-of-records/modules/config/mixins/mor-docs-mixin";
 import TitleTopBlock from "@/shared/components/block-comps/title-top-block";
 import WalletBlock from "@/shared/components/block-comps/wallet-block";
 
 export default {
   name: "DashboardPage",
+
+  mixins: [MoRDocValidate],
 
   metaInfo: {
     title: "Dashboard",
@@ -292,7 +295,7 @@ export default {
   },
 
   mounted() {
-    // if (!this.getUserVerifications) this.fetchVerifications();
+    this.fetchVerifications();
 
     // CLEAR OUT TRANSACTION STORE
     if (this.getTransactions?.name?.length) {
@@ -327,10 +330,7 @@ export default {
       this.UPDATE_AUTH_USER(updatedUser);
 
       this.saveUserProfile({
-        account_id: this.getAccountId,
-        updates: {
-          phone_number: this.verify_phone_number,
-        },
+        phone_number: this.verify_phone_number,
       });
     },
 

@@ -9,7 +9,7 @@
 
     <!-- HEADER TEXT -->
     <div class="header-text roobert-700 green-200">
-      Merchant of Records (MoR)
+      Merchant of Record (MoR)
     </div>
 
     <!-- HEADER META -->
