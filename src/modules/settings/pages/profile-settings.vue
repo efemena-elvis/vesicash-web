@@ -109,7 +109,7 @@
       </div>
 
       <!-- DOB BLOCK -->
-      <div class="page-input-block row" v-if="false">
+      <div class="page-input-block row">
         <div class="col-12 col-sm-4">
           <label for="logo" class="form-label fw-bold">Date of Birth</label>
         </div>
