@@ -2,7 +2,7 @@
   <div class="shipping-card rounded-8 border-grey-100 mgb-24">
     <div class="form-group">
       <FormFieldInput
-        label_id="shippingType"
+        :label_id="`shippingType${id}`"
         is_required
         placeholder="Enter shipping type"
         :input_value="getFormFieldValueMx(form, 'shipping_type')"
@@ -17,7 +17,7 @@
     <div class="row mgb-12">
       <div class="col-12 col-sm-6">
         <FormFieldInput
-          label_id="duration"
+          :label_id="`duration${id}`"
           is_required
           placeholder="12 hours"
           :input_value="getFormFieldValueMx(form, 'duration')"
@@ -31,7 +31,7 @@
 
       <div class="col-12 col-sm-6">
         <FormFieldInput
-          label_id="amount"
+          :label_id="`amoount${id}`"
           input_type="number"
           is_required
           placeholder="0.00"
@@ -53,6 +53,10 @@
       Please note: Your time interval can be in hours, days or months, for free
       deliveries input 0 in the price
     </div>
+
+    <button class="btn btn-sm btn-alert remove-btn" @click="$emit('remove')">
+      Remove
+    </button>
   </div>
 </template>
 
@@ -65,37 +69,80 @@ export default {
       type: String,
       default: "NGN (₦)",
     },
+
+    id: {
+      type: [String, Number],
+      default: "Card",
+    },
+
+    default_form: {
+      type: Object,
+      default: () => ({
+        shipping_type: {
+          validated: false,
+          value: "",
+        },
+        duration: {
+          validated: false,
+          value: "",
+        },
+        shipping_amount: {
+          validated: false,
+          value: "",
+        },
+      }),
+    },
+  },
+
+  mounted() {
+    this.form = { ...this.default_form };
   },
 
   watch: {
-    form: {
+    // form: {
+    //   handler(form) {
+    //
+    //     this.$emit("change", form);
+    //   },
+    // },
+
+    default_form: {
       handler(form) {
-        this.$emit("change", form);
+        this.form = { ...form };
       },
     },
   },
 
-  data: () => ({
-    form: {
-      shipping_type: {
-        validated: false,
-        value: "",
+  data() {
+    return {
+      form: {
+        shipping_type: {
+          validated: false,
+          value: "",
+        },
+        duration: {
+          validated: false,
+          value: "",
+        },
+        shipping_amount: {
+          validated: false,
+          value: "",
+        },
       },
-      duration: {
-        validated: false,
-        value: "",
-      },
-      shipping_amount: {
-        validated: false,
-        value: "",
-      },
-    },
-  }),
+    };
+  },
 };
 </script>
 
 <style lang="scss" scoped>
 .shipping-card {
   padding: toRem(16);
+  position: relative;
+}
+
+.remove-btn {
+  margin-left: auto;
+  margin-top: toRem(10);
+  display: block;
 }
 </style>

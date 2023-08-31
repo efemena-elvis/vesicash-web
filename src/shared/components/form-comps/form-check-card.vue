@@ -30,6 +30,17 @@ export default {
     secondary_text: {
       type: String,
     },
+
+    checked: {
+      type: Boolean,
+      default: false,
+    },
+  },
+
+  watch: {
+    checked(state) {
+      this.state = state;
+    },
   },
 
   data() {
