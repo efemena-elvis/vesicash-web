@@ -20,7 +20,7 @@
 // =========================================
 // FULL BACKGROUND DISPLAY (COVER/CONTAIN)
 // =========================================
-@mixin set-full-bg($type: "") {
+@mixin set-full-bg($type: "cover") {
   position: absolute;
   @include width-height(100%);
 

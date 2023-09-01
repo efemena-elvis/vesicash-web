@@ -1,4 +1,5 @@
 <template>
+<div class="fp-section">
   <AuthWrapper
     title_text="Forgot password"
     meta_text="Please enter your registered email address  <br> that is associated with your account. "
@@ -34,6 +35,7 @@
       </div>
     </form>
   </AuthWrapper>
+</div>
 </template>
 
 <script>
@@ -99,4 +101,8 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.fp-section {
+    margin-top: toRem(100);
+}
+</style>

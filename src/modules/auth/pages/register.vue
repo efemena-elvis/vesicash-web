@@ -1,9 +1,10 @@
 <template>
-  <AuthWrapper title_text="Register a business account">
+<div class="register-wrapper">
+  <AuthWrapper title_text="Access multiple markets across Africa in a minute." meta_text="Register a business account today to gain access to customers across African markets">
     <!-- AUTH PAGE -->
     <form @submit.prevent="handleUserRegister" class="auth-page">
       <!-- BUSINESS NAME INPUT -->
-      <div class="form-group">
+      <div class="form-group" v-if="false">
         <FormFieldInput
           label_title="Business name"
           label_id="businessName"
@@ -18,7 +19,7 @@
       </div>
 
       <!-- BUSINESS TYPE -->
-      <div class="form-group">
+      <div class="form-group" v-if="false">
         <div class="form-label">Business type</div>
         <DropSelectInput
           placeholder="Select business type"
@@ -28,7 +29,7 @@
       </div>
 
       <!-- FULLNAME INPUT -->
-      <div class="form-group">
+      <div class="form-group" v-if="false">
         <FormFieldInput
           label_title="Full name"
           label_id="fullName"
@@ -40,25 +41,6 @@
             type: 'minimum',
             minimum: 2,
             message: 'Full name should contain 2 words',
-          }"
-        />
-      </div>
-
-      <!-- PHONE INPUT -->
-      <div class="form-group">
-        <FormFieldInput
-          label_title="Phone number"
-          label_id="phoneNumber"
-          input_type="number"
-          is_phone_type
-          is_required
-          placeholder="Enter your phone number"
-          :custom_style="{ input_wrapper_style: 'form-prefix' }"
-          :input_value="getFormFieldValueMx(form, 'phone_number')"
-          @getInputState="updateFormFieldMx($event, 'phone_number')"
-          :error_handler="{
-            type: 'phone',
-            message: 'Phone number is not valid',
           }"
         />
       </div>
@@ -76,6 +58,25 @@
           :error_handler="{
             type: 'email',
             message: 'Email address is not valid',
+          }"
+        />
+      </div>
+
+       <!-- PHONE INPUT -->
+      <div class="form-group">
+        <FormFieldInput
+          label_title="Phone number"
+          label_id="phoneNumber"
+          input_type="number"
+          is_phone_type
+          is_required
+          placeholder="Enter your phone number"
+          :custom_style="{ input_wrapper_style: 'form-prefix' }"
+          :input_value="getFormFieldValueMx(form, 'phone_number')"
+          @getInputState="updateFormFieldMx($event, 'phone_number')"
+          :error_handler="{
+            type: 'phone',
+            message: 'Phone number is not valid',
           }"
         />
       </div>
@@ -108,20 +109,20 @@
           />
 
           <div class="tertiary-2-text grey-900">
-            I agree to
+            I agree to Vesicash
             <a href="https://vesicash.com/terms">Terms and Conditions</a>
           </div>
         </div>
       </div>
 
       <!-- BUTTON AREA -->
-      <div class="btn-area mgt-35 mgb-10">
+      <div class="btn-area mgt-35 mgb-20">
         <button
           class="btn btn-primary btn-md w-100"
           ref="btnRef"
           :disabled="isFormValidated"
         >
-          Register
+          Create an Account
         </button>
       </div>
 
@@ -132,6 +133,7 @@
       </div>
     </form>
   </AuthWrapper>
+</div>
 </template>
 
 <script>
@@ -333,4 +335,8 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.register-wrapper {
+   margin-top: toRem(60);
+}
+</style>

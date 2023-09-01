@@ -1,5 +1,6 @@
 <template>
-  <AuthWrapper title_text="Login to your account">
+<div class="login-section">
+  <AuthWrapper title_text="Welcome back, Deskangle" meta_text="Please enter your login details below to gain access your dashboard">
     <!-- AUTH PAGE -->
     <form @submit.prevent="handleUserLogIn" class="auth-page">
       <!-- EMAIL ADDRESS INPUT -->
@@ -38,7 +39,7 @@
       </div>
 
       <!-- FORGOT PASSWORD LINK -->
-      <div class="d-flex justify-content-end">
+      <div class="d-flex justify-content-start">
         <router-link
           :to="{ name: 'VesicashForgotPassword' }"
           class="tertiary-2-text"
@@ -47,7 +48,7 @@
       </div>
 
       <!-- BUTTON AREA -->
-      <div class="btn-area mgt-25 mgb-10">
+      <div class="btn-area mgt-25 mgb-20">
         <button
           class="btn btn-primary btn-md w-100"
           ref="btnRef"
@@ -64,6 +65,7 @@
       </div>
     </form>
   </AuthWrapper>
+</div>
 </template>
 
 <script>
@@ -147,4 +149,8 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.login-section {
+   margin-top: toRem(100);
+}
+</style>
