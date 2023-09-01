@@ -156,6 +156,7 @@ import CoporationVerificationModal from "@/modules/settings/modals/coporation-ve
 import TinVerificationModal from "@/modules/settings/modals/tin-verification-modal";
 import VerificationBvnModal from "@/modules/settings/modals/verification-bvn-modal";
 import SuccessModal from "@/shared/modals/success-modal";
+import { serviceUtils } from "@/shared/services";
 
 export default {
   name: "MerchantUpgrade",
@@ -297,9 +298,8 @@ export default {
 
       if (response.code === 200) {
         this.user_verifications = response.data;
-
-        if (this.validateMoRVerification) {
-          this.$router.push("/settings/mor-setup");
+        if (serviceUtils.checkAccountStatus(response?.data)) {
+          this.$router.push("/dashboard");
         }
       }
     },
