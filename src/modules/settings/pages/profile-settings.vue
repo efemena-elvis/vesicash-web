@@ -356,7 +356,7 @@ export default {
         phone_number: this.form.phone_number.value,
         email_address: this.form.email_address.value,
         // username: this.form.username.value,
-        // dob: this.form.dob.value,
+        dob: this.form.dob.value,
         meta: this.uploaded_pic,
         // bio: this.form.bio.value,
         // flutterwave_merchant_id: this.form.flutterwave_merchant_id.value,
@@ -405,10 +405,10 @@ export default {
         //   validated: true,
         //   value: "",
         // },
-        // dob: {
-        //   validated: true,
-        //   value: "",
-        // },
+        dob: {
+          validated: true,
+          value: "",
+        },
         // flutterwave_merchant_id: {
         //   validated: true,
         //   value: "",
@@ -526,7 +526,7 @@ export default {
         fullname,
         email,
         // username,
-        // dob,
+        dob,
         phone,
         // flutterwave_merchant_id,
         // bio,
@@ -544,7 +544,7 @@ export default {
       this.form.last_name.validated = !!lastname;
 
       // this.form.username.value = username;
-      // this.form.dob.value = dob;
+      this.form.dob.value = dob;
       // this.form.flutterwave_merchant_id.value = flutterwave_merchant_id;
       // this.form.bio.value = bio;
 
@@ -566,7 +566,7 @@ export default {
         meta: this.uploaded_pic,
         fullname: `${this.form.last_name.value} ${this.form.first_name.value}`,
         // username: this.form?.username.value,
-        // dob: this.form?.dob.value,
+        dob: this.form?.dob.value,
         // flutterwave_merchant_id: this.form?.flutterwave_merchant_id.value,
       };
 
