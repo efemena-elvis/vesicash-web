@@ -102,7 +102,7 @@ export default {
     },
 
     selected_currency: {
-      type: String,
+      type: Object,
     },
   },
 
@@ -111,7 +111,8 @@ export default {
       return {
         account_name: this.account_details?.account_name,
         account_no: "" + this.account_details?.account_number,
-        bank_id: this.bank.code,
+        bank_id: this.bank.id,
+        sort_code: this.bank.code,
         bank_name: this.bank.name,
         country: this.selected_currency.country.toLowerCase(),
         currency: this.selected_currency.short,
@@ -141,7 +142,6 @@ export default {
   },
 
   async mounted() {
-    console.log(this.account_type);
     await this.fetchBanksInCountry();
   },
 
