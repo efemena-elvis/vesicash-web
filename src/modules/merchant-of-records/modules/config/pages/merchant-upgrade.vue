@@ -1,6 +1,6 @@
 <template>
   <div class="merchant-upgrade pdb-40">
-    <PageBackBtn history_mode />
+    <PageBackBtn />
 
     <div class="vesicash-container mgt-24">
       <div class="title-text h4-text mgb-8 grey-900 text-center">

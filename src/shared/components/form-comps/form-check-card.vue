@@ -1,7 +1,12 @@
 <template>
   <label class="form-check-card mgb-16" :for="check_id">
     <div class="left-section">
-      <input type="checkbox" :id="check_id" />
+      <input
+        type="checkbox"
+        :id="check_id"
+        v-model="state"
+        @change="$emit('change', state)"
+      />
       <div class="check-value">{{ primary_text }}</div>
     </div>
 
@@ -25,6 +30,23 @@ export default {
     secondary_text: {
       type: String,
     },
+
+    checked: {
+      type: Boolean,
+      default: false,
+    },
+  },
+
+  watch: {
+    checked(state) {
+      this.state = state;
+    },
+  },
+
+  data() {
+    return {
+      state: false,
+    };
   },
 };
 </script>

@@ -9,24 +9,26 @@
           <div class="product-list">
             <div class="item-row">
               <div class="title">Subtotal</div>
-              <div class="value">N15,000</div>
+              <div class="value">#15,000</div>
             </div>
 
             <div class="item-row">
               <div class="title">Shipping</div>
-              <div class="value">N2,000</div>
+              <div class="value">#2,000</div>
             </div>
 
             <div class="item-row">
-              <div class="title">Tax (6.50%)</div>
-              <div class="value">+N345</div>
+              <div class="title">
+                Tax ({{ this.getPaymentModuleConfig.vat || 0 }}%)
+              </div>
+              <div class="value">+#{{ taxCost }}</div>
             </div>
           </div>
 
           <div class="product-total">
             <div class="item-row mgb-0">
               <div class="title">Total</div>
-              <div class="value fw-bold">N5,345</div>
+              <div class="value fw-bold">#{{ totalCost }}</div>
             </div>
           </div>
         </div>
@@ -54,17 +56,11 @@
 
     <template>
       <div class="title-text">PAYMENT INFORMATON</div>
-
-      <FormCheckCard check_id="creditCard" primary_text="Pay by credit card" />
-
       <FormCheckCard
-        check_id="mobileMoney"
-        primary_text="Pay by mobile money "
-      />
-
-      <FormCheckCard
-        check_id="bankTransfer"
-        primary_text="Pay by bank transfer"
+        v-for="payment in paymentMethods"
+        :key="payment.id"
+        :check_id="payment.id"
+        :primary_text="`Pay by ${payment.name}`"
       />
     </template>
 
@@ -77,6 +73,8 @@
 <script>
 import FormCheckCard from "@/shared/components/form-comps/form-check-card";
 import OrderDisplayCard from "@/modules/merchant-of-records/modules/developer/components/payment-module/order-display-card";
+import { mapGetters } from "vuex";
+import { serviceUtils } from "@/shared/services";
 
 export default {
   name: "OrderPreview",
@@ -84,6 +82,30 @@ export default {
   components: {
     FormCheckCard,
     OrderDisplayCard,
+  },
+
+  computed: {
+    ...mapGetters({
+      getPaymentModuleConfig: "merchant/getPaymentModuleConfig",
+    }),
+
+    taxCost() {
+      const cost = ((this.getPaymentModuleConfig?.vat || 0) / 100) * 15000;
+      return serviceUtils?.formatCurrencyWithComma(cost);
+    },
+
+    totalCost() {
+      const tax = ((this.getPaymentModuleConfig?.vat || 0) / 100) * 15000;
+      const cost = 17000 + tax;
+      return serviceUtils?.formatCurrencyWithComma(cost);
+    },
+
+    paymentMethods() {
+      return this.getPaymentModuleConfig?.payment_methods?.map((option) => ({
+        name: option,
+        id: `Preview${option}`,
+      }));
+    },
   },
 
   data: () => ({
