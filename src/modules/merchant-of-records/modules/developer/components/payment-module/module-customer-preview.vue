@@ -21,6 +21,23 @@
       />
     </div>
 
+    <div class="col-12" v-show="getPaymentModuleConfig.request_phone_number">
+      <div class="form-group">
+        <FormFieldInput
+          label_title="Phone number"
+          label_id="phoneNumber"
+          is_required
+          placeholder="Your phone number"
+          :input_value="getFormFieldValueMx(form, 'phone_number')"
+          @getInputState="updateFormFieldMx($event, 'phone_number')"
+          :error_handler="{
+            type: 'required',
+            message: 'Phone number is required',
+          }"
+        />
+      </div>
+    </div>
+
     <div class="row border-bottom-grey-200 mgb-24">
       <div class="col-12 col-sm-6">
         <div class="form-group">
@@ -56,7 +73,23 @@
         </div>
       </div>
 
-      <div class="col-12 col-sm-6">
+      <div
+        class="col-12 col-sm-6"
+        v-show="getPaymentModuleConfig.request_country"
+      >
+        <div class="form-group">
+          <div class="form-label">Country</div>
+          <DropSelectInput
+            placeholder="Select country"
+            :options="checkoutCountries"
+          />
+        </div>
+      </div>
+
+      <div
+        class="col-12 col-sm-6"
+        v-show="getPaymentModuleConfig.request_street_address"
+      >
         <div class="form-group">
           <FormFieldInput
             label_title="Street address"
@@ -73,7 +106,7 @@
         </div>
       </div>
 
-      <div class="col-12 col-sm-6">
+      <div class="col-12 col-sm-6" v-if="false">
         <div class="form-group">
           <FormFieldInput
             label_title="Town/City"
@@ -89,59 +122,34 @@
           />
         </div>
       </div>
-
-      <div class="col-12 col-sm-6">
-        <div class="form-group">
-          <FormFieldInput
-            label_title="State"
-            label_id="state"
-            is_required
-            placeholder="Your state"
-            :input_value="getFormFieldValueMx(form, 'state')"
-            @getInputState="updateFormFieldMx($event, 'state')"
-            :error_handler="{
-              type: 'required',
-              message: 'State is required',
-            }"
-          />
-        </div>
-      </div>
-
-      <div class="col-12 col-sm-6">
-        <div class="form-group">
-          <FormFieldInput
-            label_title="Phone number"
-            label_id="phoneNumber"
-            is_required
-            placeholder="Your phone number"
-            :input_value="getFormFieldValueMx(form, 'phone_number')"
-            @getInputState="updateFormFieldMx($event, 'phone_number')"
-            :error_handler="{
-              type: 'required',
-              message: 'Phone number is required',
-            }"
-          />
-        </div>
-      </div>
     </div>
 
-    <!-- TITLE TEXT -->
-    <div class="title-text primary-1-text grey-900 mgb-24">SHIPPING TYPES</div>
+    <div v-show="getPaymentModuleConfig.is_shipping_type">
+      <!-- TITLE TEXT -->
+      <div class="title-text primary-1-text grey-900 mgb-24">
+        SHIPPING TYPES
+      </div>
 
-    <FormCheckCard
-      check_id="express"
-      primary_text="Express delivery (Mainland) - 12hr"
-      secondary_text="FREE"
-    />
-
-    <FormCheckCard
-      check_id="mainland"
-      primary_text="Main delivery (Mainland) - 6hr"
-      secondary_text="N3,000"
-    />
+      <FormCheckCard
+        v-for="(option, index) in getPaymentModuleConfig.shipping_types"
+        :key="index"
+        :check_id="option.name + index"
+        :primary_text="`${option.name} (${option.time})`"
+        :secondary_text="
+          option?.amount
+            ? `${
+                '#' || option.currency_code
+              }${serviceUtils.formatCurrencyWithComma(option.amount)}`
+            : 'FREE'
+        "
+      />
+    </div>
 
     <div class="mgt-24" v-if="show_cta">
-      <button class="btn btn-md w-100 teal-800-bg neutral-10 pdy-10">
+      <button
+        class="btn btn-md w-100 teal-800-bg neutral-10 pdy-10"
+        :style="{ backgroundColor: getPaymentModuleConfig.button_colour }"
+      >
         Continue
       </button>
     </div>
@@ -149,7 +157,10 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import FormCheckCard from "@/shared/components/form-comps/form-check-card";
+import countries from "@/utilities/countries";
+import { serviceUtils } from "@/shared/services";
 
 export default {
   name: "CustomerPreview",
@@ -165,8 +176,24 @@ export default {
     },
   },
 
+  computed: {
+    ...mapGetters({
+      getPaymentModuleConfig: "merchant/getPaymentModuleConfig",
+    }),
+
+    checkoutCountries() {
+      return this.countries?.map((cc) => ({
+        ...cc,
+        name: cc.country,
+        id: cc.code,
+      }));
+    },
+  },
+
   data() {
     return {
+      serviceUtils,
+      countries,
       form: {
         email_address: {
           validated: false,

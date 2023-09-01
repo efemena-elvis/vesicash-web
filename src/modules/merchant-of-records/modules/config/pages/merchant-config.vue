@@ -330,7 +330,7 @@ export default {
 
       if (response.code === 200 && response.data !== null) {
         this.populateMoRDataset(response.data);
-      } else this.$bus.$emit("toggle-page-loader");
+      } else this.$bus.$emit("hide-page-loader");
     },
 
     populateMoRDataset(dataset) {
@@ -377,7 +377,7 @@ export default {
         ).status = verification.status;
       });
 
-      this.$bus.$emit("toggle-page-loader");
+      this.$bus.$emit("hide-page-loader");
       this.checkAndUpdateMerchantStatus(verifications);
     },
 
