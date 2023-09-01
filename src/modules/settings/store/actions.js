@@ -9,7 +9,7 @@ const routes = {
   user_banks: "user/fetch/bank?array=true",
   add_user_bank: "user/bank_details",
   update_user_banks: "user/bank_details/update",
-  remove_user_bank: "user/remove/bank/",
+  remove_user_bank: "user/remove/bank",
   fetch_connected_users: "user/fetch-users-by-business",
   delete_connected_user: "user/delete",
 
@@ -53,7 +53,10 @@ export default {
   // ==============================
 
   async removeUserBank(_, payload) {
-    return await deleteRequest("auth", routes.remove_user_bank, payload);
+    return await deleteRequest(
+      "auth",
+      `${routes.remove_user_bank}/${payload.bank_id}`
+    );
   },
 
   // ==============================

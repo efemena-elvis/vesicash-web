@@ -79,9 +79,8 @@ export default {
   },
 
   computed: {
-    deleteUpdate() {
+    deletePayload() {
       return {
-        account_id: this.getAccountId,
         bank_id: this.account.id,
       };
     },
@@ -96,12 +95,12 @@ export default {
     async deleteAccount() {
       this.handleClick("delete");
       try {
-        const response = await this.removeUserBank(this.deleteUpdate);
+        const response = await this.removeUserBank(this.deletePayload);
 
-        const type = response?.code === 200 ? "success" : "error";
+        const type = response?.data?.code === 200 ? "success" : "error";
 
         const message =
-          response?.code === 200 ? "Account deleted" : response.message;
+          response?.data?.code === 200 ? "Account deleted" : response.message;
 
         this.pushToast(message, type);
 
