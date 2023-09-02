@@ -121,6 +121,7 @@
             placeholder="Select date of birth"
             :input_value="getFormFieldValueMx(form, 'dob')"
             @getInputState="updateFormFieldMx($event, 'dob')"
+            :maximum_date="new Date().toISOString().split('T')[0]"
           />
         </div>
       </div>
@@ -344,7 +345,7 @@ export default {
     },
 
     isDisabled() {
-      return this.validateFormFieldMx(this.form) && !this.isEmailVerified;
+      return this.validateFormFieldMx(this.form) || !this.isEmailVerified;
     },
 
     userProfileUpdate() {
@@ -362,7 +363,7 @@ export default {
         // flutterwave_merchant_id: this.form.flutterwave_merchant_id.value,
       };
 
-      if (!this.isBusiness) delete profile_updates.updates.username;
+      // if (!this.isBusiness) delete profile_updates.updates.username;
       // if (!this.isBusiness)
       // delete profile_updates.updates?.flutterwave_merchant_id;
 
@@ -406,7 +407,7 @@ export default {
         //   value: "",
         // },
         dob: {
-          validated: true,
+          validated: false,
           value: "",
         },
         // flutterwave_merchant_id: {
