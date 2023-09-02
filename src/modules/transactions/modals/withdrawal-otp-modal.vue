@@ -412,30 +412,29 @@ export default {
 
     async makeWithdrawal() {
       this.$bus.$emit("show-page-loader", "Processing your transfer");
-      console.log("BANK DETAILS", this.getWithdrawalPayload);
-
+      
       try {
         this.handleClick("btnRef");
 
-        // const response =
-        //   this.getWithdrawalMeta.selected_beneficiary.category === "wallet"
-        //     ? await this.walletToWalletTransfer(this.getWalletTransferDetails)
-        //     : await this.withdrawWalletFund(this.getWithdrawalPayload);
+        const response =
+          this.getWithdrawalMeta.selected_beneficiary.category === "wallet"
+            ? await this.walletToWalletTransfer(this.getWalletTransferDetails)
+            : await this.withdrawWalletFund(this.getWithdrawalPayload);
 
-        // this.$bus.$emit("hide-page-loader");
-        // this.handleClick("btnRef", "Continue", false);
+        this.$bus.$emit("hide-page-loader");
+        this.handleClick("btnRef", "Continue", false);
 
-        // response?.code == 200
-        //   ? this.$emit("done", {
-        //       amount:
-        //         this.getWithdrawalMeta.amount -
-        //         this.getWithdrawalMeta.withdrawal_charge,
-        //       currency: this.getWalletType.slug,
-        //     })
-        //   : this.pushToast(
-        //       response.message || "Withdrawal failed. Please try again",
-        //       "warning"
-        //     );
+        response?.code == 200
+          ? this.$emit("done", {
+              amount:
+                this.getWithdrawalMeta.amount -
+                this.getWithdrawalMeta.withdrawal_charge,
+              currency: this.getWalletType.slug,
+            })
+          : this.pushToast(
+              response.message || "Withdrawal failed. Please try again",
+              "warning"
+            );
       } catch (error) {
         console.log(error);
         this.$bus.$emit("hide-page-loader");
