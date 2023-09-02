@@ -151,6 +151,6 @@ export default {
 
 <style lang="scss" scoped>
 .login-section {
-   margin-top: toRem(100);
+  margin-top: toRem(100);
 }
 </style>

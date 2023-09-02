@@ -26,7 +26,7 @@
 
     <!-- BANNER IMAGE SECTION -->
     <div class="banner-image-section h-100">
-      <div class="image-wrapper position-relative w-100 h-100 m-auto rounded-12 overflow-hidden">
+      <div class="image-wrapper position-relative w-100 h-100 m-auto overflow-hidden">
         <img :src="loadImage('banner-img.png')" alt="vesicash-banner-image">
       </div>
     </div>
@@ -58,7 +58,7 @@ export default {
   height: 100vh;
 
   .form-section {
-    width: 47%;
+    width: 48%;
 
     .section-wrapper {
       @include flex-column('flex-start', 'flex-start');
@@ -80,8 +80,8 @@ export default {
     position: fixed;
     right: 0;
     @include flex-column('center', 'center');
-    padding: toRem(12);
-    width: 53%;
+    // padding: toRem(12);
+    width: 52%;
 
     .image-wrapper {
       img {
