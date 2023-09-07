@@ -11,14 +11,29 @@
       Payment modules
     </div>
 
-    <div class="description-text tertiary-2-text grey-600 mgb-24 text-center">
-      You dont have any payment modules created, Please create a payment module
+    <div
+      class="description-text tertiary-2-text grey-600 mgb-24 text-center"
+      v-if="isMoRSetupEnabled"
+    >
+      You dont have any payment modules created, please create a payment module
+    </div>
+
+    <div
+      class="description-text tertiary-2-text grey-600 mgb-24 text-center"
+      v-else
+    >
+      You are yet to set up your mor, please do to create a payment module
     </div>
 
     <router-link
+      v-if="isMoRSetupEnabled"
       :to="{ name: 'MerchantModuleCustomer' }"
       class="btn btn-md btn-primary"
       >Create a payment module</router-link
+    >
+
+    <router-link v-else to="/settings/mor-setup" class="btn btn-md btn-primary"
+      >Set up mor</router-link
     >
   </div>
 </template>
