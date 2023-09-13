@@ -14,7 +14,7 @@
       />
     </div>
 
-    <div class="row mgb-12">
+    <div class="row mgb-12 ship-row">
       <div class="col-12 col-sm-6">
         <FormFieldInput
           :label_id="`duration${id}`"
@@ -138,6 +138,10 @@ export default {
 .shipping-card {
   padding: toRem(16);
   position: relative;
+
+  .ship-row {
+    gap: toRem(20) 0;
+  }
 }
 
 .remove-btn {
