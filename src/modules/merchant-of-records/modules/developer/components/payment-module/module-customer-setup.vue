@@ -236,10 +236,12 @@ export default {
 
     isDisabled() {
       const config = this.getPaymentModuleConfig;
+      const use_shipping = config.is_shipping_type;
       const invalidShippingMethods =
         config?.shipping_types?.some(
           (type) => !type?.name || !type?.currency_code || !type?.time
-        ) || !config?.shipping_types?.length;
+        ) ||
+        (!config?.shipping_types?.length && use_shipping);
 
       return (
         invalidShippingMethods ||
@@ -399,8 +401,8 @@ export default {
           country_name:
             countries?.find((cc) => cc?.id === data?.country_id)?.name || "",
           currency_code: data?.currency_code || "",
-          is_shipping_type: data?.is_shipping_type || true,
-          shipping_types: [...data?.shipping_types],
+          is_shipping_type: data?.is_shipping_type,
+          shipping_types: [...(data?.shipping_types || [])],
           product_type: data?.product_type || "",
           vat: data?.vat || 0,
           payment_methods: [...data?.payment_methods],
@@ -533,22 +535,24 @@ export default {
 
       this.ship = config.is_shipping_type;
 
-      this.shipping_options = [...config?.shipping_types]?.map((type) => {
-        return {
-          shipping_type: {
-            validated: !!type?.name,
-            value: type?.name || "",
-          },
-          duration: {
-            validated: !!type?.time,
-            value: type?.time || "",
-          },
-          shipping_amount: {
-            validated: !!type?.amount,
-            value: type?.amount || "",
-          },
-        };
-      });
+      this.shipping_options = [...(config?.shipping_types || [])]?.map(
+        (type) => {
+          return {
+            shipping_type: {
+              validated: !!type?.name,
+              value: type?.name || "",
+            },
+            duration: {
+              validated: !!type?.time,
+              value: type?.time || "",
+            },
+            shipping_amount: {
+              validated: !!type?.amount,
+              value: type?.amount || "",
+            },
+          };
+        }
+      );
     },
   },
 };
