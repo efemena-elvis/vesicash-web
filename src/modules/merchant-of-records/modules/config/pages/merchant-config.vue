@@ -198,7 +198,7 @@ export default {
 
     user_verifications: {
       handler() {
-        if (!this.validateMoRVerification) {
+        if (!this.validateUserAccount) {
           this.$router.push("/merchant/document-upgrade");
         }
       },

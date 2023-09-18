@@ -10,13 +10,20 @@ class serviceUtils {
   }
 
   checkAccountStatus(verifications) {
-     //WAITING ON BACKEND TO GIVE UPDATED LIST
-     const required_types = ['tin','cac','bvn','nin'];
+     const required_types = ['tin','cac','bvn'];
+     const other_docs = ["passport", "drivers_license", "nin"]
 
-     return required_types?.every(type=>{
+     const required = required_types?.every(type=>{
        const doc = verifications?.find(verification=>verification?.verification_type===type);
        return doc && doc?.is_verified
      })
+
+     const others = other_docs?.some(type=>{
+      const doc = verifications?.find(verification=>verification?.verification_type===type);
+      return doc && doc?.is_verified
+    })
+
+    return required && others;
   }
 
   checkAuthTimeout(minutes) {

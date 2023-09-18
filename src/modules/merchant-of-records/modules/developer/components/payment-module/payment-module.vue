@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters, mapMutations } from "vuex";
 import PaymentModuleEmpty from "@/modules/merchant-of-records/modules/developer/components/payment-module/payment-module-empty";
 
 export default {
@@ -51,6 +51,10 @@ export default {
       fetchMoRCountries: "merchant/fetchMoRCountries",
     }),
 
+    ...mapMutations({
+      RESET_PAYMENT_MODULE: "merchant/RESET_PAYMENT_MODULE",
+    }),
+
     async fetchModules() {
       this.loading = true;
       const response = await this.fetchPaymentModules();
@@ -63,8 +67,9 @@ export default {
   },
 
   async mounted() {
+    this.RESET_PAYMENT_MODULE();
     if (!this.getMorCountries.length) this.fetchMoRCountries();
-    this.fetchModules();
+    if (this.isMoRSetupEnabled) this.fetchModules();
   },
 };
 </script>

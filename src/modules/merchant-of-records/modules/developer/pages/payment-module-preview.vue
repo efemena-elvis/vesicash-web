@@ -4,6 +4,7 @@
       <div class="row">
         <div class="col-12 col-lg-10 mx-auto">
           <div class="preview-area">
+            <PageBackBtn history_mode />
             <!-- BRAND LOGO -->
             <div class="brand-logo position-relative mgb-40 h-auto mx-auto">
               <img :src="loadImage('vesicash-svg.svg')" alt="" />
@@ -35,6 +36,7 @@
 <script>
 import ModuleCustomerPreview from "@/modules/merchant-of-records/modules/developer/components/payment-module/module-customer-preview";
 import ModuleOrderPreview from "@/modules/merchant-of-records/modules/developer/components/payment-module/module-order-preview";
+import PageBackBtn from "@/shared/components/util-comps/page-back-btn";
 
 export default {
   name: "ModulePreview",
@@ -42,6 +44,7 @@ export default {
   components: {
     ModuleCustomerPreview,
     ModuleOrderPreview,
+    PageBackBtn,
   },
 };
 </script>

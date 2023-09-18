@@ -88,7 +88,7 @@
     </template>
 
     <!-- ACTION ROW -->
-    <div class="row mgt-12">
+    <div class="row mgt-12 action-row">
       <div class="col-12 col-sm-6">
         <button
           ref="save"
@@ -96,7 +96,7 @@
           :disabled="isDisabled"
           class="btn btn-md btn-primary w-100 pdy-8"
         >
-          Save module
+          {{ btnAction }}
         </button>
       </div>
 
@@ -130,15 +130,23 @@ export default {
       getPaymentModuleConfig: "merchant/getPaymentModuleConfig",
     }),
 
+    btnAction() {
+      const payment_module_id = this.$route?.query?.id;
+      return payment_module_id ? "Update module" : "Save module";
+    },
+
     productTax() {
       return this.selected_product?.tax || 0;
     },
 
     isDisabled() {
       const config = this.getPaymentModuleConfig;
-      const invalidShippingMethods = config?.shipping_types?.some(
-        (type) => !type?.name || !type?.currency_code || !type?.time
-      );
+      const use_shipping = config.is_shipping_type;
+      const invalidShippingMethods =
+        config?.shipping_types?.some(
+          (type) => !type?.name || !type?.currency_code || !type?.time
+        ) ||
+        (!config?.shipping_types?.length && use_shipping);
 
       console.log(!config?.payment_methods?.length);
 
@@ -220,11 +228,14 @@ export default {
 
     async saveModule() {
       try {
+        const payment_module_id = Number(this.$route?.query?.id);
+        const payload = payment_module_id
+          ? { payment_module_id, ...this.getPaymentModuleConfig }
+          : { ...this.getPaymentModuleConfig };
+
         this.handleClick("save");
-        const response = await this.savePaymentModule(
-          this.getPaymentModuleConfig
-        );
-        this.handleClick("save", "Save module", false);
+        const response = await this.savePaymentModule(payload);
+        this.handleClick("save", this.btnAction, false);
         const type = response?.code === 200 ? "success" : "warning";
         const message = response?.message;
         this.pushToast(message, type);
@@ -233,9 +244,9 @@ export default {
           this.$router.push("/merchant/developer");
         }
       } catch (err) {
-        this.handleClick("save", "Save module", false);
-        console.log("ERROR SAVING MODULE", err);
-        this.pushToast("Error saving payment module", "error");
+        this.handleClick("save", this.btnAction, false);
+        console.log("ERROR SAVING/UPDATING MODULE", err);
+        this.pushToast("Action failed", "error");
       }
     },
 
@@ -286,6 +297,10 @@ export default {
   justify-content: space-between;
   align-items: center;
   font-size: 0.85rem;
+}
+
+.action-row {
+  gap: toRem(20) 0;
 }
 
 .order-setup {
