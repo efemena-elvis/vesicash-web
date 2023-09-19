@@ -147,9 +147,7 @@ class serviceApi {
         if (error.response) {
           if ([401].includes(error.response.status) && !originalConfig._retry) {
             originalConfig._retry = true;
-
-            localStorage.clear();
-            window.location.href = "/";
+            serviceUtils.logOutUser();
 
             return axios(originalConfig);
           }

@@ -5,8 +5,8 @@
 
     <!-- PAGE META -->
     <div class="page-meta tertiary-2-text grey-600">
-      Verify your bvn, business documents and settlements documents here to be
-      able to carry out transactions
+      Verify your bvn, business documents and identity here to be able to carry
+      out transactions
     </div>
 
     <div class="cards-container" v-if="loading_verification">
@@ -57,7 +57,7 @@
       </verification-card>
 
       <verification-card
-        title="Government ID"
+        title="Government issued ID"
         subtitle="Choose and upload a document for verification."
         cta_title="Verify document"
         :verified_docs="getOtherDocuments"

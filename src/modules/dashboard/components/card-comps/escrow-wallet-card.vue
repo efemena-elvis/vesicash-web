@@ -62,7 +62,7 @@
             v-if="loading_wallet"
           ></div>
 
-          <div class="amount-value mgb-8" style="opacity: 0.5" v-else>
+          <div class="amount-value mgb-8" v-else>
             <span
               >{{ escrow_balance[2]?.sign || "-"
               }}{{

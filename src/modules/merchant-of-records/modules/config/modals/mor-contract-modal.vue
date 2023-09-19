@@ -1254,7 +1254,7 @@ export default {
 
 .modal-cover-body {
   max-height: 65vh;
-  overflow: auto;
+  overflow: auto !important;
 
   @include breakpoint-down(lg) {
     max-height: 60vh;

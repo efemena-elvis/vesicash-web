@@ -1,16 +1,14 @@
 <template>
   <ModalCover
     @closeModal="$emit('closeTriggered')"
-    class="doc-verification-overlay"
     :modal_style="{ size: 'modal-sm' }"
   >
     <!-- MODAL COVER HEADER -->
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
-        <div class="modal-cover-title">Other documents</div>
+        <div class="modal-cover-title">Identity verification</div>
         <div class="tertiary-2-text grey-600">
-          Choose any document type you wish to upload. Upload multiple documents
-          to access more account features.
+          Select any available document type to verify.
         </div>
       </div>
     </template>
@@ -44,11 +42,11 @@
           />
         </div>
 
-        <ContractUploadCard
+        <!-- <ContractUploadCard
           titleText="Select document to upload"
           @fileUploaded="uploaded_doc = $event"
           @clearTransactionFile="uploaded_doc = null"
-        />
+        /> -->
       </div>
     </template>
 
@@ -61,7 +59,7 @@
           :disabled="isDisabled"
           @click="save"
         >
-          Submit
+          Verify document
         </button>
       </div>
     </template>
@@ -79,18 +77,26 @@ export default {
     ModalCover,
   },
 
+  props: {
+    is_director_type: {
+      type: Boolean,
+      default: false,
+    },
+
+    director_count: {
+      type: Number,
+      default: 1,
+    },
+  },
+
   computed: {
     ...mapGetters({
       getFileData: "general/getFileData",
       getAllFilesData: "general/getAllFilesData",
     }),
 
-    isBusiness() {
-      return this.getAccountType === "business" ? true : false;
-    },
-
     isDisabled() {
-      return this.form.type && this.form.doc_number && this.form.file_url
+      return (this.form.type && this.form.doc_number) || this.form.file_url
         ? false
         : true;
     },
@@ -158,7 +164,9 @@ export default {
     }),
 
     updateSelectedDocument(document) {
-      this.form.type = document.id;
+      if (this.is_director_type) {
+        this.form.type = `director@${document.id}@${this.director_count}`;
+      } else this.form.type = document.id;
     },
 
     async save() {
@@ -171,7 +179,10 @@ export default {
 
         if (response?.code === 200) {
           this.pushToast(response.message, "success");
-          this.$emit("saved", "Your document has been uploaded successfully");
+          if (this.is_director_type) {
+            this.$emit("saved");
+          } else
+            this.$emit("saved", "Your document has been uploaded successfully");
 
           setTimeout(() => this.$emit("closeTriggered"), 3000);
         } else {
@@ -188,9 +199,6 @@ export default {
 
 <style lang="scss">
 .modal-overlay.doc-verification-overlay {
-  .modal-outer-container {
-    top: 1.5rem;
-  }
   .modal-cover-body {
     max-height: 65vh;
     overflow-y: auto;

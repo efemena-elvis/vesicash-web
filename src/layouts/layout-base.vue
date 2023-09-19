@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import Sidebar from "@/shared/components/nav-comps/sidebar";
 import MobileTopbar from "@/shared/components/nav-comps/mobile-topbar";
 
@@ -36,8 +37,36 @@ export default {
     MobileTopbar,
   },
 
+  computed: {
+    ...mapGetters({ getOnboardingData: "general/getOnboardingData" }),
+  },
+
+  watch: {
+    $route: {
+      handler(route) {
+        let { is_completed, completed_routes } = this.getOnboardingData;
+        let is_onbording_route = this.onboarding_paths.includes(route.path);
+
+        if (is_completed && is_onbording_route) {
+          this.$router.push("/dashboard");
+        } else if (!is_completed && !is_onbording_route) {
+          this.$router.push(this.onboarding_paths[completed_routes.length]);
+        }
+      },
+      immediate: true,
+      deep: true,
+    },
+  },
+
   data: () => ({
     show_mobile_sidebar: false,
+
+    onboarding_paths: [
+      "/onboarding/business-information",
+      "/onboarding/business-verification",
+      "/onboarding/identity-verification",
+      "/onboarding/mor-deployment",
+    ],
   }),
 
   created() {

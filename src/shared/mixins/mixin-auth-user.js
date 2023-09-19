@@ -1,11 +1,12 @@
 import { mapGetters } from "vuex";
-import { serviceUtils } from "@/shared/services";
+import { serviceUtils, serviceStorage } from "@/shared/services";
 
 const MixinAuthUser = {
   computed: {
     ...mapGetters({
       getAuthUser: "auth/getAuthUser",
       getAuthToken: "auth/getAuthToken",
+      getMerchantData: "general/getMerchantData",
     }),
 
     // ==============================
@@ -20,16 +21,6 @@ const MixinAuthUser = {
     // ==============================
     getUserToken() {
       return this.getAuthToken ?? null;
-    },
-
-    // ==============================
-    // GET USER LOGIN COUNT
-    // ==============================
-    getUserLoginCount() {
-      return (
-        Object.keys(this.getAuthUser).length &&
-        Number(serviceUtils.decodeString(this.getAuthUser.total_entry))
-      );
     },
 
     // ==============================
@@ -77,8 +68,17 @@ const MixinAuthUser = {
       };
     },
 
+    // GET BUSINESS NAME WHEN A USER IS NOT LOGGED IN
+    getBusinessName() {
+      let business_name = serviceStorage.getStorage({
+        storage_name: "identifier_token",
+      });
+
+      return business_name ? serviceUtils.decodeString(business_name) : null;
+    },
+
     isMoRSetupEnabled() {
-      return this.getAuthUser.is_merchant ?? false;
+      return this.getMerchantData;
     },
   },
 };

@@ -1,25 +1,14 @@
 <template>
-  <div class="merchant-upgrade pdb-40">
-    <PageBackBtn history_mode />
-
-    <div class="vesicash-container mgt-24">
-      <div class="title-text h4-text mgb-8 grey-900 text-center">
-        Verify your account
-      </div>
-
-      <div class="description-text h7-text grey-800 text-center mgb-40">
-        Complete your business account verification in the following steps.
-      </div>
+  <div class="col-12 col-md-10 col-xl-8 business-onboarding">
+    <div class="description-text grey-800 mgb-30 tertiary-1-text">
+      Complete your business account verification in the following steps.
     </div>
 
-    <div class="container">
+    <!-- VERIFICATION CARDS -->
+    <div class="verification-cards">
       <div class="row">
         <template v-if="loading_verification">
-          <div
-            class="col-12 col-md-10 col-lg-8 mx-auto"
-            v-for="i in 4"
-            :key="i"
-          >
+          <div v-for="i in 3" :key="i">
             <div class="cards-container">
               <div class="skeleton-loader card-skeleton rounded-12"></div>
             </div>
@@ -27,16 +16,29 @@
         </template>
 
         <template v-else>
-          <div class="col-12 col-md-10 col-lg-8 mx-auto">
+          <div>
+            <div class="mgb-24">
+              <verification-card
+                title="Bank verification number (BVN)"
+                subtitle="Verify your BVN details"
+                cta_title="Verify BVN details"
+                :verified="isBvnVerified"
+                @action="toggleBvnModal"
+              >
+                <BvnIcon />
+              </verification-card>
+            </div>
+
             <div class="mgb-24">
               <verification-card
                 title="Company registration document"
                 subtitle="Upload your business registration document for verification."
                 cta_title="Verify business"
-                :verified="isCACDocVerified.is_verified"
                 :verification_state="isCACDocVerified.verification_state"
-                :check_verification_state="true"
+                :verified="isCACDocVerified.is_verified"
+                :check_verification_state="false"
                 @action="toggleCACRegistrationModal"
+                :disable_verify="disableCACVerification"
               >
                 <FileIcon active />
               </verification-card>
@@ -49,49 +51,35 @@
                 cta_title="Verify TIN"
                 :verified="isTinVerified.is_verified"
                 :verification_state="isTinVerified.verification_state"
-                :check_verification_state="true"
+                :check_verification_state="false"
                 @action="toggleTinVerificationModal"
+                :disable_verify="disableTINVerification"
               >
                 <FileIcon active />
-              </verification-card>
-            </div>
-
-            <div class="mgb-24">
-              <verification-card
-                title="Bank Verification"
-                subtitle="Verify your BVN details"
-                cta_title="Verify BVN details"
-                :verified="isBvnVerified"
-                @action="toggleBvnModal"
-              >
-                <BvnIcon />
               </verification-card>
             </div>
           </div>
         </template>
       </div>
+
+      <div class="action-row mgt-20">
+        <button
+          @click="moveToNextOnboarding"
+          ref="btnRef"
+          class="btn btn-md btn-primary"
+          :disabled="isDisabled"
+        >
+          Next
+        </button>
+      </div>
     </div>
 
     <!-- MODALS -->
     <portal to="vesicash-modals">
-      <transition name="fade" v-if="show_business_info_modal">
-        <BusinessInfoModal
-          @saved="showSuccessModal('show_business_info_modal', $event)"
-          @closeTriggered="toggleBusinessInfoModal"
-        />
-      </transition>
-
       <transition name="fade" v-if="show_cac_registration_modal">
         <CoporationVerificationModal
-          @saved="showSuccessModal('show_doc_upload_modal', $event)"
+          @saved="showSuccessModal('show_cac_registration_modal', $event)"
           @closeTriggered="toggleCACRegistrationModal"
-        />
-      </transition>
-
-      <transition name="fade" v-if="show_doc_upload_modal">
-        <VerificationDocumentModal
-          @saved="showSuccessModal('show_doc_upload_modal', $event)"
-          @closeTriggered="toggleDocUploadModal"
         />
       </transition>
 
@@ -122,30 +110,27 @@
 
 <script>
 import { mapActions } from "vuex";
-import MoRDocValidate from "@/modules/merchant-of-records/modules/config/mixins/mor-docs-mixin";
-import PageBackBtn from "@/shared/components/util-comps/page-back-btn";
-import VerificationCard from "@/modules/settings/components/card-comps/verification-card";
-import BusinessInfoModal from "@/modules/settings/modals/business-info-modal";
-import VerificationDocumentModal from "@/modules/settings/modals/verification-document-modal";
+import onboardingMixin from "@/modules/dashboard/mixins/onboarding-mixin";
 import CoporationVerificationModal from "@/modules/settings/modals/coporation-verification-modal";
 import TinVerificationModal from "@/modules/settings/modals/tin-verification-modal";
 import VerificationBvnModal from "@/modules/settings/modals/verification-bvn-modal";
-import SuccessModal from "@/shared/modals/success-modal";
+import VerificationCard from "@/modules/settings/components/card-comps/verification-card";
 
 export default {
-  name: "MerchantUpgrade",
+  name: "onboardingBusiness",
 
-  mixins: [MoRDocValidate],
+  metaInfo: {
+    title: "Business verification",
+    titleTemplate: "%s - Vesicash",
+  },
+
+  mixins: [onboardingMixin],
 
   components: {
-    PageBackBtn,
-    VerificationCard,
-    BusinessInfoModal,
-    VerificationDocumentModal,
     CoporationVerificationModal,
     TinVerificationModal,
+    VerificationCard,
     VerificationBvnModal,
-    SuccessModal,
     BusinessIcon: () =>
       import(
         /* webpackChunkName: 'shared-module' */ "@/shared/components/icon-comps/business-icon"
@@ -161,28 +146,9 @@ export default {
   },
 
   computed: {
-    isBusinessVerified() {
-      return this.getUser.business_name && this.getUser.business_address
-        ? true
-        : false;
-    },
-
-    getOtherDocuments() {
-      if (!this.user_verifications) return [];
-
-      let doc_verifications = [];
-
-      this.user_verifications.map((doc) => {
-        if (this.other_documents.includes(doc.verification_type)) {
-          doc_verifications.push(doc);
-        }
-      });
-
-      doc_verifications = doc_verifications.map((doc) => {
-        return { ...doc, verification_state: this.getVerificationState(doc) };
-      });
-
-      return doc_verifications;
+    isDisabled() {
+      // return this.isTinVerified.is_verified ? false : true;
+      return this.isCACDocVerified.is_verified ? false : true;
     },
 
     isBvnVerified() {
@@ -228,30 +194,32 @@ export default {
           verification_state: "not_uploaded",
         };
     },
+
+    disableCACVerification() {
+      return this.isBvnVerified ? false : true;
+    },
+
+    disableTINVerification() {
+      return this.isCACDocVerified.is_verified ? false : true;
+    },
   },
 
   data: () => ({
+    bvn_verified: false,
+
     show_success_modal: false,
     show_cac_registration_modal: false,
     show_bvn_modal: false,
-    show_business_info_modal: false,
     show_tin_verification_modal: false,
-    show_doc_upload_modal: false,
-
-    business_info_verified: false,
-    document_verified: false,
-    bvn_verified: false,
 
     user_verifications: [],
     response_message: "",
     loading_verification: true,
     base_timestamp: "0001-01-01T00:00:00Z",
-    other_documents: ["passport", "drivers_license", "nin"],
   }),
 
   mounted() {
     this.fetchVerifications();
-    this.hidePageLoader();
   },
 
   methods: {
@@ -272,11 +240,11 @@ export default {
 
       if (response.code === 200) {
         this.user_verifications = response.data;
-
-        if (this.validateUserAccount) {
-          this.$router.push("/settings/mor-setup");
-        }
       }
+    },
+
+    async moveToNextOnboarding() {
+      await this.handleOnboardingUpdate("VesicashIdentityOnboarding");
     },
 
     getVerificationState(payload) {
@@ -287,16 +255,8 @@ export default {
       }
     },
 
-    toggleBusinessInfoModal() {
-      this.show_business_info_modal = !this.show_business_info_modal;
-    },
-
     toggleBvnModal() {
       this.show_bvn_modal = !this.show_bvn_modal;
-    },
-
-    toggleDocUploadModal() {
-      this.show_doc_upload_modal = !this.show_doc_upload_modal;
     },
 
     toggleSuccessModal() {
@@ -322,11 +282,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.merchant-upgrade {
+.business-onboarding {
   .description-text {
-    font-size: toRem(17);
-    margin: 0 auto;
-    width: 60%;
+    @include font-height(15, 25);
   }
 
   .cards-container {
@@ -341,6 +299,13 @@ export default {
     .card-skeleton {
       width: 100%;
       height: toRem(65);
+    }
+  }
+
+  .action-row {
+    .btn {
+      width: max-content;
+      padding: toRem(9.75) toRem(52);
     }
   }
 }

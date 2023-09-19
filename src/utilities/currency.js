@@ -26,8 +26,8 @@ const foreign_currencies = [
     short: "GBP",
     long: "Pound Sterling",
     description: "British Pound Sterling",
-    default: false,
-    enabled: false,
+    default: true,
+    enabled: true,
   },
   {
     id: 6,
@@ -36,8 +36,8 @@ const foreign_currencies = [
     short: "ESCROW_GBP",
     long: "Pound Sterling",
     description: "British Pound Sterling",
-    default: false,
-    enabled: false,
+    default: true,
+    enabled: true,
   },
 ];
 

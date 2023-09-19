@@ -7,54 +7,12 @@
     <div class="top-row mgb-16">
       <!-- WALLET COLUMN SECTION -->
       <template v-for="(wallet, index) in wallet_balance">
-        <!-- :class="!wallet.enabled && 'disable-wallet'" -->
-        <div class="column" :key="index">
-          <!-- TITLE TEXT -->
-          <div class="title-text tertiary-3-text teal-100 mgb-10">
-            <template>
-              {{ wallet?.short ?? "----" }}
-            </template>
-          </div>
-
-          <!-- LOADING AMOUNT VALUE -->
-          <template v-if="loading_wallet">
-            <div
-              class="loading-amount-value rounded-3 skeleton-loader mgb-5"
-            ></div>
-          </template>
-
-          <template v-else>
-            <!-- AMOUNT VALUE -->
-            <div
-              class="amount-value secondary-1-text mgb-4"
-              :class="[
-                index === 0 && 'neutral-10',
-                index === 1 && 'green-400',
-                index === 2 && 'teal-500',
-                index === 3 && 'yellow-300',
-                index === 4 && 'red-300',
-                index === 5 && 'teal-300',
-                index === 6 && 'green-300',
-              ]"
-            >
-              <span>
-                {{ wallet.sign
-                }}{{
-                  $utils.formatCurrencyWithComma(
-                    wallet.balance?.split(".")[0] ?? wallet.balance
-                  )
-                }}</span
-              ><span class="amount-zero"
-                >.{{ wallet.balance?.split(".")[1] ?? "00" }}</span
-              >
-            </div>
-          </template>
-
-          <!-- TITLE DESCRIPTION -->
-          <div class="title-description secondary-3-text neutral-10 mgt-5">
-            {{ wallet?.description ?? "-----------" }}
-          </div>
-        </div>
+        <PrimaryWalletColumn
+          :key="index"
+          :index="index"
+          :wallet="wallet"
+          :loading_wallet="loading_wallet"
+        />
       </template>
     </div>
 
@@ -119,6 +77,7 @@
 import { mapGetters } from "vuex";
 import MoneyIcon from "@/shared/components/icon-comps/money-icon";
 import ExchangeIcon from "@/shared/components/icon-comps/exchange-icon";
+import PrimaryWalletColumn from "@/modules/dashboard/components/card-comps/primary-wallet-column";
 
 export default {
   name: "PrimaryWalletCard",
@@ -126,6 +85,7 @@ export default {
   components: {
     ExchangeIcon,
     MoneyIcon,
+    PrimaryWalletColumn,
     FundingFlowDialog: () =>
       import(
         /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/modals/fund-wallet-modals/funding-flow-dialog"
@@ -298,8 +258,9 @@ export default {
         }
       }
 
-      .loading-sign-value {
-        @include draw-shape(50, 10);
+      .hidden-balance {
+        position: relative;
+        top: toRem(3);
       }
 
       .loading-amount-value {

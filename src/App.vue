@@ -22,8 +22,8 @@
 </template>
 
 <script>
-import { serviceUtils } from "@/shared/services";
 import { mapActions, mapGetters, mapMutations } from "vuex";
+import { serviceStorage } from "@/shared/services";
 
 export default {
   name: "App",
@@ -49,25 +49,16 @@ export default {
       ),
   },
 
+  computed: {
+    ...mapGetters({ getOnboardingData: "general/getOnboardingData" }),
+  },
+
   watch: {
     $route: {
       handler() {
         this.show_feather_loader = false;
       },
     },
-
-    getUserVerifications: {
-      handler(verifications) {
-        const is_upgraded = serviceUtils.checkAccountStatus(verifications);
-        const user = this.getUser || {};
-        this.UPDATE_AUTH_USER({ ...user, is_upgraded });
-      },
-      deep: true,
-    },
-  },
-
-  computed: {
-    ...mapGetters({ getUserVerifications: "settings/getUserVerifications" }),
   },
 
   data: () => ({
@@ -82,6 +73,12 @@ export default {
   }),
 
   created() {
+    // FETCH AN ONBOARDING SNAPSHOT FROM LOCALSTORAGE AFTER APP RELOADS
+    this.getSnapshots();
+
+    // CHECK IF USER EMAIL NEEDS VALIDATION
+    this.checkIfEmailIsVerified();
+
     // EVENT BUS TO TOGGLE PAGE LOADER
     this.$bus.$on("toggle-page-loader", (message = "") => {
       this.show_feather_loader = !this.show_feather_loader;
@@ -100,17 +97,63 @@ export default {
 
     // EVENT BUS TO TOGGLE ALERT BANNER
     this.$bus.$on("toggle-alert-banner", (data) => this.toggleAlert(data));
+  },
 
-    // CHECK IF USER EMAIL NEEDS VALIDATION
-    this.checkIfEmailIsVerified();
+  beforeMount() {
+    window.addEventListener("beforeunload", this.takeSnapshots);
+    this.$once("hook:beforeDestroy", () => {
+      window.removeEventListener("beforeunload", this.takeSnapshots);
+    });
   },
 
   methods: {
     ...mapActions({
       verifyEmailOTP: "settings/verifyEmailOTP",
+      updateMerchantState: "general/updateMerchantState",
+      updateOnboardingState: "general/updateOnboardingState",
     }),
 
     ...mapMutations({ UPDATE_AUTH_USER: "auth/UPDATE_AUTH_USER" }),
+
+    takeSnapshots() {
+      serviceStorage.setStorage({
+        storage_name: "app_onboarding",
+        storage_value: this.getOnboardingData,
+        storage_type: "object",
+      });
+
+      serviceStorage.setStorage({
+        storage_name: "mor_merchant",
+        storage_value: this.isMoRSetupEnabled,
+      });
+    },
+
+    getSnapshots() {
+      if (serviceStorage.getStorage({ storage_name: "app_onboarding" })) {
+        let cached_onboarding = serviceStorage.getStorage({
+          storage_name: "app_onboarding",
+          storage_type: "object",
+        });
+
+        // UPDATE CACHED DATA BACK TO STORE
+        this.updateOnboardingState(cached_onboarding);
+
+        // REMOVED CACHED ONBOARDING DATA FROM LOCAL STORAGE
+        serviceStorage.removeStorage("app_onboarding");
+      }
+
+      if (serviceStorage.getStorage({ storage_name: "mor_merchant" })) {
+        let cached_merchant = serviceStorage.getStorage({
+          storage_name: "mor_merchant",
+        });
+
+        // UPDATE CACHED DATA BACK TO STORE
+        this.updateMerchantState(cached_merchant === "true");
+
+        // REMOVED CACHED DATA FROM LOCAL STORAGE
+        serviceStorage.removeStorage("mor_merchant");
+      }
+    },
 
     toggleAlert(data) {
       this.alert = data;

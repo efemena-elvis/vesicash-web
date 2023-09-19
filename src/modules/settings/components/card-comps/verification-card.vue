@@ -31,7 +31,13 @@
       </div>
     </div>
 
-    <div class="action-area">
+    <button v-if="disable_verify">
+      <button class="btn btn-primary btn-sm" disabled>
+        {{ cta_title }}
+      </button>
+    </button>
+
+    <div class="action-area" v-else>
       <!-- CHECK VERIFICATION -->
       <template v-if="check_verification_state">
         <button
@@ -82,6 +88,7 @@
 
 <script>
 import CheckIcon from "@/shared/components/icon-comps/check-icon";
+
 export default {
   name: "VerificationCard",
 
@@ -119,6 +126,11 @@ export default {
     verified_docs: {
       type: Array,
       default: () => [],
+    },
+
+    disable_verify: {
+      type: Boolean,
+      default: false,
     },
   },
 

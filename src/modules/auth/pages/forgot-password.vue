@@ -103,6 +103,14 @@ export default {
 
 <style lang="scss" scoped>
 .fp-section {
-    margin-top: toRem(100);
+  margin-top: toRem(100);
+
+  @include breakpoint-down(sm) {
+    margin-top: toRem(80);
+  }
+
+  @include breakpoint-down(xs) {
+    margin-top: toRem(60);
+  }
 }
 </style>

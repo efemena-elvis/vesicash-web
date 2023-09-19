@@ -40,64 +40,24 @@ export default {
 .auth-wrapper {
   padding-bottom: toRem(50);
 
-  @include breakpoint-up(sm) {
-    // padding: toRem(24);
-    // width: fit-content;
+  @include breakpoint-down(sm) {
+    padding-bottom: toRem(70);
   }
 
   .title-text {
     font-size: toRem(27);
+    @include font-height(26, 36);
 
-    // @include breakpoint-down(xxs) {
-    //   font-size: toRem(18);
-    // }
-
-    // @include breakpoint-up(xxs) {
-    //   font-size: toRem(18.25);
-    // }
-
-    // @include breakpoint-up(sm) {
-    //   font-size: toRem(19);
-    // }
-
-    // @include breakpoint-up(lg) {
-    //   font-size: toRem(20);
-    // }
+    @include breakpoint-down(sm) {
+      font-size: toRem(26);
+    }
   }
 
   .meta-text {
     @include font-height(14.75, 24);
-
-    // @include breakpoint-down(xxs) {
-    //   font-size: toRem(12.75);
-    // }
-
-    // @include breakpoint-up(xxs) {
-    //   font-size: toRem(13);
-    // }
-
-    // @include breakpoint-up(sm) {
-    //   font-size: toRem(13.25);
-    // }
-
-    // @include breakpoint-up(lg) {
-    //   font-size: toRem(13.5);
-    // }
   }
 
   .auth-page {
-    // @include breakpoint-down(xxs) {
-    //   width: 100%;
-    // }
-
-    // @include breakpoint-up(xxs) {
-    //   width: 100%;
-    // }
-
-    // @include breakpoint-up(sm) {
-    //   width: toRem(400);
-    // }
-
     .btn-area {
       .btn {
         padding: toRem(10.5);

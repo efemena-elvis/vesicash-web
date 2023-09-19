@@ -29,6 +29,14 @@ const morDocValidate = {
         return mor_verifications.every((item) => item.is_verified);
       } else return false;
     },
+
+    validateUserPhone() {
+      let phone_verification = this.user_verifications.find(
+        (item) => item.verification_type === "phone"
+      );
+
+      return phone_verification?.is_verified ? false : true;
+    },
   },
 
   data() {

@@ -1,22 +1,30 @@
 import countries from "@/utilities/countries";
+import { serviceStorage } from "@/shared/services";
+import { constants } from "@/utilities";
 
 class serviceUtils {
   /**
    * The function logs out the user by clearing the local storage and redirecting to the login page.
    */
+  storage_exception_key = "identifier_token";
+
   logOutUser() {
-    localStorage.clear();
+    // PRIORITY REMOVALS ON LOGOUT
+    serviceStorage.removeStorage(constants.VESICASH_AUTH_USER);
+    serviceStorage.removeStorage(constants.VESICASH_AUTH_TOKEN);
+
+    serviceStorage.removeStorage("app_onboarding");
+    serviceStorage.removeStorage("timestamp");
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const local_key = localStorage.key(i);
+      if (local_key !== this.storage_exception_key) {
+        serviceStorage.removeStorage(local_key);
+      }
+    }
+
+    // REDIRECT TO LOGIN PAGE
     location.href = "/login";
-  }
-
-  checkAccountStatus(verifications) {
-     //WAITING ON BACKEND TO GIVE UPDATED LIST
-     const required_types = ['tin','cac','bvn','nin'];
-
-     return required_types?.every(type=>{
-       const doc = verifications?.find(verification=>verification?.verification_type===type);
-       return doc && doc?.is_verified
-     })
   }
 
   checkAuthTimeout(minutes) {

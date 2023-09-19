@@ -36,8 +36,6 @@ export default {
     }),
 
     getComputedPageFlow() {
-      console.log(document.referrer);
-
       return this.computed_page_flow;
     },
 
