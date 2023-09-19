@@ -1,6 +1,6 @@
 <template>
   <div class="merchant-upgrade pdb-40">
-    <PageBackBtn history_mode />
+    <PageBackBtn />
 
     <div class="vesicash-container mgt-24">
       <div class="title-text h4-text mgb-8 grey-900 text-center">
@@ -131,6 +131,7 @@ import CoporationVerificationModal from "@/modules/settings/modals/coporation-ve
 import TinVerificationModal from "@/modules/settings/modals/tin-verification-modal";
 import VerificationBvnModal from "@/modules/settings/modals/verification-bvn-modal";
 import SuccessModal from "@/shared/modals/success-modal";
+import { serviceUtils } from "@/shared/services";
 
 export default {
   name: "MerchantUpgrade",

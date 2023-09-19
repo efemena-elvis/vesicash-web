@@ -23,6 +23,9 @@
             is_phone_type ? `${country_dialing_code}0000000000` : placeholder
           "
           :min="getInputType === 'date' ? minimum_date : 0"
+          :max="
+            getInputType === 'date' ? maximum_date : Number.POSITIVE_INFINITY
+          "
           @input="validateAndEmitUserInput"
           @paste="validateAndEmitUserInput"
           @change="validateAndEmitUserInput"
@@ -145,6 +148,11 @@ export default {
     },
 
     minimum_date: {
+      type: String,
+      default: "",
+    },
+
+    maximum_date: {
       type: String,
       default: "",
     },

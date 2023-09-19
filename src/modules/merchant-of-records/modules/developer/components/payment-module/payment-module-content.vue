@@ -13,28 +13,8 @@
     <!-- PAYMENT MODULES -->
     <div class="payment-modules">
       <div class="row">
-        <div class="col-6 col-md-4">
-          <ModuleCard />
-        </div>
-
-        <div class="col-6 col-md-4">
-          <ModuleCard />
-        </div>
-
-        <div class="col-6 col-md-4">
-          <ModuleCard />
-        </div>
-
-        <div class="col-6 col-md-4">
-          <ModuleCard />
-        </div>
-
-        <div class="col-6 col-md-4">
-          <ModuleCard />
-        </div>
-
-        <div class="col-6 col-md-4">
-          <ModuleCard />
+        <div class="col-6 col-md-4" v-for="module in modules" :key="module.id">
+          <ModuleCard :module="module" @refresh="$emit('refresh')" />
         </div>
       </div>
     </div>
@@ -49,6 +29,13 @@ export default {
 
   components: {
     ModuleCard,
+  },
+
+  props: {
+    modules: {
+      type: Array,
+      default: () => [],
+    },
   },
 };
 </script>

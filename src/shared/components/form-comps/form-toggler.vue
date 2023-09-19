@@ -1,9 +1,10 @@
 <template>
   <div
-    class="form-toggler smooth-transition"
+    class="form-toggler smooth-transition pointer"
     :class="isToggleActive ? 'toggle-active' : 'toggle-inactive'"
+    @click="toggleSelect"
   >
-    <div class="thumb pointer smooth-transition" @click="toggleSelect"></div>
+    <div class="thumb"></div>
   </div>
 </template>
 
@@ -15,6 +16,12 @@ export default {
     default_value: {
       type: Boolean,
       default: false,
+    },
+  },
+
+  watch: {
+    default_value(state) {
+      this.toggle_value = state;
     },
   },
 
@@ -45,11 +52,13 @@ export default {
   border-radius: toRem(25);
   padding: toRem(1.2);
   position: relative;
+  transition: all ease 0.5s;
 
   .thumb {
     @include center-placement("y-axis");
     @include draw-shape(18);
     border-radius: 50%;
+    transition: all ease 0.5s;
   }
 
   &.toggle-active {
@@ -58,6 +67,7 @@ export default {
     .thumb {
       background: getColor("green-500");
       right: toRem(1.2);
+      transition: all ease 0.5s;
     }
   }
 
@@ -67,6 +77,7 @@ export default {
     .thumb {
       background: getColor("grey-700");
       left: toRem(1.2);
+      transition: all ease 0.5s;
     }
   }
 }

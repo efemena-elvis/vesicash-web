@@ -1,10 +1,11 @@
 import { mapActions } from "vuex";
+import { serviceUtils } from "@/shared/services";
 
 const morDocValidate = {
   computed: {
     validateMoRVerification() {
       let mor_verifications = this.user_verifications.filter((data) =>
-        ["cac", "bvn", "tin"].includes(data.verification_type)
+        ["cac", "bvn", "tin", "nin"].includes(data.verification_type)
       );
 
       let business_verified =
@@ -12,7 +13,7 @@ const morDocValidate = {
           ? true
           : false;
 
-      if (mor_verifications.length === 3) {
+      if (mor_verifications.length === 4) {
         return mor_verifications.every((item) => item.is_verified) &&
           business_verified
           ? true
@@ -21,13 +22,7 @@ const morDocValidate = {
     },
 
     validateUserAccount() {
-      let mor_verifications = this.user_verifications.filter((data) =>
-        ["cac", "bvn", "tin"].includes(data.verification_type)
-      );
-
-      if (mor_verifications.length === 3) {
-        return mor_verifications.every((item) => item.is_verified);
-      } else return false;
+      return serviceUtils?.checkAccountStatus([...this.user_verifications])
     },
 
     validateUserPhone() {

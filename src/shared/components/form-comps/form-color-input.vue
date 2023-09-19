@@ -5,7 +5,7 @@
         type="color"
         :id="color_id"
         v-model="color"
-        @change="handleColorChange"
+        @input="handleColorChange"
       />
     </div>
 
@@ -23,6 +23,12 @@ export default {
     },
     default_color: {
       type: String,
+    },
+  },
+
+  watch: {
+    default_color(color) {
+      this.color = color || "#FFF";
     },
   },
 
