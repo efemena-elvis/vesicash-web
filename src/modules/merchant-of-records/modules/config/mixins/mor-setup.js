@@ -86,6 +86,9 @@ const morSetup = {
     ...mapMutations({ UPDATE_AUTH_USER: "auth/UPDATE_AUTH_USER" }),
 
     signMoRContract(country) {
+      console.log("COUNTRIES", country);
+      console.log("FORM", this.form);
+
       const country_index = this.form.documents.findIndex(
         (doc) => doc.country_id === country.country_id
       );
@@ -159,13 +162,13 @@ const morSetup = {
       this.form.usage_type = usage_type;
 
       this.pre_select_countries = this.mor_countries.filter((country) =>
-        countries.some((item) => item.id === country.id)
+        countries?.some((item) => item.id === country.id)
       );
 
       this.$bus.$emit("preSelectMultiple", this.pre_select_countries);
 
       this.mor_countries.map((country) => {
-        if (countries.some((item) => item.id === country.id)) {
+        if (countries?.some((item) => item.id === country.id)) {
           this.mor_selected_countries.push({
             base: false,
             code: country.code,
@@ -179,7 +182,7 @@ const morSetup = {
 
       this.selectUserCountry(this.mor_selected_countries, true);
 
-      verifications.map((verification) => {
+      verifications?.map((verification) => {
         this.form.documents.find(
           (doc) => doc.country_id === verification.country_id
         ).status = verification.status;
@@ -189,6 +192,10 @@ const morSetup = {
     },
 
     async processMoROnboardingInfo() {
+      // FIX UP EMPTY BUSINESS AND USAGE TYPE
+      if (!this.form.business_type_id) this.form.business_type_id = 1;
+      if (!this.form.usage_type) this.form.usage_type = "online";
+
       const response = await this.handleDataRequest({
         action: "saveMoROnboarding",
         payload: this.form,

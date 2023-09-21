@@ -92,9 +92,7 @@ const MixinGlobal = {
      *****************************************/
     validateUserEmailAddress(email_address) {
       const forbiddenDomains = ["gmail.com", "hotmail.com", "yahoo.com"];
-
       const domain = email_address.split("@")[1];
-
       return forbiddenDomains.includes(domain) ? false : true;
     },
 
