@@ -8,25 +8,21 @@
       <VesicashBrandLogo />
     </router-link>
 
-    <!-- SIDE NAV ITEMS -->
-    <div
-      :class="
-        isMoRSetupEnabled
-          ? 'sidebar-item-list sidebar-item-list__long'
-          : 'sidebar-item-list'
-      "
-    >
-      <component
-        :is="sidebar_view"
-        v-for="(nav, index) in getSidebarRoutes"
-        :key="index"
-        :nav="nav"
-        :onboarding_state="getOnboardingRouteState[index]"
-      />
+    <div class="sidebar-content w-100">
+      <!-- SIDE NAV ITEMS -->
+      <div class="sidebar-item-list">
+        <component
+          :is="sidebar_view"
+          v-for="(nav, index) in getSidebarRoutes"
+          :key="index"
+          :nav="nav"
+          :onboarding_state="getOnboardingRouteState[index]"
+        />
+      </div>
     </div>
 
     <!-- LOG OUT ACCOUNT SECTION -->
-    <div class="wrapper position-absolute wt-100">
+    <div class="wrapper wt-100">
       <ProfileMenu
         @exit="handleUserlogOut"
         :onboarding_view="isBaseView ? false : true"
@@ -144,9 +140,9 @@ export default {
 
 <style lang="scss" scoped>
 .sidebar {
-  padding: toRem(22) toRem(16);
   @include stretch-area;
   position: relative;
+  height: 100vh;
 
   @include breakpoint-down(lg) {
     width: 60%;
@@ -160,30 +156,41 @@ export default {
     width: 75%;
   }
 
-  .sidebar-item-list {
-    max-height: 65vh !important;
-    overflow-y: auto;
-
-    &::-webkit-scrollbar {
-      width: 5px;
-      background-color: getColor("grey-300");
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background-color: getColor("grey-400");
-    }
-  }
-
-  .sidebar-item-list__long {
-    max-height: 85vh !important;
-  }
-
   .brand-logo {
-    margin-top: toRem(6);
+    padding: toRem(24) toRem(20) 0;
+    margin-top: toRem(8);
 
     svg {
       width: toRem(150);
       height: auto;
+    }
+  }
+
+  .sidebar-content {
+    overflow: overlay;
+    height: 74%;
+    margin-bottom: 3%;
+
+    &::-webkit-scrollbar {
+      @include transition(0.3s);
+      background-color: getColor("grey-200");
+      display: none;
+      width: 0;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: getColor("grey-300");
+    }
+
+    &:hover {
+      &::-webkit-scrollbar {
+        width: toRem(4);
+        display: unset;
+      }
+    }
+
+    .sidebar-item-list {
+      padding: 0 toRem(16);
     }
   }
 
@@ -192,8 +199,9 @@ export default {
   }
 
   .wrapper {
+    position: relative;
     padding: 0 toRem(16);
-    bottom: toRem(14);
+    bottom: 0;
     left: 0;
 
     .log-out-section {

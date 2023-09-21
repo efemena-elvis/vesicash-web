@@ -5,7 +5,7 @@
       <FormFieldInput
         input_type="email"
         is_required
-        placeholder="Enter email address"
+        placeholder="Enter business email address"
         :custom_style="{ group_wrapper_style: 'input-field input-field-email' }"
         :input_value="getFormFieldValueMx(form, 'email_address')"
         @getInputState="updateFormFieldMx($event, 'email_address')"
@@ -68,6 +68,11 @@ export default {
     isFormValidated() {
       return this.validateFormFieldMx(this.form);
     },
+
+    isBusinessEmail() {
+      const { email_address } = this.getFormPayloadMx(this.form);
+      return this.validateUserEmailAddress(email_address);
+    },
   },
 
   data() {
@@ -106,6 +111,15 @@ export default {
     // ADD A NEW USER TO BENEFICIARY LIST
     // ======================================
     handleAddUser() {
+      if (!this.isBusinessEmail) {
+        this.handleToastPushMx(
+          "Email address is not a business email",
+          "error"
+        );
+
+        return;
+      }
+
       if (this.getTransactionBeneficiaries.length === 2) {
         this.pushToast(
           "Only 2 users are allowed on a single party transaction",

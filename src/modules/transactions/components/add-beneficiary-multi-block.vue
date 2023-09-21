@@ -7,7 +7,7 @@
         <BasicInput
           input_type="email"
           is_required
-          placeholder="Enter email address"
+          placeholder="Enter business email address"
           :custom_style="{
             group_wrapper_style: 'input-field',
           }"
@@ -93,6 +93,11 @@ export default {
 
     isFormValidated() {
       return this.validateFormFieldMx(this.form);
+    },
+
+    isBusinessEmail() {
+      const { email_address } = this.getFormPayloadMx(this.form);
+      return this.validateUserEmailAddress(email_address);
     },
   },
 
@@ -188,6 +193,15 @@ export default {
     // ADD A NEW USER TO BENEFICIARY LIST
     // ========================================
     handleAddUser() {
+      if (!this.isBusinessEmail) {
+        this.handleToastPushMx(
+          "Email address is not a business email",
+          "error"
+        );
+
+        return;
+      }
+
       if (!this.checkPartyState()) return true;
 
       let user_data = {};
