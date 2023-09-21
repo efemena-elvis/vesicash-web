@@ -7,6 +7,7 @@ const MixinAuthUser = {
       getAuthUser: "auth/getAuthUser",
       getAuthToken: "auth/getAuthToken",
       getMerchantData: "general/getMerchantData",
+      getOnboardingData: "general/getOnboardingData",
     }),
 
     // ==============================
@@ -79,6 +80,10 @@ const MixinAuthUser = {
 
     isMoRSetupEnabled() {
       return this.getMerchantData;
+    },
+
+    getOnboardingState() {
+      return this.getOnboardingData;
     },
   },
 };

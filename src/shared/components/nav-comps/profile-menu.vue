@@ -17,14 +17,14 @@
       </div>
 
       <div>
-        <div class="grey-900 primary-2-text mgb-4" style="width: 95%">
+        <div class="grey-900 primary-2-text mgb-4">
           {{ getUser.business_name || getUser.fullname || getUser.email }}
         </div>
 
         <div class="tertiary-3-text green-500">ID: {{ getAccountId }}</div>
       </div>
 
-      <div class="menu-icon-wrapper">
+      <div class="menu-icon-wrapper pdl-5">
         <span class="icon icon-ellipsis-h" @click="toggleMenu"></span>
 
         <div

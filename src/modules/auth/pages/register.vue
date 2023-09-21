@@ -298,6 +298,7 @@ export default {
       if (response.code === 201) {
         this.user_details = response.data;
         this.handleOTPInitiation(); // SEND USER OTP
+        localStorage.clear();
       }
       if (response?.code === 400) {
         const error_type = response.message.split(":")[0];

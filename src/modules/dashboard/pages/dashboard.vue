@@ -5,7 +5,7 @@
         <UpgradeAlertCard
           alert_message="Great news! Your account verification is almost complete. Simply verify your phone number to finish the process."
           upgrade_link="/settings/profile"
-          upgrade_action="Veify phone"
+          upgrade_action="Verify phone number"
         />
       </div>
     </transition>

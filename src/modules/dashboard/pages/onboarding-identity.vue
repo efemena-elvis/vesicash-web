@@ -63,6 +63,7 @@
 
       <transition name="fade" v-if="show_success_modal">
         <SuccessModal
+          main_cta_title="Continue onboarding"
           @closeTriggered="toggleSuccessModal"
           @done="toggleSuccessModal"
           message="Director identity document has been successfully submitted for verification"
@@ -77,6 +78,7 @@ import { mapActions } from "vuex";
 import onboardingMixin from "@/modules/dashboard/mixins/onboarding-mixin";
 import VerificationCard from "@/modules/settings/components/card-comps/verification-card";
 import VerificationDocumentModal from "@/modules/settings/modals/verification-document-modal";
+import SuccessModal from "@/shared/modals/success-modal";
 
 export default {
   name: "onboardingIdentity",
@@ -91,6 +93,7 @@ export default {
   components: {
     VerificationCard,
     VerificationDocumentModal,
+    SuccessModal,
     UserIcon: () =>
       import(
         /* webpackChunkName: 'shared-module' */ "@/shared/components/icon-comps/user-icon"
@@ -169,6 +172,10 @@ export default {
     toggleDocUploadModal(director_id = null) {
       this.director_count = director_id ?? 0;
       this.show_doc_upload_modal = !this.show_doc_upload_modal;
+    },
+
+    toggleSuccessModal() {
+      this.show_success_modal = !this.show_success_modal;
     },
 
     showSuccessModal(modal) {

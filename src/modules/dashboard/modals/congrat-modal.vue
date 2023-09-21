@@ -24,9 +24,9 @@
     <!-- MODAL COVER FOOTER -->
     <template slot="modal-cover-footer">
       <div class="modal-cover-footer footer-wrapper">
-        <router-link to="/dashboard" class="btn btn-primary btn-md wt-100"
-          >Dashboard</router-link
-        >
+        <button @click="goToDashboard" class="btn btn-primary btn-md wt-100">
+          Dashboard
+        </button>
       </div>
     </template>
   </ModalCover>
@@ -62,7 +62,7 @@ export default {
 
   mounted() {
     this.startConfetti();
-    setTimeout(() => this.endConfetti(), 5000);
+    setTimeout(() => this.endConfetti(), 2000);
   },
 
   methods: {
@@ -79,6 +79,10 @@ export default {
 
     endConfetti() {
       this.$confetti.stop();
+    },
+
+    goToDashboard() {
+      location.href = "/dashboard";
     },
   },
 };

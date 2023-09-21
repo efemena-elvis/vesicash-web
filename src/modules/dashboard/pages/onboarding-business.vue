@@ -99,6 +99,7 @@
 
       <transition name="fade" v-if="show_success_modal">
         <SuccessModal
+          main_cta_title="Continue onboarding"
           @closeTriggered="toggleSuccessModal"
           @done="toggleSuccessModal"
           :message="response_message"
@@ -109,12 +110,13 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapMutations } from "vuex";
 import onboardingMixin from "@/modules/dashboard/mixins/onboarding-mixin";
 import CoporationVerificationModal from "@/modules/settings/modals/coporation-verification-modal";
 import TinVerificationModal from "@/modules/settings/modals/tin-verification-modal";
 import VerificationBvnModal from "@/modules/settings/modals/verification-bvn-modal";
 import VerificationCard from "@/modules/settings/components/card-comps/verification-card";
+import SuccessModal from "@/shared/modals/success-modal";
 
 export default {
   name: "onboardingBusiness",
@@ -131,6 +133,7 @@ export default {
     TinVerificationModal,
     VerificationCard,
     VerificationBvnModal,
+    SuccessModal,
     BusinessIcon: () =>
       import(
         /* webpackChunkName: 'shared-module' */ "@/shared/components/icon-comps/business-icon"
@@ -147,8 +150,8 @@ export default {
 
   computed: {
     isDisabled() {
-      // return this.isTinVerified.is_verified ? false : true;
-      return this.isCACDocVerified.is_verified ? false : true;
+      return this.isTinVerified.is_verified ? false : true;
+      // return this.isCACDocVerified.is_verified ? false : true;
     },
 
     isBvnVerified() {
@@ -224,8 +227,12 @@ export default {
 
   methods: {
     ...mapActions({
+      saveUserProfile: "settings/saveUserProfile",
+      updateUserBusinessInfo: "settings/updateUserBusinessInfo",
       fetchUserVerifications: "settings/fetchUserVerifications",
     }),
+
+    ...mapMutations({ UPDATE_AUTH_USER: "auth/UPDATE_AUTH_USER" }),
 
     async fetchVerifications() {
       const response = await this.handleDataRequest({
@@ -240,6 +247,39 @@ export default {
 
       if (response.code === 200) {
         this.user_verifications = response.data;
+      }
+    },
+
+    async updateUserVerifiedData() {
+      const response = await this.handleDataRequest({
+        action: "saveUserProfile",
+        payload: {},
+      });
+
+      if (response.code === 200) {
+        let { firstname, lastname } = response.data.user;
+
+        this.UPDATE_AUTH_USER({
+          ...this.getUser,
+          fullname: `${firstname} ${lastname}`,
+        });
+      }
+    },
+
+    async updateBusinessVerifiedData() {
+      const response = await this.handleDataRequest({
+        action: "updateUserBusinessInfo",
+        payload: {},
+      });
+
+      if (response.code === 200) {
+        let { business_name, business_address } = response.data;
+
+        this.UPDATE_AUTH_USER({
+          ...this.getUser,
+          business_name,
+          business_address,
+        });
       }
     },
 
@@ -276,6 +316,11 @@ export default {
       this[modal] = false;
       this.response_message = message;
       this.show_success_modal = true;
+
+      if (modal === "show_tin_registration_modal") {
+        this.updateUserVerifiedData();
+        this.updateBusinessVerifiedData();
+      }
     },
   },
 };

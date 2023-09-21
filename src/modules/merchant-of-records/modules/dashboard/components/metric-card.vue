@@ -12,8 +12,8 @@
         v-for="(wallet, index) in metric_data"
         :key="index"
       >
-        <div class="title grey-700 mgb-4">
-          {{ wallet.description }} ({{ wallet.short }})
+        <div class="title grey-700 mgb-6">
+          {{ wallet.short }}
         </div>
 
         <template>
@@ -34,6 +34,10 @@
             }}
           </div>
         </template>
+
+        <div class="title grey-700">
+          {{ wallet.description }}
+        </div>
       </div>
     </div>
   </div>

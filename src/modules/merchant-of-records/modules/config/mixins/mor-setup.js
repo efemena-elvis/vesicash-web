@@ -14,15 +14,13 @@ const morSetup = {
     },
 
     isDisabled() {
-      const { countries, usage_type, business_type_id, documents } = this.form;
+      const { countries, documents } = this.form;
 
       const isNotSigned = documents.some((doc) =>
         ["unsigned", "not_verified"].includes(doc.status)
       );
 
-      return countries.length && usage_type && business_type_id && !isNotSigned
-        ? false
-        : true;
+      return countries.length && !isNotSigned ? false : true;
     },
 
     getMoRwallets() {
@@ -57,7 +55,7 @@ const morSetup = {
       form: {
         countries: [],
         wallet_currency_codes: [],
-        business_type_id: null,
+        business_type_id: 1,
         usage_type: "online", // offline | online
         documents: [
           // {
@@ -125,6 +123,7 @@ const morSetup = {
             !exclude_countries.includes(country.country_short.toUpperCase())
         );
       } else {
+        country_list = country_list.slice(1);
         country_list.map((country) => {
           if (exclude_countries.includes(country.code.toUpperCase())) {
             country.disable = true;
@@ -149,8 +148,7 @@ const morSetup = {
 
       if (response.code === 200 && response.data !== null) {
         this.populateMoRDataset(response.data);
-      }
-      // else this.$bus.$emit("toggle-page-loader");
+      } else this.$bus.$emit("toggle-page-loader");
     },
 
     populateMoRDataset(dataset) {
@@ -188,25 +186,7 @@ const morSetup = {
       });
 
       this.$bus.$emit("toggle-page-loader");
-      // this.checkAndUpdateMerchantStatus(verifications);
     },
-
-    // checkAndUpdateMerchantStatus(verifications) {
-    //   if (!this.isMoRSetupEnabled) {
-    //     const is_verified = verifications.some(
-    //       (verification) => verification.status === "verified"
-    //     );
-
-    //     if (is_verified) {
-    //       const user_payload = {
-    //         ...this.getUser,
-    //         is_merchant: true,
-    //       };
-
-    //       this.UPDATE_AUTH_USER(user_payload);
-    //     }
-    //   }
-    // },
 
     async processMoROnboardingInfo() {
       const response = await this.handleDataRequest({

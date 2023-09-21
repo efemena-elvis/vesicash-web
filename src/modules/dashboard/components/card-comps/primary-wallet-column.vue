@@ -25,13 +25,12 @@
           <span class="hidden-balance smooth-transition">****</span>
         </template>
 
-        <template v-else>
-          <span class="smooth-transition">
-            {{
-              $utils.formatCurrencyWithComma(
-                wallet.balance?.split(".")[0] ?? wallet.balance
-              )
-            }}</span
+        <template v-else
+          ><span class="smooth-transition">{{
+            $utils.formatCurrencyWithComma(
+              wallet.balance?.split(".")[0] ?? wallet.balance
+            )
+          }}</span
           ><span class="amount-zero smooth-transition"
             >.{{ wallet.balance?.split(".")[1] ?? "00" }}</span
           >

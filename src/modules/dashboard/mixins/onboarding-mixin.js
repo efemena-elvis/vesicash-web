@@ -1,11 +1,9 @@
-import { mapActions, mapGetters } from "vuex";
+import { mapActions } from "vuex";
 
 const OnboardingMixin = {
   computed: {
-    ...mapGetters({ getOnboardingData: "general/getOnboardingData" }),
-
     getCompletedRoutes() {
-      let { completed_routes } = this.getOnboardingData;
+      let { completed_routes } = this.getOnboardingState;
 
       return completed_routes.includes(this.$route.name)
         ? completed_routes

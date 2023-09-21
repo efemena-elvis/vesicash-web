@@ -110,6 +110,7 @@ import MoRSetup from "@/modules/merchant-of-records/modules/config/mixins/mor-se
 import onboardingMixin from "@/modules/dashboard/mixins/onboarding-mixin";
 import CountryHelper from "@/shared/mixins/mixin-country-helper";
 import FieldSetup from "@/modules/merchant-of-records/modules/config/components/field-setup";
+import WalletMixin from "@/modules/dashboard/mixins/wallet-mixin";
 
 export default {
   name: "onboardingMoR",
@@ -119,7 +120,7 @@ export default {
     titleTemplate: "%s - Vesicash",
   },
 
-  mixins: [CountryHelper, onboardingMixin, MoRSetup],
+  mixins: [CountryHelper, WalletMixin, onboardingMixin, MoRSetup],
 
   components: {
     FieldSetup,
@@ -144,6 +145,12 @@ export default {
       selected_country: false,
       show_congrat_dialog: false,
     };
+  },
+
+  created() {
+    this.$bus.$on("reload-mor-wallets", () => {
+      if (!this.getMoRwallets.length) this.loadMoRWalletSize();
+    });
   },
 
   mounted() {

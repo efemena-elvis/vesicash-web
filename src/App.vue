@@ -22,8 +22,8 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from "vuex";
-import { serviceStorage } from "@/shared/services";
+import { mapActions, mapMutations } from "vuex";
+import SnapshotMixin from "@/shared/mixins/mixin-snapshots";
 
 export default {
   name: "App",
@@ -37,6 +37,8 @@ export default {
     },
   },
 
+  mixins: [SnapshotMixin],
+
   components: {
     PageLoader: () =>
       import(
@@ -47,10 +49,6 @@ export default {
       import(
         /* webpackChunkName: "app-module" */ "@/shared/components/util-comps/alert-banner"
       ),
-  },
-
-  computed: {
-    ...mapGetters({ getOnboardingData: "general/getOnboardingData" }),
   },
 
   watch: {
@@ -73,9 +71,6 @@ export default {
   }),
 
   created() {
-    // FETCH AN ONBOARDING SNAPSHOT FROM LOCALSTORAGE AFTER APP RELOADS
-    this.getSnapshots();
-
     // CHECK IF USER EMAIL NEEDS VALIDATION
     this.checkIfEmailIsVerified();
 
@@ -99,13 +94,6 @@ export default {
     this.$bus.$on("toggle-alert-banner", (data) => this.toggleAlert(data));
   },
 
-  beforeMount() {
-    window.addEventListener("beforeunload", this.takeSnapshots);
-    this.$once("hook:beforeDestroy", () => {
-      window.removeEventListener("beforeunload", this.takeSnapshots);
-    });
-  },
-
   methods: {
     ...mapActions({
       verifyEmailOTP: "settings/verifyEmailOTP",
@@ -114,46 +102,6 @@ export default {
     }),
 
     ...mapMutations({ UPDATE_AUTH_USER: "auth/UPDATE_AUTH_USER" }),
-
-    takeSnapshots() {
-      serviceStorage.setStorage({
-        storage_name: "app_onboarding",
-        storage_value: this.getOnboardingData,
-        storage_type: "object",
-      });
-
-      serviceStorage.setStorage({
-        storage_name: "mor_merchant",
-        storage_value: this.isMoRSetupEnabled,
-      });
-    },
-
-    getSnapshots() {
-      if (serviceStorage.getStorage({ storage_name: "app_onboarding" })) {
-        let cached_onboarding = serviceStorage.getStorage({
-          storage_name: "app_onboarding",
-          storage_type: "object",
-        });
-
-        // UPDATE CACHED DATA BACK TO STORE
-        this.updateOnboardingState(cached_onboarding);
-
-        // REMOVED CACHED ONBOARDING DATA FROM LOCAL STORAGE
-        serviceStorage.removeStorage("app_onboarding");
-      }
-
-      if (serviceStorage.getStorage({ storage_name: "mor_merchant" })) {
-        let cached_merchant = serviceStorage.getStorage({
-          storage_name: "mor_merchant",
-        });
-
-        // UPDATE CACHED DATA BACK TO STORE
-        this.updateMerchantState(cached_merchant === "true");
-
-        // REMOVED CACHED DATA FROM LOCAL STORAGE
-        serviceStorage.removeStorage("mor_merchant");
-      }
-    },
 
     toggleAlert(data) {
       this.alert = data;
