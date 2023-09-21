@@ -24,6 +24,14 @@ const morDocValidate = {
     validateUserAccount() {
       return serviceUtils?.checkAccountStatus([...this.user_verifications])
     },
+
+    validateUserPhone() {
+      let phone_verification = this.user_verifications.find(
+        (item) => item.verification_type === "phone"
+      );
+
+      return phone_verification?.is_verified ? false : true;
+    },
   },
 
   data() {

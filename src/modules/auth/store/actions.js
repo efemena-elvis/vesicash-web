@@ -76,7 +76,7 @@ export default {
   // ============================================
   async logOutUser({ commit }) {
     await postRequest("auth", routes.logout);
-    setTimeout(() => commit("AUTH_LOGOUT"), 500);
+    setTimeout(() => commit("AUTH_LOGOUT"), 300);
   },
 
   // ============================================

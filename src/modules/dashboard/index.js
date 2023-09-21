@@ -20,6 +20,69 @@ const dashboardRoutes = [
           requiresAuth: true,
         },
       },
+
+      {
+        path: "/onboarding/business-information",
+        component: () =>
+          import(
+            /* webpackChunkName: "dashboard-module" */
+            "@/modules/dashboard/layouts/layout-onboarding"
+          ),
+        children: [
+          {
+            path: "",
+            name: "VesicashBusinessInfoOnboarding",
+            component: () =>
+              import(
+                /* webpackChunkName: "dashboard-module" */
+                "@/modules/dashboard/pages/onboarding-business-info"
+              ),
+            meta: {
+              requiresAuth: true,
+              page_type: "onboarding",
+            },
+          },
+          {
+            path: "/onboarding/business-verification",
+            name: "VesicashBusinessOnboarding",
+            component: () =>
+              import(
+                /* webpackChunkName: "dashboard-module" */
+                "@/modules/dashboard/pages/onboarding-business"
+              ),
+            meta: {
+              requiresAuth: true,
+              page_type: "onboarding",
+            },
+          },
+          {
+            path: "/onboarding/identity-verification",
+            name: "VesicashIdentityOnboarding",
+            component: () =>
+              import(
+                /* webpackChunkName: "dashboard-module" */
+                "@/modules/dashboard/pages/onboarding-identity"
+              ),
+            meta: {
+              requiresAuth: true,
+              page_type: "onboarding",
+            },
+          },
+          {
+            path: "/onboarding/mor-deployment",
+            name: "VesicashMoROnboarding",
+            component: () =>
+              import(
+                /* webpackChunkName: "dashboard-module" */
+                "@/modules/dashboard/pages/onboarding-mor"
+              ),
+            meta: {
+              requiresAuth: true,
+              page_type: "onboarding",
+            },
+          },
+        ],
+      },
     ],
   },
 

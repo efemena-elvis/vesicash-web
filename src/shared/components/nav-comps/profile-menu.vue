@@ -1,39 +1,52 @@
 <template>
-  <div
-    class="profile-menu-wrapper"
-    :class="show_profile_menu ? 'tour-index' : null"
-  >
-    <div class="user-icon-wrapper">
-      <UserIcon profileMenu />
-    </div>
-
-    <div>
-      <div class="grey-900 primary-2-text mgb-4">
-        {{ getUser.business_name || getUser.fullname || getUser.email }}
+  <div>
+    <div class="profile-menu-wrapper onboarding-view" v-if="onboarding_view">
+      <div class="onboarding-item" @click="$emit('exit')">
+        <ExitIcon profileMenu />
+        <span class="red-600 tertiary-1-text">Logout</span>
       </div>
-      <div class="tertiary-3-text green-500">ID: {{ getAccountId }}</div>
     </div>
 
-    <div class="menu-icon-wrapper">
-      <span class="icon icon-ellipsis-h" @click="toggleMenu"></span>
+    <div
+      v-else
+      class="profile-menu-wrapper"
+      :class="show_profile_menu ? 'tour-index' : null"
+    >
+      <div class="user-icon-wrapper">
+        <UserIcon profileMenu />
+      </div>
 
-      <div
-        class="profile-menu-block smooth-transition"
-        v-if="show_menu"
-        v-on-clickaway="toggleMenu"
-      >
-        <div
-          class="profile-menu-item border-bottom-grey-100"
-          @click="copyMerchantID"
-        >
-          <CopyIcon />
-          <span class="tertiary-2-text grey-900" v-if="copied">ID Copied!</span>
-          <span class="tertiary-2-text grey-900" v-else>Copy Account ID</span>
+      <div>
+        <div class="grey-900 primary-2-text mgb-4">
+          {{ getUser.business_name || getUser.fullname || getUser.email }}
         </div>
 
-        <div class="profile-menu-item" @click="$emit('exit')">
-          <ExitIcon profileMenu />
-          <span class="red-600 tertiary-2-text">Logout</span>
+        <div class="tertiary-3-text green-500">ID: {{ getAccountId }}</div>
+      </div>
+
+      <div class="menu-icon-wrapper pdl-5">
+        <span class="icon icon-ellipsis-h" @click="toggleMenu"></span>
+
+        <div
+          class="profile-menu-block smooth-transition"
+          v-if="show_menu"
+          v-on-clickaway="toggleMenu"
+        >
+          <div
+            class="profile-menu-item border-bottom-grey-100"
+            @click="copyMerchantID"
+          >
+            <CopyIcon />
+            <span class="tertiary-2-text grey-900" v-if="copied"
+              >ID Copied!</span
+            >
+            <span class="tertiary-2-text grey-900" v-else>Copy Account ID</span>
+          </div>
+
+          <div class="profile-menu-item" @click="$emit('exit')">
+            <ExitIcon profileMenu />
+            <span class="red-600 tertiary-2-text">Logout</span>
+          </div>
         </div>
       </div>
     </div>
@@ -53,6 +66,12 @@ export default {
     UserIcon,
     CopyIcon,
     ExitIcon,
+  },
+
+  props: {
+    onboarding_view: {
+      type: Boolean,
+    },
   },
 
   computed: {
@@ -166,5 +185,25 @@ export default {
 .tour-index {
   @include transition(0.3s);
   z-index: 1099;
+}
+
+.onboarding-view {
+  position: relative;
+  margin-top: toRem(-20);
+  padding: toRem(12) toRem(10);
+
+  .onboarding-item {
+    @include flex-row-nowrap("flex-start", "center");
+    gap: 0 toRem(16);
+
+    svg {
+      width: toRem(30);
+      height: auto;
+    }
+
+    span {
+      font-size: toRem(15);
+    }
+  }
 }
 </style>

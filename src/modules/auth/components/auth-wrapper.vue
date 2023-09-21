@@ -1,13 +1,13 @@
 <template>
-  <div class="auth-wrapper wt-fit neutral-10-bg rounded-16 mx-auto mgb-40">
+  <div class="auth-wrapper">
     <!-- TITLE TEXT -->
-    <div class="title-text h5-text grey-900 text-center">
+    <div class="title-text h3-text grey-800">
       {{ title_text }}
     </div>
 
     <!-- META TEXT -->
     <div
-      class="meta-text tertiary-2-text grey-600 text-center mgt-4"
+      class="meta-text grey-600 mgt-8"
       v-if="meta_text"
       v-html="meta_text"
     ></div>
@@ -21,7 +21,7 @@
 
 <script>
 export default {
-  name: "AuthWrappers",
+  name: "AuthWrapper",
 
   props: {
     title_text: {
@@ -38,79 +38,29 @@ export default {
 
 <style lang="scss" scoped>
 .auth-wrapper {
-  padding: toRem(24);
+  padding-bottom: toRem(50);
 
-  @include breakpoint-down(xxs) {
-    padding: toRem(24) toRem(14);
-    width: 100%;
-  }
-
-  @include breakpoint-up(xxs) {
-    padding: toRem(24) toRem(16);
-    width: 100%;
-  }
-
-  @include breakpoint-up(sm) {
-    padding: toRem(24);
-    width: fit-content;
+  @include breakpoint-down(sm) {
+    padding-bottom: toRem(70);
   }
 
   .title-text {
-    @include breakpoint-down(xxs) {
-      font-size: toRem(18);
-    }
+    font-size: toRem(27);
+    @include font-height(26, 36);
 
-    @include breakpoint-up(xxs) {
-      font-size: toRem(18.25);
-    }
-
-    @include breakpoint-up(sm) {
-      font-size: toRem(19);
-    }
-
-    @include breakpoint-up(lg) {
-      font-size: toRem(20);
+    @include breakpoint-down(sm) {
+      font-size: toRem(26);
     }
   }
 
   .meta-text {
-    font-size: toRem(13.5);
-
-    @include breakpoint-down(xxs) {
-      font-size: toRem(12.75);
-    }
-
-    @include breakpoint-up(xxs) {
-      font-size: toRem(13);
-    }
-
-    @include breakpoint-up(sm) {
-      font-size: toRem(13.25);
-    }
-
-    @include breakpoint-up(lg) {
-      font-size: toRem(13.5);
-    }
+    @include font-height(14.75, 24);
   }
 
   .auth-page {
-    width: toRem(400);
-
-    @include breakpoint-down(xxs) {
-      width: 100%;
-    }
-
-    @include breakpoint-up(xxs) {
-      width: 100%;
-    }
-
-    @include breakpoint-up(sm) {
-      width: toRem(400);
-    }
-
     .btn-area {
       .btn {
-        padding: toRem(10);
+        padding: toRem(10.5);
       }
     }
   }

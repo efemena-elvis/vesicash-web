@@ -11,6 +11,7 @@
       <!-- INPUT WRAPPER AREA -->
       <div :class="getInputWrapperStyle">
         <input
+          :autocomplete="autocomplete"
           :type="getInputType"
           :id="label_id"
           v-model.trim="form_value"
@@ -96,6 +97,11 @@ export default {
   mixins: [CountryHelper],
 
   props: {
+    autocomplete: {
+      type: String,
+      default: "on"
+    },
+
     label_title: {
       type: String,
       default: "",
@@ -105,7 +111,7 @@ export default {
       type: String,
       default: "",
     },
-
+    
     input_type: {
       type: String,
       default: "text",

@@ -16,20 +16,21 @@
           : 'sidebar-item-list'
       "
     >
-      <SidebarItem
-        v-for="(nav, index) in sidebar_routes"
+      <component
+        :is="sidebar_view"
+        v-for="(nav, index) in getSidebarRoutes"
         :key="index"
         :nav="nav"
+        :onboarding_state="getOnboardingRouteState[index]"
       />
-    </div>
-
-    <div class="fixed-sidebar" v-if="!isMoRSetupEnabled">
-      <SidebarItem is_active :nav="merchant_of_record" />
     </div>
 
     <!-- LOG OUT ACCOUNT SECTION -->
     <div class="wrapper position-absolute wt-100">
-      <ProfileMenu @exit="handleUserlogOut" />
+      <ProfileMenu
+        @exit="handleUserlogOut"
+        :onboarding_view="isBaseView ? false : true"
+      />
     </div>
   </div>
 </template>
@@ -37,10 +38,15 @@
 <script>
 import { mapActions } from "vuex";
 import MoRDocValidate from "@/modules/merchant-of-records/modules/config/mixins/mor-docs-mixin";
-import { escrowRoutes, merchantRoutes } from "@/shared/nav-routes";
+import {
+  escrowRoutes,
+  merchantRoutes,
+  onboardingRoutes,
+} from "@/shared/nav-routes";
 import VesicashBrandLogo from "@/shared/components/icon-comps/vesicash-brand-logo";
 import ExitIcon from "@/shared/components/icon-comps/exit-icon";
 import SidebarItem from "@/shared/components/nav-comps/sidebar-item";
+import SidebarItemCount from "@/shared/components/nav-comps/sidebar-item-count";
 import ProfileMenu from "@/shared/components/nav-comps/profile-menu";
 
 export default {
@@ -51,32 +57,73 @@ export default {
   components: {
     VesicashBrandLogo,
     SidebarItem,
+    SidebarItemCount,
     ExitIcon,
     ProfileMenu,
   },
 
+  computed: {
+    isBaseView() {
+      return this.base_view ? true : false;
+    },
+
+    getSidebarRoutes() {
+      if (!this.base_view) {
+        this.sidebar_view = "SidebarItemCount";
+        return onboardingRoutes;
+      } else {
+        this.sidebar_view = "SidebarItem";
+        return this.isMoRSetupEnabled ? merchantRoutes : escrowRoutes;
+      }
+    },
+
+    getOnboardingRouteState() {
+      return this.onboarding_route_state;
+    },
+  },
+
   data() {
     return {
-      sidebar_routes: "",
-      merchant_of_record: {
-        id: 5,
-        title: "Merchant of Record",
-        icon: "MORIcon",
-        link: "/merchant/introduction",
-        slug: "mor",
-        tour_id: [],
-        tag: true,
-      },
+      base_view: true,
+      sidebar_view: "SidebarItem",
+
+      onboarding_route_state: [
+        {
+          route: "VesicashBusinessInfoOnboarding",
+          disabled: false,
+        },
+        {
+          route: "VesicashBusinessOnboarding",
+          disabled: true,
+        },
+        {
+          route: "VesicashIdentityOnboarding",
+          disabled: true,
+        },
+        {
+          route: "VesicashMoROnboarding",
+          disabled: true,
+        },
+      ],
     };
   },
 
+  watch: {
+    $route: {
+      handler(route) {
+        this.base_view = route.meta?.page_type === "onboarding" ? false : true;
+
+        if (!this.base_view) {
+          if (route.name === "VesicashBusinessOnboarding") {
+            this.onbording_route_state = [];
+          }
+        }
+      },
+      immediate: true,
+    },
+  },
+
   mounted() {
-    this.sidebar_routes = this.isMoRSetupEnabled
-      ? merchantRoutes
-      : escrowRoutes;
-
-    this.checkMoRVerficationState();
-
     if (this.getAccountType === "business" && !this.isMoRSetupEnabled) {
       this.fetchVerifications();
     }
@@ -89,22 +136,7 @@ export default {
 
     handleUserlogOut() {
       this.togglePageLoader();
-      setTimeout(() => this.logOutUser(), 2000);
-    },
-
-    checkMoRVerficationState() {
-      let has_seen_mor_intro = this.getUser.has_seen_mor_introduction;
-
-      if (has_seen_mor_intro) {
-        // CHECK VERIFICATION UPGRADE
-        if (this.validateMoRVerification) {
-          this.merchant_of_record.link = "/settings/mor-setup";
-        } else {
-          this.merchant_of_record.link = "/merchant/document-upgrade";
-        }
-      } else {
-        this.merchant_of_record.link = "/merchant/introduction";
-      }
+      this.logOutUser();
     },
   },
 };
@@ -136,6 +168,7 @@ export default {
       width: 5px;
       background-color: getColor("grey-300");
     }
+
     &::-webkit-scrollbar-thumb {
       background-color: getColor("grey-400");
     }
@@ -146,8 +179,10 @@ export default {
   }
 
   .brand-logo {
+    margin-top: toRem(6);
+
     svg {
-      width: toRem(146);
+      width: toRem(150);
       height: auto;
     }
   }

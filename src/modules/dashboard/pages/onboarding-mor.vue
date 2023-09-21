@@ -1,22 +1,19 @@
 <template>
-  <div class="merchant-config">
-    <!-- TOP AREA -->
-    <div class="top-area mgb-32">
-      <div class="page-title mgb-4 grey-900 h5-text">
-        Merchant of Record (MoR)
-      </div>
-
-      <div class="page-meta grey-600 tertiary-2-text">
-        For merchants who wish to open in other countries.
-      </div>
+  <div class="col-12 col-md-10 col-xl-8 mor-onboarding mgb-40 pdb-40">
+    <div class="page-title mgb-4 grey-900 h5-text">
+      Merchant of Record (MoR)
     </div>
 
-    <!-- BOTTOM AREA -->
-    <div class="bottom-area mgb-40">
+    <div class="page-meta grey-600 tertiary-2-text">
+      Exapand the reach of your business by easily deploying your services into
+      diverse markets.
+    </div>
+
+    <div class="config-setup mgt-30">
       <!-- MOR COUNTRIES -->
       <FieldSetup
-        title="Select countries to deploy MoR for"
-        description="Select the countries you wish to deploy Merchant of Record for."
+        title="Select countries to deploy MoR"
+        description="Select the countries you wish to setup a new market."
       >
         <template slot="form-area">
           <div class="form-area">
@@ -80,33 +77,50 @@
       <FieldSetup>
         <template slot="form-area">
           <button
+            v-if="country_selected"
             class="btn btn-md btn-primary"
             ref="btnRef"
             :disabled="isDisabled"
             @click="processMoROnboardingInfo"
           >
-            Configure MoR
+            Complete MoR onboarding
+          </button>
+
+          <button
+            class="btn btn-md btn-primary"
+            v-else
+            @click="completeOnboarding(true)"
+          >
+            Skip MoR and Complete onboarding
           </button>
         </template>
       </FieldSetup>
     </div>
+
+    <portal to="vesicash-modals">
+      <transition name="fade" v-if="show_congrat_dialog">
+        <congratModal @closeTriggered="toggleCongratDialog" />
+      </transition>
+    </portal>
   </div>
 </template>
 
 <script>
 import MoRSetup from "@/modules/merchant-of-records/modules/config/mixins/mor-setup";
+import onboardingMixin from "@/modules/dashboard/mixins/onboarding-mixin";
 import CountryHelper from "@/shared/mixins/mixin-country-helper";
 import FieldSetup from "@/modules/merchant-of-records/modules/config/components/field-setup";
+import WalletMixin from "@/modules/dashboard/mixins/wallet-mixin";
 
 export default {
-  name: "MerchantConfig",
-
-  mixins: [CountryHelper, MoRSetup],
+  name: "onboardingMoR",
 
   metaInfo: {
-    title: "MoR Setup",
+    title: "MoR Deployment",
     titleTemplate: "%s - Vesicash",
   },
+
+  mixins: [CountryHelper, WalletMixin, onboardingMixin, MoRSetup],
 
   components: {
     FieldSetup,
@@ -114,17 +128,50 @@ export default {
       import(
         /* webpackChunkName: "MoR-module" */ "@/modules/merchant-of-records/modules/config/components/mor-document-table"
       ),
+    congratModal: () =>
+      import(
+        /* webpackChunkName: "onboarding-module" */ "@/modules/dashboard/modals/congrat-modal"
+      ),
+  },
+
+  computed: {
+    country_selected() {
+      return this.form.countries.length ? true : false;
+    },
+  },
+
+  data() {
+    return {
+      selected_country: false,
+      show_congrat_dialog: false,
+    };
+  },
+
+  created() {
+    this.$bus.$on("reload-mor-wallets", () => {
+      if (!this.getMoRwallets.length) this.loadMoRWalletSize();
+    });
   },
 
   mounted() {
     this.$bus.$emit("toggle-page-loader");
     this.loadMoRWalletSize();
   },
+
+  methods: {
+    async completeOnboarding(skip_mor = false) {
+      await this.handleOnboardingUpdate(null, true, skip_mor);
+    },
+
+    toggleCongratDialog() {
+      this.show_congrat_dialog = !this.show_congrat_dialog;
+    },
+  },
 };
 </script>
 
-<style lang="scss" scoped>
-.merchant-config {
+<style lang="scss">
+.mor-onboarding {
   .form-area {
     .wallet-area {
       @include flex-row-wrap("flex-start", "center");
@@ -138,7 +185,7 @@ export default {
 
   .btn {
     padding: toRem(10) toRem(22);
-    width: toRem(170);
+    width: max-content;
   }
 }
 </style>

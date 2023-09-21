@@ -22,7 +22,7 @@
             label_title="Business name *"
             label_id="business-name"
             :input_value="form.business_name"
-            is_required
+            is_disabled
             placeholder="Enter your business name"
             @getInputState="updateFormState($event, 'business_name')"
             :error_handler="{
@@ -50,7 +50,7 @@
             label_title="Address *"
             label_id="business-address"
             :input_value="form.business_address"
-            is_required
+            is_disabled
             placeholder="Enter business address"
             @getInputState="updateFormState($event, 'business_address')"
             :error_handler="{
@@ -78,7 +78,7 @@
           />
         </div>
 
-        <div class="form-group">
+        <div class="form-group" v-if="false">
           <BasicInput
             label_title="Email"
             label_id="business-email"

@@ -1,8 +1,12 @@
 <template>
   <div class="dashboard-view">
     <transition name="fade" mode="out-in">
-      <div class="alert-wrapper" v-if="!validateUserAccount">
-        <UpgradeAlertCard />
+      <div class="alert-wrapper" v-if="validateUserPhone">
+        <UpgradeAlertCard
+          alert_message="Great news! Your account verification is almost complete. Simply verify your phone number to finish the process."
+          upgrade_link="/settings/profile"
+          upgrade_action="Verify phone number"
+        />
       </div>
     </transition>
 
@@ -180,18 +184,6 @@ export default {
       getTourData: "general/getTourData",
       hasUserSeenTour: "auth/hasUserSeenTour",
     }),
-
-    // isDocVerified() {
-    //   if (!this.getUserVerifications) return false;
-    //   const doc_verification = this.getUserVerifications.find(
-    //     (type) => type.verification_type === "cac"
-    //   );
-    //   return doc_verification ? doc_verification?.is_verified : false;
-    // },
-
-    isPhoneNumberVerified() {
-      return this.getUser?.verifications?.phone ?? false;
-    },
 
     isPhoneVerified() {
       if (!this.getUserVerifications) return false;
@@ -391,10 +383,6 @@ export default {
     toggleEndWalkthrough() {
       this.show_end_walkthrough_modal = !this.show_end_walkthrough_modal;
     },
-
-    // async fetchVerifications() {
-    //   await this.fetchUserVerifications({ account_id: this.getAccountId });
-    // },
   },
 };
 </script>
