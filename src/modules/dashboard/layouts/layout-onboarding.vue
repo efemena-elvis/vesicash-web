@@ -1,10 +1,10 @@
 <template>
   <div class="layout-disbursement">
     <!-- TITLE TEXT -->
-    <div class="title-text h4-text mgb-24 grey-900">Onboarding</div>
+    <div class="title-text h4-text mgb-12 grey-900">Let's get you verified</div>
 
     <!-- FUND DISBURSMENT FLOW -->
-    <ProgressFlowCard :flows="getComputedPageFlow" />
+    <!-- <ProgressFlowCard :flows="getComputedPageFlow" /> -->
 
     <transition name="fade" mode="out-in">
       <router-view />

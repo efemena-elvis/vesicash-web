@@ -1,32 +1,31 @@
 <template>
   <div class="sidebar teal-50-bg">
     <!-- BRAND LOGO -->
-    <router-link
-      :to="{ name: 'VesicashDashboard' }"
-      class="brand-logo mgb-40 d-block"
-    >
+    <router-link :to="{ name: 'VesicashDashboard' }" class="brand-logo d-block">
       <VesicashBrandLogo />
     </router-link>
 
-    <div class="sidebar-content w-100">
-      <!-- SIDE NAV ITEMS -->
-      <div class="sidebar-item-list">
-        <component
-          :is="sidebar_view"
-          v-for="(nav, index) in getSidebarRoutes"
-          :key="index"
-          :nav="nav"
-          :onboarding_state="getOnboardingRouteState[index]"
+    <div class="sidebar-wrapper d-flex flex-column justify-content-between">
+      <div class="sidebar-content w-100">
+        <!-- SIDE NAV ITEMS -->
+        <div class="sidebar-item-list">
+          <component
+            :is="sidebar_view"
+            v-for="(nav, index) in getSidebarRoutes"
+            :key="index"
+            :nav="nav"
+            :onboarding_state="getOnboardingRouteState[index]"
+          />
+        </div>
+      </div>
+
+      <!-- LOG OUT ACCOUNT SECTION -->
+      <div class="wrapper wt-100">
+        <ProfileMenu
+          @exit="handleUserlogOut"
+          :onboarding_view="isBaseView ? false : true"
         />
       </div>
-    </div>
-
-    <!-- LOG OUT ACCOUNT SECTION -->
-    <div class="wrapper wt-100">
-      <ProfileMenu
-        @exit="handleUserlogOut"
-        :onboarding_view="isBaseView ? false : true"
-      />
     </div>
   </div>
 </template>
@@ -143,6 +142,7 @@ export default {
   @include stretch-area;
   position: relative;
   height: 100vh;
+  border: toRem(1) solid transparent;
 
   @include breakpoint-down(lg) {
     width: 60%;
@@ -157,8 +157,9 @@ export default {
   }
 
   .brand-logo {
-    padding: toRem(24) toRem(20) 0;
+    padding: toRem(28) toRem(20);
     margin-top: toRem(8);
+    height: 12%;
 
     svg {
       width: toRem(150);
@@ -166,9 +167,13 @@ export default {
     }
   }
 
+  .sidebar-wrapper {
+    height: 85%;
+  }
+
   .sidebar-content {
     overflow: overlay;
-    height: 74%;
+    height: 87%;
     margin-bottom: 3%;
 
     &::-webkit-scrollbar {

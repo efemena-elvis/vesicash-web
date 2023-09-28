@@ -45,11 +45,18 @@ export default {
   computed: {
     extractPrimaryWallet() {
       let empty_wallet = Array.from({ length: 3 }, () => this.default_wallet);
+      let exclude_mor_list = ["USD", "GBP"];
+
+      let primary_wallets = this.getWalletSize.filter(
+        (wallet) => !wallet.short.includes("ESCROW") && !wallet.mor
+      );
+
+      let mor_wallets = this.getWalletSize
+        .filter((wallet) => wallet.mor)
+        .filter((w) => !exclude_mor_list.includes(w.short));
 
       return this.getWalletSize.length
-        ? this.getWalletSize.filter(
-            (wallet) => !wallet.short.includes("ESCROW")
-          )
+        ? [...primary_wallets, ...mor_wallets]
         : empty_wallet;
     },
 

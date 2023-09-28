@@ -3,9 +3,9 @@
     <!-- VERIFICATION CARDS -->
     <div class="verification-cards">
       <div class="row mgb-40">
-        <div class="title-text grey-900 mgb-4 h7-text fw-semibold">
+        <!-- <div class="title-text grey-900 mgb-4 h7-text fw-semibold">
           Verify business owner(s) identity
-        </div>
+        </div> -->
 
         <div class="meta-text grey-600 tertiary-2-text mgb-40">
           Complete identity verification by verifying an identification document
@@ -20,7 +20,9 @@
               subtitle="Verify a director personal identification document."
               cta_title="Verify director"
               :verified="item.verified"
+              :show_remove_btn="item.id > 1 ? true : false"
               @action="toggleDocUploadModal(item.id)"
+              @removeCard="directors.pop()"
             >
               <UserIcon />
             </verification-card>
@@ -42,7 +44,7 @@
         <button
           @click="moveToNextOnboarding"
           ref="btnRef"
-          :disabled="isLastDirectorVerified"
+          :disabled="firstDirectorIsVerified"
           class="btn btn-md btn-primary"
         >
           Next
@@ -101,6 +103,10 @@ export default {
   },
 
   computed: {
+    firstDirectorIsVerified() {
+      return this.directors[0].verified ? false : true;
+    },
+
     isLastDirectorVerified() {
       return this.directors.at(-1).verified ? false : true;
     },
@@ -166,6 +172,7 @@ export default {
     },
 
     async moveToNextOnboarding() {
+      this.handleButtonStateOnRequest("btnRef", "start");
       await this.handleOnboardingUpdate("VesicashMoROnboarding");
     },
 
@@ -176,6 +183,7 @@ export default {
 
     toggleSuccessModal() {
       this.show_success_modal = !this.show_success_modal;
+      if (!this.show_success_modal) this.fetchVerifications();
     },
 
     showSuccessModal(modal) {

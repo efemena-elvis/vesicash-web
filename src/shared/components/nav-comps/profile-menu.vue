@@ -16,7 +16,7 @@
         <UserIcon profileMenu />
       </div>
 
-      <div class="profile-data">
+      <div class="profile-data w-100">
         <div class="">
           <div class="grey-900 primary-2-text mgb-4">
             {{ getUser.business_name || getUser.fullname || getUser.email }}

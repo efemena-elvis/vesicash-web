@@ -1,8 +1,8 @@
 <template>
   <div class="col-12 col-lg-10 col-xl-8 business-onboarding">
-    <div class="page-title mgb-4 grey-900 h5-text">
+    <!-- <div class="page-title mgb-4 grey-900 h5-text">
       Tell us about your business
-    </div>
+    </div> -->
 
     <div class="page-meta grey-600 tertiary-2-text mgb-30">
       Share your business type with us today, let's embark on a journey of
