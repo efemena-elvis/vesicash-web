@@ -57,6 +57,7 @@
       </verification-card>
 
       <verification-card
+        v-if="false"
         title="Government issued ID"
         subtitle="Choose and upload a document for verification."
         cta_title="Verify document"
@@ -66,13 +67,13 @@
         <FileIcon active />
       </verification-card>
 
-      <template v-if="false">
+      <template>
         <verification-card
           v-if="isBusiness"
           title="Directors information"
           subtitle="Confirm current number of directors and identification details."
           cta_title="Verify directors"
-          :verified="false"
+          :verified="true"
           :check_verification_state="true"
           @action="toggleDirectorVerifyModal"
         >

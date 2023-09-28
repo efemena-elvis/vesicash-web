@@ -1,6 +1,6 @@
 <template>
   <div class="col-12 col-md-10 col-xl-8 business-onboarding">
-    <div class="description-text grey-800 mgb-30 tertiary-1-text">
+    <div class="description-text grey-800 mgb-40 tertiary-1-text">
       Complete your business account verification in the following steps.
     </div>
 
@@ -207,6 +207,18 @@ export default {
     },
   },
 
+  watch: {
+    isTinVerified: {
+      handler(tinData) {
+        if (tinData.is_verified) {
+          this.updateUserVerifiedData();
+          this.updateBusinessVerifiedData();
+        }
+      },
+      immediate: true,
+    },
+  },
+
   data: () => ({
     bvn_verified: false,
 
@@ -273,17 +285,19 @@ export default {
       });
 
       if (response.code === 200) {
-        let { business_name, business_address } = response.data;
+        let { business_name, business_address, business_type } = response.data;
 
         this.UPDATE_AUTH_USER({
           ...this.getUser,
           business_name,
           business_address,
+          business_type,
         });
       }
     },
 
     async moveToNextOnboarding() {
+      this.handleButtonStateOnRequest("btnRef", "start");
       await this.handleOnboardingUpdate("VesicashIdentityOnboarding");
     },
 
@@ -316,11 +330,6 @@ export default {
       this[modal] = false;
       this.response_message = message;
       this.show_success_modal = true;
-
-      if (modal === "show_tin_registration_modal") {
-        this.updateUserVerifiedData();
-        this.updateBusinessVerifiedData();
-      }
     },
   },
 };

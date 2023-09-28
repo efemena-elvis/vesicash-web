@@ -1,12 +1,12 @@
 <template>
   <div class="col-12 col-md-10 col-xl-8 mor-onboarding mgb-40 pdb-40">
-    <div class="page-title mgb-4 grey-900 h5-text">
+    <!-- <div class="page-title mgb-4 grey-900 h5-text">
       Merchant of Record (MoR)
-    </div>
+    </div> -->
 
     <div class="page-meta grey-600 tertiary-2-text">
-      Exapand the reach of your business by easily deploying your services into
-      diverse markets.
+      Exapand the reach of your business using our Merchant of Record technology
+      to easily deploy your services into diverse markets.
     </div>
 
     <div class="config-setup mgt-30">

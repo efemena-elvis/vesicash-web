@@ -137,7 +137,7 @@ const WalletMixin = {
 
         updated_mor_wallets.map((wallet) => {
           const wallet_found = this.getWalletSize.some(
-            (w) => w.short === wallet.short
+            (w) => w.short === wallet.short && w.mor
           );
 
           if (wallet_found === false) {

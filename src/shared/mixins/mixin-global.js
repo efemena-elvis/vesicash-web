@@ -26,6 +26,8 @@ const MixinGlobal = {
         this.$refs[
           btnRef
         ].innerHTML = `<div class="icon-spinner f-size-19 mgr-10 animate"></div>${btnText}`;
+
+        setTimeout(() => {}, 8000);
       } else {
         this.$refs[btnRef].innerHTML = `${btnText}`;
         this.$refs[btnRef].disabled = false;

@@ -86,9 +86,6 @@ const morSetup = {
     ...mapMutations({ UPDATE_AUTH_USER: "auth/UPDATE_AUTH_USER" }),
 
     signMoRContract(country) {
-      console.log("COUNTRIES", country);
-      console.log("FORM", this.form);
-
       const country_index = this.form.documents.findIndex(
         (doc) => doc.country_id === country.country_id
       );

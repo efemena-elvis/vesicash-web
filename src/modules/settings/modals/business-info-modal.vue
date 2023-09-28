@@ -18,11 +18,11 @@
     <template slot="modal-cover-body">
       <div class="modal-cover-body">
         <div class="form-group">
+          <!-- is_disabled -->
           <BasicInput
             label_title="Business name *"
             label_id="business-name"
             :input_value="form.business_name"
-            is_disabled
             placeholder="Enter your business name"
             @getInputState="updateFormState($event, 'business_name')"
             :error_handler="{
