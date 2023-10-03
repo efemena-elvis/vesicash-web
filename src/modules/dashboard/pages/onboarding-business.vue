@@ -315,6 +315,7 @@ export default {
 
     toggleSuccessModal() {
       this.show_success_modal = !this.show_success_modal;
+      if (!this.show_success_modal) this.fetchVerifications();
     },
 
     toggleCACRegistrationModal() {

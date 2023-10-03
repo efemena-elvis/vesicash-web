@@ -5,8 +5,26 @@
     </div> -->
 
     <div class="page-meta grey-600 tertiary-2-text mgb-30">
-      Share your business type with us today, let's embark on a journey of
+      Share your business info with us today, let's embark on a journey of
       growth and innovation together!
+    </div>
+
+    <div class="row mgb-10">
+      <div class="col-12 col-sm-6">
+        <div class="form-group">
+          <FormFieldInput
+            label_title="Business name"
+            label_id="businessName"
+            placeholder="What is your business called?"
+            :input_value="getFormFieldValueMx(form, 'business_name')"
+            @getInputState="updateFormFieldMx($event, 'business_name')"
+            :error_handler="{
+              type: 'required',
+              message: 'Business name is a required field',
+            }"
+          />
+        </div>
+      </div>
     </div>
 
     <div class="row mgb-40">
@@ -89,11 +107,20 @@ export default {
 
   computed: {
     isDisabled() {
-      return this.business_type ? false : true;
+      return this.business_type && this.form.business_name.validated
+        ? false
+        : true;
     },
   },
 
   data: () => ({
+    form: {
+      business_name: {
+        validated: false,
+        value: "",
+      },
+    },
+
     business_type: null,
     other_business_type: "",
     others_selected: false,
@@ -203,7 +230,10 @@ export default {
     async handleBusinessTypeSelection() {
       const response = await this.handleDataRequest({
         action: "updateUserBusinessInfo",
-        payload: { business_type: this.business_type },
+        payload: {
+          business_type: this.business_type,
+          business_name: this.form.business_name.value,
+        },
         btn_text: "Next",
         alert_handler: {
           success: "Business type added successfully",

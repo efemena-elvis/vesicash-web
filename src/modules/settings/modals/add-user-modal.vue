@@ -6,7 +6,7 @@
     <!-- MODAL COVER HEADER -->
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
-        <div class="modal-cover-title">Add users to account</div>
+        <div class="modal-cover-title">Invite users to account</div>
         <div class="tertiary-2-text grey-600 wt-75">
           Create account for new users
         </div>

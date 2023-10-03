@@ -2,7 +2,7 @@
   <div class="order-setup">
     <!-- ORDER SUMMARY -->
     <template>
-      <div class="setup-wrapper">
+      <div class="setup-wrapper" v-if="false">
         <div class="title-text">ORDER SUMMARY</div>
 
         <div class="form-group">
@@ -148,7 +148,7 @@ export default {
         ) ||
         (!config?.shipping_types?.length && use_shipping);
 
-      console.log(!config?.payment_methods?.length);
+      // console.log(!config?.payment_methods?.length);
 
       return (
         invalidShippingMethods ||
@@ -156,9 +156,7 @@ export default {
         !config?.country_id ||
         !config?.country_name ||
         !config?.currency_code ||
-        !config?.product_type ||
-        !config?.payment_methods?.length ||
-        !config?.vat
+        !config?.payment_methods?.length
       );
     },
   },
@@ -170,14 +168,17 @@ export default {
       payment_methods: [
         {
           name: "credit card",
+          slug: "credit_card",
           checked: false,
         },
         {
           name: "mobile money",
+          slug: "mobile_money",
           checked: false,
         },
         {
           name: "bank transfer",
+          slug: "bank_transfer",
           checked: false,
         },
       ],
@@ -274,7 +275,7 @@ export default {
       this.payment_methods = this.payment_methods?.map((method) => {
         return {
           ...method,
-          checked: config?.payment_methods?.includes(method?.name),
+          checked: config?.payment_methods?.includes(method?.slug),
         };
       });
     },

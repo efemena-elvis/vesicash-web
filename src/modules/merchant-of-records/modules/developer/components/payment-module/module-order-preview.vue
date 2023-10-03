@@ -9,26 +9,28 @@
           <div class="product-list">
             <div class="item-row">
               <div class="title">Subtotal</div>
-              <div class="value">#15,000</div>
+              <div class="value">{{ getCurrencySign }}1,000</div>
             </div>
 
             <div class="item-row">
               <div class="title">Shipping</div>
-              <div class="value">#2,000</div>
+              <div class="value">{{ getCurrencySign }}{{ shipping_cost }}</div>
             </div>
 
-            <div class="item-row">
+            <!-- <div class="item-row">
               <div class="title">
                 Tax ({{ this.getPaymentModuleConfig.vat || 0 }}%)
               </div>
               <div class="value">+#{{ taxCost }}</div>
-            </div>
+            </div> -->
           </div>
 
           <div class="product-total">
             <div class="item-row mgb-0">
               <div class="title">Total</div>
-              <div class="value fw-bold">#{{ totalCost }}</div>
+              <div class="value fw-bold">
+                {{ getCurrencySign }}{{ totalCost }}
+              </div>
             </div>
           </div>
         </div>
@@ -71,10 +73,10 @@
 </template>
 
 <script>
-import FormCheckCard from "@/shared/components/form-comps/form-check-card";
-import OrderDisplayCard from "@/modules/merchant-of-records/modules/developer/components/payment-module/order-display-card";
 import { mapGetters } from "vuex";
 import { serviceUtils } from "@/shared/services";
+import FormCheckCard from "@/shared/components/form-comps/form-check-card";
+import OrderDisplayCard from "@/modules/merchant-of-records/modules/developer/components/payment-module/order-display-card";
 
 export default {
   name: "OrderPreview",
@@ -84,25 +86,38 @@ export default {
     OrderDisplayCard,
   },
 
+  props: {
+    shipping_cost: {
+      type: Number,
+      default: 0,
+    },
+  },
+
   computed: {
     ...mapGetters({
       getPaymentModuleConfig: "merchant/getPaymentModuleConfig",
     }),
 
-    taxCost() {
-      const cost = ((this.getPaymentModuleConfig?.vat || 0) / 100) * 15000;
-      return serviceUtils?.formatCurrencyWithComma(cost);
+    getCurrencySign() {
+      return this.$utils.formatCurrency({
+        input: this.getPaymentModuleConfig.currency_code,
+        output: "sign",
+      });
     },
 
+    // taxCost() {
+    //   const cost = ((this.getPaymentModuleConfig?.vat || 0) / 100) * 15000;
+    //   return serviceUtils?.formatCurrencyWithComma(cost);
+    // },
+
     totalCost() {
-      const tax = ((this.getPaymentModuleConfig?.vat || 0) / 100) * 15000;
-      const cost = 17000 + tax;
-      return serviceUtils?.formatCurrencyWithComma(cost);
+      let total_cost = 1000 + this.shipping_cost;
+      return this.$utils.formatCurrencyWithComma(total_cost);
     },
 
     paymentMethods() {
       return this.getPaymentModuleConfig?.payment_methods?.map((option) => ({
-        name: option,
+        name: option.split("_").join(" "),
         id: `Preview${option}`,
       }));
     },
