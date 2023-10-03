@@ -7,7 +7,7 @@
       <!-- AUTH PAGE -->
       <form @submit.prevent="handleUserRegister" class="auth-page">
         <!-- BUSINESS NAME INPUT -->
-        <div class="form-group">
+        <!-- <div class="form-group">
           <FormFieldInput
             label_title="Business name"
             label_id="businessName"
@@ -19,7 +19,7 @@
               message: 'Business name is a required field',
             }"
           />
-        </div>
+        </div> -->
 
         <!-- EMAIL ADDRESS INPUT -->
         <div class="form-group">
@@ -170,10 +170,10 @@ export default {
   data() {
     return {
       form: {
-        business_name: {
-          validated: false,
-          value: "",
-        },
+        // business_name: {
+        //   validated: false,
+        //   value: "",
+        // },
         account_type: {
           validated: true,
           value: "business",
@@ -229,7 +229,7 @@ export default {
   },
 
   mounted() {
-    this.fetchBusinessTypes();
+    // this.fetchBusinessTypes();
   },
 
   methods: {

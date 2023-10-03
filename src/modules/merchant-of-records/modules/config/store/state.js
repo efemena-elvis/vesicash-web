@@ -14,7 +14,7 @@ export default () => {
       country_id: 0,
       country_name: "",
       currency_code: "",
-      is_shipping_type: true,
+      is_shipping_type: false,
       shipping_types: [
         {
           amount: 0,
@@ -25,7 +25,7 @@ export default () => {
       ],
       product_type: "",
       vat: 0,
-      payment_methods: [],
+      payment_methods: ["credit_card"],
     },
   };
 };

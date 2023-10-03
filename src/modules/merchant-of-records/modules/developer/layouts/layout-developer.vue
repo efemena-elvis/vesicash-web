@@ -31,19 +31,23 @@ export default {
     },
   },
 
+  watch: {},
+
   data: () => ({
+    computed_page_flow: [],
+
     page_flows: [
       {
         id: 1,
         title: "Customer Information",
-        route: "TransactionSetup",
+        route: "MerchantModuleCustomer",
         alias_route: "",
         state: "current",
       },
       {
         id: 2,
-        title: "Order details",
-        route: "TransactionParties",
+        title: "Payment details",
+        route: "MerchantModuleOrder",
         alias_route: "",
         state: "next",
       },

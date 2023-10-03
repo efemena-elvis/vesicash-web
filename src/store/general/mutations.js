@@ -55,6 +55,6 @@ export default {
   },
 
   UPDATE_MERCHANT: (state, data) => {
-    state.is_merchant = data;
+    state.is_merchant = data === true || data === "true";
   },
 };

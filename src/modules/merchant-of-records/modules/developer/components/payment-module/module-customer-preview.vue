@@ -124,24 +124,29 @@
       </div>
     </div>
 
-    <div v-show="getPaymentModuleConfig.is_shipping_type">
+    <div v-show="getPaymentModuleConfig.shipping_types.length">
       <!-- TITLE TEXT -->
       <div class="title-text primary-1-text grey-900 mgb-24">
         SHIPPING TYPES
       </div>
 
       <FormCheckCard
-        v-for="(option, index) in getPaymentModuleConfig.shipping_types"
+        v-for="(option, index) in getShippingOptions"
         :key="index"
+        :checked="option.selected"
         :check_id="option.name + index"
-        :primary_text="`${option.name} (${option.time})`"
+        :primary_text="`${option?.name.length ? option?.name : '-'} ${
+          option?.time.length ? '(' + option.time + ')' : ''
+        }`"
         :secondary_text="
           option?.amount
-            ? `${
-                '#' || option.currency_code
-              }${serviceUtils.formatCurrencyWithComma(option.amount)}`
+            ? `${$utils.formatCurrency({
+                input: option.currency_code,
+                output: 'sign',
+              })}${$utils.formatCurrencyWithComma(option.amount)}`
             : 'FREE'
         "
+        @change="updateSelectedShippingType(index)"
       />
     </div>
 
@@ -188,12 +193,25 @@ export default {
         id: cc.code,
       }));
     },
+
+    getShippingOptions() {
+      return this.shipping_options;
+    },
+  },
+
+  watch: {
+    "getPaymentModuleConfig.shipping_types": {
+      handler() {
+        this.loadShippingTypes();
+      },
+    },
   },
 
   data() {
     return {
       serviceUtils,
       countries,
+
       form: {
         email_address: {
           validated: false,
@@ -227,7 +245,29 @@ export default {
 
       business_type_options: [],
       user_details: {},
+
+      shipping_options: [],
     };
+  },
+
+  mounted() {
+    this.loadShippingTypes();
+  },
+
+  methods: {
+    loadShippingTypes() {
+      this.shipping_options = [];
+
+      this.getPaymentModuleConfig.shipping_types.map((items) => {
+        this.shipping_options.push({ ...items, selected: false });
+      });
+    },
+
+    updateSelectedShippingType(index) {
+      this.shipping_options.map((item) => (item.selected = false));
+      this.shipping_options[index].selected = true;
+      this.$emit("shippingTypeSelected", this.shipping_options[index]);
+    },
   },
 };
 </script>

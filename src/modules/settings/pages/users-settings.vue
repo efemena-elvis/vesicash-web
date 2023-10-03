@@ -5,7 +5,7 @@
 
     <!-- PAGE META -->
     <div class="page-meta tertiary-2-text grey-600">
-      Create and manage your users here.
+      Invite and manage your team here.
     </div>
 
     <button

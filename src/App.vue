@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations } from "vuex";
+import { mapActions } from "vuex";
 import SnapshotMixin from "@/shared/mixins/mixin-snapshots";
 
 export default {
@@ -97,11 +97,7 @@ export default {
   methods: {
     ...mapActions({
       verifyEmailOTP: "settings/verifyEmailOTP",
-      updateMerchantState: "general/updateMerchantState",
-      updateOnboardingState: "general/updateOnboardingState",
     }),
-
-    ...mapMutations({ UPDATE_AUTH_USER: "auth/UPDATE_AUTH_USER" }),
 
     toggleAlert(data) {
       this.alert = data;

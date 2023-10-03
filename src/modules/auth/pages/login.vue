@@ -136,6 +136,7 @@ export default {
     ...mapActions({
       loginUser: "auth/loginUser",
       saveUserProfile: "settings/saveUserProfile",
+      updateMerchantState: "general/updateMerchantState",
       updateOnboardingState: "general/updateOnboardingState",
     }),
 
@@ -188,8 +189,9 @@ export default {
         let { is_completed, completed_routes } =
           user_extra_data?.onboarding ?? this.default_onboarding_state;
 
-        // UPDATE AND PERSIST ONBOARDING DATA IN STORE
+        // UPDATE AND PERSIST ONBOARDING AND MERCHANT DATA IN STORE
         this.updateOnboardingState({ is_completed, completed_routes });
+        this.updateMerchantState(user_extra_data?.merchant ?? false);
 
         // NAVIGATE TO DASHBOARD IF ONBOARDING IS COMPLETE
         // IF NOT COMPLETE NAVIGATE TO ONBOARDING PROGRESS ROUTE

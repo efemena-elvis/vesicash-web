@@ -81,6 +81,7 @@ const morSetup = {
       fetchMoRCountries: "merchant/fetchMoRCountries",
       fetchMoROnboarding: "merchant/fetchMoROnboarding",
       saveMoROnboarding: "merchant/saveMoROnboarding",
+      updateMerchantState: "general/updateMerchantState",
     }),
 
     ...mapMutations({ UPDATE_AUTH_USER: "auth/UPDATE_AUTH_USER" }),
@@ -208,6 +209,8 @@ const morSetup = {
         // CHECK IF MOR ONBOARDING
         if (this.$route.name === "VesicashMoROnboarding") {
           await this.completeOnboarding();
+        } else {
+          this.updateMerchantState(true);
         }
       }
     },
@@ -223,7 +226,12 @@ const morSetup = {
       });
 
       if (response.code === 200) {
-        const mor_country_list = response.data;
+        const mor_country_list = response.data.filter(
+          (country) =>
+            !["united states of america", "United Kingdom"].includes(
+              country.name
+            )
+        );
 
         mor_country_list.map((country) => {
           let country_data = this.base_countries.find(
