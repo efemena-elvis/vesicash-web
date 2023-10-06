@@ -41,7 +41,7 @@ const OnboardingMixin = {
 
         if (!skip_mor && this.$route.name === "VesicashMoROnboarding")
           this.updateMerchantState(true);
-        else this.updateMerchantState(true);
+        else this.updateMerchantState(false);
 
         if (next_onboarding_route) {
           this.$router.push({ name: next_onboarding_route });

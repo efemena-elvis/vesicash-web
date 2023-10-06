@@ -188,6 +188,17 @@ input[type="radio"],
     }
   }
 
+  &.sm-size {
+    &:before,
+    &:after {
+      @include draw-shape(20);
+    }
+
+    &:before {
+      @include draw-shape(12.25);
+    }
+  }
+
   // ERROR RADIO INPUT
   &.radio-error {
     &:after {
