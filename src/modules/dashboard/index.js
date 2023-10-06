@@ -92,7 +92,7 @@ const dashboardRoutes = [
   {
     path: "/withdrawal-successful",
     component: () =>
-      import(/* webpackChunkName: "auth-layout" */ "@/layouts/layout-auth"),
+      import(/* webpackChunkName: "auth-layout" */ "@/layouts/layout-dialog"),
 
     children: [
       {

@@ -25,9 +25,10 @@
             is_required
             placeholder="0.00"
             :custom_style="{ input_wrapper_style: 'form-prefix' }"
-            :currency="`${selected_currency.short} (${$money.getSign(
-              selected_currency.slug
-            )})`"
+            :currency="`${selected_currency.short} (${$utils.formatCurrency({
+              input: selected_currency.slug,
+              output: 'sign',
+            })})`"
             class="form-prefix-right"
             @getInputState="updateFormState($event, 'amount')"
             :error_handler="{

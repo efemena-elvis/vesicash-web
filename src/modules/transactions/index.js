@@ -126,7 +126,7 @@ const transactionRoutes = [
   {
     path: "/transaction/payment-successful",
     component: () =>
-      import(/* webpackChunkName: "auth-layout" */ "@/layouts/layout-auth"),
+      import(/* webpackChunkName: "auth-layout" */ "@/layouts/layout-dialog"),
 
     children: [
       {

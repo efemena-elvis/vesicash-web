@@ -82,12 +82,12 @@ export default {
       ],
 
       business_pages: [
-        {
-          id: 5,
-          name: "Users",
-          route: "UsersSettings",
-          active: false,
-        },
+        // {
+        //   id: 5,
+        //   name: "Users",
+        //   route: "UsersSettings",
+        //   active: false,
+        // },
         {
           id: 6,
           name: "MoR Setup",
