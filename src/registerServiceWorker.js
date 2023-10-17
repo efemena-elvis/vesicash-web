@@ -19,14 +19,16 @@ if (process.env.NODE_ENV === "production") {
     updatefound() {
       console.log("New content is downloading.");
     },
-    updated() {
+    updated(registration) {
       console.log("New content is available; please refresh.");
 
       caches.keys().then(function (names) {
         for (let name of names) caches.delete(name);
       });
 
-      registration.update();
+      registration.unregister().then(() => {
+        window.location.reload(true);
+      });
     },
     offline() {
       console.log(

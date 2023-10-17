@@ -150,8 +150,8 @@ export default {
 
   computed: {
     isDisabled() {
-      return this.isTinVerified.is_verified ? false : true;
-      // return this.isCACDocVerified.is_verified ? false : true;
+      // return this.isTinVerified.is_verified ? false : true;
+      return this.isCACDocVerified.is_verified ? false : true;
     },
 
     isBvnVerified() {
