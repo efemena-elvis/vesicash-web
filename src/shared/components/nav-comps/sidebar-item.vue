@@ -1,7 +1,7 @@
 <template>
   <router-link
     :to="nav.link"
-    class="d-block mgb-14"
+    class="d-block mgb-10"
     @click="$emit('isClicked')"
   >
     <div
@@ -170,6 +170,7 @@ export default {
 
   svg {
     margin-right: toRem(16);
+    @include draw-shape(30);
 
     .light-theme {
       @include transition(0.325s);
