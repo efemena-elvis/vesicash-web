@@ -31,14 +31,14 @@ const escrowRoutes = [
     slug: "payments",
     tour_id: [7],
   },
-  {
-    id: 5,
-    title: "Merchant of Records",
-    icon: "MORIcon",
-    link: "/settings/mor-setup",
-    slug: "mor",
-    tour_id: [7],
-  },
+  // {
+  //   id: 5,
+  //   title: "Merchant of Records",
+  //   icon: "MORIcon",
+  //   link: "/settings/mor-setup",
+  //   slug: "mor",
+  //   tour_id: [7],
+  // },
   {
     id: 6,
     title: "Developers",
@@ -165,14 +165,14 @@ const onboardingRoutes = [
     slug: "identity-verification",
     disabled: true,
   },
-  {
-    id: 4,
-    title: "MoR deployment",
-    icon: "CheckIcon",
-    link: "/onboarding/mor-deployment",
-    slug: "mor-deployment",
-    disabled: true,
-  },
+  // {
+  //   id: 4,
+  //   title: "MoR deployment",
+  //   icon: "CheckIcon",
+  //   link: "/onboarding/mor-deployment",
+  //   slug: "mor-deployment",
+  //   disabled: true,
+  // },
 ];
 
 export { escrowRoutes, merchantRoutes, onboardingRoutes };

@@ -1,13 +1,23 @@
 <template>
   <div class="dashboard-transactions">
-    <PageSwitcher
+    <!-- <PageSwitcher
       :page_data="pages"
       :full_width="false"
       @swapItem="updateTransactionChanges($event)"
-    />
+    /> -->
 
     <!-- DATA FILTERS -->
     <div class="filters mgt-28 mgb-28 row">
+      <div class="select-field col-6 col-lg-3">
+        <DropSelectInput
+          placeholder="Transaction type"
+          @selectedOption="updateTransactionChanges($event)"
+          :options="transaction_options"
+          :pre_select="preselect_transaction"
+          class_name="custom-drop-input"
+        />
+      </div>
+
       <!-- SELECT WALLET TYPE -->
       <div class="select-field col-6 col-lg-3">
         <DropSelectInput
@@ -236,6 +246,19 @@ export default {
       },
     ],
 
+    transaction_options: [
+      {
+        id: 1,
+        name: "Inflow",
+        slug: "inflow",
+      },
+      {
+        id: 2,
+        name: "Outflow",
+        slug: "outflow",
+      },
+    ],
+
     pages: [
       {
         title: "Inflow",
@@ -253,6 +276,7 @@ export default {
 
     preselect_wallet: null,
     preselect_source: null,
+    preselect_transaction: null,
 
     filters: {
       wallet: "",
@@ -342,10 +366,14 @@ export default {
           this.filters.source = this.payment_source_options[0]?.slug;
           this.preselect_source = this.payment_source_options[0];
 
+          this.filters.transaction = this.transaction_options[0].slug;
+          this.preselect_transaction = this.transaction_options[0];
+
           this.$router
             .replace({
               name: this.$route.name,
               query: {
+                transaction: this.filters.transaction,
                 wallet: this.filters.wallet,
                 source: this.filters.source,
               },

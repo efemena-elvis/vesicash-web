@@ -8,7 +8,7 @@
 
     <!-- TRANSACTION SECTION -->
     <template>
-      <div class="section-title mgb-18 h5-text grey-900">
+      <div class="section-title mgt-45 mgb-18 h5-text grey-900">
         Exchange transactions
       </div>
 

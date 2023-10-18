@@ -1,5 +1,5 @@
 <template>
-  <div class="wallet-block mgb-40">
+  <div class="wallet-block mgb-20">
     <!-- PRIMARY WALLET SECTION -->
     <PrimaryWalletCard
       :wallet_balance="extractPrimaryWallet"
@@ -13,6 +13,9 @@
       :escrow_balance="extractEscrowWallet"
       :loading_wallet="loading_wallet"
     />
+
+    <!-- MOR WALLET SECTION -->
+    <MoRWalletBlock v-if="card_type === 'escrow'" />
   </div>
 </template>
 
@@ -32,6 +35,10 @@ export default {
     EscrowWalletCard: () =>
       import(
         /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/card-comps/escrow-wallet-card"
+      ),
+    MoRWalletBlock: () =>
+      import(
+        /* webpackChunkName: "mor-module" */ "@/modules/merchant-of-records/modules/dashboard/components/mor-wallet-block"
       ),
   },
 

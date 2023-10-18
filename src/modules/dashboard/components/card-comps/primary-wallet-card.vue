@@ -19,12 +19,20 @@
     <!-- BOTTOM ROW -->
     <div class="bottom-row">
       <template v-if="card_type === 'escrow'">
-        <button class="btn btn-tertiary btn-md" @click="toggleFundingFlow">
+        <button
+          class="btn btn-tertiary btn-md"
+          @click="toggleFundingFlow"
+          v-if="false"
+        >
           <div class="icon-plus mgr-6 teal-700 f-size-17"></div>
           Fund Wallet
         </button>
 
-        <button class="btn btn-tertiary btn-md" @click="toggleTransferFlow">
+        <button
+          class="btn btn-tertiary btn-md"
+          @click="toggleTransferFlow"
+          v-if="false"
+        >
           <div class="mgr-8 position-relative" style="top: -1px">
             <MoneyIcon />
           </div>
