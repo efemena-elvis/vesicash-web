@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-view">
-    <transition name="fade" mode="out-in">
+    <transition name="fade" mode="out-in" v-if="false">
       <div class="alert-wrapper" v-if="validateUserPhone">
         <UpgradeAlertCard
           alert_message="Great news! Your account verification is almost complete. Simply verify your phone number to finish the process."
@@ -11,48 +11,15 @@
     </transition>
 
     <!-- TITLE TOP BLOCK -->
-    <TitleTopBlock type="escrow" />
+    <TitleTopBlock />
 
     <!-- WALLET BALANCE SECTION -->
     <WalletBlock />
 
-    <template v-if="isMoRSetupEnabled">
-      <MoRDashboard />
-    </template>
+    <!-- ACTIONS BLOCK -->
+    <ActionsBlock />
 
-    <template v-else>
-      <!-- ESCROW TRANSACTION SECTION -->
-      <template>
-        <div class="section-row mgb-20">
-          <div class="section-title h5-text grey-900">Escrow Transactions</div>
-
-          <router-link to="/transactions" class="btn btn-secondary btn-sm"
-            >View all</router-link
-          >
-        </div>
-
-        <!-- TRANSACTION TABLE DATA -->
-        <div class="disbursement-table-wrapper">
-          <TransactionTable />
-        </div>
-      </template>
-
-      <!-- PAYMENT SECTION -->
-      <template>
-        <div class="section-row mgb-16">
-          <div class="section-title h5-text grey-900">Payments</div>
-
-          <!-- <router-link to="/payments" class="btn btn-secondary btn-sm"
-          >View all</router-link
-        > -->
-        </div>
-
-        <!-- DASHBOARD TRANSACTIONS -->
-        <div class="wrapper pdb-30">
-          <DashboardTransactions />
-        </div>
-      </template>
-    </template>
+    <MoRDashboard />
 
     <!-- MODALS -->
     <!-- v-if="show_start_walkthrough_modal && !hasUserSeenTour" -->
@@ -131,18 +98,22 @@ export default {
   components: {
     TitleTopBlock,
     WalletBlock,
+    ActionsBlock: () =>
+      import(
+        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/card-comps/actions-block"
+      ),
     MoRDashboard: () =>
       import(
         /* webpackChunkName: "MoR-module" */ "@/modules/merchant-of-records/modules/dashboard/components/mor-dashboard"
       ),
-    TransactionTable: () =>
-      import(
-        /* webpackChunkName: "transactions-module" */ "@/modules/transactions/components/table-comps/transaction-table"
-      ),
-    DashboardTransactions: () =>
-      import(
-        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/dashboard-transactions"
-      ),
+    // TransactionTable: () =>
+    //   import(
+    //     /* webpackChunkName: "transactions-module" */ "@/modules/transactions/components/table-comps/transaction-table"
+    //   ),
+    // DashboardTransactions: () =>
+    //   import(
+    //     /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/dashboard-transactions"
+    //   ),
     UpgradeAlertCard: () =>
       import(
         /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/card-comps/upgrade-alert-card"
@@ -287,7 +258,7 @@ export default {
   },
 
   mounted() {
-    this.fetchVerifications();
+    // this.fetchVerifications();
 
     // CLEAR OUT TRANSACTION STORE
     if (this.getTransactions?.name?.length) {
@@ -390,6 +361,7 @@ export default {
 <style lang="scss" scoped>
 .dashboard-view {
   position: relative;
+  padding-bottom: toRem(25);
 
   .alert-wrapper {
     width: 680px;

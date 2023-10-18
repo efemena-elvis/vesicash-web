@@ -47,7 +47,7 @@
           :disabled="firstDirectorIsVerified"
           class="btn btn-md btn-primary"
         >
-          Next
+          Complete
         </button>
       </div>
     </div>
@@ -70,6 +70,10 @@
           @done="toggleSuccessModal"
           message="Director identity document has been successfully submitted for verification"
         />
+      </transition>
+
+      <transition name="fade" v-if="show_congrat_dialog">
+        <congratModal @closeTriggered="toggleCongratDialog" />
       </transition>
     </portal>
   </div>
@@ -100,6 +104,10 @@ export default {
       import(
         /* webpackChunkName: 'shared-module' */ "@/shared/components/icon-comps/user-icon"
       ),
+    congratModal: () =>
+      import(
+        /* webpackChunkName: "onboarding-module" */ "@/modules/dashboard/modals/congrat-modal"
+      ),
   },
 
   computed: {
@@ -113,6 +121,7 @@ export default {
   },
 
   data: () => ({
+    show_congrat_dialog: false,
     show_success_modal: false,
     user_verifications: [],
 
@@ -126,14 +135,24 @@ export default {
         verified: false,
       },
     ],
+
+    form: {
+      countries: [],
+      wallet_currency_codes: [],
+      business_type_id: 1,
+      usage_type: "online",
+      documents: [],
+    },
   }),
 
   mounted() {
+    this.enableMerchantPayment();
     this.fetchVerifications();
   },
 
   methods: {
     ...mapActions({
+      saveMoROnboarding: "merchant/saveMoROnboarding",
       fetchUserVerifications: "settings/fetchUserVerifications",
     }),
 
@@ -150,6 +169,16 @@ export default {
         this.user_verifications = response.data;
         this.checkDirectorsVerification(response.data);
       }
+    },
+
+    async enableMerchantPayment() {
+      await this.handleDataRequest({
+        action: "saveMoROnboarding",
+        payload: this.form,
+        alert_handler: {
+          error: "Unable to configure MoR at the moment",
+        },
+      });
     },
 
     checkDirectorsVerification(verifications) {
@@ -173,7 +202,11 @@ export default {
 
     async moveToNextOnboarding() {
       this.handleButtonStateOnRequest("btnRef", "start");
-      await this.handleOnboardingUpdate("VesicashMoROnboarding");
+      await this.handleOnboardingUpdate(null, true);
+    },
+
+    toggleCongratDialog() {
+      this.show_congrat_dialog = !this.show_congrat_dialog;
     },
 
     toggleDocUploadModal(director_id = null) {

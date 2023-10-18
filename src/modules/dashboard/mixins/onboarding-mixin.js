@@ -21,12 +21,11 @@ const OnboardingMixin = {
     // UPDATE ONBOARDING UPDATE AND REDIRECT
     async handleOnboardingUpdate(
       next_onboarding_route = null,
-      is_completed = false,
-      skip_mor = false
+      is_completed = false
     ) {
       const response = await this.handleDataRequest({
         action: "saveUserProfile",
-        payload: this.getOnboardingPayload(is_completed, skip_mor),
+        payload: this.getOnboardingPayload(is_completed),
         alert_handler: {
           request_error: "User profile not found",
           not_found_error: "User profile not found",
@@ -39,9 +38,8 @@ const OnboardingMixin = {
           completed_routes: this.getCompletedRoutes,
         });
 
-        if (!skip_mor && this.$route.name === "VesicashMoROnboarding")
+        if (this.$route.name === "VesicashIdentityOnboarding")
           this.updateMerchantState(true);
-        else this.updateMerchantState(false);
 
         if (next_onboarding_route) {
           this.$router.push({ name: next_onboarding_route });
@@ -49,10 +47,10 @@ const OnboardingMixin = {
       }
     },
 
-    getOnboardingPayload(is_completed, skip_mor) {
+    getOnboardingPayload(is_completed) {
       const current_route = this.$route.name;
 
-      if (current_route === "VesicashMoROnboarding" && !skip_mor) {
+      if (current_route === "VesicashIdentityOnboarding") {
         return {
           extra_data: {
             onboarding: {
