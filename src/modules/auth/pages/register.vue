@@ -71,7 +71,7 @@
             @getInputState="updateFormFieldMx($event, 'password')"
             :error_handler="{
               type: 'password',
-              message: 'Password should contain at least 4 characters',
+              message: 'Password should contain at least 6 characters',
             }"
           />
         </div>
@@ -228,26 +228,10 @@ export default {
     });
   },
 
-  mounted() {
-    // this.fetchBusinessTypes();
-  },
-
   methods: {
     ...mapActions({
       registerUser: "auth/registerUser",
-      getBusinessTypes: "auth/getBusinessTypes",
     }),
-
-    // ===========================================
-    // HANDLE FETCHING OF AVAILABLE BUSINESS TYPES
-    // ===========================================
-    async fetchBusinessTypes() {
-      const response = await this.handleDataRequest({
-        action: "getBusinessTypes",
-      });
-
-      this.business_type_options = response?.code === 200 ? response.data : [];
-    },
 
     sanitizeUserPhoneNumber(phone_number) {
       return this.sanitizePhone(this.country_selected_code, phone_number);
@@ -272,41 +256,40 @@ export default {
           "Email address is not a business email",
           "error"
         );
-
         return;
       }
 
-      const response = await this.handleDataRequest({
-        action: "registerUser",
-        payload: this.getRequestPayload,
-        btn_text: "Register",
-        alert_handler: {
-          success: "Your vesicash account has been created",
-          error: "Unable to create your account at this time",
-        },
-      });
+      try {
+        // VALIDATE USER PASSWORD STRENGTH
+        this.$validate.validatePasswordStrength(
+          this.getRequestPayload.password
+        );
 
-      // const status = [200, 201].includes(response?.code);
-      // const data = status ? response?.data : this.getRequestPayload;
+        const response = await this.handleDataRequest({
+          action: "registerUser",
+          payload: this.getRequestPayload,
+          btn_text: "Register",
+          alert_handler: {
+            success: "Your vesicash account has been created",
+            error: "Unable to create your account at this time",
+          },
+        });
 
-      // window?.fbq("track", "CompleteRegistration", {
-      //   customer_name: `${data?.lastname} ${data?.firstname}`,
-      //   customer_email: data.email_address,
-      //   status,
-      // });
-
-      if (response.code === 201) {
-        this.user_details = response.data;
-        this.handleOTPInitiation(); // SEND USER OTP
-        localStorage.clear();
-      }
-      if (response?.code === 400) {
-        const error_type = response.message.split(":")[0];
-        if (error_type === "EmailAddress") {
-          this.handleToastPushMx("Email address already exist!", "error");
-        } else if (error_type === "PhoneNumber") {
-          this.handleToastPushMx("Phone number already exist!", "error");
+        if (response.code === 201) {
+          this.user_details = response.data;
+          this.handleOTPInitiation(); // SEND USER OTP
+          localStorage.clear();
         }
+
+        if (response?.code === 400) {
+          this.handleToastPushMx(
+            this.$utils.capitalizeFirstLetter(response?.message) ??
+              "An error occured while creating account",
+            "error"
+          );
+        }
+      } catch (error) {
+        this.handleToastPushMx(error.message, "error");
       }
     },
   },

@@ -9,25 +9,25 @@
           <div class="product-list">
             <div class="item-row">
               <div class="title">Subtotal</div>
-              <div class="value">{{ getCurrencySign }}1,000</div>
+              <div class="value">{{ getCurrencySign }}{{ getSubTotal }}</div>
             </div>
 
             <div class="item-row">
               <div class="title">Shipping</div>
-              <div class="value">{{ getCurrencySign }}{{ shipping_cost }}</div>
+              <div class="value">
+                {{ getCurrencySign }}{{ getShippingCost }}
+              </div>
             </div>
 
-            <!-- <div class="item-row">
-              <div class="title">
-                Tax ({{ this.getPaymentModuleConfig.vat || 0 }}%)
-              </div>
-              <div class="value">+#{{ taxCost }}</div>
-            </div> -->
+            <div class="item-row">
+              <div class="title">VAT</div>
+              <div class="value">{{ getCurrencySign }}{{ getVat }}</div>
+            </div>
           </div>
 
           <div class="product-total">
             <div class="item-row mgb-0">
-              <div class="title">Total</div>
+              <div class="title">Total amount</div>
               <div class="value fw-bold">
                 {{ getCurrencySign }}{{ totalCost }}
               </div>
@@ -58,22 +58,33 @@
 
     <template>
       <div class="title-text">PAYMENT INFORMATON</div>
+
       <FormCheckCard
-        v-for="payment in paymentMethods"
+        v-for="(payment, index) in paymentMethods"
         :key="payment.id"
+        :checked="payment.selected"
         :check_id="payment.id"
         :primary_text="`Pay by ${payment.name}`"
+        @change="updatePaymentMethod(index)"
       />
     </template>
 
     <div class="mgt-24">
-      <button class="btn btn-md w-100 pdy-10">Make payment</button>
+      <button
+        class="btn btn-md w-100 pdy-10"
+        ref="btnRef"
+        :disabled="isDisabled"
+        :style="getButtonColor"
+        @click="handleClickOfPaymentBtn"
+      >
+        Make payment
+      </button>
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 import { serviceUtils } from "@/shared/services";
 import FormCheckCard from "@/shared/components/form-comps/form-check-card";
 import OrderDisplayCard from "@/modules/merchant-of-records/modules/developer/components/payment-module/order-display-card";
@@ -91,12 +102,44 @@ export default {
       type: Number,
       default: 0,
     },
+
+    disable_btn_processing: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   computed: {
     ...mapGetters({
       getPaymentModuleConfig: "merchant/getPaymentModuleConfig",
+      isPaymentInfoCompleted: "merchantDeveloper/isPaymentInfoCompleted",
     }),
+
+    isDisabled() {
+      return this.isPaymentInfoCompleted && this.payment_method_selected
+        ? false
+        : true;
+    },
+
+    getButtonColor() {
+      return { backgroundColor: this.getPaymentModuleConfig.button_colour };
+    },
+
+    getSubTotal() {
+      return this.$utils.formatCurrencyWithComma(
+        this.getPaymentModuleConfig.amount || 0
+      );
+    },
+
+    getShippingCost() {
+      return this.$utils.formatCurrencyWithComma(this.shipping_cost || 0);
+    },
+
+    getVat() {
+      return this.$utils.formatCurrencyWithComma(
+        this.getPaymentModuleConfig.vat || 0
+      );
+    },
 
     getCurrencySign() {
       return this.$utils.formatCurrency({
@@ -105,25 +148,36 @@ export default {
       });
     },
 
-    // taxCost() {
-    //   const cost = ((this.getPaymentModuleConfig?.vat || 0) / 100) * 15000;
-    //   return serviceUtils?.formatCurrencyWithComma(cost);
-    // },
-
     totalCost() {
-      let total_cost = 1000 + this.shipping_cost;
+      let sub_total = this.getPaymentModuleConfig.amount;
+      let vat = this.getPaymentModuleConfig.vat;
+      let total_cost = sub_total + vat + this.shipping_cost;
       return this.$utils.formatCurrencyWithComma(total_cost);
     },
 
     paymentMethods() {
       return this.getPaymentModuleConfig?.payment_methods?.map((option) => ({
-        name: option.split("_").join(" "),
+        name: this.getPaymentMethod(option),
         id: `Preview${option}`,
+        slug: option,
+        selected: false,
       }));
     },
   },
 
+  watch: {
+    disable_btn_processing: {
+      handler(value) {
+        if (value) {
+          this.handleClick("btnRef", "Make payment", false);
+        }
+      },
+    },
+  },
+
   data: () => ({
+    payment_method_selected: false,
+
     form: {
       promo_code: {
         validated: false,
@@ -131,6 +185,49 @@ export default {
       },
     },
   }),
+
+  methods: {
+    ...mapMutations({
+      UPDATE_SELECTED_PAYMENT: "merchantDeveloper/UPDATE_SELECTED_PAYMENT",
+    }),
+
+    handleClickOfPaymentBtn() {
+      this.handleClick("btnRef", "Processing payment...");
+      this.$emit("processUserPayment");
+    },
+
+    getPaymentMethod(method) {
+      let payment_methods = {
+        card: "card",
+        banktransfer: "bank transfer",
+        mobilemoney: "mobile money",
+      };
+
+      if (method.includes("mobilemoney")) return "mobile money";
+      else return payment_methods[method];
+    },
+
+    updatePaymentMethod(index) {
+      let selected_option = this.paymentMethods[index];
+
+      if (selected_option.selected) selected_option.selected = false;
+      else selected_option.selected = true;
+
+      this.paymentMethods
+        .filter((_, itemIndex) => itemIndex !== index)
+        .map((item) => (item.selected = false));
+
+      let selected = this.paymentMethods.findIndex((pay) => pay.selected);
+
+      if (selected >= 0) {
+        this.payment_method_selected = true;
+        this.UPDATE_SELECTED_PAYMENT(this.paymentMethods[selected].slug);
+      } else {
+        this.UPDATE_SELECTED_PAYMENT("");
+        this.payment_method_selected = false;
+      }
+    },
+  },
 };
 </script>
 

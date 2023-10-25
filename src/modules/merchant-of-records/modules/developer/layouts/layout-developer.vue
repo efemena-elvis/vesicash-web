@@ -1,5 +1,5 @@
 <template>
-  <div class="layout-disbursement">
+  <div>
     <!-- BACK BUTTON -->
     <PageBackBtn history_mode />
 
@@ -13,7 +13,6 @@
 </template>
 
 <script>
-import { serviceStorage } from "@/shared/services";
 import PageBackBtn from "@/shared/components/util-comps/page-back-btn";
 import ProgressFlowCard from "@/shared/components/card-comps/progress-flow-card";
 

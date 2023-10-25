@@ -20,9 +20,9 @@
         </div>
       </div>
 
-      <div class="icon-wrap">
+      <!-- <div class="icon-wrap">
         <div class="icon icon-caret-right grey-600"></div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -51,7 +51,7 @@ export default {
 
   methods: {
     actionClicked() {
-      if (this.card_detail.action.length) {
+      if (this.card_detail?.action?.length) {
         this.$bus.$emit("cardActionClicked", this.card_detail.action);
       } else this.$router.push(this.card_detail.link);
     },

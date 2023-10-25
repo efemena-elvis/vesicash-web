@@ -4,7 +4,10 @@
       <div class="wrapper">
         <!-- <div class="title-text h5-text grey-900 mgb-8">Your Metrics</div> -->
 
-        <div class="metric-card-section" v-if="false">
+        <div
+          class="metric-card-section"
+          v-if="$route.name === 'MerchantTransaction'"
+        >
           <MetricCard
             metric_title="MoR Revenue metrics"
             metric_theme="teal"

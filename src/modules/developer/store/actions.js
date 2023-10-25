@@ -24,8 +24,12 @@ export default {
   // ==============================
   // FETCH API KEYS
   // ==============================
-  async fetchAPIkeys({ commit }) {
-    const response = await getRequest("auth", routes.fetch_api_keys);
+  async fetchAPIkeys({ commit }, { regenerate }) {
+    let api_url = regenerate
+      ? `${routes.fetch_api_keys}?new=true`
+      : routes.fetch_api_keys;
+
+    const response = await getRequest("auth", api_url);
 
     [201, 200].includes(response?.code) &&
       commit("SET_API_KEYS_DETAILS", response.data);

@@ -63,6 +63,7 @@
       class="btn btn-md btn-alert generate-key-btn"
       ref="btnRef"
       :disabled="generating_keys"
+      v-if="false"
     >
       Revoke keys
     </button>
@@ -87,6 +88,20 @@ export default {
     }),
   },
 
+  watch: {
+    getAPIKeysDetails: {
+      async handler(keys) {
+        if (!keys) this.fetchTokenKeys();
+        // else {
+        //   if (keys.public_key.includes("v_staging")) {
+        //     this.fetchTokenKeys(true);
+        //   }
+        // }
+      },
+      immediate: true,
+    },
+  },
+
   data() {
     return {
       api_keys: "26fhf4jf8key783920v56y",
@@ -98,6 +113,62 @@ export default {
       generating_keys: false,
     };
   },
+
+  methods: {
+    ...mapActions({
+      generateAPIkeys: "developer/generateAPIkeys",
+      fetchAPIkeys: "developer/fetchAPIkeys",
+    }),
+
+    async generateKeys() {
+      this.generating_keys = true;
+
+      const response = await this.handleDataRequest({
+        action: "generateAPIkeys",
+        payload: {
+          account_id: this.getAccountId,
+        },
+        alert_handler: {
+          success: "API keys generated successfully.",
+          error: "Unable to generate API keys.",
+          request_error: "Failed to generate API keys.",
+          not_found_error: "Failed to generate API keys.",
+        },
+      });
+
+      if (response) {
+        this.generating_keys = false;
+      }
+    },
+
+    async fetchTokenKeys(regenerate = false) {
+      this.generating_keys = true;
+
+      const response = await this.handleDataRequest({
+        action: "fetchAPIkeys",
+        payload: {
+          regenerate,
+        },
+        alert_handler: {
+          success: "API keys fetched successfully",
+          error: "Failed to load API keys",
+          request_error: "Failed to load API keys",
+          not_found_error: "No API keys found, generate new keys.",
+        },
+      });
+
+      if (response) {
+        this.generating_keys = false;
+      }
+    },
+
+    async copyAPIkeys(type = "public_key") {
+      await navigator.clipboard.writeText(this.getAPIKeysDetails[type]);
+      this.copied_key[type] = true;
+
+      setTimeout(() => (this.copied_key[type] = false), 2500);
+    },
+  },
 };
 </script>
 
@@ -105,8 +176,8 @@ export default {
 .api-module {
   .key-wrapper {
     @include flex-row-nowrap("flex-start", "center");
+    margin-bottom: toRem(40);
     gap: toRem(16);
-    margin-bottom: toRem(48);
 
     @include breakpoint-custom-down(787) {
       @include flex-row-wrap("flex-start", "center");

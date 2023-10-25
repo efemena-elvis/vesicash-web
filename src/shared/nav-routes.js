@@ -126,7 +126,7 @@ const merchantRoutes = [
     id: 9,
     title: "Developers",
     icon: "DeveloperIcon",
-    link: "/merchant/developer",
+    link: "/merchant/developer?type=api_key",
     slug: "developer",
     tour_id: [],
   },

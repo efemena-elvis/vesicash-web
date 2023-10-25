@@ -1,24 +1,43 @@
 <template>
   <div class="transaction">
     <!-- TITLE TOP BLOCK -->
-    <TitleTopBlock title="MoR Transactions" />
+    <TitleTopBlock title="MoR Summary" />
 
-    <MetricCard
-      metric_title="Processed transaction summary"
-      metric_theme="teal"
-      :metric_data="getTransactionRevenue"
-      :is_loading="loading"
-    />
+    <div
+      class="metric-card-section mgb-40"
+      v-if="$route.name === 'MerchantTransaction'"
+    >
+      <MetricCard
+        metric_title="MoR Revenue metrics"
+        metric_theme="teal"
+        :metric_data="getTransactionRevenue"
+        :is_loading="loading"
+      />
 
-    <PageSwitcher
-      v-if="false"
-      :page_data="pages"
-      :full_width="false"
-      @swapItem="updateTransactionChanges($event)"
-    />
+      <MetricCard
+        metric_title="MoR Transaction volume"
+        metric_theme="teal"
+        :metric_data="getTransactionVolume"
+        :is_currency_type="false"
+        :is_loading="loading"
+      />
+    </div>
 
     <template>
-      <MoRTransactionTable />
+      <div class="wrapper mgy-40">
+        <div class="title-text h5-text grey-900 mgb-8">MoR Transactions</div>
+
+        <PageSwitcher
+          v-if="false"
+          :page_data="pages"
+          :full_width="false"
+          @swapItem="updateTransactionChanges($event)"
+        />
+
+        <template>
+          <MoRTransactionTable />
+        </template>
+      </div>
     </template>
   </div>
 </template>
@@ -81,5 +100,9 @@ export default {
 
 <style lang="scss" scoped>
 .transaction {
+  .metric-card-section {
+    @include flex-row-wrap("flex-start", "stretch");
+    gap: toRem(20);
+  }
 }
 </style>

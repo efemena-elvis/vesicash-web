@@ -105,6 +105,7 @@ const MixinGlobal = {
       action,
       payload = "",
       btn_text = "",
+      show_alert = true,
       alert_handler = {}, // success: "", error: "", request_error: "", not_found_error: ""
     }) {
       const btnRef = "btnRef";
@@ -119,17 +120,19 @@ const MixinGlobal = {
         // 200 responses
         if (response?.code === 200 || response?.code === 201) {
           if (handle_alert && alert_handler?.success)
-            this.handleToastPushMx(alert_handler.success);
+            show_alert && this.handleToastPushMx(alert_handler.success);
         }
         // 400 responses
         else if (response?.code === 400) {
           if (handle_alert && alert_handler?.request_error)
-            this.handleToastPushMx(alert_handler.request_error, "error");
+            show_alert &&
+              this.handleToastPushMx(alert_handler.request_error, "error");
         }
         // 404 responses
         else if (response?.code === 404) {
           if (handle_alert && alert_handler?.not_found_error) {
-            this.handleToastPushMx(alert_handler.not_found_error, "error");
+            show_alert &&
+              this.handleToastPushMx(alert_handler.not_found_error, "error");
           }
         }
         // error responses

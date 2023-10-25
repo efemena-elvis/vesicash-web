@@ -91,6 +91,17 @@ class serviceUtils {
     return modified_list.join(" ");
   }
 
+  capitalizeFirstLetter(string) {
+    const words = string.split(" ");
+
+    if (words.length > 0) {
+      words[0] = words[0][0].toUpperCase() + words[0].substring(1);
+      return words.join(" ");
+    }
+
+    return string;
+  }
+
   getStringInitials(string) {
     const string_list = string.replace(/\s+/g, " ").split(" ");
 
@@ -163,6 +174,17 @@ class serviceUtils {
 
   formatCurrencyWithComma(currency) {
     return new Intl.NumberFormat().format(currency);
+  }
+
+  createAndClickAnchor(href, target = "_self") {
+    const anchor = document.createElement("a");
+
+    anchor.href = href;
+    anchor.target = target;
+
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
   }
 }
 

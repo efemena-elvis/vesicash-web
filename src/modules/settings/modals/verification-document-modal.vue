@@ -126,17 +126,17 @@ export default {
     return {
       verification_docs: [
         {
-          name: "Passport",
-          id: "passport",
-        },
-        {
-          name: "Driver License",
-          id: "drivers_license",
-        },
-        {
           name: "National ID",
           id: "nin",
         },
+        // {
+        //   name: "Passport",
+        //   id: "passport",
+        // },
+        // {
+        //   name: "Driver License",
+        //   id: "drivers_license",
+        // },
       ],
 
       uploaded_doc: null,
