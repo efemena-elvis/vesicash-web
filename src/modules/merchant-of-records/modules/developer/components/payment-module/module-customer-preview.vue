@@ -27,6 +27,7 @@
           label_title="Phone number"
           label_id="phoneNumber"
           is_required
+          input_type="number"
           placeholder="Your phone number"
           :input_value="getFormFieldValueMx(form, 'phone_number')"
           @getInputState="updateFormFieldMx($event, 'phone_number')"
@@ -38,7 +39,14 @@
       </div>
     </div>
 
-    <div class="row border-bottom-grey-200 mgb-24">
+    <div
+      class="row mgb-24"
+      :class="
+        getPaymentModuleConfig.is_shipping_type
+          ? 'border-bottom-grey-200'
+          : null
+      "
+    >
       <div class="col-12 col-sm-6">
         <div class="form-group">
           <FormFieldInput
@@ -131,17 +139,22 @@
       </div>
 
       <FormCheckCard
-        v-for="(option, index) in getPaymentModuleConfig.shipping_types"
+        v-for="(option, index) in getShippingOptions"
         :key="index"
+        :checked="option.selected"
         :check_id="option.name + index"
-        :primary_text="`${option.name} (${option.time})`"
+        :primary_text="`${option?.name.length ? option?.name : '-'} ${
+          option?.time.length ? '(' + option.time + ')' : ''
+        }`"
         :secondary_text="
           option?.amount
-            ? `${
-                '#' || option.currency_code
-              }${serviceUtils.formatCurrencyWithComma(option.amount)}`
+            ? `${$utils.formatCurrency({
+                input: option.currency_code.split(' ')[0],
+                output: 'sign',
+              })}${$utils.formatCurrencyWithComma(option.amount)}`
             : 'FREE'
         "
+        @change="updateSelectedShippingType(index)"
       />
     </div>
 
@@ -157,7 +170,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 import FormCheckCard from "@/shared/components/form-comps/form-check-card";
 import countries from "@/utilities/countries";
 import { serviceUtils } from "@/shared/services";
@@ -188,12 +201,32 @@ export default {
         id: cc.code,
       }));
     },
+
+    getShippingOptions() {
+      return this.shipping_options;
+    },
+  },
+
+  watch: {
+    "getPaymentModuleConfig.shipping_types": {
+      handler() {
+        this.loadShippingTypes();
+      },
+    },
+
+    form: {
+      handler() {
+        this.updateUserPaymentInfo();
+      },
+      deep: true,
+    },
   },
 
   data() {
     return {
       serviceUtils,
       countries,
+
       form: {
         email_address: {
           validated: false,
@@ -211,14 +244,14 @@ export default {
           validated: false,
           value: "",
         },
-        town_city: {
-          validated: false,
-          value: "",
-        },
-        state: {
-          validated: false,
-          value: "",
-        },
+        // town_city: {
+        //   validated: false,
+        //   value: "",
+        // },
+        // state: {
+        //   validated: false,
+        //   value: "",
+        // },
         phone_number: {
           validated: false,
           value: "",
@@ -227,7 +260,79 @@ export default {
 
       business_type_options: [],
       user_details: {},
+
+      shipping_options: [],
     };
+  },
+
+  mounted() {
+    this.loadShippingTypes();
+  },
+
+  methods: {
+    ...mapMutations({
+      UPDATE_PAYMENT_COMPLETED_STATE:
+        "merchantDeveloper/UPDATE_PAYMENT_COMPLETED_STATE",
+      UPDATE_PAYMENT_INFO: "merchantDeveloper/UPDATE_PAYMENT_INFO",
+    }),
+
+    loadShippingTypes() {
+      this.shipping_options = [];
+
+      this.getPaymentModuleConfig.shipping_types.map((items) => {
+        this.shipping_options.push({ ...items, selected: false });
+      });
+    },
+
+    updateSelectedShippingType(index) {
+      let selected_option = this.shipping_options[index];
+
+      if (selected_option.selected) selected_option.selected = false;
+      else selected_option.selected = true;
+
+      this.shipping_options
+        .filter((_, itemIndex) => itemIndex !== index)
+        .map((item) => (item.selected = false));
+
+      this.$emit("shippingTypeSelected", selected_option);
+    },
+
+    updateUserPaymentInfo() {
+      let { request_phone_number, request_street_address } =
+        this.getPaymentModuleConfig;
+
+      let {
+        email_address,
+        first_name,
+        last_name,
+        street_address,
+        phone_number,
+      } = this.getFormPayloadMx(this.form);
+
+      this.UPDATE_PAYMENT_INFO({
+        email_address,
+        first_name,
+        last_name,
+        street_address,
+        phone_number,
+      });
+
+      let mandatory_field = !!email_address && !!first_name && !!last_name;
+
+      let paymentCompletedState;
+      if (request_phone_number && request_street_address) {
+        paymentCompletedState =
+          mandatory_field && !!phone_number && !!street_address;
+      } else if (request_phone_number) {
+        paymentCompletedState = mandatory_field && !!phone_number;
+      } else if (request_street_address) {
+        paymentCompletedState = mandatory_field && !!street_address;
+      } else {
+        paymentCompletedState = mandatory_field;
+      }
+
+      this.UPDATE_PAYMENT_COMPLETED_STATE(paymentCompletedState);
+    },
   },
 };
 </script>

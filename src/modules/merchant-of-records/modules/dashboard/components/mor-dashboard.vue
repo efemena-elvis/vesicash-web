@@ -2,9 +2,12 @@
   <div class="mor-dashboard">
     <template>
       <div class="wrapper">
-        <div class="title-text h5-text grey-900 mgb-8">Your Metrics</div>
+        <!-- <div class="title-text h5-text grey-900 mgb-8">Your Metrics</div> -->
 
-        <div class="metric-card-section">
+        <div
+          class="metric-card-section"
+          v-if="$route.name === 'MerchantTransaction'"
+        >
           <MetricCard
             metric_title="MoR Revenue metrics"
             metric_theme="teal"
@@ -37,7 +40,7 @@
 
     <template>
       <div class="wrapper mgy-40">
-        <div class="title-text h5-text grey-900 mgb-8">Transactions</div>
+        <div class="title-text h5-text grey-900 mgb-8">Recent transactions</div>
 
         <PageSwitcher
           :page_data="pages"
@@ -47,7 +50,7 @@
 
         <template>
           <div class="table-title primary-1-text grey-900 mgb-16">
-            {{ getTableTitle }}
+            <!-- {{ getTableTitle }} -->
           </div>
           <component :is="active_transaction_view" />
         </template>
@@ -77,6 +80,10 @@ export default {
       import(
         /* webpackChunkName: "MoR-module" */ "@/modules/merchant-of-records/modules/transactions/components/mor-transaction-table"
       ),
+    DashboardTransactions: () =>
+      import(
+        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/dashboard-transactions"
+      ),
   },
 
   computed: {
@@ -89,17 +96,22 @@ export default {
 
   data() {
     return {
-      active_transaction_view: "MoRTransactionTable",
+      active_transaction_view: "DashboardTransactions",
 
       pages: [
         {
-          title: "Merchant of Record",
-          value: "merchant",
+          title: "Payments",
+          value: "DashboardTransactions",
           active: true,
         },
         {
+          title: "Merchant of Records",
+          value: "MoRTransactionTable",
+          active: false,
+        },
+        {
           title: "Escrow",
-          value: "escrow",
+          value: "TransactionTable",
           active: false,
         },
       ],
@@ -108,11 +120,7 @@ export default {
 
   methods: {
     updateTransactionChanges(selected_value) {
-      this.active_transaction_view =
-        selected_value === "merchant"
-          ? "MoRTransactionTable"
-          : "TransactionTable";
-
+      this.active_transaction_view = selected_value;
       this.pages.find((page) => page.value === selected_value).active = true;
     },
   },

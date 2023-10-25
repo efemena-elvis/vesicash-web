@@ -1,35 +1,31 @@
 <template>
   <div class="sidebar teal-50-bg">
     <!-- BRAND LOGO -->
-    <router-link
-      :to="{ name: 'VesicashDashboard' }"
-      class="brand-logo mgb-40 d-block"
-    >
+    <router-link :to="{ name: 'VesicashDashboard' }" class="brand-logo d-block">
       <VesicashBrandLogo />
     </router-link>
 
-    <!-- SIDE NAV ITEMS -->
-    <div
-      :class="
-        isMoRSetupEnabled
-          ? 'sidebar-item-list sidebar-item-list__long'
-          : 'sidebar-item-list'
-      "
-    >
-      <SidebarItem
-        v-for="(nav, index) in sidebar_routes"
-        :key="index"
-        :nav="nav"
-      />
-    </div>
+    <div class="sidebar-wrapper d-flex flex-column justify-content-between">
+      <div class="sidebar-content w-100">
+        <!-- SIDE NAV ITEMS -->
+        <div class="sidebar-item-list">
+          <component
+            :is="sidebar_view"
+            v-for="(nav, index) in getSidebarRoutes"
+            :key="index"
+            :nav="nav"
+            :onboarding_state="getOnboardingRouteState[index]"
+          />
+        </div>
+      </div>
 
-    <div class="fixed-sidebar" v-if="!isMoRSetupEnabled">
-      <SidebarItem is_active :nav="merchant_of_record" />
-    </div>
-
-    <!-- LOG OUT ACCOUNT SECTION -->
-    <div class="wrapper position-absolute wt-100">
-      <ProfileMenu @exit="handleUserlogOut" />
+      <!-- LOG OUT ACCOUNT SECTION -->
+      <div class="wrapper wt-100">
+        <ProfileMenu
+          @exit="handleUserlogOut"
+          :onboarding_view="isBaseView ? false : true"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -37,10 +33,15 @@
 <script>
 import { mapActions } from "vuex";
 import MoRDocValidate from "@/modules/merchant-of-records/modules/config/mixins/mor-docs-mixin";
-import { escrowRoutes, merchantRoutes } from "@/shared/nav-routes";
+import {
+  escrowRoutes,
+  merchantRoutes,
+  onboardingRoutes,
+} from "@/shared/nav-routes";
 import VesicashBrandLogo from "@/shared/components/icon-comps/vesicash-brand-logo";
 import ExitIcon from "@/shared/components/icon-comps/exit-icon";
 import SidebarItem from "@/shared/components/nav-comps/sidebar-item";
+import SidebarItemCount from "@/shared/components/nav-comps/sidebar-item-count";
 import ProfileMenu from "@/shared/components/nav-comps/profile-menu";
 
 export default {
@@ -51,32 +52,73 @@ export default {
   components: {
     VesicashBrandLogo,
     SidebarItem,
+    SidebarItemCount,
     ExitIcon,
     ProfileMenu,
   },
 
+  computed: {
+    isBaseView() {
+      return this.base_view ? true : false;
+    },
+
+    getSidebarRoutes() {
+      if (!this.base_view) {
+        this.sidebar_view = "SidebarItemCount";
+        return onboardingRoutes;
+      } else {
+        this.sidebar_view = "SidebarItem";
+        return this.isMoRSetupEnabled ? merchantRoutes : escrowRoutes;
+      }
+    },
+
+    getOnboardingRouteState() {
+      return this.onboarding_route_state;
+    },
+  },
+
   data() {
     return {
-      sidebar_routes: "",
-      merchant_of_record: {
-        id: 5,
-        title: "Merchant of Record",
-        icon: "MORIcon",
-        link: "/merchant/introduction",
-        slug: "mor",
-        tour_id: [],
-        tag: true,
-      },
+      base_view: true,
+      sidebar_view: "SidebarItem",
+
+      onboarding_route_state: [
+        {
+          route: "VesicashBusinessInfoOnboarding",
+          disabled: false,
+        },
+        {
+          route: "VesicashBusinessOnboarding",
+          disabled: true,
+        },
+        {
+          route: "VesicashIdentityOnboarding",
+          disabled: true,
+        },
+        {
+          route: "VesicashMoROnboarding",
+          disabled: true,
+        },
+      ],
     };
   },
 
+  watch: {
+    $route: {
+      handler(route) {
+        this.base_view = route.meta?.page_type === "onboarding" ? false : true;
+
+        if (!this.base_view) {
+          if (route.name === "VesicashBusinessOnboarding") {
+            this.onbording_route_state = [];
+          }
+        }
+      },
+      immediate: true,
+    },
+  },
+
   mounted() {
-    this.sidebar_routes = this.isMoRSetupEnabled
-      ? merchantRoutes
-      : escrowRoutes;
-
-    this.checkMoRVerficationState();
-
     if (this.getAccountType === "business" && !this.isMoRSetupEnabled) {
       this.fetchVerifications();
     }
@@ -89,22 +131,7 @@ export default {
 
     handleUserlogOut() {
       this.togglePageLoader();
-      setTimeout(() => this.logOutUser(), 2000);
-    },
-
-    checkMoRVerficationState() {
-      let has_seen_mor_intro = this.getUser.has_seen_mor_introduction;
-
-      if (has_seen_mor_intro) {
-        // CHECK VERIFICATION UPGRADE
-        if (this.validateMoRVerification) {
-          this.merchant_of_record.link = "/settings/mor-setup";
-        } else {
-          this.merchant_of_record.link = "/merchant/document-upgrade";
-        }
-      } else {
-        this.merchant_of_record.link = "/merchant/introduction";
-      }
+      this.logOutUser();
     },
   },
 };
@@ -112,9 +139,10 @@ export default {
 
 <style lang="scss" scoped>
 .sidebar {
-  padding: toRem(22) toRem(16);
   @include stretch-area;
   position: relative;
+  height: 100vh;
+  border: toRem(1) solid transparent;
 
   @include breakpoint-down(lg) {
     width: 60%;
@@ -128,27 +156,46 @@ export default {
     width: 75%;
   }
 
-  .sidebar-item-list {
-    max-height: 65vh !important;
-    overflow-y: auto;
+  .brand-logo {
+    padding: toRem(28) toRem(20);
+    margin-top: toRem(8);
+    height: 12%;
+
+    svg {
+      width: toRem(150);
+      height: auto;
+    }
+  }
+
+  .sidebar-wrapper {
+    height: 85%;
+  }
+
+  .sidebar-content {
+    overflow: overlay;
+    height: 87%;
+    margin-bottom: 3%;
 
     &::-webkit-scrollbar {
-      width: 5px;
+      @include transition(0.3s);
+      background-color: getColor("grey-200");
+      display: none;
+      width: 0;
+    }
+
+    &::-webkit-scrollbar-thumb {
       background-color: getColor("grey-300");
     }
-    &::-webkit-scrollbar-thumb {
-      background-color: getColor("grey-400");
+
+    &:hover {
+      &::-webkit-scrollbar {
+        width: toRem(4);
+        display: unset;
+      }
     }
-  }
 
-  .sidebar-item-list__long {
-    max-height: 85vh !important;
-  }
-
-  .brand-logo {
-    svg {
-      width: toRem(146);
-      height: auto;
+    .sidebar-item-list {
+      padding: 0 toRem(16);
     }
   }
 
@@ -157,8 +204,9 @@ export default {
   }
 
   .wrapper {
+    position: relative;
     padding: 0 toRem(16);
-    bottom: toRem(14);
+    bottom: 0;
     left: 0;
 
     .log-out-section {

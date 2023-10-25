@@ -22,8 +22,8 @@
 </template>
 
 <script>
-import { serviceUtils } from "@/shared/services";
-import { mapActions, mapGetters, mapMutations } from "vuex";
+import { mapActions } from "vuex";
+import SnapshotMixin from "@/shared/mixins/mixin-snapshots";
 
 export default {
   name: "App",
@@ -36,6 +36,8 @@ export default {
       amp: true,
     },
   },
+
+  mixins: [SnapshotMixin],
 
   components: {
     PageLoader: () =>
@@ -55,19 +57,6 @@ export default {
         this.show_feather_loader = false;
       },
     },
-
-    getUserVerifications: {
-      handler(verifications) {
-        const is_upgraded = serviceUtils.checkAccountStatus(verifications);
-        const user = this.getUser || {};
-        this.UPDATE_AUTH_USER({ ...user, is_upgraded });
-      },
-      deep: true,
-    },
-  },
-
-  computed: {
-    ...mapGetters({ getUserVerifications: "settings/getUserVerifications" }),
   },
 
   data: () => ({
@@ -82,6 +71,9 @@ export default {
   }),
 
   created() {
+    // CHECK IF USER EMAIL NEEDS VALIDATION
+    this.checkIfEmailIsVerified();
+
     // EVENT BUS TO TOGGLE PAGE LOADER
     this.$bus.$on("toggle-page-loader", (message = "") => {
       this.show_feather_loader = !this.show_feather_loader;
@@ -100,17 +92,12 @@ export default {
 
     // EVENT BUS TO TOGGLE ALERT BANNER
     this.$bus.$on("toggle-alert-banner", (data) => this.toggleAlert(data));
-
-    // CHECK IF USER EMAIL NEEDS VALIDATION
-    this.checkIfEmailIsVerified();
   },
 
   methods: {
     ...mapActions({
       verifyEmailOTP: "settings/verifyEmailOTP",
     }),
-
-    ...mapMutations({ UPDATE_AUTH_USER: "auth/UPDATE_AUTH_USER" }),
 
     toggleAlert(data) {
       this.alert = data;

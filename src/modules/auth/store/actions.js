@@ -3,6 +3,7 @@ import { getRequest, postRequest } from "@/utilities/micro-services";
 const routes = {
   login: "login",
   register: "signup",
+  invite_user: "invite-user",
   send_user_otp: "send_otp",
   verify_user_otp: "is_otp_valid",
   request_password: "reset-password",
@@ -34,6 +35,13 @@ export default {
   // ============================================
   async registerBulkUsers(_, payload) {
     return await postRequest("auth", `${routes.register}/bulk`, payload);
+  },
+
+  // ============================================
+  // INVITE USERS TO YOUR BUSINESS ACCOUNT
+  // ============================================
+  async inviteUser(_, payload) {
+    return await postRequest("auth", `${routes.invite_user}`, payload);
   },
 
   // ============================================
@@ -76,7 +84,7 @@ export default {
   // ============================================
   async logOutUser({ commit }) {
     await postRequest("auth", routes.logout);
-    setTimeout(() => commit("AUTH_LOGOUT"), 500);
+    setTimeout(() => commit("AUTH_LOGOUT"), 300);
   },
 
   // ============================================

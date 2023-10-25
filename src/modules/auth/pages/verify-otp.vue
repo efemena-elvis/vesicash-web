@@ -1,84 +1,86 @@
 <template>
-  <AuthWrapper
-    title_text="Enter OTP code"
-    :meta_text="`Enter the OTP code we sent to <br> <span class='grey-800'>${user_details.email_address}</span>`"
-  >
-    <!-- AUTH PAGE -->
-    <div class="auth-page">
-      <!-- OTP ENTRY INPUTS -->
-      <div class="form-group">
-        <input
-          type="number"
-          class="form-control"
-          v-model="otp_one"
-          ref="otpOne"
-        />
-        <input
-          type="number"
-          class="form-control"
-          v-model="otp_two"
-          ref="otpTwo"
-          :disabled="checkOTPOne"
-        />
-        <input
-          type="number"
-          class="form-control"
-          v-model="otp_three"
-          ref="otpThree"
-          :disabled="checkOTPTwo"
-        />
-        <input
-          type="number"
-          class="form-control"
-          v-model="otp_four"
-          ref="otpFour"
-          :disabled="checkOTPThree"
-        />
-        <input
-          type="number"
-          class="form-control"
-          v-model="otp_five"
-          ref="otpFive"
-          :disabled="checkOTPFour"
-        />
-        <input
-          type="number"
-          class="form-control"
-          v-model="otp_six"
-          ref="otpSix"
-          :disabled="checkOTPFive"
-        />
-      </div>
-
-      <!-- BUTTON AREA -->
-      <div class="btn-area mgt-35 mgb-10">
-        <button
-          class="btn btn-primary btn-md w-100"
-          ref="btnRef"
-          :disabled="getOTPToken.length === 6 ? false : true"
-          @click="handleUserOTPVerification"
-        >
-          Verify OTP code
-        </button>
-      </div>
-
-      <!-- HELP BLOCK TEXT -->
-      <template v-if="resend_countdown === 0">
-        <div
-          class="help-block text-center grey-600 pointer"
-          @click="resendOTPCode"
-        >
-          Resend OTP code
+  <div class="otp-section">
+    <AuthWrapper
+      title_text="Enter OTP code"
+      :meta_text="`Enter the OTP code we sent to <br> <span class='grey-800'>${user_details.email_address}</span>`"
+    >
+      <!-- AUTH PAGE -->
+      <div class="auth-page">
+        <!-- OTP ENTRY INPUTS -->
+        <div class="form-group">
+          <input
+            type="number"
+            class="form-control"
+            v-model="otp_one"
+            ref="otpOne"
+          />
+          <input
+            type="number"
+            class="form-control"
+            v-model="otp_two"
+            ref="otpTwo"
+            :disabled="checkOTPOne"
+          />
+          <input
+            type="number"
+            class="form-control"
+            v-model="otp_three"
+            ref="otpThree"
+            :disabled="checkOTPTwo"
+          />
+          <input
+            type="number"
+            class="form-control"
+            v-model="otp_four"
+            ref="otpFour"
+            :disabled="checkOTPThree"
+          />
+          <input
+            type="number"
+            class="form-control"
+            v-model="otp_five"
+            ref="otpFive"
+            :disabled="checkOTPFour"
+          />
+          <input
+            type="number"
+            class="form-control"
+            v-model="otp_six"
+            ref="otpSix"
+            :disabled="checkOTPFive"
+          />
         </div>
-      </template>
 
-      <template v-else>
-        <div class="help-block text-center grey-600 pointer">
-          Resending in.. 0.{{ resend_countdown }}s
+        <!-- BUTTON AREA -->
+        <div class="btn-area mgt-35 mgb-10">
+          <button
+            class="btn btn-primary btn-md w-100"
+            ref="btnRef"
+            :disabled="getOTPToken.length === 6 ? false : true"
+            @click="handleUserOTPVerification"
+          >
+            Verify OTP code
+          </button>
         </div>
-      </template>
-    </div>
-  </AuthWrapper>
+
+        <!-- HELP BLOCK TEXT -->
+        <template v-if="resend_countdown === 0">
+          <div
+            class="help-block text-center grey-600 pointer"
+            @click="resendOTPCode"
+          >
+            Resend OTP code
+          </div>
+        </template>
+
+        <template v-else>
+          <div class="help-block text-center grey-600 pointer">
+            Resending in.. 0.{{ resend_countdown }}s
+          </div>
+        </template>
+      </div>
+    </AuthWrapper>
+  </div>
 </template>
 
 <script>
@@ -235,23 +237,35 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.auth-page {
-  .form-group {
-    @include flex-row-nowrap("center", "center");
+.otp-section {
+  margin-top: toRem(100);
 
-    .form-control {
-      padding: toRem(8) toRem(10);
-      @include draw-shape(36);
-      margin: 0 toRem(5);
-      text-align: center;
-    }
+  @include breakpoint-down(sm) {
+    margin-top: toRem(80);
   }
 
-  .help-block {
-    @include transition(0.4s);
+  @include breakpoint-down(xs) {
+    margin-top: toRem(60);
+  }
 
-    &:hover {
-      color: getColor("grey-800");
+  .auth-page {
+    .form-group {
+      @include flex-row-nowrap("flex-start", "center");
+      gap: toRem(12);
+  
+      .form-control {
+        padding: toRem(10) toRem(12);
+        @include draw-shape(42);
+        text-align: center;
+      }
+    }
+  
+    .help-block {
+      @include transition(0.4s);
+  
+      &:hover {
+        color: getColor("grey-800");
+      }
     }
   }
 }

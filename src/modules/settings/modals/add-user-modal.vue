@@ -1,12 +1,12 @@
 <template>
   <ModalCover
     @closeModal="$emit('closeTriggered')"
-    :modal_style="{ size: 'modal-sm' }"
+    :modal_style="{ size: 'modal-md' }"
   >
     <!-- MODAL COVER HEADER -->
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
-        <div class="modal-cover-title">Add users to account</div>
+        <div class="modal-cover-title">Invite users to account</div>
         <div class="tertiary-2-text grey-600 wt-75">
           Create account for new users
         </div>
@@ -16,30 +16,17 @@
     <!-- MODAL COVER BODY -->
     <template slot="modal-cover-body">
       <div class="modal-cover-body">
-        <div class="form-group inline-group">
+        <div class="form-group">
           <FormFieldInput
-            label_title="First name"
-            label_id="firstName"
+            label_title="Fullname"
+            label_id="fullName"
             is_required
-            placeholder="Enter first name"
-            :input_value="getFormFieldValueMx(form, 'firstname')"
-            @getInputState="updateFormFieldMx($event, 'firstname')"
+            placeholder="Enter fullname"
+            :input_value="getFormFieldValueMx(form, 'fullname')"
+            @getInputState="updateFormFieldMx($event, 'fullname')"
             :error_handler="{
               type: 'required',
-              message: 'First name is a required field',
-            }"
-          />
-
-          <FormFieldInput
-            label_title="Last name"
-            label_id="lastName"
-            is_required
-            placeholder="Enter last name"
-            :input_value="getFormFieldValueMx(form, 'lastname')"
-            @getInputState="updateFormFieldMx($event, 'lastname')"
-            :error_handler="{
-              type: 'required',
-              message: 'Last name is a required field',
+              message: 'Fullname is a required field',
             }"
           />
         </div>
@@ -60,21 +47,18 @@
           />
         </div>
 
+        <!-- ACCESS TYPES -->
         <div class="form-group">
-          <FormFieldInput
-            label_title="Password"
-            label_id="password"
-            input_type="password"
-            is_required
-            placeholder="Enter password"
-            :custom_style="{ input_wrapper_style: 'form-suffix' }"
-            :input_value="getFormFieldValueMx(form, 'password')"
-            @getInputState="updateFormFieldMx($event, 'password')"
-            :error_handler="{
-              type: 'password',
-              message: 'Password should contain at least 4 characters',
-            }"
-          />
+          <label class="form-label">Access types</label>
+
+          <div class="access-cards">
+            <userAccessCard
+              v-for="(level, index) in access_levels"
+              :key="index"
+              :level="level"
+              @updateSelection="updateAccessTypeSelection(index)"
+            />
+          </div>
         </div>
       </div>
     </template>
@@ -84,7 +68,7 @@
       <div class="modal-cover-footer">
         <button
           ref="btnRef"
-          class="btn btn-primary btn-md wt-100 mgt-10"
+          class="btn btn-primary btn-md wt-100"
           @click="addUser"
           :disabled="isFormValidated"
         >
@@ -98,6 +82,7 @@
 <script>
 import { mapActions } from "vuex";
 import ModalCover from "@/shared/components/util-comps/modal-cover";
+import userAccessCard from "@/modules/settings/components/card-comps/user-access-card";
 
 export default {
   name: "AddUserModal",
@@ -111,6 +96,7 @@ export default {
 
   components: {
     ModalCover,
+    userAccessCard,
   },
 
   computed: {
@@ -131,11 +117,7 @@ export default {
   data() {
     return {
       form: {
-        firstname: {
-          validated: false,
-          value: "",
-        },
-        lastname: {
+        fullname: {
           validated: false,
           value: "",
         },
@@ -143,19 +125,56 @@ export default {
           validated: false,
           value: "",
         },
-        password: {
+        access_level: {
           validated: false,
           value: "",
         },
       },
+
+      access_levels: [
+        {
+          title: "Moderator",
+          types: [
+            "Manage payment module",
+            "Invoice",
+            "Escrow",
+            "View wallets",
+            "View dashboard",
+            "Analytics",
+          ],
+          selected: false,
+        },
+        {
+          title: "Developer",
+          types: [
+            "Manage payment module",
+            "Generate keys",
+            "View live keys",
+            "View wallets",
+            "View dashboard",
+            "Analytics",
+          ],
+          selected: false,
+        },
+      ],
     };
   },
 
   methods: {
     ...mapActions({
-      registerUser: "auth/registerUser",
+      registerUser: "auth/inviteUser",
       fetchConnectedUsers: "settings/fetchConnectedUsers",
     }),
+
+    updateAccessTypeSelection(index) {
+      this.form.access_level.validated = true;
+
+      this.access_levels.map((level) => (level.selected = false));
+      this.access_levels[index].selected = true;
+
+      this.form.access_level.value =
+        this.access_levels[index].title.toLowerCase();
+    },
 
     async addUser() {
       const response = await this.handleDataRequest({
@@ -188,9 +207,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.inline-group {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 toRem(16);
+.access-cards {
+  @include flex-column("flex-start", "flex-start");
+  gap: toRem(16);
 }
 </style>

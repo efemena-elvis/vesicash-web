@@ -160,9 +160,7 @@
 
           <FormToggler
             :default_value="ship"
-            @toggleSelected="
-              UPDATE_PAYMENT_MODULE({ field: 'is_shipping_type', data: $event })
-            "
+            @toggleSelected="toggleShippingState"
           />
         </div>
 
@@ -184,6 +182,7 @@
 
         <button
           class="btn btn-md btn-secondary"
+          :disabled="ship ? false : true"
           @click="addExtraShippingOption"
         >
           <span class="icon-plus mgr-8"></span> Add a new delivery
@@ -213,7 +212,7 @@
 import { mapActions, mapGetters, mapMutations } from "vuex";
 import FormColorInput from "@/shared/components/form-comps/form-color-input";
 import FormToggler from "@/shared/components/form-comps/form-toggler";
-import FormCheckCard from "../../../../../../shared/components/form-comps/form-check-card.vue";
+import FormCheckCard from "@/shared/components/form-comps/form-check-card";
 
 export default {
   name: "CustomerSetup",
@@ -231,15 +230,18 @@ export default {
   computed: {
     ...mapGetters({
       getMorCountries: "merchant/getMorCountries",
+      getWalletSize: "general/getWalletSize",
       getPaymentModuleConfig: "merchant/getPaymentModuleConfig",
     }),
 
     isDisabled() {
       const config = this.getPaymentModuleConfig;
+      const use_shipping = config.is_shipping_type;
       const invalidShippingMethods =
         config?.shipping_types?.some(
           (type) => !type?.name || !type?.currency_code || !type?.time
-        ) || !config?.shipping_types?.length;
+        ) ||
+        (!config?.shipping_types?.length && use_shipping);
 
       return (
         invalidShippingMethods ||
@@ -251,7 +253,20 @@ export default {
     },
 
     morCountries() {
-      return [...this.getMorCountries];
+      let mor_countries = [];
+      let mor_wallets = this.getWalletSize.filter((wallet) => wallet.mor);
+
+      this.getMorCountries.map((country) => {
+        if (
+          mor_wallets.some((wallet) => wallet.short === country.currency_code)
+        ) {
+          if (country.currency_code === "USD") {
+            mor_countries.push({ ...country, name: "United States" });
+          } else mor_countries.push(country);
+        }
+      });
+
+      return [...mor_countries];
     },
 
     shippingCurency() {
@@ -276,6 +291,7 @@ export default {
     request_country: false,
     country: null,
     ship: false,
+
     empty_shipping_option: {
       shipping_type: {
         validated: false,
@@ -318,6 +334,7 @@ export default {
 
   mounted() {
     const id = this.$route?.query?.id;
+
     id && !this.getPaymentModuleConfig?.saved
       ? this.fetchSavedModule(id)
       : this.updateSavedConfig(this.getPaymentModuleConfig);
@@ -352,6 +369,11 @@ export default {
       uploadToSpace: "general/uploadToSpace",
       fetchMoRCountries: "merchant/fetchMoRCountries",
       fetchPaymentModule: "merchant/fetchPaymentModule",
+    }),
+
+    ...mapMutations({
+      UPDATE_PAYMENT_MODULE: "merchant/UPDATE_PAYMENT_MODULE",
+      SET_PAYMENT_MODULE: "merchant/SET_PAYMENT_MODULE",
     }),
 
     updateCountryWithConfig(config, countries) {
@@ -399,8 +421,8 @@ export default {
           country_name:
             countries?.find((cc) => cc?.id === data?.country_id)?.name || "",
           currency_code: data?.currency_code || "",
-          is_shipping_type: data?.is_shipping_type || true,
-          shipping_types: [...data?.shipping_types],
+          is_shipping_type: data?.is_shipping_type,
+          shipping_types: [...(data?.shipping_types || [])],
           product_type: data?.product_type || "",
           vat: data?.vat || 0,
           payment_methods: [...data?.payment_methods],
@@ -449,6 +471,11 @@ export default {
         : `${(size / 1000).toFixed(1)}kb`;
     },
 
+    toggleShippingState($event) {
+      this.ship = $event;
+      this.UPDATE_PAYMENT_MODULE({ field: "is_shipping_type", data: $event });
+    },
+
     addExtraShippingOption() {
       const empty_option = {
         shipping_type: {
@@ -466,11 +493,6 @@ export default {
       };
       this.shipping_options = [...this.shipping_options, empty_option];
     },
-
-    ...mapMutations({
-      UPDATE_PAYMENT_MODULE: "merchant/UPDATE_PAYMENT_MODULE",
-      SET_PAYMENT_MODULE: "merchant/SET_PAYMENT_MODULE",
-    }),
 
     updateShipping(options, currency) {
       const updated_shippings = [...options]?.map((option) => {
@@ -533,22 +555,24 @@ export default {
 
       this.ship = config.is_shipping_type;
 
-      this.shipping_options = [...config?.shipping_types]?.map((type) => {
-        return {
-          shipping_type: {
-            validated: !!type?.name,
-            value: type?.name || "",
-          },
-          duration: {
-            validated: !!type?.time,
-            value: type?.time || "",
-          },
-          shipping_amount: {
-            validated: !!type?.amount,
-            value: type?.amount || "",
-          },
-        };
-      });
+      this.shipping_options = [...(config?.shipping_types || [])]?.map(
+        (type) => {
+          return {
+            shipping_type: {
+              validated: !!type?.name,
+              value: type?.name || "",
+            },
+            duration: {
+              validated: !!type?.time,
+              value: type?.time || "",
+            },
+            shipping_amount: {
+              validated: !!type?.amount,
+              value: type?.amount || "",
+            },
+          };
+        }
+      );
     },
   },
 };

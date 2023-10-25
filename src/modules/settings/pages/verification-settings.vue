@@ -5,8 +5,8 @@
 
     <!-- PAGE META -->
     <div class="page-meta tertiary-2-text grey-600">
-      Verify your bvn, business documents and settlements documents here to be
-      able to carry out transactions
+      Verify your bvn, business documents and identity here to be able to carry
+      out transactions
     </div>
 
     <div class="cards-container" v-if="loading_verification">
@@ -57,7 +57,8 @@
       </verification-card>
 
       <verification-card
-        title="Government ID"
+        v-if="false"
+        title="Government issued ID"
         subtitle="Choose and upload a document for verification."
         cta_title="Verify document"
         :verified_docs="getOtherDocuments"
@@ -66,13 +67,13 @@
         <FileIcon active />
       </verification-card>
 
-      <template v-if="false">
+      <template>
         <verification-card
           v-if="isBusiness"
           title="Directors information"
           subtitle="Confirm current number of directors and identification details."
           cta_title="Verify directors"
-          :verified="false"
+          :verified="true"
           :check_verification_state="true"
           @action="toggleDirectorVerifyModal"
         >

@@ -1,9 +1,9 @@
 <template>
   <div
-    class="metric-card rounded-12 teal-10-bg border-teal-100 mgb-24"
+    class="metric-card rounded-12 teal-10-bg border-teal-100 mgb-8"
     :class="`border-${metric_theme}-100 ${metric_theme}-10-bg`"
   >
-    <div class="metric-title h5-text grey-900">{{ metric_title }}</div>
+    <div class="metric-title primary-1-text grey-900">{{ metric_title }}</div>
 
     <!-- METRIC DATA ROW -->
     <div class="metric-data-row">
@@ -12,8 +12,8 @@
         v-for="(wallet, index) in metric_data"
         :key="index"
       >
-        <div class="title grey-700 mgb-4">
-          {{ wallet.description }} ({{ wallet.short }})
+        <div class="title grey-700 mgb-6">
+          {{ wallet.short }}
         </div>
 
         <template>
@@ -34,6 +34,10 @@
             }}
           </div>
         </template>
+
+        <div class="title grey-700">
+          {{ wallet.description }}
+        </div>
       </div>
     </div>
   </div>
@@ -80,7 +84,7 @@ export default {
 
   .metric-title {
     padding: toRem(16) toRem(24) 0;
-    font-size: toRem(18);
+    font-size: toRem(16);
 
     @include breakpoint-down(lg) {
       font-size: toRem(17);

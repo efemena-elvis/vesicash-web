@@ -5,6 +5,7 @@
         :label_id="`shippingType${id}`"
         is_required
         placeholder="Enter shipping type"
+        :is_disabled="is_active"
         :input_value="getFormFieldValueMx(form, 'shipping_type')"
         @getInputState="updateFormFieldMx($event, 'shipping_type')"
         :error_handler="{
@@ -14,12 +15,13 @@
       />
     </div>
 
-    <div class="row mgb-12">
+    <div class="row mgb-12 ship-row">
       <div class="col-12 col-sm-6">
         <FormFieldInput
           :label_id="`duration${id}`"
           is_required
           placeholder="12 hours"
+          :is_disabled="is_active"
           :input_value="getFormFieldValueMx(form, 'duration')"
           @getInputState="updateFormFieldMx($event, 'duration')"
           :error_handler="{
@@ -31,10 +33,11 @@
 
       <div class="col-12 col-sm-6">
         <FormFieldInput
-          :label_id="`amoount${id}`"
+          :label_id="`amount${id}`"
           input_type="number"
           is_required
           placeholder="0.00"
+          :is_disabled="is_active"
           :prefix_value="currency"
           :custom_style="{
             input_wrapper_style: 'form-prefix form-prefix-right',
@@ -54,7 +57,11 @@
       deliveries input 0 in the price
     </div>
 
-    <button class="btn btn-sm btn-alert remove-btn" @click="$emit('remove')">
+    <button
+      class="btn btn-sm btn-alert remove-btn"
+      v-if="identifier > 0"
+      @click="$emit('remove')"
+    >
       Remove
     </button>
   </div>
@@ -65,14 +72,24 @@ export default {
   name: "ShippingCard",
 
   props: {
+    identifier: {
+      type: Number,
+      default: 0,
+    },
+
     currency: {
       type: String,
-      default: "NGN (₦)",
+      default: "---",
     },
 
     id: {
       type: [String, Number],
       default: "Card",
+    },
+
+    is_active: {
+      type: Boolean,
+      default: false,
     },
 
     default_form: {
@@ -138,6 +155,10 @@ export default {
 .shipping-card {
   padding: toRem(16);
   position: relative;
+
+  .ship-row {
+    gap: toRem(20) 0;
+  }
 }
 
 .remove-btn {

@@ -4,7 +4,14 @@
     :class="ongoingTour ? 'tour-index' : null"
   >
     <!-- TITLE TEXT -->
-    <div class="title-text tertiary-2-text grey-700 mgb-2">In Escrow</div>
+    <div class="title-text tertiary-2-text grey-700 mgb-2">
+      In Escrow
+      <span
+        class="icon f-size-12 mgl-4 pointer"
+        :class="isBalanceHidden ? 'icon-show' : 'icon-hide'"
+        @click="toggleWalletBalance"
+      ></span>
+    </div>
 
     <div class="escrow-balance-block">
       <div class="balance-block">
@@ -15,17 +22,21 @@
           ></div>
 
           <div class="amount-value mgb-8" v-else>
-            <span
-              >{{ escrow_balance[0]?.sign || "-"
-              }}{{
+            <span>{{ escrow_balance[0]?.sign || "-" }}</span>
+            <template v-if="isBalanceHidden">
+              <span class="hidden-balance">****</span>
+            </template>
+
+            <template v-else>
+              <span>{{
                 $utils.formatCurrencyWithComma(
                   escrow_balance[0]?.balance?.split(".")[0] || "0"
                 )
               }}</span
-            >
-            <span class="amount-zero"
-              >.{{ escrow_balance[0]?.balance?.split(".")[1] || "00" }}</span
-            >
+              ><span class="amount-zero"
+                >.{{ escrow_balance[0]?.balance?.split(".")[1] || "00" }}</span
+              >
+            </template>
           </div>
         </div>
 
@@ -36,17 +47,21 @@
           ></div>
 
           <div class="amount-value mgb-8" v-else>
-            <span
-              >{{ escrow_balance[1]?.sign || "-"
-              }}{{
+            <span>{{ escrow_balance[1]?.sign || "-" }}</span>
+            <template v-if="isBalanceHidden">
+              <span class="hidden-balance">****</span>
+            </template>
+
+            <template v-else>
+              <span>{{
                 $utils.formatCurrencyWithComma(
                   escrow_balance[1]?.balance?.split(".")[0] || "0"
                 )
-              }}</span
-            >
-            <span class="amount-zero"
-              >.{{ escrow_balance[1]?.balance?.split(".")[1] || "00" }}</span
-            >
+              }}</span>
+              <span class="amount-zero"
+                >.{{ escrow_balance[1]?.balance?.split(".")[1] || "00" }}</span
+              >
+            </template>
           </div>
 
           <div class="balance-meta title-description grey-700 secondary-3-text">
@@ -62,18 +77,22 @@
             v-if="loading_wallet"
           ></div>
 
-          <div class="amount-value mgb-8" style="opacity: 0.5" v-else>
-            <span
-              >{{ escrow_balance[2]?.sign || "-"
-              }}{{
+          <div class="amount-value mgb-8" v-else>
+            <span>{{ escrow_balance[2]?.sign || "-" }}</span>
+            <template v-if="isBalanceHidden">
+              <span class="hidden-balance">****</span>
+            </template>
+
+            <template v-else>
+              <span>{{
                 $utils.formatCurrencyWithComma(
                   escrow_balance[2]?.balance?.split(".")[0] || "0"
                 )
-              }}</span
-            >
-            <span class="amount-zero"
-              >.{{ escrow_balance[2]?.balance?.split(".")[1] || "00" }}</span
-            >
+              }}</span>
+              <span class="amount-zero"
+                >.{{ escrow_balance[2]?.balance?.split(".")[1] || "00" }}</span
+              >
+            </template>
           </div>
         </div>
 
@@ -122,6 +141,22 @@ export default {
 
       if (ongoing) return [1].includes(count) ? true : false;
       else return false;
+    },
+
+    isBalanceHidden() {
+      return this.is_hidden;
+    },
+  },
+
+  data() {
+    return {
+      is_hidden: true,
+    };
+  },
+
+  methods: {
+    toggleWalletBalance() {
+      this.is_hidden = !this.is_hidden;
     },
   },
 };
@@ -197,6 +232,11 @@ export default {
         font-size: toRem(16);
       }
     }
+  }
+
+  .hidden-balance {
+    position: relative;
+    top: toRem(3);
   }
 
   .loading-amount-value {

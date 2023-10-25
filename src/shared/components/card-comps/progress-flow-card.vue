@@ -100,6 +100,7 @@ export default {
   @include flex-row-nowrap("flex-start", "flex-start");
   padding: toRem(8) toRem(16);
   width: max-content;
+  gap: toRem(6);
 
   .item-flow {
     @include flex-row-nowrap("flex-start", "center");
@@ -136,7 +137,7 @@ export default {
 
     .counter-text {
       font-size: toRem(12.75);
-      margin-left: toRem(8);
+      margin-left: toRem(10);
 
       @include breakpoint-down(md) {
         display: none;

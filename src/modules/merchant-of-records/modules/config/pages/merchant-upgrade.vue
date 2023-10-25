@@ -30,19 +30,6 @@
           <div class="col-12 col-md-10 col-lg-8 mx-auto">
             <div class="mgb-24">
               <verification-card
-                title="Business information"
-                subtitle="Provide some information about your business."
-                cta_title="Update business information"
-                :verified="isBusinessVerified"
-                :check_verification_state="true"
-                @action="toggleBusinessInfoModal"
-              >
-                <BusinessIcon />
-              </verification-card>
-            </div>
-
-            <div class="mgb-24">
-              <verification-card
                 title="Company registration document"
                 subtitle="Upload your business registration document for verification."
                 cta_title="Verify business"
@@ -78,18 +65,6 @@
                 @action="toggleBvnModal"
               >
                 <BvnIcon />
-              </verification-card>
-            </div>
-
-            <div class="mgb-24">
-              <verification-card
-                title="Government ID"
-                subtitle="Choose and upload a document for verification."
-                cta_title="Verify document"
-                :verified_docs="getOtherDocuments"
-                @action="toggleDocUploadModal"
-              >
-                <FileIcon active />
               </verification-card>
             </div>
           </div>
@@ -298,8 +273,9 @@ export default {
 
       if (response.code === 200) {
         this.user_verifications = response.data;
-        if (serviceUtils.checkAccountStatus(response?.data)) {
-          this.$router.push("/dashboard");
+
+        if (this.validateUserAccount) {
+          this.$router.push("/settings/mor-setup");
         }
       }
     },

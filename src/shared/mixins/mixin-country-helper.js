@@ -20,12 +20,19 @@ const countryHelper = {
   }),
 
   created() {
-    const saved_country_data = this.$storage.getStorage({
+    let saved_country_data = this.$storage.getStorage({
       storage_name: "base_country_data",
       storage_type: "object",
     });
 
-    saved_country_data === null && this.loadCurrentUserLocation();
+    saved_country_data === null &&
+      this.$storage.setStorage({
+        storage_name: "base_country_data",
+        storage_value: this.loadCurrentUserLocation(),
+        storage_type: "object",
+      });
+
+    saved_country_data = this.loadCurrentUserLocation();
   },
 
   methods: {
@@ -54,16 +61,18 @@ const countryHelper = {
         payload: "",
       });
 
-      let country_code = response?.split(";")[1]?.toLowerCase() ?? "ng";
-      this.current_country = this.countries_data.find(
-        (country) => country.code === country_code
-      );
+      if (response) {
+        let country_code = response?.split(";")[1]?.toLowerCase() ?? "ng";
+        this.current_country = this.countries_data.find(
+          (country) => country.code === country_code
+        );
 
-      this.$storage.setStorage({
-        storage_name: "base_country_data",
-        storage_value: this.current_country,
-        storage_type: "object",
-      });
+        this.$storage.setStorage({
+          storage_name: "base_country_data",
+          storage_value: this.current_country,
+          storage_type: "object",
+        });
+      }
     },
   },
 };

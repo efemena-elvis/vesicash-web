@@ -227,8 +227,6 @@ export default {
       if (signup_payload.length) {
         this.registerBulkUsers({ bulk: signup_payload })
           .then((response) => {
-            console.log("response", response);
-
             // RETRY BULK UPLOAD IF IT RETURNS 500 RESPONSE
             if (response?.code === 500) {
               this.signupBulkUsers();

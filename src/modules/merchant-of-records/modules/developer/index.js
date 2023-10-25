@@ -66,6 +66,16 @@ const merchantDeveloperRoutes = [
       requiresAuth: true,
     },
   },
+
+  {
+    path: "/mor-checkout/:reference",
+    name: "MerchantCheckoutPreview",
+    component: () =>
+      import(
+        /* webpackChunkName: "merchant-module" */
+        "@/modules/merchant-of-records/modules/developer/pages/payment-checkout"
+      ),
+  },
 ];
 
 export default merchantDeveloperRoutes;

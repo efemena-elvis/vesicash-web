@@ -109,7 +109,7 @@
       </div>
 
       <!-- DOB BLOCK -->
-      <div class="page-input-block row">
+      <div class="page-input-block row" v-if="false">
         <div class="col-12 col-sm-4">
           <label for="logo" class="form-label fw-bold">Date of Birth</label>
         </div>
@@ -127,7 +127,7 @@
       </div>
 
       <!-- FLUTTERWAVE MERCHANT ID BLOCK -->
-      <div class="page-input-block row" v-if="isBusiness && false">
+      <div class="page-input-block row" v-if="isBusiness">
         <div class="col-12 col-sm-4">
           <label for="logo" class="form-label fw-bold">Merchant ID</label>
         </div>
@@ -360,12 +360,12 @@ export default {
         dob: this.form.dob.value,
         meta: this.uploaded_pic,
         // bio: this.form.bio.value,
-        // flutterwave_merchant_id: this.form.flutterwave_merchant_id.value,
+        flutterwave_merchant_id: this.form.flutterwave_merchant_id.value,
       };
 
-      // if (!this.isBusiness) delete profile_updates.updates.username;
-      // if (!this.isBusiness)
-      // delete profile_updates.updates?.flutterwave_merchant_id;
+      if (!this.isBusiness) delete profile_updates.updates.username;
+      if (!this.isBusiness)
+        delete profile_updates.updates?.flutterwave_merchant_id;
 
       return profile_updates;
     },
@@ -406,14 +406,14 @@ export default {
         //   validated: true,
         //   value: "",
         // },
-        dob: {
-          validated: false,
-          value: "",
-        },
-        // flutterwave_merchant_id: {
+        // dob: {
         //   validated: true,
         //   value: "",
         // },
+        flutterwave_merchant_id: {
+          validated: true,
+          value: "",
+        },
         // bio: {
         //   validated: true,
         //   value: "",
@@ -529,7 +529,7 @@ export default {
         // username,
         dob,
         phone,
-        // flutterwave_merchant_id,
+        flutterwave_merchant_id,
         // bio,
         meta,
       } = this.getUser;
@@ -545,8 +545,8 @@ export default {
       this.form.last_name.validated = !!lastname;
 
       // this.form.username.value = username;
-      this.form.dob.value = dob;
-      // this.form.flutterwave_merchant_id.value = flutterwave_merchant_id;
+      // this.form.dob.value = dob;
+      this.form.flutterwave_merchant_id.value = flutterwave_merchant_id;
       // this.form.bio.value = bio;
 
       this.form.email_address.value = email;
@@ -567,8 +567,8 @@ export default {
         meta: this.uploaded_pic,
         fullname: `${this.form.last_name.value} ${this.form.first_name.value}`,
         // username: this.form?.username.value,
-        dob: this.form?.dob.value,
-        // flutterwave_merchant_id: this.form?.flutterwave_merchant_id.value,
+        // dob: this.form?.dob.value,
+        flutterwave_merchant_id: this.form?.flutterwave_merchant_id.value,
       };
 
       this.UPDATE_AUTH_USER(updatedUser);

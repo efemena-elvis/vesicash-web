@@ -21,4 +21,11 @@ export default () => ({
       storage_name: "user_wallet_size",
       storage_type: "object",
     }) || [],
+
+  onboarding: {
+    is_completed: false,
+    completed_routes: [],
+  },
+
+  is_merchant: false,
 });

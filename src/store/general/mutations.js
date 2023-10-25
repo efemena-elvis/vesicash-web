@@ -49,4 +49,12 @@ export default {
       storage_type: "object",
     });
   },
+
+  UPDATE_ONBOARDING: (state, data) => {
+    state.onboarding = data;
+  },
+
+  UPDATE_MERCHANT: (state, data) => {
+    state.is_merchant = data === true || data === "true";
+  },
 };

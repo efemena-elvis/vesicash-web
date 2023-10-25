@@ -1,29 +1,30 @@
 import countries from "@/utilities/countries";
+import { serviceStorage } from "@/shared/services";
+import { constants } from "@/utilities";
 
 class serviceUtils {
   /**
    * The function logs out the user by clearing the local storage and redirecting to the login page.
    */
+  storage_exception_key = "identifier_token";
+
   logOutUser() {
-    localStorage.clear();
+    // PRIORITY REMOVALS ON LOGOUT
+    serviceStorage.removeStorage(constants.VESICASH_AUTH_USER);
+    serviceStorage.removeStorage(constants.VESICASH_AUTH_TOKEN);
+
+    serviceStorage.removeStorage("app_onboarding");
+    serviceStorage.removeStorage("timestamp");
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const local_key = localStorage.key(i);
+      if (local_key !== this.storage_exception_key) {
+        serviceStorage.removeStorage(local_key);
+      }
+    }
+
+    // REDIRECT TO LOGIN PAGE
     location.href = "/login";
-  }
-
-  checkAccountStatus(verifications) {
-     const required_types = ['tin','cac','bvn'];
-     const other_docs = ["passport", "drivers_license", "nin"]
-
-     const required = required_types?.every(type=>{
-       const doc = verifications?.find(verification=>verification?.verification_type===type);
-       return doc && doc?.is_verified
-     })
-
-     const others = other_docs?.some(type=>{
-      const doc = verifications?.find(verification=>verification?.verification_type===type);
-      return doc && doc?.is_verified
-    })
-
-    return required && others;
   }
 
   checkAuthTimeout(minutes) {
@@ -88,6 +89,17 @@ class serviceUtils {
     );
 
     return modified_list.join(" ");
+  }
+
+  capitalizeFirstLetter(string) {
+    const words = string.split(" ");
+
+    if (words.length > 0) {
+      words[0] = words[0][0].toUpperCase() + words[0].substring(1);
+      return words.join(" ");
+    }
+
+    return string;
   }
 
   getStringInitials(string) {
@@ -162,6 +174,17 @@ class serviceUtils {
 
   formatCurrencyWithComma(currency) {
     return new Intl.NumberFormat().format(currency);
+  }
+
+  createAndClickAnchor(href, target = "_self") {
+    const anchor = document.createElement("a");
+
+    anchor.href = href;
+    anchor.target = target;
+
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
   }
 }
 

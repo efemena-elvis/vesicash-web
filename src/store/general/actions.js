@@ -245,4 +245,12 @@ export default {
   updateWalletListSize({ commit }, wallet_size) {
     commit("UPDATE_WALLET_SIZE", wallet_size);
   },
+
+  updateOnboardingState({ commit }, onboarding_data) {
+    commit("UPDATE_ONBOARDING", onboarding_data);
+  },
+
+  updateMerchantState({ commit }, is_merchant) {
+    commit("UPDATE_MERCHANT", is_merchant);
+  },
 };

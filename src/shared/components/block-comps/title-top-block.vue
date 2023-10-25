@@ -58,6 +58,8 @@ export default {
   }
 
   .welcome-message {
+    font-size: toRem(22);
+
     @include breakpoint-down(sm) {
       font-size: toRem(18.75);
     }

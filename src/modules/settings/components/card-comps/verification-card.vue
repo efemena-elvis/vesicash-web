@@ -31,57 +31,74 @@
       </div>
     </div>
 
-    <div class="action-area">
-      <!-- CHECK VERIFICATION -->
-      <template v-if="check_verification_state">
-        <button
-          class="btn btn-primary btn-sm"
-          v-if="['not_uploaded', 'declined'].includes(verification_state)"
-          @click="$emit('action')"
-        >
+    <div class="d-flex justify-content-end align-items-center">
+      <button v-if="disable_verify">
+        <button class="btn btn-primary btn-sm" disabled>
           {{ cta_title }}
         </button>
+      </button>
 
-        <div
-          class="error-message-wrapper mgl-10"
-          v-if="verification_state === 'declined'"
-        >
-          <div class="icon-info red-400 f-size-18 pointer"></div>
+      <div class="action-area" v-else>
+        <!-- CHECK VERIFICATION -->
+        <template v-if="check_verification_state">
+          <button
+            class="btn btn-primary btn-sm"
+            v-if="['not_uploaded', 'declined'].includes(verification_state)"
+            @click="$emit('action')"
+          >
+            {{ cta_title }}
+          </button>
 
-          <!-- BOTTOM TOOLTIP -->
-          <div class="tooltip-wrapper wt-100 position-absolute">
-            <div
-              class="tooltip-data wt-100 grey-10-bg rounded-8 grey-700"
-              v-html="tooltip_text"
-            ></div>
+          <div
+            class="error-message-wrapper mgl-10"
+            v-if="verification_state === 'declined'"
+          >
+            <div class="icon-info red-400 f-size-18 pointer"></div>
+
+            <!-- BOTTOM TOOLTIP -->
+            <div class="tooltip-wrapper wt-100 position-absolute">
+              <div
+                class="tooltip-data wt-100 grey-10-bg rounded-8 grey-700"
+                v-html="tooltip_text"
+              ></div>
+            </div>
           </div>
-        </div>
 
-        <button
-          class="btn yellow-100-bg yellow-900 btn-sm"
-          disabled
-          v-if="verification_state === 'pending'"
-        >
-          Pending approval
-        </button>
-      </template>
+          <button
+            class="btn yellow-100-bg yellow-900 btn-sm"
+            disabled
+            v-if="verification_state === 'pending'"
+          >
+            Pending approval
+          </button>
+        </template>
 
-      <!-- NO VERIFICATION CHECK -->
-      <template v-else>
-        <button
-          class="btn btn-primary btn-sm"
-          v-if="!verified"
-          @click="$emit('action')"
-        >
-          {{ cta_title }}
-        </button>
-      </template>
+        <!-- NO VERIFICATION CHECK -->
+        <template v-else>
+          <button
+            class="btn btn-primary btn-sm"
+            v-if="!verified"
+            @click="$emit('action')"
+          >
+            {{ cta_title }}
+          </button>
+        </template>
+      </div>
+
+      <button
+        class="btn btn-sm btn-alert mgl-10"
+        v-if="show_remove_btn && !verified"
+        @click="$emit('removeCard')"
+      >
+        Remove
+      </button>
     </div>
   </div>
 </template>
 
 <script>
 import CheckIcon from "@/shared/components/icon-comps/check-icon";
+
 export default {
   name: "VerificationCard",
 
@@ -119,6 +136,16 @@ export default {
     verified_docs: {
       type: Array,
       default: () => [],
+    },
+
+    disable_verify: {
+      type: Boolean,
+      default: false,
+    },
+
+    show_remove_btn: {
+      type: Boolean,
+      default: false,
     },
   },
 

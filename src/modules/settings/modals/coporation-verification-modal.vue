@@ -6,7 +6,7 @@
     <!-- MODAL COVER HEADER -->
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
-        <div class="modal-cover-title">Company Verification</div>
+        <div class="modal-cover-title">Company Registration</div>
         <div class="tertiary-2-text grey-600">
           Upload your company registration document
         </div>
@@ -32,6 +32,7 @@
         </div>
 
         <ContractUploadCard
+          v-if="false"
           titleText="Select company registration document"
           @fileUploaded="uploaded_doc = $event"
           @clearTransactionFile="uploaded_doc = null"
@@ -44,7 +45,7 @@
       <div class="modal-cover-footer">
         <button
           ref="save"
-          class="btn btn-primary btn-md wt-100 mgt-17"
+          class="btn btn-primary btn-md wt-100"
           :disabled="isDisabled"
           @click="save"
         >
@@ -68,7 +69,7 @@ export default {
 
   computed: {
     isDisabled() {
-      return this.form.doc_number && this.form.file_url ? false : true;
+      return this.form.doc_number || this.form.file_url ? false : true;
     },
 
     verfiyDocPayload() {
@@ -145,7 +146,8 @@ export default {
 
 <style lang="scss">
 .modal-cover-body {
-  max-height: 65vh;
+  min-height: 6vh !important;
+  max-height: 50vh;
   overflow-y: auto;
 
   &::-webkit-scrollbar {

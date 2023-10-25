@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from "vuex";
 import Sidebar from "@/shared/components/nav-comps/sidebar";
 import MobileTopbar from "@/shared/components/nav-comps/mobile-topbar";
 
@@ -36,8 +37,37 @@ export default {
     MobileTopbar,
   },
 
+  computed: {
+    ...mapGetters({ getOnboardingData: "general/getOnboardingData" }),
+  },
+
+  watch: {
+    $route: {
+      handler(route) {
+        let { is_completed, completed_routes } = this.getOnboardingData;
+        let is_onbording_route = this.onboarding_paths.includes(route.path);
+
+        if (is_completed && is_onbording_route) {
+          this.$router.push("/dashboard");
+        } else if (!is_completed && !is_onbording_route) {
+          this.fetchUserExtraData();
+          this.$router.push(this.onboarding_paths[completed_routes.length]);
+        }
+      },
+      immediate: true,
+      deep: true,
+    },
+  },
+
   data: () => ({
     show_mobile_sidebar: false,
+
+    onboarding_paths: [
+      "/onboarding/business-information",
+      "/onboarding/business-verification",
+      "/onboarding/identity-verification",
+      "/onboarding/mor-deployment",
+    ],
   }),
 
   created() {
@@ -53,9 +83,38 @@ export default {
   },
 
   methods: {
+    ...mapActions({
+      saveUserProfile: "settings/saveUserProfile",
+      updateMerchantState: "general/updateMerchantState",
+      updateOnboardingState: "general/updateOnboardingState",
+    }),
+
     hideSidebar($event) {
       if ($event.target.classList.contains("sidebar-build-open"))
         this.show_mobile_sidebar = !this.show_mobile_sidebar;
+    },
+
+    async fetchUserExtraData() {
+      const response = await this.handleDataRequest({
+        action: "saveUserProfile",
+        payload: {},
+        alert_handler: {
+          request_error: "User profile not found",
+          not_found_error: "User profile not found",
+        },
+      });
+
+      if (response.code === 200) {
+        let user_extra_data = response.data.user?.extra_data;
+
+        // EXTRACT COMPLETED STATE AND COMPLETED ROUTES
+        let { is_completed, completed_routes } =
+          user_extra_data?.onboarding ?? {};
+
+        // UPDATE AND PERSIST ONBOARDING DATAAND MERCHANT IN STORE
+        this.updateOnboardingState({ is_completed, completed_routes });
+        this.updateMerchantState(user_extra_data?.merchant ?? false);
+      }
     },
   },
 };
