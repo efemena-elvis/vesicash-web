@@ -205,26 +205,10 @@ export default {
     business_type_options: [],
   }),
 
-  mounted() {
-    // this.fetchBusinessTypes();
-  },
-
   methods: {
     ...mapActions({
-      getBusinessTypes: "auth/getBusinessTypes",
       updateUserBusinessInfo: "settings/updateUserBusinessInfo",
     }),
-
-    // ===========================================
-    // HANDLE FETCHING OF AVAILABLE BUSINESS TYPES
-    // ===========================================
-    // async fetchBusinessTypes() {
-    //   const response = await this.handleDataRequest({
-    //     action: "getBusinessTypes",
-    //   });
-
-    //   this.business_type_options = response?.code === 200 ? response.data : [];
-    // },
 
     // UPDATE BUSINESS TYPE DATA
     async handleBusinessTypeSelection() {

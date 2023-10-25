@@ -16,6 +16,7 @@ import mor from "@/modules/mor/store";
 // MERCHANT OF RECORD STORE
 import merchant from "@/modules/merchant-of-records/modules/config/store";
 import merchantDashboard from "@/modules/merchant-of-records/modules/dashboard/store";
+import merchantDeveloper from "@/modules/merchant-of-records/modules/developer/store";
 import merchantTransactions from "@/modules/merchant-of-records/modules/transactions/store";
 
 Vue.use(Vuex);
@@ -32,6 +33,7 @@ export default new Vuex.Store({
     mor,
     merchant,
     merchantDashboard,
+    merchantDeveloper,
     merchantTransactions,
   },
 });

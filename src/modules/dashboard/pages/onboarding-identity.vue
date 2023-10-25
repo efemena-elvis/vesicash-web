@@ -9,15 +9,15 @@
 
         <div class="meta-text grey-600 tertiary-2-text mgb-40">
           Complete identity verification by verifying an identification document
-          of the business owner(s)
+          of the business owner
         </div>
 
         <!-- DIRECTOR CARDS -->
         <div class="director-cards mgb-30">
           <div class="mgb-10" v-for="(item, index) in directors" :key="index">
             <verification-card
-              :title="`${item.id}. Director identity verification`"
-              subtitle="Verify a director personal identification document."
+              :title="`Director identity verification`"
+              subtitle="Verify director personal identification document."
               cta_title="Verify director"
               :verified="item.verified"
               :show_remove_btn="item.id > 1 ? true : false"
@@ -30,6 +30,7 @@
         </div>
 
         <button
+          v-if="false"
           class="btn btn-md btn-tertiary mgl-12"
           style="width: max-content"
           @click="addDirectorCard"
@@ -47,7 +48,7 @@
           :disabled="firstDirectorIsVerified"
           class="btn btn-md btn-primary"
         >
-          Complete
+          Complete onboarding
         </button>
       </div>
     </div>
@@ -55,9 +56,9 @@
     <!-- MODALS -->
     <portal to="vesicash-modals">
       <transition name="fade" v-if="show_doc_upload_modal">
+        <!-- :director_count="director_count" -->
+        <!-- :is_director_type="false" -->
         <VerificationDocumentModal
-          is_director_type
-          :director_count="director_count"
           @saved="showSuccessModal('show_doc_upload_modal', $event)"
           @closeTriggered="toggleDocUploadModal"
         />
@@ -183,7 +184,7 @@ export default {
 
     checkDirectorsVerification(verifications) {
       let director_list = verifications.filter((item) =>
-        item.verification_type.includes("director")
+        item.verification_type.includes("nin")
       );
 
       if (director_list.length) {
@@ -202,7 +203,7 @@ export default {
 
     async moveToNextOnboarding() {
       this.handleButtonStateOnRequest("btnRef", "start");
-      await this.handleOnboardingUpdate(null, true);
+      await this.handleOnboardingUpdate("", true);
     },
 
     toggleCongratDialog() {

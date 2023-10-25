@@ -99,7 +99,7 @@ export default {
   props: {
     autocomplete: {
       type: String,
-      default: "on"
+      default: "on",
     },
 
     label_title: {
@@ -111,7 +111,7 @@ export default {
       type: String,
       default: "",
     },
-    
+
     input_type: {
       type: String,
       default: "text",
@@ -267,7 +267,7 @@ export default {
 
         case "password":
           this.error_message =
-            !this.$validate.validatePasswordInput(value) && message;
+            !this.$validate.validatePasswordInput(value, 8) && message;
           break;
 
         case "required":

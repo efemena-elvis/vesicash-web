@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import ProgressFlowCard from "@/shared/components/card-comps/progress-flow-card";
 
 export default {
@@ -61,11 +61,22 @@ export default {
       },
       immediate: true,
     },
+
+    getOnboardingData: {
+      handler() {
+        this.validateUserOnboarding();
+      },
+    },
   },
 
   data: () => ({
     computed_page_flow: [],
     show_welcome_dialog: false,
+
+    default_onboarding_state: {
+      is_completed: false,
+      completed_routes: [],
+    },
 
     page_flows: [
       {
@@ -100,6 +111,8 @@ export default {
   }),
 
   mounted() {
+    this.fetchUserState();
+
     let { is_completed, completed_routes } = this.getOnboardingData;
 
     if (
@@ -114,8 +127,51 @@ export default {
   },
 
   methods: {
+    ...mapActions({
+      saveUserProfile: "settings/saveUserProfile",
+      updateMerchantState: "general/updateMerchantState",
+      updateOnboardingState: "general/updateOnboardingState",
+    }),
+
     toggleWelcomeDialog() {
       this.show_welcome_dialog = !this.show_welcome_dialog;
+    },
+
+    validateUserOnboarding() {
+      let { is_completed, completed_routes } = this.getOnboardingData;
+
+      if (
+        this.$route.name === "VesicashBusinessInfoOnboarding" &&
+        !completed_routes.length
+      )
+        this.toggleWelcomeDialog();
+
+      if (is_completed) {
+        location.href = "/dashboard";
+      }
+    },
+
+    async fetchUserState() {
+      const response = await this.handleDataRequest({
+        action: "saveUserProfile",
+        payload: {},
+        alert_handler: {
+          request_error: "User profile not found",
+          not_found_error: "User profile not found",
+        },
+      });
+
+      if (response.code === 200) {
+        let user_extra_data = response.data.user?.extra_data;
+
+        // EXTRACT COMPLETED STATE AND COMPLETED ROUTES
+        let { is_completed, completed_routes } =
+          user_extra_data?.onboarding ?? this.default_onboarding_state;
+
+        // UPDATE AND PERSIST ONBOARDING AND MERCHANT DATA IN STORE
+        this.updateOnboardingState({ is_completed, completed_routes });
+        this.updateMerchantState(user_extra_data?.merchant ?? true);
+      }
     },
   },
 };

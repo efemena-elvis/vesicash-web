@@ -26,10 +26,7 @@ const OnboardingMixin = {
       const response = await this.handleDataRequest({
         action: "saveUserProfile",
         payload: this.getOnboardingPayload(is_completed),
-        alert_handler: {
-          request_error: "User profile not found",
-          not_found_error: "User profile not found",
-        },
+        show_alert: false,
       });
 
       if (response.code === 200) {

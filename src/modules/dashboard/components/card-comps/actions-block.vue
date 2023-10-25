@@ -103,7 +103,7 @@ export default {
         title: "Payment via checkout",
         description: "Integrate MoR checkout api",
         icon: "subscription-icon.svg",
-        link: "",
+        link: "/merchant/developer?type=checkout",
       },
       {
         title: "Deploy MoR",

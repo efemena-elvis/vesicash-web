@@ -3,7 +3,7 @@
     <!-- TITLE TEXT -->
     <div class="title-text h5-text grey-900 mgb-24 mgt-12">Your API keys</div>
 
-    <div class="mgb-32">
+    <div class="mgb-32" v-if="false">
       <TabSwitcher :tabs="tab_options" @tabSelected="updateAPIView" />
     </div>
 
