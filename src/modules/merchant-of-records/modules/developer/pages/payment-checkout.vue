@@ -77,6 +77,7 @@ export default {
       getPaymentModuleConfig: "merchant/getPaymentModuleConfig",
       getUserPaymentInfo: "merchantDeveloper/getUserPaymentInfo",
       getSelectedPaymentMethod: "merchantDeveloper/getSelectedPaymentMethod",
+      getSelectedShippingType: "merchantDeveloper/getSelectedShippingType",
     }),
 
     getPaymentReference() {
@@ -103,6 +104,7 @@ export default {
         payment_method: this.getSelectedPaymentMethod,
         phone_number: this.getUserPaymentInfo?.phone_number ?? null,
         country_code: this.getPaymentModuleConfig.country_code,
+        shipping_type: this.getSelectedShippingType,
       };
     },
   },
@@ -181,16 +183,18 @@ export default {
         currency_code: payload?.currency_code || "",
         currency_sign: country_data.currency.sign,
 
-        is_shipping_type: payload?.shipping_types[0]?.name.length
-          ? true
-          : false,
-        shipping_types: [...(payload?.shipping_types || [])],
-
         product_type: payload?.product_type || "",
         amount: payload?.amount || 0,
         vat: payload?.vat || 0,
         payment_methods: [...payload?.payment_methods],
       };
+
+      if (Array.isArray(payload?.shipping_types)) {
+        payment_info.is_shipping_type = payload?.shipping_types[0]?.name.length
+          ? true
+          : false;
+        payment_info.shipping_types = [...(payload?.shipping_types || [])];
+      }
 
       this.SET_PAYMENT_MODULE(payment_info);
     },

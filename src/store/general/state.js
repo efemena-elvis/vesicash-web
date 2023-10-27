@@ -23,8 +23,17 @@ export default () => ({
     }) || [],
 
   onboarding: {
-    is_completed: false,
-    completed_routes: [],
+    is_completed:
+      serviceStorage.getStorage({
+        storage_name: "app_onboarding",
+        storage_type: "object",
+      })?.is_completed || false,
+
+    completed_routes:
+      serviceStorage.getStorage({
+        storage_name: "app_onboarding",
+        storage_type: "object",
+      })?.completed_routes || [],
   },
 
   is_merchant: false,

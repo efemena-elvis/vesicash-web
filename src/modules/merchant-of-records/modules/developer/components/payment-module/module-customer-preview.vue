@@ -274,6 +274,7 @@ export default {
       UPDATE_PAYMENT_COMPLETED_STATE:
         "merchantDeveloper/UPDATE_PAYMENT_COMPLETED_STATE",
       UPDATE_PAYMENT_INFO: "merchantDeveloper/UPDATE_PAYMENT_INFO",
+      UPDATE_SELECTED_SHIPPING: "merchantDeveloper/UPDATE_SELECTED_SHIPPING",
     }),
 
     loadShippingTypes() {
@@ -295,6 +296,10 @@ export default {
         .map((item) => (item.selected = false));
 
       this.$emit("shippingTypeSelected", selected_option);
+
+      this.UPDATE_SELECTED_SHIPPING(
+        selected_option.selected ? selected_option.name : ""
+      );
     },
 
     updateUserPaymentInfo() {

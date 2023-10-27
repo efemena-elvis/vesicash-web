@@ -112,21 +112,26 @@ class serviceApi {
         storage_name: constants.VESICASH_AUTH_TOKEN,
       }) || null;
 
+    const api_keys = serviceStorage.getStorage({
+      storage_name: constants.VESICASH_USER_TOKEN,
+      storage_type: "object",
+    }) || { 0: "", 1: "" };
+
     return attach
       ? {
           headers: {
             "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${authUserToken}`,
-            "V-PUBLIC-KEY": constants.VESICASH_PUBLIC_KEY_TOKEN,
-            "V-PRIVATE-KEY": constants.VESICASH_PRIVATE_KEY_TOKEN,
+            "V-PUBLIC-KEY": serviceUtils.decodeString(api_keys[0]),
+            "V-PRIVATE-KEY": serviceUtils.decodeString(api_keys[1]),
           },
         }
       : {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${authUserToken}`,
-            "V-PUBLIC-KEY": constants.VESICASH_PUBLIC_KEY_TOKEN,
-            "V-PRIVATE-KEY": constants.VESICASH_PRIVATE_KEY_TOKEN,
+            "V-PUBLIC-KEY": serviceUtils.decodeString(api_keys[0]),
+            "V-PRIVATE-KEY": serviceUtils.decodeString(api_keys[1]),
           },
         };
   }
@@ -147,7 +152,7 @@ class serviceApi {
         if (error.response) {
           if ([401].includes(error.response.status) && !originalConfig._retry) {
             originalConfig._retry = true;
-            serviceUtils.logOutUser();
+            // serviceUtils.logOutUser();
 
             return axios(originalConfig);
           }

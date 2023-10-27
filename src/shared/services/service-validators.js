@@ -122,7 +122,7 @@ class serviceValidators {
     }
 
     // Check for a special character (e.g., !, @, #, etc.)
-    if (!/[-!$%^&*()_+|~=`{}\[\]:";'<>?@,.\/]/.test(trimmed_input)) {
+    if (!/[-!$%^&*()_+|~=`{}\[\]:";'<>?#@,.\/]/.test(trimmed_input)) {
       throw new Error("Password must contain at least one special character.");
     }
 

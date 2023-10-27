@@ -31,8 +31,12 @@ export default {
 
     const response = await getRequest("auth", api_url);
 
-    [201, 200].includes(response?.code) &&
+    // [201, 200].includes(response?.code) &&
+
+    if ([201, 200].includes(response?.code)) {
       commit("SET_API_KEYS_DETAILS", response.data);
+    }
+
     return response;
   },
 };
