@@ -100,7 +100,8 @@ export default {
         this.handleClick("save", "Submit", false);
 
         if (response?.code === 200) {
-          this.pushToast(response.message, "success");
+          this.pushToast("Your TIN has been submitted", "success");
+
           this.$emit("saved", "Your TIN has been submitted successfully");
 
           setTimeout(() => this.$emit("closeTriggered"), 3000);

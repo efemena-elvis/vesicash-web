@@ -1,11 +1,7 @@
 <template>
   <div class="col-12 col-lg-10 col-xl-8 business-onboarding">
-    <!-- <div class="page-title mgb-4 grey-900 h5-text">
-      Tell us about your business
-    </div> -->
-
     <div class="page-meta grey-600 tertiary-2-text mgb-30">
-      Share your business info with us today, let's embark on a journey of
+      Share your business details with us today, let's embark on a journey of
       growth and innovation together!
     </div>
 
@@ -13,9 +9,9 @@
       <div class="col-12 col-sm-6">
         <div class="form-group">
           <FormFieldInput
-            label_title="Business name"
+            label_title="Registered Business name"
             label_id="businessName"
-            placeholder="What is your business called?"
+            placeholder="Enter a government registered business name?"
             :input_value="getFormFieldValueMx(form, 'business_name')"
             @getInputState="updateFormFieldMx($event, 'business_name')"
             :error_handler="{
@@ -28,6 +24,10 @@
     </div>
 
     <div class="row mgb-40">
+      <div class="col-12">
+        <div class="form-label mgb-10">Select your business type</div>
+      </div>
+
       <div
         class="col-12 col-sm-6"
         v-for="(item, index) in business_types"
@@ -49,27 +49,6 @@
         ></textarea>
       </div>
     </div>
-
-    <!-- <div class="label-row">
-      <div class="count-wrapper">
-        <div class="count">2</div>
-      </div>
-      <div class="mgl-2">Select your business use case on Vesicash</div>
-    </div> -->
-
-    <!-- <div class="row mgt-20 mgb-20">
-      <div
-        class="col-12 col-sm-6"
-        v-for="(item, index) in use_cases"
-        :key="index"
-      >
-        <SelectDialogCard
-          :option="item"
-          select_type="checkbox"
-          @dialogSelected="handleCheckboxSelection($event)"
-        />
-      </div>
-    </div> -->
 
     <div class="action-row mgb-40">
       <button

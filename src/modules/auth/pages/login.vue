@@ -35,8 +35,8 @@
             :input_value="getFormFieldValueMx(form, 'password')"
             @getInputState="updateFormFieldMx($event, 'password')"
             :error_handler="{
-              type: 'password',
-              message: 'Password should contain at least 4 characters',
+              type: 'required',
+              message: 'Password is a required field',
             }"
           />
         </div>
