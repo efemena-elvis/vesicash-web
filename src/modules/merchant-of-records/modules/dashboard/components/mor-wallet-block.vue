@@ -13,12 +13,13 @@
 
 <script>
 import MoRSummary from "@/modules/merchant-of-records/modules/dashboard/mixins/mor-summary";
+import WalletMixin from "@/modules/dashboard/mixins/wallet-mixin";
 import MetricCard from "@/modules/merchant-of-records/modules/dashboard/components/metric-card";
 
 export default {
   name: "MoRWalletBlock",
 
-  mixins: [MoRSummary],
+  mixins: [WalletMixin, MoRSummary],
 
   components: {
     MetricCard,

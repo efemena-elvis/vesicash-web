@@ -85,6 +85,16 @@ export default {
 
       return currency_code && payment_methods.length && amount ? false : true;
     },
+
+    getPayloadData() {
+      let payload = { ...this.getPaymentModuleConfig };
+
+      payload.shipping_types = payload.is_shipping_type
+        ? payload.shipping_types
+        : [];
+
+      return payload;
+    },
   },
 
   methods: {
@@ -95,7 +105,7 @@ export default {
     async initializePayment() {
       const response = await this.handleDataRequest({
         action: "initializeCheckoutPayment",
-        payload: this.getPaymentModuleConfig,
+        payload: this.getPayloadData,
         btn_text: "Proceed to checkout",
         alert_handler: {
           success: "Payment initiated successfully",
@@ -107,7 +117,7 @@ export default {
       if (response.code === 200) {
         let checkout_url = `${constants.VESICASH_APP_URL}/mor-checkout/${response.data.Reference}`;
 
-        this.$utils.createAndClickAnchor(checkout_url, "_blank");
+        this.$utils.createAndClickAnchor(checkout_url);
       }
     },
   },

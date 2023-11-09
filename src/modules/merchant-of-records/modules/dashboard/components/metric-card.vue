@@ -28,9 +28,9 @@
             }}{{
               is_currency_type
                 ? `${$utils.formatCurrencyWithComma(
-                    wallet.metric_value?.split(".")[0] ?? wallet.metric_value
-                  )}.${wallet.metric_value?.split(".")[1] ?? "00"}`
-                : wallet?.metric_value ?? 0
+                    wallet?.balance?.split(".")[0] ?? wallet?.balance
+                  )}.${wallet?.balance?.split(".")[1] ?? "00"}`
+                : wallet?.balance ?? 0
             }}
           </div>
         </template>
