@@ -119,7 +119,6 @@ export default {
           this.$emit("saved", "Your BVN has been verified successfully");
         } else this.pushToast(response.message, "error");
       } catch (err) {
-        console.log("ERROR VERIFYING BVN INFO", err);
         this.handleClick("save", "Submit", false);
         this.pushToast("Failed to verify BVN", "error");
       }

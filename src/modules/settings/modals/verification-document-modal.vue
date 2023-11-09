@@ -59,7 +59,7 @@
           :disabled="isDisabled"
           @click="save"
         >
-          Verify document
+          Verify director identity
         </button>
       </div>
     </template>
@@ -178,11 +178,17 @@ export default {
         this.handleClick("save", "Submit", false);
 
         if (response?.code === 200) {
-          this.pushToast(response.message, "success");
+          this.pushToast(
+            "Your identity number has been submitted successfully",
+            "success"
+          );
           if (this.is_director_type) {
             this.$emit("saved");
           } else
-            this.$emit("saved", "Your document has been uploaded successfully");
+            this.$emit(
+              "saved",
+              "Your identity verification has been submitted successfully"
+            );
 
           setTimeout(() => this.$emit("closeTriggered"), 3000);
         } else {
