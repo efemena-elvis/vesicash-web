@@ -266,10 +266,8 @@ export default {
           break;
 
         case "password":
-          const validated = this.$validate.validatePasswordStrength(value);
-
-          if (validated?.length) this.error_message = validated;
-          else this.error_message = "";
+          this.error_message =
+            !this.$validate.validatePasswordInput(value, 8) && message;
           break;
 
         case "required":

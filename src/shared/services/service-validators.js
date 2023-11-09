@@ -108,27 +108,27 @@ class serviceValidators {
 
     // Check for minimum length
     if (trimmed_input.length < 8) {
-      return "Password must be at least 8 characters long.";
+      throw new Error("Password must be at least 8 characters long.");
     }
 
     // Check for an uppercase letter
     if (!/[A-Z]/.test(trimmed_input)) {
-      return "Password must contain at least one uppercase letter.";
+      throw new Error("Password must contain at least one uppercase letter.");
     }
 
     // Check for a lowercase letter
     if (!/[a-z]/.test(trimmed_input)) {
-      return "Password must contain at least one lowercase letter.";
+      throw new Error("Password must contain at least one lowercase letter.");
     }
 
     // Check for a special character (e.g., !, @, #, etc.)
-    if (!/[-!$%^&*()_+|~=`{}\[\]:";'<>?@#,.\/]/.test(trimmed_input)) {
-      return "Password must contain at least one special character.";
+    if (!/[-!$%^&*()_+|~=`{}\[\]:";'<>?@,.\/]/.test(trimmed_input)) {
+      throw new Error("Password must contain at least one special character.");
     }
 
     // Check for a number
     if (!/\d/.test(trimmed_input)) {
-      return "Password must contain at least one number.";
+      throw new Error("Password must contain at least one number.");
     }
   }
 }

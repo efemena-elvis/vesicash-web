@@ -71,6 +71,7 @@
             @getInputState="updateFormFieldMx($event, 'password')"
             :error_handler="{
               type: 'password',
+              message: 'Password should contain at least 6 characters',
             }"
           />
         </div>
@@ -259,6 +260,11 @@ export default {
       }
 
       try {
+        // VALIDATE USER PASSWORD STRENGTH
+        this.$validate.validatePasswordStrength(
+          this.getRequestPayload.password
+        );
+
         const response = await this.handleDataRequest({
           action: "registerUser",
           payload: this.getRequestPayload,

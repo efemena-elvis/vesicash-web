@@ -208,9 +208,9 @@ export default {
   },
 
   watch: {
-    isCACDocVerified: {
-      handler(cacData) {
-        if (cacData.is_verified) {
+    isTinVerified: {
+      handler(tinData) {
+        if (tinData.is_verified) {
           this.updateUserVerifiedData();
           this.updateBusinessVerifiedData();
         }

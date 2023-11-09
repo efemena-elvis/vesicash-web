@@ -48,7 +48,7 @@ export default {
     $route: {
       handler(route) {
         // CHECK IF A USER HAS COMPLETED CURRENT ROUTE
-        let { completed_routes } = this.getOnboardingData;
+        let { is_completed, completed_routes } = this.getOnboardingData;
         const has_completed_current_onboarding = completed_routes.includes(
           route.name
         );
@@ -112,6 +112,18 @@ export default {
 
   mounted() {
     this.fetchUserState();
+
+    let { is_completed, completed_routes } = this.getOnboardingData;
+
+    if (
+      this.$route.name === "VesicashBusinessInfoOnboarding" &&
+      !completed_routes.length
+    )
+      this.toggleWelcomeDialog();
+
+    if (is_completed) {
+      this.$router.push("/dashboard");
+    }
   },
 
   methods: {
@@ -134,7 +146,9 @@ export default {
       )
         this.toggleWelcomeDialog();
 
-      if (is_completed) location.href = "/dashboard";
+      if (is_completed) {
+        location.href = "/dashboard";
+      }
     },
 
     async fetchUserState() {

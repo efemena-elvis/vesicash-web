@@ -8,8 +8,8 @@
         </div> -->
 
         <div class="meta-text grey-600 tertiary-2-text mgb-40">
-          Complete identity verification by verifying a personal identification
-          number of the business owner
+          Complete identity verification by verifying an identification document
+          of the business owner
         </div>
 
         <!-- DIRECTOR CARDS -->
