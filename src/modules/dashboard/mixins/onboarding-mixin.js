@@ -20,7 +20,7 @@ const OnboardingMixin = {
 
     // UPDATE ONBOARDING UPDATE AND REDIRECT
     async handleOnboardingUpdate(
-      next_onboarding_route = null,
+      next_onboarding_route = "",
       is_completed = false
     ) {
       const response = await this.handleDataRequest({
@@ -38,7 +38,7 @@ const OnboardingMixin = {
         if (this.$route.name === "VesicashIdentityOnboarding")
           this.updateMerchantState(true);
 
-        if (next_onboarding_route) {
+        if (next_onboarding_route?.length) {
           this.$router.push({ name: next_onboarding_route });
         } else this.toggleCongratDialog();
       }

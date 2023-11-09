@@ -8,7 +8,7 @@
       <div class="modal-cover-header">
         <div class="modal-cover-title">Company Registration</div>
         <div class="tertiary-2-text grey-600">
-          Upload your company registration document
+          Verify your company registration number
         </div>
       </div>
     </template>
@@ -17,16 +17,18 @@
     <template slot="modal-cover-body">
       <div class="modal-cover-body">
         <div class="form-group">
-          <BasicInput
-            label_title="Business verification number"
+          <FormFieldInput
+            label_title="Business registration number"
             label_id="doc-number"
-            :input_value="form.doc_number"
+            :input_value="getFormFieldValueMx(form, 'doc_number')"
             is_required
-            placeholder="Enter registration number"
-            @getInputState="updateFormState($event, 'doc_number')"
+            prefix_value="RC"
+            :custom_style="{ input_wrapper_style: 'form-prefix' }"
+            placeholder="1234567"
+            @getInputState="updateFormFieldMx($event, 'doc_number')"
             :error_handler="{
               type: 'required',
-              message: 'Enter business verification number',
+              message: 'Enter business registration number',
             }"
           />
         </div>
@@ -69,28 +71,30 @@ export default {
 
   computed: {
     isDisabled() {
-      return this.form.doc_number || this.form.file_url ? false : true;
+      return this.validateFormFieldMx(this.form);
     },
 
     verfiyDocPayload() {
+      let form_payload = this.getFormPayloadMx(this.form);
+
       return {
-        type: this.form.type,
-        id: this.form.doc_number,
-        meta: this.form.file_url,
+        type: form_payload.type,
+        id: form_payload.doc_number,
+        meta: form_payload.file_url,
       };
     },
   },
 
   watch: {
-    uploaded_doc: {
-      handler(value) {
-        if (Array.isArray(value)) {
-          this.form.file_url = value[0].file_url;
-        } else {
-          this.form.file_url = value.file_url;
-        }
-      },
-    },
+    // uploaded_doc: {
+    //   handler(value) {
+    //     if (Array.isArray(value)) {
+    //       this.form.file_url = value[0].file_url;
+    //     } else {
+    //       this.form.file_url = value.file_url;
+    //     }
+    //   },
+    // },
   },
 
   data() {
@@ -98,9 +102,18 @@ export default {
       uploaded_doc: null,
 
       form: {
-        type: "cac",
-        doc_number: "",
-        file_url: "",
+        type: {
+          validated: true,
+          value: "cac",
+        },
+        doc_number: {
+          validated: false,
+          value: "",
+        },
+        file_url: {
+          validated: true,
+          value: "",
+        },
       },
 
       validity: {
@@ -128,8 +141,15 @@ export default {
         this.handleClick("save", "Submit", false);
 
         if (response?.code === 200) {
-          this.pushToast(response.message, "success");
-          this.$emit("saved", "Your document has been uploaded successfully");
+          this.pushToast(
+            "Your business registration number has been submitted",
+            "success"
+          );
+
+          this.$emit(
+            "saved",
+            "Your business registration number has been submitted successfully"
+          );
 
           setTimeout(() => this.$emit("closeTriggered"), 3000);
         } else {
@@ -137,7 +157,7 @@ export default {
         }
       } catch (err) {
         this.handleClick("save", "Submit", false);
-        this.pushToast("Failed to verify document", "error");
+        this.pushToast("Failed to verify registration number", "error");
       }
     },
   },
