@@ -73,16 +73,23 @@ export default {
 
   computed: {
     getFormattedData() {
+      const initial_currency = this.data.rate.from_currency;
+      const final_currency = this.data.rate.to_currency;
+
       return {
         date: this.data.date,
-        name: `${this.data.rate.initial_currency}${this.data.transaction_name}${this.data.rate.final_currency}`,
-        initial_amount: this.data.rate.initial_amount,
-        final_amount: this.data.rate.final_amount,
-        rate: `${this.$money.getSign(
-          this.data.rate.initial_currency
-        )}1/${this.$money.getSign(this.data.rate.final_currency)}${
-          this.data.rate.amount
-        }`,
+        name: this.data.transaction_name,
+        initial_amount: this.formattedMoney(
+          initial_currency,
+          this.data.initial_amount
+        ),
+        final_amount: this.formattedMoney(
+          final_currency,
+          this.data.final_amount
+        ),
+        rate: `${this.$money.getSign(initial_currency)}1/${this.$money.getSign(
+          final_currency
+        )}${this.data.rate.amount}`,
         status: this.data.status,
       };
     },
@@ -108,6 +115,12 @@ export default {
   }),
 
   methods: {
+    formattedMoney(currency, amount) {
+      return `${this.$money.getSign(
+        currency
+      )}${this.$utils.formatCurrencyWithComma(amount)}`;
+    },
+
     toggleTransactionSummaryModal() {
       this.show_transaction_summary_modal =
         !this.show_transaction_summary_modal;
