@@ -21,7 +21,6 @@
             @update-currency-state="initial_currency = $event"
             class="form-prefix-right"
             @getInputState="updateFormState($event, 'initial_currency')"
-            :validity="!validity.initial_currency"
             :error_handler="{
               type: 'required',
               message: 'Enter an amount',
@@ -53,7 +52,6 @@
             @update-currency-state="final_currency = $event"
             class="form-prefix-right"
             @getInputState="updateFormState($event, 'final_currency')"
-            :validity="!validity.final_currency"
             :error_handler="{
               type: 'required',
               message: 'Enter an amount',
@@ -155,7 +153,7 @@ export default {
     ...mapGetters({ getFxRates: "exchange/getFxRates" }),
 
     isDisabled() {
-      return Object.values(this.validity).some((valid) => valid);
+      return Object.values(this.validity).some((valid) => !valid);
     },
 
     selectedRate() {
@@ -309,15 +307,14 @@ export default {
     "form.initial_currency": {
       handler(value) {
         this.form.final_currency = value ? value * this.swapRate + "" : "";
-        this.validity.final_currency = !value;
+        this.validity.final_currency = !!value;
       },
     },
 
     "form.final_currency": {
       handler(value) {
         this.form.initial_currency = value ? value / this.swapRate + "" : "";
-
-        this.validity.initial_currency = !value;
+        this.validity.initial_currency = !!value;
       },
     },
 
@@ -326,7 +323,7 @@ export default {
         const value = Number(this.form.initial_currency);
         if (isNaN(value)) return;
         this.form.final_currency = value ? value * this.swapRate + "" : "";
-        this.validity.final_currency = !value;
+        this.validity.final_currency = !!value;
       },
     },
 
@@ -335,7 +332,7 @@ export default {
         const value = Number(this.form.final_currency);
         if (isNaN(value)) return;
         this.form.initial_currency = value ? value / this.swapRate + "" : "";
-        this.validity.initial_currency = !value;
+        this.validity.initial_currency = !!value;
       },
     },
   },
@@ -377,8 +374,8 @@ export default {
       },
 
       validity: {
-        initial_currency: true,
-        final_currency: true,
+        initial_currency: false,
+        final_currency: false,
       },
 
       final_currency: {
