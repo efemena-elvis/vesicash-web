@@ -37,9 +37,9 @@
 
       <transition name="fade" v-if="show_success_modal">
         <SuccessModal
-          :message="`Your withdrawal of ${withdrawn_amount} has been sent to your bank account, Please check your bank account for details`"
+          :message="success_message"
           main_cta_title="Done"
-          @done="show_success_modal = false"
+          @done="transferDone"
         />
       </transition>
     </portal>
@@ -47,6 +47,7 @@
 </template>
 
 <script>
+import { mapGetters, mapMutations } from "vuex";
 import ActionCard from "@/modules/dashboard/components/card-comps/action-card";
 
 export default {
@@ -73,7 +74,14 @@ export default {
       ),
   },
 
+  computed: {
+    ...mapGetters({
+      getWalletTransferDetails: "general/getWalletTransferDetails",
+    }),
+  },
+
   data: () => ({
+    success_message: "",
     card_actions: [
       {
         title: "Transfer money anywhere",
@@ -144,6 +152,10 @@ export default {
   },
 
   methods: {
+    ...mapMutations({
+      resetTransferDetails: "general/RESET_WALLET_TRANSFER_DETAILS",
+    }),
+
     processModalActions(action) {
       this[action]();
     },
@@ -160,11 +172,28 @@ export default {
       this.show_otp_modal = !this.show_otp_modal;
     },
 
-    toggleSuccessModal({ amount, currency }) {
-      this.$router.push({
-        name: "SuccessfulWithdrawal",
-        query: { amount, currency },
-      });
+    transferDone() {
+      this.success_message = "";
+      this.resetTransferDetails();
+      this.show_success_modal = false;
+    },
+
+    toggleSuccessModal() {
+      this.show_otp_modal = false;
+      const { amount, currency, beneficiary } = this.getWalletTransferDetails;
+
+      const cost = `${this.$money.getSign(
+        currency
+      )}${this.$utils.formatCurrencyWithComma(amount)}`;
+      const name = beneficiary.account_name;
+
+      this.success_message = `Your transfer of ${cost} has been sent to Vesicash account ${name}`;
+      this.show_success_modal = !this.show_success_modal;
+
+      // this.$router.push({
+      //   name: "SuccessfulWithdrawal",
+      //   query: { amount, currency },
+      // });
     },
   },
 };

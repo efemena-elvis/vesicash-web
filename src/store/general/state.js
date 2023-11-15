@@ -37,4 +37,10 @@ export default () => ({
   },
 
   is_merchant: false,
+
+  wallet_transfer_details: {
+    amount: "",
+    currency: "",
+    beneficiary: null,
+  },
 });
