@@ -57,4 +57,16 @@ export default {
   UPDATE_MERCHANT: (state, data) => {
     state.is_merchant = data === true || data === "true";
   },
+
+  UPDATE_WALLET_TRANSFER_DETAILS: (state, details) => {
+    state.wallet_transfer_details = details;
+  },
+
+  RESET_WALLET_TRANSFER_DETAILS: (state) => {
+    state.wallet_transfer_details = {
+      amount: "",
+      currency: "",
+      beneficiary: null,
+    };
+  },
 };

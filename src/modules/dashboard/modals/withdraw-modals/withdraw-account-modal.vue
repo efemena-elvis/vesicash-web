@@ -297,6 +297,28 @@ export default {
     await this.fetchUserSavedAccountList(this.account_type.slug);
   },
 
+  watch: {
+    selected_currency: {
+      handler(data) {
+        const amount = this.form.amount;
+        const currency = data.short;
+        this.updateTransferDetails({ amount, currency });
+      },
+    },
+
+    form: {
+      handler({ amount, selected_beneficiary }) {
+        const currency = this.selected_currency.short;
+        this.updateTransferDetails({
+          amount,
+          currency,
+          beneficiary: selected_beneficiary,
+        });
+      },
+      deep: true,
+    },
+  },
+
   data: () => ({
     currency_options: [],
 
@@ -352,6 +374,7 @@ export default {
       setWalletType: "dashboard/SET_WALLET_TYPE",
       setWithdrawalMeta: "dashboard/SET_WITHDRAWAL_META",
       saveWithdrawalRequest: "dashboard/SAVE_WITHDRAWAL_REQUEST_DATA",
+      updateTransferDetails: "general/UPDATE_WALLET_TRANSFER_DETAILS",
     }),
 
     updateWithdrawalInput(value) {
