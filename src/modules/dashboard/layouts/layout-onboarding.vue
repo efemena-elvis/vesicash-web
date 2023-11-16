@@ -54,9 +54,13 @@ export default {
         );
 
         if (has_completed_current_onboarding) {
-          this.$router.push({
-            name: this.page_flows[completed_routes.length].route,
-          });
+          this.$router
+            .push({
+              name: this.page_flows[completed_routes.length].route,
+            })
+            .catch((error) => {
+              if (error.name != "NavigationDuplicated") throw error;
+            });
         }
       },
       immediate: true,

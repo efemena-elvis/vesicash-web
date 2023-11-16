@@ -106,53 +106,50 @@ const WalletMixin = {
     checkMoRWallets(wallets) {
       let updated_mor_wallets = [];
 
-      if (this.isMoRSetupEnabled) {
-        let mor_wallets = wallets.filter((wallet) =>
-          wallet.currency.includes("MOR")
+      let mor_wallets = wallets.filter((wallet) =>
+        wallet.currency.includes("MOR")
+      );
+
+      mor_wallets.map((wallet) => {
+        const fetched_wallet = countries.find(
+          (country) => country.currency.short === wallet.currency.split("_")[1]
         );
 
-        mor_wallets.map((wallet) => {
-          const fetched_wallet = countries.find(
-            (country) =>
-              country.currency.short === wallet.currency.split("_")[1]
-          );
+        if (fetched_wallet !== -1) {
+          let wallet_payload = {
+            id: wallet.id,
+            balance: wallet.available,
+            code: fetched_wallet.code,
+            sign: fetched_wallet.currency.sign,
+            short: fetched_wallet.currency.short,
+            long: fetched_wallet.currency.long,
+            description: fetched_wallet.currency.description,
+            default: false,
+            enabled: true,
+            mor: true,
+          };
 
-          if (fetched_wallet !== -1) {
-            let wallet_payload = {
-              id: wallet.id,
-              balance: wallet.available,
-              code: fetched_wallet.code,
-              sign: fetched_wallet.currency.sign,
-              short: fetched_wallet.currency.short,
-              long: fetched_wallet.currency.long,
-              description: fetched_wallet.currency.description,
-              default: false,
-              enabled: true,
-              mor: true,
-            };
+          updated_mor_wallets.push(wallet_payload);
+        }
+      });
 
-            updated_mor_wallets.push(wallet_payload);
-          }
-        });
+      updated_mor_wallets.map((wallet) => {
+        const wallet_found = this.getWalletSize.some(
+          (w) => w.short === wallet.short && w.mor
+        );
 
-        updated_mor_wallets.map((wallet) => {
-          const wallet_found = this.getWalletSize.some(
-            (w) => w.short === wallet.short && w.mor
-          );
+        if (wallet_found === false) {
+          this.updateWalletListSize([...this.getWalletSize, wallet]);
+        }
 
-          if (wallet_found === false) {
-            this.updateWalletListSize([...this.getWalletSize, wallet]);
-          }
+        const in_wallet = this.getWalletSize.find((w) => w.id === wallet.id);
 
-          const in_wallet = this.getWalletSize.find((w) => w.id === wallet.id);
+        if (typeof in_wallet !== "undefined") {
+          in_wallet.balance = wallet?.balance?.toString() ?? "0.00";
+        }
+      });
 
-          if (typeof in_wallet !== "undefined") {
-            in_wallet.balance = wallet?.balance?.toString() ?? "0.00";
-          }
-        });
-
-        this.wallet_balance = this.getWalletSize;
-      }
+      this.wallet_balance = this.getWalletSize;
     },
   },
 };

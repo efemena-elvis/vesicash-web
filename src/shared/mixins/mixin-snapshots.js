@@ -59,7 +59,7 @@ const SnapshotMixin = {
 
         if (snap_cache) {
           this[snap.action](snap_cache);
-          serviceStorage.removeStorage(snap.name);
+          // serviceStorage.removeStorage(snap.name);
         }
       });
     },

@@ -10,4 +10,8 @@ export default {
   UPDATE_SELECTED_PAYMENT: (state, data) => {
     state.selected_payment_method = data;
   },
+
+  UPDATE_SELECTED_SHIPPING: (state, data) => {
+    state.selected_shipping_type = data;
+  },
 };

@@ -213,9 +213,6 @@ export default {
         payload: { regenerate: true },
         show_alert: false,
       });
-
-      if (response.code === 200) {
-      }
     },
   },
 };

@@ -3,5 +3,6 @@ export default () => {
     info_entry_completed: false,
     user_payment_info: {},
     selected_payment_method: "",
+    selected_shipping_type: "",
   };
 };
