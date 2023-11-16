@@ -63,7 +63,7 @@
               >
             </div>
 
-            <div class="green-500">
+            <div class="green-500" v-if="false">
               Charges:
               <span class="fw-bold"
                 >{{ $money.getSign(selected_currency.slug)

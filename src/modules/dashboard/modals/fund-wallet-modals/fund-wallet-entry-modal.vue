@@ -49,7 +49,7 @@
               >
             </div>
 
-            <div class="green-500">
+            <div class="green-500" v-if="false">
               Charges:
               <span class="fw-bold"
                 >{{ $money.getSign(selected_currency.slug)
@@ -100,6 +100,7 @@
 
       <template v-else>
         <button
+          :disabled="isValidTransfer"
           class="btn btn-primary btn-md wt-100"
           @click="handleFundSuccess"
         >
@@ -144,10 +145,8 @@ export default {
     ...mapGetters({ getWalletSize: "general/getWalletSize" }),
 
     // CHECK FORM BUTTON VALIDITY STATE
-    isValidState() {
-      return Object.values(this.validity).every((valid) => !valid)
-        ? false
-        : true;
+    isValidTransfer() {
+      return +this.form.amount > 1000 ? false : true;
     },
 
     getCurrencyOptions() {

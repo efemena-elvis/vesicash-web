@@ -42,6 +42,26 @@ export default {
 
 <style lang="scss" scoped>
 .auth-area {
+  .auth-entry-view {
+    width: 30%;
+
+    @include breakpoint-down(lg) {
+      width: 50%;
+    }
+
+    @include breakpoint-down(md) {
+      width: 60%;
+    }
+
+    @include breakpoint-down(sm) {
+      width: 80%;
+    }
+
+    @include breakpoint-down(xs) {
+      width: 100%;
+    }
+  }
+
   .brand-logo {
     svg {
       width: toRem(160);

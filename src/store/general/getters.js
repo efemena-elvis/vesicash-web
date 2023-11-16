@@ -5,6 +5,5 @@ export default {
   getWalletSize: (state) => state.wallets,
   getOnboardingData: (state) => state.onboarding,
   getMerchantData: (state) => state.is_merchant,
-
   getWalletTransferDetails: (state) => state.wallet_transfer_details,
 };
