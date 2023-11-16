@@ -10,6 +10,7 @@ Vue.config.productionTip = false;
 // IMPORT APPLICATION STYLES
 // =========================================
 import "bootstrap/dist/css/bootstrap.css";
+import "../public/css/modal.css";
 import "@/shared/assets/scss/app.scss";
 
 // =========================================

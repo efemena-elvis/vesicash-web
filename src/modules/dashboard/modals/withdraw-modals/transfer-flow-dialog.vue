@@ -118,6 +118,5 @@ export default {
 
 <style lang="scss" scoped>
 .modal-cover-body {
-  height: auto;
 }
 </style>
