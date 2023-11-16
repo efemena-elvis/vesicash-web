@@ -135,6 +135,7 @@ export default {
   methods: {
     ...mapActions({
       loginUser: "auth/loginUser",
+      fetchAPIkeys: "developer/fetchAPIkeys",
       saveUserProfile: "settings/saveUserProfile",
       updateMerchantState: "general/updateMerchantState",
       updateOnboardingState: "general/updateOnboardingState",
@@ -158,6 +159,9 @@ export default {
 
       // REDIRECT USER ON SUCCESS RESPONSE
       if (response?.code === 200) {
+        // FETCH API KEY
+        this.getAPIKeys();
+
         // CHECK IF USER EMAIL IS VERIFIED
         const is_email_verified = this.getUser?.verifications?.email;
 
@@ -200,6 +204,17 @@ export default {
           : this.onboarding_paths[completed_routes.length];
       } else {
         this.handleToastPushMx("Failed to proceed to login", "error");
+      }
+    },
+
+    async getAPIKeys() {
+      const response = await this.handleDataRequest({
+        action: "fetchAPIkeys",
+        payload: { regenerate: true },
+        show_alert: false,
+      });
+
+      if (response.code === 200) {
       }
     },
   },

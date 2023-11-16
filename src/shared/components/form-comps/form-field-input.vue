@@ -17,11 +17,10 @@
           v-model.trim="form_value"
           :required="is_required"
           :disabled="is_disabled"
+          :readonly="is_readonly"
           class="form-control"
           :class="[getInputStyle, error_message && 'form-control-error']"
-          :placeholder="
-            is_phone_type ? `${country_dialing_code}0000000000` : placeholder
-          "
+          :placeholder="is_phone_type ? `08010000000` : placeholder"
           :min="getInputType === 'date' ? minimum_date : 0"
           :max="
             getInputType === 'date' ? maximum_date : Number.POSITIVE_INFINITY
@@ -128,6 +127,11 @@ export default {
     },
 
     is_disabled: {
+      type: Boolean,
+      default: false,
+    },
+
+    is_readonly: {
       type: Boolean,
       default: false,
     },
@@ -266,10 +270,8 @@ export default {
           break;
 
         case "password":
-          const validated = this.$validate.validatePasswordStrength(value);
-
-          if (validated?.length) this.error_message = validated;
-          else this.error_message = "";
+          this.error_message =
+            !this.$validate.validatePasswordInput(value, 8) && message;
           break;
 
         case "required":

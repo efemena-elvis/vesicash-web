@@ -34,9 +34,14 @@ const MixinGlobal = {
       }
     },
 
-    updateFormFieldMx(data, type) {
-      this.form[type].value = data?.value;
-      this.form[type].validated = data?.validity;
+    updateFormFieldMx(data, type, is_country = false) {
+      if (is_country) {
+        this.form[type].value = data.country;
+        this.form[type].validated = true;
+      } else {
+        this.form[type].value = data?.value;
+        this.form[type].validated = data?.validity;
+      }
     },
 
     getFormFieldValueMx(formPayload, field) {
