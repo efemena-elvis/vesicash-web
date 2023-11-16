@@ -38,6 +38,10 @@
         />
       </div>
     </template>
+
+    <!-- <template slot="modal-cover-footer">
+      <div class="modal-cover-footer pdb-0"></div>
+    </template> -->
   </ModalCover>
 </template>
 
@@ -118,5 +122,8 @@ export default {
 
 <style lang="scss" scoped>
 .modal-cover-body {
+  min-height: max-content;
+  height: auto;
+  max-height: 85vh;
 }
 </style>

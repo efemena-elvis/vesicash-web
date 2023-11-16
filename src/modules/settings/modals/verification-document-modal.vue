@@ -203,7 +203,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .modal-overlay.doc-verification-overlay {
   .modal-cover-body {
     max-height: 65vh;

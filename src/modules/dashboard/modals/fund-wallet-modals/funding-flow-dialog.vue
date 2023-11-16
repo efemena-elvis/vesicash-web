@@ -103,6 +103,8 @@ export default {
 
 <style lang="scss" scoped>
 .modal-cover-body {
+  min-height: max-content;
   height: auto;
+  max-height: 85vh;
 }
 </style>

@@ -11,10 +11,10 @@
     </template>
 
     <!-- MODAL COVER BODY -->
+    <!-- :class="user_data.account_id && type === 'single' ? 'mgb--50' : null" -->
     <template slot="modal-cover-body">
       <div
         class="modal-cover-body"
-        :class="user_data.account_id && type === 'single' ? 'mgb--50' : null"
       >
         <!-- EMAIL ADDRESS INPUT -->
         <div class="form-group" v-if="!user_data.account_id">
@@ -275,4 +275,4 @@ export default {
 };
 </script>
 
-<style></style>
+<style lang="scss" scoped></style>

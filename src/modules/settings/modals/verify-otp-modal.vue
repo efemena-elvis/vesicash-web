@@ -379,7 +379,7 @@ export default {
 }
 </style>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .verify-otp-modal {
   .modal-cover-body {
     min-height: auto;

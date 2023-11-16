@@ -164,7 +164,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .modal-cover-body {
   min-height: 6vh !important;
   max-height: 50vh;
