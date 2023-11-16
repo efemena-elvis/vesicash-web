@@ -103,7 +103,6 @@ export default {
 
 <style lang="scss" scoped>
 .modal-cover-body {
-  min-height: toRem(110);
   height: auto;
 }
 </style>

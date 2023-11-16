@@ -5,12 +5,12 @@
       <ErrorIcon />
 
       <!-- TITLE TEXT -->
-      <div class="title-text primary-1-text grey-900 mgb-8 text-center">
+      <div class="title-text primary-1-text neutral-100 mgb-8 text-center">
         Funding unsucessful!
       </div>
 
       <!-- DESCRIPTION TEXT -->
-      <div class="description-text tertiary-2-text grey-600 text-center">
+      <div class="description-text tertiary-2-text grey-400 text-center">
         Your wallet funding of
         <span class="fw-bold"> {{ getFormattedAmount }}</span> was not
         successful, please try again.
@@ -80,6 +80,7 @@ export default {
 <style lang="scss" scoped>
 .auth-page-success {
   @include flex-column("center", "center");
+  margin-top: toRem(70);
 
   svg {
     @include draw-shape(120);

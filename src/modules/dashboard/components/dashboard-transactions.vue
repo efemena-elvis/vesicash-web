@@ -441,12 +441,15 @@ export default {
 
     // MANUALLY UPDATE TRANSACTION CHANGES
     updateTransactionChanges(selected_value) {
-      this.filters.transaction = selected_value;
+      let filtered_transaction = this.transaction_options.find(
+        (item) => item.id === selected_value
+      ).slug;
+      this.filters.transaction = filtered_transaction;
 
       this.$router
         .replace({
           name: this.$route.name,
-          query: { ...this.$route.query, transaction: selected_value },
+          query: { ...this.$route.query, transaction: filtered_transaction },
         })
         .catch((error) => {
           if (error.name != "NavigationDuplicated") throw error;

@@ -210,12 +210,9 @@ export default {
     async getAPIKeys() {
       const response = await this.handleDataRequest({
         action: "fetchAPIkeys",
-        payload: {},
+        payload: { regenerate: true },
         show_alert: false,
       });
-
-      if (response.code === 200) {
-      }
     },
   },
 };

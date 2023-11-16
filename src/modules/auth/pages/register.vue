@@ -39,6 +39,27 @@
           />
         </div>
 
+        <!-- BUSINESS LOCATION -->
+        <!-- @getInputState="updateFormFieldMx($event, 'business_location')" -->
+        <div class="form-group position-relative">
+          <div v-on-clickaway="determineTargetArea" @click="toggleDropdown">
+            <FormFieldInput
+              label_title="Business Location"
+              label_id="businessLocation"
+              placeholder="Select business primary location"
+              :is_readonly="true"
+              :input_value="getFormFieldValueMx(form, 'country')"
+            />
+          </div>
+
+          <template v-if="show_dropdown">
+            <CountryDropSelect
+              :countries="countries_data"
+              @countrySelected="updateFormFieldMx($event, 'country', true)"
+            />
+          </template>
+        </div>
+
         <!-- PHONE INPUT -->
         <div class="form-group">
           <FormFieldInput
@@ -71,6 +92,7 @@
             @getInputState="updateFormFieldMx($event, 'password')"
             :error_handler="{
               type: 'password',
+              message: 'Password should contain at least 6 characters',
             }"
           />
         </div>
@@ -114,6 +136,7 @@
 
 <script>
 import { mapActions } from "vuex";
+import CountryHelper from "@/shared/mixins/mixin-country-helper";
 import authMixin from "@/modules/auth/mixins/auth-mixin";
 import AuthWrapper from "@/modules/auth/components/auth-wrapper";
 import countries from "@/utilities/countries";
@@ -121,7 +144,7 @@ import countries from "@/utilities/countries";
 export default {
   name: "RegisterPage",
 
-  mixins: [authMixin],
+  mixins: [authMixin, CountryHelper],
 
   metaInfo: {
     title: "Register",
@@ -134,6 +157,8 @@ export default {
 
   computed: {
     isFormValidated() {
+      console.log(this.getFormPayloadMx(this.form));
+
       return this.validateFormFieldMx(this.form);
     },
 
@@ -194,7 +219,7 @@ export default {
           value: "",
         },
         country: {
-          validated: true,
+          validated: false,
           value: "",
         },
         password: {
@@ -207,6 +232,7 @@ export default {
         },
       },
 
+      show_country: false,
       business_type_options: [],
       user_details: {},
 
@@ -223,7 +249,7 @@ export default {
         (data) => data.country === country
       ).dialing_code;
 
-      this.form.country.value = country.toLowerCase();
+      // this.form.country.value = country.toLowerCase();
     });
   },
 
@@ -246,6 +272,10 @@ export default {
       this.form.business_type.validated = true;
     },
 
+    toggleShowCountry() {
+      this.show_country = !this.show_country;
+    },
+
     // ===========================================
     // HANDLE USER CLIENT REGISTRATION
     // ===========================================
@@ -259,6 +289,11 @@ export default {
       }
 
       try {
+        // VALIDATE USER PASSWORD STRENGTH
+        this.$validate.validatePasswordStrength(
+          this.getRequestPayload.password
+        );
+
         const response = await this.handleDataRequest({
           action: "registerUser",
           payload: this.getRequestPayload,
