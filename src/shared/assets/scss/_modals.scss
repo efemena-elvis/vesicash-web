@@ -170,20 +170,22 @@
 .modal-cover-body {
   padding: toRem(24) toRem(24) 0;
   overflow: unset !important;
+  min-height: max-content;
   height: auto;
-
+  border: 1px solid transparent;
+  
   @include breakpoint-down(sm) {
     padding: toRem(16);
   }
-
+  
   &::-webkit-scrollbar {
     width: toRem(5);
   }
-
+  
   &::-webkit-scrollbar-track {
     border-radius: toRem(3);
   }
-
+  
   &::-webkit-scrollbar-thumb {
     border-radius: toRem(3);
     background: getColor("green-100");
