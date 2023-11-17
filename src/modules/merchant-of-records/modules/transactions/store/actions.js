@@ -6,6 +6,6 @@ const routes = {
 
 export default {
   async getMoRTransactions() {
-    return await getRequest("mor", `${routes.mor_transactions}?limit=30`);
+    return await getRequest("mor", `${routes.mor_transactions}?is_paid_out=true&limit=30`);
   },
 };
