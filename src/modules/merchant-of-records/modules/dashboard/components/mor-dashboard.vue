@@ -16,6 +16,7 @@
           />
 
           <MetricCard
+            v-if="false"
             metric_title="MoR Transaction volume"
             metric_theme="teal"
             :metric_data="getTransactionVolume"

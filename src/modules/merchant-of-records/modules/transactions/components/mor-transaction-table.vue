@@ -152,7 +152,7 @@ export default {
       const payload = {
         payload: { account_id: this.getAccountId },
         page,
-        limit: this.$route?.name === "AllTransactions" ? 20 : 3,
+        limit: this.$route?.name === "AllTransactions" ? 30 : 3,
       };
 
       this.table_loading = true;
