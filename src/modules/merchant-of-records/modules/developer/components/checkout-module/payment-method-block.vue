@@ -40,24 +40,67 @@ export default {
     }),
   },
 
+  watch: {
+    getPaymentModuleConfig: {
+      handler(config) {
+        console.log("CONFIG", config.currency_code);
+        if (config.currency_code)
+          this.formatPaymentMethods(config.currency_code);
+      },
+    },
+  },
+
   data() {
     return {
+      available_payment_methods: [
+        {
+          name: "bank transfer",
+          slug: "banktransfer",
+          checked: false,
+          identifier: "banktransfer",
+        },
+
+        {
+          name: "mobile money",
+          slug: "mobilemoney",
+          checked: false,
+        },
+
+        {
+          name: "mobile money",
+          slug: "mobilemoneyghana",
+          checked: false,
+        },
+
+        {
+          name: "mobile money",
+          slug: "mobilemoneyzambia",
+          checked: false,
+        },
+
+        {
+          name: "mpesa",
+          slug: "mpesa",
+          checked: false,
+        },
+      ],
+
       payment_methods: [
         {
           name: "card",
           slug: "card",
           checked: false,
         },
-        {
-          name: "bank transfer",
-          slug: "banktransfer",
-          checked: false,
-        },
-        {
-          name: "mobile money",
-          slug: "mobilemoney",
-          checked: false,
-        },
+        // {
+        //   name: "bank transfer",
+        //   slug: "banktransfer",
+        //   checked: false,
+        // },
+        // {
+        //   name: "mobile money",
+        //   slug: "mobilemoney",
+        //   checked: false,
+        // },
       ],
     };
   },
@@ -72,6 +115,26 @@ export default {
     ...mapMutations({
       UPDATE_PAYMENT_MODULE: "merchant/UPDATE_PAYMENT_MODULE",
     }),
+
+    formatPaymentMethods(currency) {
+      this.payment_methods = [this.payment_methods[0]];
+
+      if (currency === "GHS") {
+        this.payment_methods = [
+          ...this.payment_methods,
+          this.available_payment_methods.find(
+            (item) => item.slug === "mobilemoneyghana"
+          ),
+        ];
+      } else if (currency === "ZMW") {
+        this.payment_methods = [
+          ...this.payment_methods,
+          this.available_payment_methods.find(
+            (item) => item.slug === "mobilemoneyzambia"
+          ),
+        ];
+      } else this.payment_methods = [...this.payment_methods];
+    },
 
     updatePaymentMethods(checked, index) {
       const method = this.payment_methods[index];

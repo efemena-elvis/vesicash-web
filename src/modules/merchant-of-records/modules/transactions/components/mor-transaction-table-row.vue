@@ -23,7 +23,9 @@
       }}
     </td>
 
-    <td class="body-data" :class="`${table_name}-5`">--------</td>
+    <td class="body-data" :class="`${table_name}-5`">
+      {{ data.payment_method }}
+    </td>
 
     <td class="body-data" :class="`${table_name}-6`">
       <TagCard card_text="Successful" card_type="success" />

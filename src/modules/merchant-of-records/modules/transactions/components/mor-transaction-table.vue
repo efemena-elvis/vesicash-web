@@ -68,7 +68,7 @@ export default {
         "Reference ID",
         "Email Address",
         "Amount Paid",
-        "Payment Method",
+        "Method",
         "Status",
       ],
       // "Actions",
