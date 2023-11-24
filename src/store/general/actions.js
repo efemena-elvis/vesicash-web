@@ -251,7 +251,7 @@ export default {
     const response = await postRequest("payment", routes.transaction_charges, {
       type,
     });
-    console.log("HERE IS THE RESPONSE", response);
+
     if (response.code === 200)
       commit("SET_TRANSACTION_CHARGES", { type, charges: response.data });
   },
