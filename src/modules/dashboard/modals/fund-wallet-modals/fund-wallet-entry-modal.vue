@@ -49,11 +49,11 @@
               >
             </div>
 
-            <div class="green-500" v-if="false">
+            <div class="green-500">
               Charges:
               <span class="fw-bold"
                 >{{ $money.getSign(selected_currency.slug)
-                }}{{ $utils.formatCurrencyWithComma(getFundingCharge) }}</span
+                }}{{ $utils.formatCurrencyWithComma(estimatedCharge) }}</span
               >
             </div>
           </div>
@@ -142,7 +142,60 @@ export default {
   },
 
   computed: {
-    ...mapGetters({ getWalletSize: "general/getWalletSize" }),
+    ...mapGetters({
+      getWalletSize: "general/getWalletSize",
+      getTransactionCharges: "general/getTransactionCharges",
+    }),
+
+    fundingCharges() {
+      const funding_charges = this.getTransactionCharges?.wallet_funding;
+      if (!funding_charges) return [];
+
+      return funding_charges.map((charge) => {
+        charge.min_value = charge.MinValue;
+        if (charge.MaxValue == 0 || charge.max_value == 0)
+          charge.max_value = Number.MAX_SAFE_INTEGER;
+        return charge;
+      });
+    },
+
+    estimatedCharge() {
+      const amount = Number(this.form?.amount) || 0;
+      const currency = this.selected_currency.short;
+
+      const foundCharge = this.fundingCharges.find((charge) => {
+        return (
+          charge.currency === currency &&
+          amount >= charge.min_value &&
+          amount <= charge.max_value
+        );
+      });
+
+      if (!foundCharge) return "0";
+
+      const payment_type = this.payment_type?.slug;
+
+      switch (payment_type) {
+        case "card": {
+          const card_cap = foundCharge?.value?.card_fee_capped_at;
+          const card_fee = foundCharge?.value?.card_fee;
+          const is_capped = card_cap > 0;
+          const is_percentage = foundCharge?.value?.is_percentage_card_fee;
+          const cost = is_percentage ? (card_fee / 100) * amount : card_fee;
+          return is_capped ? Math.min(card_cap, cost) : cost;
+        }
+        case "transfer": {
+          const bank_cap = foundCharge?.value?.bank_fee_capped_at;
+          const bank_fee = foundCharge?.value?.bank_fee;
+          const is_capped = bank_cap > 0;
+          const is_percentage = foundCharge?.value?.is_percentage_bank_fee;
+          const cost = is_percentage ? (bank_fee / 100) * amount : bank_fee;
+          return is_capped ? Math.min(bank_cap, cost) : cost;
+        }
+        default:
+          return "0";
+      }
+    },
 
     // CHECK FORM BUTTON VALIDITY STATE
     isValidTransfer() {

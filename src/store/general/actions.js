@@ -2,7 +2,7 @@ import axios from "axios";
 import { constants } from "@/utilities";
 import { getServiceRoute } from "@/utilities/micro-services";
 import { serviceStorage, serviceApi as $api } from "@/shared/services";
-import { getRequest, postRequest } from "@/utilities/micro-services";
+import { postRequest } from "@/utilities/micro-services";
 
 const routes = {
   location: "https://ip2c.org/s",
@@ -10,6 +10,7 @@ const routes = {
   country_bank_list: "banks",
   verify_bank_account: "bank_account/verify",
   verify_wallet: "user/bank-details",
+  transaction_charges: "charges",
 };
 
 let formData = new FormData();
@@ -240,6 +241,19 @@ export default {
   // ==============================
   async verifyWalletAccountID(_, account_id) {
     return await $api.fetch(`${routes.verify_wallet}/${account_id}`);
+  },
+
+  // ==============================
+  // FETCH TXN CHARGES
+  // ==============================
+
+  async fetchCharges({ commit }, type) {
+    const response = await postRequest("payment", routes.transaction_charges, {
+      type,
+    });
+    console.log("HERE IS THE RESPONSE", response);
+    if (response.code === 200)
+      commit("SET_TRANSACTION_CHARGES", { type, charges: response.data });
   },
 
   updateWalletListSize({ commit }, wallet_size) {
