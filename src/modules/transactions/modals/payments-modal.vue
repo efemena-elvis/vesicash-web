@@ -99,15 +99,15 @@ export default {
               action_type: "modal",
               action: "toggleWireTransferModal",
             },
-            {
-              id: 3,
-              icon: "BusinessIcon",
-              title: "Pay with flutterwave business account",
-              description:
-                "Make a transfer from your flutterwave business account.",
-              action_type: "modal",
-              action: "toggleFWBizModal",
-            },
+            // {
+            //   id: 3,
+            //   icon: "BusinessIcon",
+            //   title: "Pay with flutterwave business account",
+            //   description:
+            //     "Make a transfer from your flutterwave business account.",
+            //   action_type: "modal",
+            //   action: "toggleFWBizModal",
+            // },
             {
               id: 4,
               icon: "WalletIcon",
@@ -177,7 +177,7 @@ export default {
   }),
 
   mounted() {
-    console.log("...", this.paymentDetails);
+    // console.log("...", this.paymentDetails);
   },
 
   methods: {
@@ -200,7 +200,9 @@ export default {
 
     toggleWireTransferModal() {
       const currency = this.paymentDetails?.currency?.slug;
-      this.$emit("initiateWireTransfer", { currency });
+      const amount = this.paymentDetails.total_fee;
+
+      this.$emit("initiateWireTransfer", { currency, amount });
     },
 
     toggleFWBizModal() {

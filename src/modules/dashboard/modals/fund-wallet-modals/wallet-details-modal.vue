@@ -222,7 +222,8 @@ export default {
         account_id: this.getAccountId,
         transaction_id:
           this.$route?.query?.transaction_id ?? this.$route?.params?.id,
-        gateway: "monnify",
+        gateway: "rave",
+        amount: this.amount,
       };
       // if (!this.gateway) delete request_payload?.gateway;
 
@@ -270,22 +271,31 @@ export default {
     // VERIFY USER WALLET PAYMENT
     // ===============================
     handleFundSuccess() {
-      this.verifyPaymentAccount({
-        reference: this.account_reference_id,
-      })
-        .then((response) => {
-          if (response.code === 200) {
-            this.$router.push({
-              name: "SuccessfulWalletFund",
-              query: {
-                type: "transfer",
-                currency: this.currency,
-                amount: this.amount,
-              },
-            });
-          }
-        })
-        .catch((err) => {});
+      this.$router.push({
+        name: "SuccessfulWalletFund",
+        query: {
+          type: "transfer",
+          currency: this.currency,
+          amount: this.amount,
+        },
+      });
+
+      // this.verifyPaymentAccount({
+      //   reference: this.account_reference_id,
+      // })
+      //   .then((response) => {
+      //     if (response.code === 200) {
+      //       this.$router.push({
+      //         name: "SuccessfulWalletFund",
+      //         query: {
+      //           type: "transfer",
+      //           currency: this.currency,
+      //           amount: this.amount,
+      //         },
+      //       });
+      //     }
+      //   })
+      //   .catch((err) => {});
 
       // setTimeout(() => this.$emit("walletFunded"), 1500);
     },

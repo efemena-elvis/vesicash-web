@@ -137,7 +137,7 @@ export default {
 
     gateway: {
       type: String,
-      default: "monnify",
+      default: "rave",
     },
   },
 
