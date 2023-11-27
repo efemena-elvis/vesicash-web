@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from "vuex";
 import ModalCover from "@/shared/components/util-comps/modal-cover";
 import PageBackBtn from "@/shared/components/util-comps/page-back-btn";
 
@@ -62,6 +63,8 @@ export default {
   },
 
   computed: {
+    ...mapGetters({ getTransactionCharges: "general/getTransactionCharges" }),
+
     getActiveFlow() {
       return this.active_flow === 0
         ? "FundWalletSelectModal"
@@ -88,7 +91,14 @@ export default {
     };
   },
 
+  async mounted() {
+    if (!this.getTransactionCharges?.wallet_funding)
+      await this.fetchCharges("wallet_funding");
+  },
+
   methods: {
+    ...mapActions({ fetchCharges: "general/fetchCharges" }),
+
     goToPreviousFlow() {
       this.active_flow -= 1;
     },

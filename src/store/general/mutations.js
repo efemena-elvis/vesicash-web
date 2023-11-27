@@ -69,4 +69,10 @@ export default {
       beneficiary: null,
     };
   },
+
+  SET_TRANSACTION_CHARGES: (state, { charges, type }) => {
+    state.transaction_charges
+      ? (state.transaction_charges[type] = charges)
+      : (state.transaction_charges = { [type]: charges });
+  },
 };

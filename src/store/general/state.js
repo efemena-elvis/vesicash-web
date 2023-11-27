@@ -43,4 +43,6 @@ export default () => ({
     currency: "",
     beneficiary: null,
   },
+
+  transaction_charges: null,
 });
