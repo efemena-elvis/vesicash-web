@@ -255,8 +255,8 @@ export default {
                 this.naira_wallet_info.push(detail);
             });
 
-            let account_name = this.naira_wallet_info.at(-1).value;
-            this.naira_wallet_info.at(-1).value = `Vesicash-${account_name}`;
+            // let account_name = this.naira_wallet_info.at(-1).value;
+            // this.naira_wallet_info.at(-1).value = `Vesicash-${account_name}`;
 
             this.naira_wallet_loading = false;
           } else if (response?.code === 500) {
