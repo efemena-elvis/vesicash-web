@@ -430,7 +430,7 @@ export default {
     }),
 
     updateWithdrawalInput(value) {
-      console.log("Date", value);
+      // console.log("Date", value);
     },
 
     loadWalletCurrencyOptions() {
