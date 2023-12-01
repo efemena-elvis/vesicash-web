@@ -49,11 +49,8 @@
           />
 
           <!-- AMOUNT DATA -->
-          <div
-            v-if="account_type.slug !== 'transfer_request'"
-            class="amount-meta mgt-8 tertiary-2-text grey-600"
-          >
-            <div>
+          <div class="amount-meta mgt-8 tertiary-2-text grey-600">
+            <div v-if="account_type.slug !== 'transfer_request'">
               Minimum amount:
               <span class="fw-bold"
                 >{{ $money.getSign(selected_currency.slug)
@@ -63,13 +60,11 @@
               >
             </div>
 
-            <div class="green-500" v-if="false">
+            <div class="charge-text">
               Charges:
-              <span class="fw-bold"
-                >{{ $money.getSign(selected_currency.slug)
-                }}{{
-                  $utils.formatCurrencyWithComma(getWithdrawalCharge)
-                }}</span
+              <span
+                :class="['fw-bold', estimatedCharge === 'FREE' && 'green-500']"
+                >{{ estimatedCharge }}</span
               >
             </div>
           </div>
@@ -236,7 +231,64 @@ export default {
       getWalletType: "dashboard/getWalletType",
       getWalletBalances: "dashboard/getWalletBalances",
       getWalletSize: "general/getWalletSize",
+      getTransactionCharges: "general/getTransactionCharges",
     }),
+
+    charges() {
+      const type = this.account_type?.slug;
+
+      switch (type) {
+        case "transfer_request":
+          return this.getTransactionCharges?.mor_withdrawal;
+        case "settlement":
+          return this.getTransactionCharges?.wallet_withdrawal;
+        case "third_party":
+          return this.getTransactionCharges?.wallet_withdrawal;
+        case "wallet":
+          return [];
+        default:
+          return [];
+      }
+    },
+
+    withdrawalCharges() {
+      const charges = this.charges;
+      if (!charges) return [];
+
+      return charges.map((charge) => {
+        charge.min_value = charge.MinValue || charge.min_value;
+        if (charge.MaxValue == 0 || charge.max_value == 0)
+          charge.max_value = Number.MAX_SAFE_INTEGER;
+        return charge;
+      });
+    },
+
+    estimatedCharge() {
+      const type = this.account_type?.slug;
+      if (type === "wallet") return "FREE";
+
+      const amount = Number(this.form?.amount) || 0;
+      const currency = this.selected_currency.short;
+      const sign = this.$money.getSign(currency);
+
+      const foundCharge = this.withdrawalCharges.find((charge) => {
+        return (
+          charge.currency === currency &&
+          amount >= charge.min_value &&
+          amount <= charge.max_value
+        );
+      });
+
+      if (!foundCharge) return `----`;
+
+      const cap = foundCharge?.value?.fee_capped_at;
+      const fee = foundCharge?.value?.fee;
+      const is_capped = cap > 0;
+      const is_percentage = foundCharge?.value?.is_percentage_fee;
+      const cost = is_percentage ? (fee / 100) * amount : fee;
+      const _cost = is_capped ? Math.min(cap, cost) : cost;
+      return `${sign}${this.$utils.formatCurrencyWithComma(_cost)}`;
+    },
 
     // GET ACCOUNT BENEFICIARY INPUT FILED LABEL
     getBeneficiaryLabel() {
@@ -639,6 +691,10 @@ export default {
 <style lang="scss" scoped>
 .amount-meta {
   @include flex-row-nowrap("space-between", "center");
+
+  .charge-text {
+    margin-left: auto;
+  }
 }
 
 .info-card {
