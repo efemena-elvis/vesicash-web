@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from "vuex";
+import { mapGetters, mapMutations, mapActions } from "vuex";
 import ActionCard from "@/modules/dashboard/components/card-comps/action-card";
 
 export default {
@@ -77,6 +77,7 @@ export default {
   computed: {
     ...mapGetters({
       getWalletTransferDetails: "general/getWalletTransferDetails",
+      getTransactionCharges: "general/getTransactionCharges",
     }),
   },
 
@@ -156,6 +157,16 @@ export default {
       resetTransferDetails: "general/RESET_WALLET_TRANSFER_DETAILS",
     }),
 
+    ...mapActions({ fetchCharges: "general/fetchCharges" }),
+
+    async fetchTransferCharges() {
+      if (!this.getTransactionCharges?.wallet_withdrawal)
+        await this.fetchCharges("wallet_withdrawal");
+
+      if (!this.getTransactionCharges?.mor_withdrawal)
+        await this.fetchCharges("mor_withdrawal");
+    },
+
     processModalActions(action) {
       this[action]();
     },
@@ -165,6 +176,7 @@ export default {
     },
 
     toggleTransferFlow() {
+      this.fetchTransferCharges();
       this.show_transfer_flow = !this.show_transfer_flow;
     },
 

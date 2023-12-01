@@ -152,7 +152,7 @@ export default {
       if (!funding_charges) return [];
 
       return funding_charges.map((charge) => {
-        charge.min_value = charge.MinValue;
+        charge.min_value = charge.MinValue || charge.min_value;
         if (charge.MaxValue == 0 || charge.max_value == 0)
           charge.max_value = Number.MAX_SAFE_INTEGER;
         return charge;
