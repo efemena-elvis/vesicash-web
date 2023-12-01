@@ -672,6 +672,7 @@ export default {
         action: "sendUserOTP",
         payload: {
           account_id: this.getAccountId,
+          is_withdrawal: true,
         },
         btn_text: "Continue",
         alert_handler: {

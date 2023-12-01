@@ -43,7 +43,6 @@ export default {
   watch: {
     getPaymentModuleConfig: {
       handler(config) {
-        console.log("CONFIG", config.currency_code);
         if (config.currency_code)
           this.formatPaymentMethods(config.currency_code);
       },

@@ -61,29 +61,31 @@
       </template>
 
       <!-- TRANSFER OPTION VIEW -->
-      <template
-        v-if="payment_type.slug === 'transfer' && selected_currency.slug"
-      >
-        <!-- TITLE TEXT -->
-        <div class="description-text mgb-10 grey-600 tertiary-2-text">
-          Please send the amount to fund to the bank account below.
-        </div>
+      <template v-if="+form.amount >= selected_currency.min_amount">
+        <template
+          v-if="payment_type.slug === 'transfer' && selected_currency.slug"
+        >
+          <!-- TITLE TEXT -->
+          <div class="description-text mgb-10 grey-600 tertiary-2-text">
+            Please send the amount to fund to the bank account below.
+          </div>
 
-        <!-- LOADING TRANSFER DETAILS -->
-        <div class="modal-items-wrapper rounded-4 green-50-bg mgb-20">
-          <template v-if="info_loading">
-            <ModalListItem v-for="(_, index) in 3" :key="index" loading />
-          </template>
+          <!-- LOADING TRANSFER DETAILS -->
+          <div class="modal-items-wrapper rounded-4 green-50-bg mgb-20">
+            <template v-if="bank_details_loading">
+              <ModalListItem v-for="(_, index) in 3" :key="index" loading />
+            </template>
 
-          <template v-else>
-            <ModalListItem
-              v-for="(data, index) in transfer_info"
-              :title="data.title"
-              :value="data.value"
-              :key="index"
-            />
-          </template>
-        </div>
+            <template v-else>
+              <ModalListItem
+                v-for="(data, index) in transfer_info"
+                :title="data.title"
+                :value="data.value"
+                :key="index"
+              />
+            </template>
+          </div>
+        </template>
       </template>
     </div>
 
@@ -137,7 +139,7 @@ export default {
 
     gateway: {
       type: String,
-      default: "monnify",
+      default: "rave",
     },
   },
 
@@ -208,15 +210,15 @@ export default {
         : this.currency_options;
     },
 
-    getFundingCharge() {
-      let amount = Number(this.form.amount);
+    // getFundingCharge() {
+    //   let amount = Number(this.form.amount);
 
-      if (amount < 600) return 0.5 * amount;
-      else if (amount <= 500000) return 500;
-      else if (amount <= 1000000) return 1000;
-      else if (amount > 1000000) return 2000;
-      else return 0;
-    },
+    //   if (amount < 600) return 0.5 * amount;
+    //   else if (amount <= 500000) return 500;
+    //   else if (amount <= 1000000) return 1000;
+    //   else if (amount > 1000000) return 2000;
+    //   else return 0;
+    // },
 
     getFundingSuccessRoute() {
       return `${constants.VESICASH_APP_URL}/fund-wallet-success?type=funding&currency=${this.selected_currency.short}&amount=${this.form.amount}`;
@@ -224,6 +226,16 @@ export default {
 
     getFundingErrorRoute() {
       return `${constants.VESICASH_APP_URL}/fund-wallet-error?type=funding&currency=${this.selected_currency.short}&amount=${this.form.amount}`;
+    },
+  },
+
+  watch: {
+    "form.amount": {
+      handler(value) {
+        if (+value >= 1000) {
+          this.handleFetchingOfTransferDetails();
+        }
+      },
     },
   },
 
@@ -244,7 +256,7 @@ export default {
         amount: true,
       },
 
-      info_loading: true,
+      bank_details_loading: true,
       displayed_bank_details: ["account number", "bank name", "account name"],
       account_reference_id: "",
       transfer_info_repo: [],
@@ -254,7 +266,7 @@ export default {
 
   mounted() {
     this.loadWalletCurrencyOptions();
-    this.handleFetchingOfTransferDetails();
+    // this.handleFetchingOfTransferDetails();
   },
 
   methods: {
@@ -301,16 +313,18 @@ export default {
     handleFetchingOfTransferDetails() {
       let request_payload = {
         account_id: this.getAccountId,
+        amount: +this.form.amount,
         transaction_id:
           this.$route?.query?.transaction_id ?? this.$route?.params?.id,
-        gateway: this.gateway,
+        gateway: "rave",
       };
 
       if (!this.gateway) delete request_payload?.gateway;
 
       this.fetchTransferAccountBankDetails(request_payload)
         .then((response) => {
-          this.info_loading = false;
+          this.bank_details_loading = false;
+          this.transfer_info = [];
 
           if (response?.code === 200) {
             let account = response?.data ?? {};
@@ -328,14 +342,14 @@ export default {
                 this.transfer_info.push(detail);
             });
 
-            let account_name = this.transfer_info.at(-1).value;
-            this.transfer_info.at(-1).value = `Vesicash-${account_name}`;
+            // let account_name = this.transfer_info.at(-1).value;
+            // this.transfer_info.at(-1).value = `Vesicash-${account_name}`;
           }
           // else if (response?.code === 500) {
           //   this.handleFetchingOfTransferDetails();
           // }
         })
-        .catch(() => (this.info_loading = false));
+        .catch(() => (this.bank_details_loading = false));
     },
 
     // ========================================
@@ -361,24 +375,33 @@ export default {
     // VERIFY USER WALLET PAYMENT
     // ===============================
     async handleFundSuccess() {
-      const response = await this.handleDataRequest({
-        action: "verifyPaymentAccount",
-        payload: { reference: this.account_reference_id },
-        alert_handler: {
-          error: "Unable to verify account payment",
+      this.$router.push({
+        name: "SuccessfulWalletFund",
+        query: {
+          type: "transfer",
+          currency: this.selected_currency.short,
+          amount: +this.form.amount,
         },
       });
 
-      if (response.code === 200) {
-        this.$router.push({
-          name: "SuccessfulWalletFund",
-          query: {
-            type: "transfer",
-            currency: this.selected_currency.short,
-            amount: +this.form.amount,
-          },
-        });
-      }
+      // const response = await this.handleDataRequest({
+      //   action: "verifyPaymentAccount",
+      //   payload: { reference: this.account_reference_id },
+      //   alert_handler: {
+      //     error: "Unable to verify account payment",
+      //   },
+      // });
+
+      // if (response.code === 200) {
+      //   this.$router.push({
+      //     name: "SuccessfulWalletFund",
+      //     query: {
+      //       type: "transfer",
+      //       currency: this.selected_currency.short,
+      //       amount: +this.form.amount,
+      //     },
+      //   });
+      // }
     },
 
     // =======================================

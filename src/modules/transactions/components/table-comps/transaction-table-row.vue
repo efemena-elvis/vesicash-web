@@ -21,7 +21,7 @@
         {{ $money.getSign(data.currency)
         }}{{
           $utils.formatCurrencyWithComma(
-            data.totalAmount ? data.totalAmount : data.amount
+            data.total_amount ? data.total_amount : data.amount
           )
         }}
       </div>

@@ -4,12 +4,12 @@
       <!-- INPUT BLOCKS -->
       <div class="input-block">
         <!-- USER EMAIL ADDRESS -->
-        <BasicInput
+        <FormFieldInput
           input_type="email"
           is_required
           placeholder="Enter business email address"
           :custom_style="{
-            group_wrapper_style: 'input-field',
+            group_wrapper_style: 'input-field input-field-email',
           }"
           :input_value="getFormFieldValueMx(form, 'email_address')"
           @getInputState="updateFormFieldMx($event, 'email_address')"
@@ -20,7 +20,7 @@
         />
 
         <!-- USER PHONE NUMBER -->
-        <BasicInput
+        <FormFieldInput
           input_type="number"
           is_phone_type
           is_required

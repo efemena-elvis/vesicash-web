@@ -176,9 +176,9 @@ const paymentHelper = {
       // this.togglePaymentOptionModal();
     },
 
-    closePaymentOpenWire({ currency, gateway }) {
+    closePaymentOpenWire({ currency, gateway, amount = null }) {
       this.show_payment_option_modal = false;
-      this.gateway = gateway ?? "monnify";
+      this.gateway = gateway ?? "rave";
       currency === "naira"
         ? this.toggleNairaTransferModal()
         : this.toggleWireTransferModal();

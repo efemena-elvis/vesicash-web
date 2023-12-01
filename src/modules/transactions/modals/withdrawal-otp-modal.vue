@@ -381,6 +381,7 @@ export default {
     sendOutOTPVerificationCode() {
       let payload = {
         account_id: this.getAccountId,
+        is_withdrawal: true,
       };
 
       this.sendUserOTP(payload)
@@ -412,7 +413,7 @@ export default {
 
     async makeWithdrawal() {
       this.$bus.$emit("show-page-loader", "Processing your transfer");
-      
+
       try {
         this.handleClick("btnRef");
 

@@ -153,6 +153,7 @@ class serviceUtils {
   // ============================================================
   // METHODS RELATED TO CURRENCY HANDLING
   // ============================================================
+  // output => 'sign', 'code', 'long'
   formatCurrency({ input, output = "" }) {
     let country_data = countries.find(
       (country) =>
