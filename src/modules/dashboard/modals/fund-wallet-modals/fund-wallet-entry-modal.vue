@@ -311,6 +311,10 @@ export default {
     // HANDLE FETCHING OF BANK TRANSFER DETAILS
     // ========================================
     handleFetchingOfTransferDetails() {
+      this.bank_details_loading = true;
+      this.transfer_info_repo = [];
+      this.transfer_info = [];
+
       let request_payload = {
         account_id: this.getAccountId,
         amount: +this.form.amount,
