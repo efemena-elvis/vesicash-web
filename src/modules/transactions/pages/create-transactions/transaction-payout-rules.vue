@@ -29,6 +29,7 @@
           :milestone="milestone"
           :currency="getTransactionAmount.currency"
           :index="index"
+          :charge="estimatedCharge"
         />
       </div>
     </div>
@@ -60,7 +61,7 @@
               card_name="dispute"
               label_id="disputeCard2"
               label_text="Arbitration"
-              tooltip_text="Any dispute will be handled via arbitration. Cost of which will be borne by the transacting parties."
+              tooltip_text="Any dispute will be handled via arbitration. card_bank_cost of which will be borne by the transacting parties."
               :is_checked="
                 getTransactionSetup.dispute_handler == 'arbitration'
                   ? true
@@ -79,6 +80,7 @@
         <SummationCard
           :milestones="getTransactionMilestones"
           :amount_data="getTransactionAmount"
+          :charge="estimatedCharge"
         />
       </div>
     </div>
@@ -93,7 +95,7 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters } from "vuex";
+import { mapMutations, mapGetters, mapActions } from "vuex";
 
 export default {
   name: "FundPayoutRules",
@@ -122,7 +124,80 @@ export default {
       getTransactionMilestones: "transactions/getTransactionMilestones",
       getTransactionAmount: "transactions/getTransactionAmount",
       getMilestoneRecipients: "transactions/getMilestoneRecipients",
+      getTransactionCharges: "general/getTransactionCharges",
     }),
+
+    escrowCharges() {
+      const escrow_charges = this.getTransactionCharges?.escrow;
+      if (!escrow_charges) return [];
+
+      return escrow_charges.map((charge) => {
+        charge.min_value = charge.MinValue;
+        if (charge.MaxValue == 0 || charge.max_value == 0)
+          charge.max_value = Number.MAX_SAFE_INTEGER;
+        return charge;
+      });
+    },
+
+    estimatedCharge() {
+      const amount = this.getTransactionAmount?.payment_amount;
+      const currency = this.getTransactionAmount?.currency?.short;
+
+      const escrowCharge = this.escrowCharges.find((charge) => {
+        return (
+          charge.currency === currency &&
+          amount >= charge.min_value &&
+          amount <= charge.max_value
+        );
+      });
+
+      let card_charge = null;
+      let transfer_charge = null;
+      let fee_charge = null;
+
+      if (!escrowCharge) return { card_charge, transfer_charge, fee_charge };
+
+      const card_cap = escrowCharge?.value?.card_fee_capped_at;
+      const card_fee = escrowCharge?.value?.card_fee;
+      const is_card_capped = card_cap > 0;
+
+      const is_card_percentage = escrowCharge?.value?.is_percentage_card_fee;
+
+      const card_bank_cost = is_card_percentage
+        ? (card_fee / 100) * amount
+        : card_fee;
+
+      card_charge = is_card_capped
+        ? Math.min(card_cap, card_bank_cost)
+        : card_bank_cost;
+
+      const bank_cap = escrowCharge?.value?.bank_fee_capped_at;
+      const bank_fee = escrowCharge?.value?.bank_fee;
+      const is_bank_capped = bank_cap > 0;
+      const is_bank_percentage = escrowCharge?.value?.is_percentage_bank_fee;
+      const bank_cost = is_bank_percentage
+        ? (bank_fee / 100) * amount
+        : bank_fee;
+      transfer_charge = is_bank_capped
+        ? Math.min(bank_cap, bank_cost)
+        : bank_cost;
+
+      const fee_cap = escrowCharge?.value?.fee_capped_at;
+      const fee = escrowCharge?.value?.fee;
+      const is_fee_capped = fee_cap > 0;
+      const is_fee_percentage = escrowCharge?.value?.is_percentage_fee;
+      const fee_cost = is_fee_percentage ? (fee / 100) * amount : fee;
+      fee_charge = is_fee_capped ? Math.min(fee_cap, fee_cost) : fee_cost;
+
+      const total = fee_charge ? amount + fee_charge : null;
+
+      return {
+        card_charge,
+        transfer_charge,
+        fee_charge,
+        total,
+      };
+    },
 
     // =============================================
     // GET THE TRANSACTION PARTY TYPE FROM ROUTE
@@ -140,6 +215,7 @@ export default {
   },
 
   mounted() {
+    if (!this.getTransactionCharges?.escrow) this.fetchCharges("escrow");
     // this.loadMileStoneData();
     this.getTransactionMilestones.length
       ? this.loadAllCurrentMilestones()
@@ -153,6 +229,10 @@ export default {
       UPDATE_TRANSACTION_DISPUTE_MGT:
         "transactions/UPDATE_TRANSACTION_DISPUTE_MGT",
       EVALUATE_TRANSACTION_FEES: "transactions/EVALUATE_TRANSACTION_FEES",
+    }),
+
+    ...mapActions({
+      fetchCharges: "general/fetchCharges",
     }),
 
     nextProgressFlow() {
@@ -257,7 +337,9 @@ export default {
                 pay: this.$route.query.pay,
                 name: this.$route.query.name,
                 parties: this.$route.query.parties,
-                fee: this.getTransactionAmount.total_fee,
+                fee:
+                  this.estimatedCharge?.total ||
+                  this.getTransactionAmount.total_fee,
               },
             });
           }

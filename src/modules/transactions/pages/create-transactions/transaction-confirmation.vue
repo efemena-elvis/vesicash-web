@@ -99,6 +99,7 @@
         <SummationCard
           :milestones="getTransactionMilestones"
           :amount_data="getTransactionAmount"
+          :charge="getTransactionCharge"
         />
       </div>
     </div>
@@ -152,6 +153,7 @@ export default {
       getTransactionMilestones: "transactions/getTransactionMilestones",
       getTransactionAmount: "transactions/getTransactionAmount",
       getMilestoneRecipients: "transactions/getMilestoneRecipients",
+      getTransactionCharge: "transactions/getTransactionCharge",
     }),
 
     // ===================================================

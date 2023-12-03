@@ -40,12 +40,12 @@
     </template>
 
     <div class="item-row">
-      <div class="item grey-600 tertiary-2-text">Escrow fee (5%)</div>
+      <div class="item grey-600 tertiary-2-text">Escrow fee</div>
       <div
         class="value grey-900 secondary-2-text"
         v-html="
           `${getCurrencySign} ${$utils.formatCurrencyWithComma(
-            amount_data.escrow_fee
+            charge?.fee_charge || amount_data.escrow_fee
           )}`
         "
       ></div>
@@ -58,7 +58,7 @@
         class="value grey-900 primary-2-text"
         v-html="
           `${getCurrencySign} ${$utils.formatCurrencyWithComma(
-            amount_data.total_fee
+            charge?.total || amount_data.total_fee
           )}`
         "
       ></div>
@@ -78,6 +78,11 @@ export default {
     amount_data: {
       type: Object,
       default: () => ({}),
+    },
+
+    charge: {
+      type: Object,
+      default: () => null,
     },
   },
 

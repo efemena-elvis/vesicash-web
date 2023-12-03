@@ -14,6 +14,13 @@ export default () => ({
     escrow_fee: 0,
     total_fee: 0,
 
+    escrow_charge: {
+      card_charge: null,
+      transfer_charge: null,
+      fee_charge: null,
+      total: null,
+    },
+
     beneficiaries: [],
     milestones: [],
     milestone_recipients: [],
