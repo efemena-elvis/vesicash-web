@@ -308,7 +308,8 @@ export default {
         this.getTransactionAmount.currency?.name.split(" ")[0];
 
       transaction_payload.type = this.getTransactionSetup.type;
-      transaction_payload.amount = this.getTransactionAmount.total_fee;
+      transaction_payload.amount =
+        this.getTransactionCharge.total || this.getTransactionAmount.total_fee;
 
       transaction_payload.files = this.getTransactionSetup.files;
       transaction_payload.dispute_handler =
