@@ -195,6 +195,7 @@ export default {
         card_charge,
         transfer_charge,
         fee_charge,
+        amount,
         total,
       };
     },

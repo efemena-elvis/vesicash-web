@@ -309,7 +309,8 @@ export default {
 
       transaction_payload.type = this.getTransactionSetup.type;
       transaction_payload.amount =
-        this.getTransactionCharge.total || this.getTransactionAmount.total_fee;
+        this.getTransactionCharge.amount ||
+        this.getTransactionAmount.payment_amount;
 
       transaction_payload.files = this.getTransactionSetup.files;
       transaction_payload.dispute_handler =
