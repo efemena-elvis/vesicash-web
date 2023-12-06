@@ -117,7 +117,9 @@ export default {
   computed: {
     getAmount() {
       const sign = this.$money.getSign(this.wallet_type);
-      const amount = this.$utils.formatCurrencyWithComma(this.amount);
+      const amount = this.$utils.formatCurrencyWithComma(
+        this.amount?.total_fee || "0"
+      );
       return `${sign}${amount}`;
     },
 

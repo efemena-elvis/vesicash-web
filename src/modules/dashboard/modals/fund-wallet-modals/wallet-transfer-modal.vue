@@ -149,7 +149,7 @@ export default {
   },
 
   data: () => ({
-    amount: "",
+    // amount: "",
 
     form: {
       amount: "",

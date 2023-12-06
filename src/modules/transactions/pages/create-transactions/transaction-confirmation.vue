@@ -99,6 +99,7 @@
         <SummationCard
           :milestones="getTransactionMilestones"
           :amount_data="getTransactionAmount"
+          :charge="getTransactionCharge"
         />
       </div>
     </div>
@@ -152,6 +153,7 @@ export default {
       getTransactionMilestones: "transactions/getTransactionMilestones",
       getTransactionAmount: "transactions/getTransactionAmount",
       getMilestoneRecipients: "transactions/getMilestoneRecipients",
+      getTransactionCharge: "transactions/getTransactionCharge",
     }),
 
     // ===================================================
@@ -306,7 +308,9 @@ export default {
         this.getTransactionAmount.currency?.name.split(" ")[0];
 
       transaction_payload.type = this.getTransactionSetup.type;
-      transaction_payload.amount = this.getTransactionAmount.total_fee;
+      transaction_payload.amount =
+        this.getTransactionCharge.amount ||
+        this.getTransactionAmount.payment_amount;
 
       transaction_payload.files = this.getTransactionSetup.files;
       transaction_payload.dispute_handler =

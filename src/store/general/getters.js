@@ -7,4 +7,5 @@ export default {
   getMerchantData: (state) => state.is_merchant,
   getWalletTransferDetails: (state) => state.wallet_transfer_details,
   getTransactionCharges: (state) => state.transaction_charges,
+  getEscrowCharge: (state) => state.escrow_charge,
 };

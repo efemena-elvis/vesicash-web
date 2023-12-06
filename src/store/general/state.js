@@ -45,4 +45,5 @@ export default () => ({
   },
 
   transaction_charges: null,
+  escrow_charge: null,
 });

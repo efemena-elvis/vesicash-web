@@ -19,7 +19,7 @@
           <SumTotalDisplayCard
             total_text="Total amount to pay"
             :total_value="`${getCurrencySign} ${$utils.formatCurrencyWithComma(
-              getTransactionAmount.total_fee
+              getTransactionCharge?.total || getTransactionAmount.total_fee
             )}`"
           />
         </div>
@@ -41,7 +41,7 @@
     <portal to="vesicash-modals">
       <transition name="fade" v-if="show_payment_option_modal">
         <PaymentsModal
-          :paymentDetails="getTransactionAmount"
+          :paymentDetails="transactionDetails"
           @closeTriggered="togglePaymentOptionModal"
           @initiateWireTransfer="closePaymentOpenWire"
           @initiateFWBizPayment="closePaymentOpenFWBiz"
@@ -52,7 +52,7 @@
 
       <transition name="fade" v-if="show_wire_transfer_modal">
         <WireTransferModal
-          :paymentDetails="getTransactionAmount"
+          :paymentDetails="transactionDetails"
           @closeTriggered="toggleWireTransferModal"
           @goBackPaymentSelection="closeWTPaymentOpenPayment"
           @paid="closeWireAndOpenSuccess"
@@ -65,8 +65,8 @@
           @goBackWalletSelection="closeNairaPaymentOpenPayment"
           @walletFunded="closeFundDetailsAndOpenSuccess"
           :gateway="gateway"
-          :amount="getTransactionAmount.total_fee"
-          :currency="getTransactionAmount.currency.short"
+          :amount="transactionDetails.total_fee"
+          :currency="transactionDetails.currency.short"
         />
       </transition>
 
@@ -76,7 +76,7 @@
           @goBackWalletSelection="closeFWBizOpenPayment"
           @walletFunded="closeFundDetailsAndOpenSuccess"
           :gateway="gateway"
-          :amount="getTransactionAmount || '0'"
+          :amount="transactionDetails || '0'"
         />
       </transition>
 
@@ -125,11 +125,20 @@ export default {
     ...mapGetters({
       getTransactionSetup: "transactions/getTransactionSetup",
       getTransactionAmount: "transactions/getTransactionAmount",
+      getTransactionCharge: "transactions/getTransactionCharge",
     }),
+
+    transactionDetails() {
+      const charge = this.getTransactionCharge;
+      const amount = this.getTransactionAmount;
+      return charge
+        ? { ...amount, escrow_fee: charge.fee_charge, total_fee: charge.total }
+        : amount;
+    },
   },
 
   mounted() {
-    console.log("----", this.getTransactionAmount);
+    // console.log("----", this.getTransactionAmount);
   },
 };
 </script>

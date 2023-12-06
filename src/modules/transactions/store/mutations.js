@@ -49,7 +49,7 @@ export default {
     );
   },
 
-  EVALUATE_TRANSACTION_FEES: (state) => {
+  EVALUATE_TRANSACTION_FEES: (state, charge = null) => {
     let amount_list = [];
 
     // LOOP THROUGH ALL MILESTONES RECIPIENTS AND EXTRACT THEIR AMOUNT
@@ -71,6 +71,10 @@ export default {
     state.transaction.escrow_fee = sum_total * 0.05;
     state.transaction.total_fee = sum_total + state.transaction.escrow_fee;
     state.transaction.payment_amount = sum_total;
+
+    if (charge) {
+      state.transaction.escrow_charge = charge;
+    }
   },
 
   RESET_TRANSACTION: (state) => {
