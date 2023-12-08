@@ -216,7 +216,7 @@ export default {
   },
 
   mounted() {
-    if (!this.getTransactionCharges?.escrow) this.fetchCharges("escrow");
+    this.fetchCharges("escrow");
     // this.loadMileStoneData();
     this.getTransactionMilestones.length
       ? this.loadAllCurrentMilestones()
