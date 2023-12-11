@@ -33,7 +33,10 @@
           <component
             :is="getActiveFlow"
             :payment_type="flows[1].payment_selection"
+            :amount="funding_amount"
+            :currency="funding_currency"
             @fundingOptionSelected="goToNextFlow"
+            @loadBankDetails="goToBankTransferFlow"
           />
         </keep-alive>
       </div>
@@ -60,26 +63,37 @@ export default {
       import(
         /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/modals/fund-wallet-modals/fund-wallet-entry-modal"
       ),
+    FundTransferListModal: () =>
+      import(
+        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/modals/fund-wallet-modals/fund-transfer-list-modal"
+      ),
   },
 
   computed: {
     ...mapGetters({ getTransactionCharges: "general/getTransactionCharges" }),
 
     getActiveFlow() {
-      return this.active_flow === 0
-        ? "FundWalletSelectModal"
-        : "FundWalletEntryModal";
+      if (this.active_flow === 0) return "FundWalletSelectModal";
+      else if (this.active_flow === 1) return "FundWalletEntryModal";
+      else if (this.active_flow === 2) return "FundTransferListModal";
     },
   },
 
   data() {
     return {
       active_flow: 0,
+      funding_amount: 0,
+      funding_currency: null,
 
       flows: [
         {
           show_close_btn: true,
           trigger_self_close: true,
+          payment_selection: {},
+        },
+        {
+          show_close_btn: false,
+          trigger_self_close: false,
           payment_selection: {},
         },
         {
@@ -106,6 +120,12 @@ export default {
     goToNextFlow($event) {
       this.active_flow += 1;
       this.flows[1].payment_selection = $event;
+    },
+
+    goToBankTransferFlow(data) {
+      this.active_flow += 1;
+      this.funding_amount = data.amount;
+      this.funding_currency = data.currency;
     },
   },
 };

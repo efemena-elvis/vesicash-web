@@ -55,6 +55,7 @@
           <template v-if="show_dropdown">
             <CountryDropSelect
               :countries="countries_data"
+              is_country_only
               @countrySelected="updateFormFieldMx($event, 'country', true)"
             />
           </template>

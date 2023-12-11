@@ -102,20 +102,20 @@ const morSetup = {
         storage_type: "object",
       });
 
-      const us_country_data = {
-        country: "United States",
-        code: "us",
-      };
+      // const us_country_data = {
+      //   country: "United States",
+      //   code: "us",
+      // };
 
-      const uk_country_data = {
-        country: "United Kingdom",
-        code: "gb",
-      };
+      // const uk_country_data = {
+      //   country: "United Kingdom",
+      //   code: "gb",
+      // };
 
       const exclude_countries = [
         base_country_data.code.toUpperCase(),
-        us_country_data.code.toUpperCase(),
-        uk_country_data.code.toUpperCase(),
+        // us_country_data.code.toUpperCase(),
+        // uk_country_data.code.toUpperCase(),
       ];
 
       if (type === "filter") {
@@ -124,7 +124,7 @@ const morSetup = {
             !exclude_countries.includes(country.country_short.toUpperCase())
         );
       } else {
-        country_list = country_list.slice(1);
+        // country_list = country_list.slice(1);
         country_list.map((country) => {
           if (exclude_countries.includes(country.code.toUpperCase())) {
             country.disable = true;
@@ -226,16 +226,19 @@ const morSetup = {
       });
 
       if (response.code === 200) {
-        const mor_country_list = response.data.filter(
-          (country) =>
-            !["united states of america", "United Kingdom"].includes(
-              country.name
-            )
-        );
+        // const mor_country_list = response.data.filter(
+        //   (country) =>
+        //     !["united states of america", "United Kingdom"].includes(
+        //       country.name
+        //     )
+        // );
+
+        const mor_country_list = response.data;
 
         mor_country_list.map((country) => {
           let country_data = this.base_countries.find(
-            (data) => data.country === country.name
+            (data) =>
+              data?.country?.toLowerCase() === country.name?.toLowerCase()
           );
 
           country_data = {
@@ -260,7 +263,10 @@ const morSetup = {
       this.getWalletSize
         .filter(
           (wallet) =>
-            wallet.enabled && !wallet.short.includes("ESCROW") && !wallet?.mor
+            wallet.enabled &&
+            !wallet.short.includes("ESCROW") &&
+            !wallet?.mor &&
+            !["USD", "GBP"].includes(wallet.short)
         )
         .map((wallet_type) => {
           this.mor_wallet_list.push({

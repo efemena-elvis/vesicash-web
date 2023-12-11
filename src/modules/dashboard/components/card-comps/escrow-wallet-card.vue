@@ -1,125 +1,30 @@
 <template>
-  <div
-    class="escrow-metric-card position-relative rounded-12 border-green-100 green-10-bg"
-    :class="ongoingTour ? 'tour-index' : null"
-  >
+  <div class="escrow-metric-card position-relative rounded-12 border-green-100 green-10-bg">
     <!-- TITLE TEXT -->
-    <div class="title-text tertiary-2-text grey-700 mgb-2">
-      In Escrow
-      <span
-        class="icon f-size-12 mgl-4 pointer"
-        :class="isBalanceHidden ? 'icon-show' : 'icon-hide'"
-        @click="toggleWalletBalance"
-      ></span>
+    <div class="wallet-title-text tertiary-2-text grey-700 fw-semibold">
+      Escrow wallet balance
     </div>
 
-    <div class="escrow-balance-block">
-      <div class="balance-block">
-        <div class="border-bottom-grey-100">
-          <div
-            class="loading-amount-value rounded-3 skeleton-loader mgb-16"
-            v-if="loading_wallet"
-          ></div>
-
-          <div class="amount-value mgb-8" v-else>
-            <span>{{ escrow_balance[0]?.sign || "-" }}</span>
-            <template v-if="isBalanceHidden">
-              <span class="hidden-balance">****</span>
-            </template>
-
-            <template v-else>
-              <span>{{
-                $utils.formatCurrencyWithComma(
-                  escrow_balance[0]?.balance?.split(".")[0] || "0"
-                )
-              }}</span
-              ><span class="amount-zero"
-                >.{{ escrow_balance[0]?.balance?.split(".")[1] || "00" }}</span
-              >
-            </template>
-          </div>
-        </div>
-
-        <div class="third-balance">
-          <div
-            class="loading-amount-value rounded-3 skeleton-loader mgb-16"
-            v-if="loading_wallet"
-          ></div>
-
-          <div class="amount-value mgb-8" v-else>
-            <span>{{ escrow_balance[1]?.sign || "-" }}</span>
-            <template v-if="isBalanceHidden">
-              <span class="hidden-balance">****</span>
-            </template>
-
-            <template v-else>
-              <span>{{
-                $utils.formatCurrencyWithComma(
-                  escrow_balance[1]?.balance?.split(".")[0] || "0"
-                )
-              }}</span>
-              <span class="amount-zero"
-                >.{{ escrow_balance[1]?.balance?.split(".")[1] || "00" }}</span
-              >
-            </template>
-          </div>
-
-          <div class="balance-meta title-description grey-700 secondary-3-text">
-            Escrow balance
-          </div>
-        </div>
-      </div>
-
-      <div class="balance-block">
-        <div class="border-bottom-grey-100">
-          <div
-            class="loading-amount-value rounded-3 skeleton-loader mgb-16"
-            v-if="loading_wallet"
-          ></div>
-
-          <div class="amount-value mgb-8" v-else>
-            <span>{{ escrow_balance[2]?.sign || "-" }}</span>
-            <template v-if="isBalanceHidden">
-              <span class="hidden-balance">****</span>
-            </template>
-
-            <template v-else>
-              <span>{{
-                $utils.formatCurrencyWithComma(
-                  escrow_balance[2]?.balance?.split(".")[0] || "0"
-                )
-              }}</span>
-              <span class="amount-zero"
-                >.{{ escrow_balance[2]?.balance?.split(".")[1] || "00" }}</span
-              >
-            </template>
-          </div>
-        </div>
-
-        <div>
-          <div
-            class="loading-amount-value rounded-3 skeleton-loader mgb-16"
-            v-if="loading_wallet"
-          ></div>
-
-          <div class="amount-value mgb-8" v-else>
-            <span>---------</span>
-          </div>
-
-          <div
-            class="balance-meta title-description grey-700 secondary-3-text"
-          ></div>
-        </div>
-      </div>
+    <!-- TOP ROW -->
+    <div class="top-row">
+      <!-- WALLET COLUMN SECTION -->
+      <template v-for="(wallet, index) in escrow_balance">
+        <PrimaryWalletColumn :key="index" :index="index" :wallet="wallet" :loading_wallet="loading_wallet"
+          is_escrow_type />
+      </template>
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import PrimaryWalletColumn from "@/modules/dashboard/components/card-comps/primary-wallet-column";
 
 export default {
   name: "EscrowMetricCard",
+
+  components: {
+    PrimaryWalletColumn,
+  },
 
   props: {
     escrow_balance: {
@@ -134,15 +39,6 @@ export default {
   },
 
   computed: {
-    ...mapGetters({ getTourData: "general/getTourData" }),
-
-    ongoingTour() {
-      const { count, ongoing } = this.getTourData;
-
-      if (ongoing) return [1].includes(count) ? true : false;
-      else return false;
-    },
-
     isBalanceHidden() {
       return this.is_hidden;
     },
@@ -164,89 +60,23 @@ export default {
 
 <style lang="scss" scoped>
 .escrow-metric-card {
-  padding: toRem(14) toRem(24);
-  width: toRem(380);
-  max-width: 100%;
+  padding: toRem(16) 0 toRem(12);
+  width: max-content;
 
   @include breakpoint-custom-down(530) {
     width: 100%;
   }
 
-  .escrow-balance-block {
-    @include flex-row-wrap("flex-start", "center");
+  .wallet-title-text {
+    padding: toRem(2) toRem(24) toRem(8);
 
-    .balance-block {
-      width: 50%;
-      padding: 0 toRem(16);
-      border-left: toRem(1) solid getColor("grey-100");
-
-      &:first-of-type {
-        padding-left: 0;
-        border-left: 0;
-      }
-
-      @include breakpoint-down(xxs) {
-        width: 100%;
-        border-left: 0;
-        padding-left: 0;
-
-        .third-balance {
-          border-bottom: toRem(1) solid getColor("grey-100");
-          padding-bottom: toRem(16);
-        }
-      }
-
-      .balance-meta {
-        min-height: toRem(17);
-      }
-    }
-  }
-
-  .title-text {
     @include breakpoint-down(xs) {
       font-size: toRem(11.75);
     }
   }
 
-  .amount-value {
-    @include generate-font-type("h4");
-    color: getColor("teal-800");
-    padding: toRem(10) 0 toRem(8) 0;
-    font-size: toRem(23.5);
-    margin: 0 !important;
-
-    @include breakpoint-down(lg) {
-      @include generate-font-type("primary-1");
-      padding-bottom: toRem(12.75);
-      font-size: toRem(18.5);
-    }
-
-    @include breakpoint-custom-down(700) {
-      font-size: toRem(16);
-    }
-
-    .amount-zero {
-      font-size: toRem(18);
-
-      @include breakpoint-custom-down(700) {
-        font-size: toRem(16);
-      }
-    }
+  .top-row {
+    @include flex-row-wrap("flex-start", "center")
   }
-
-  .hidden-balance {
-    position: relative;
-    top: toRem(3);
-  }
-
-  .loading-amount-value {
-    @include draw-shape(120, 32);
-    margin-top: toRem(5);
-  }
-}
-
-.tour-index {
-  @include transition(0.7s);
-  z-index: 1099;
 }
 </style>

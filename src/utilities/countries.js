@@ -528,7 +528,7 @@ const countries = [
     },
   },
   {
-    country: "United States",
+    country: "United States of America",
     dialing_code: "1",
     code: "us",
     flag: "https://flagsapi.com/US/flat/64.png",

@@ -102,8 +102,8 @@ const merchantRoutes = [
   //   id: 6,
   //   title: "Tax Records",
   //   icon: "TaxIcon",
-  //   link: "/payments",
-  //   slug: "payments",
+  //   link: "/merchant/tax-record",
+  //   slug: "tax-record",
   //   tour_id: [],
   // },
   // {

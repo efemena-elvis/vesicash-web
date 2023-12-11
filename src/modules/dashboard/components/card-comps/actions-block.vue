@@ -7,7 +7,7 @@
     <div class="row">
       <div
         class="col-12 col-sm-6 col-md-4"
-        v-for="(card, index) in card_actions"
+        v-for="(card, index) in getCardActions"
         :key="index"
         :card_id="index"
       >
@@ -79,6 +79,12 @@ export default {
       getWalletTransferDetails: "general/getWalletTransferDetails",
       getTransactionCharges: "general/getTransactionCharges",
     }),
+
+    getCardActions() {
+      return this.isMoRSetupEnabled
+        ? this.card_actions
+        : this.card_actions.filter((item) => !item.isMor);
+    },
   },
 
   data: () => ({
@@ -89,36 +95,42 @@ export default {
         description: "Send money globally with ease",
         icon: "cash-icon.svg",
         action: "toggleTransferFlow",
+        isMor: false,
       },
       {
         title: "Fund your wallet",
         description: "Top up wallet for swift payments",
         icon: "wallet-icon.svg",
         action: "toggleFundingFlow",
+        isMor: false,
       },
       {
         title: "Create escrow",
         description: "Engage in transparent transactions",
         icon: "central-icon.svg",
         link: "/transactions/setup",
+        isMor: false,
       },
       {
         title: "Exchange money",
         description: "Exchange money across currencies",
         icon: "swap-icon.svg",
         link: "/exchange/setup",
-      },
-      {
-        title: "Payment via checkout",
-        description: "Integrate MoR checkout api",
-        icon: "subscription-icon.svg",
-        link: "/merchant/developer?type=checkout",
+        isMor: false,
       },
       {
         title: "Deploy MoR",
         description: "Setup MoR for any country",
         icon: "subscription-icon.svg",
         link: "/settings/mor-setup",
+        isMor: false,
+      },
+      {
+        title: "Payment via checkout",
+        description: "Integrate MoR checkout api",
+        icon: "subscription-icon.svg",
+        link: "/merchant/developer?type=checkout",
+        isMor: true,
       },
     ],
 

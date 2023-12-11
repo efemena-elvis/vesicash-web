@@ -5,17 +5,10 @@
     </td>
 
     <td class="body-data" :class="`${table_name}-2`">
-      <div>{{ data.customer_name }}</div>
-      <div class="f-size-13 mgt-4">
-        {{ data.merchant_email }}
-      </div>
-    </td>
-
-    <td class="body-data" :class="`${table_name}-3`">
       {{ data.reference }}
     </td>
 
-    <td class="body-data" :class="`${table_name}-4`">
+    <td class="body-data" :class="`${table_name}-3`">
       {{
         $utils.formatCurrency({
           input: data.currency,
@@ -39,24 +32,34 @@
       </div>
     </td>
 
+    <td class="body-data" :class="`${table_name}-4`">
+      {{
+        $utils.formatCurrency({
+          input: data.currency,
+          output: "sign",
+        })
+      }}
+      {{ `${$utils.formatCurrencyWithComma("1200")}` }}
+    </td>
+
     <!-- <td class="body-data" :class="`${table_name}-5`">
-      {{ data.payment_method }}
-    </td> -->
+        {{ data.payment_method }}
+      </td> -->
 
     <td class="body-data" :class="`${table_name}-6`">
       <TagCard card_text="Successful" card_type="success" />
     </td>
   </tr>
   <!-- <td class="body-data" :class="`${table_name}-7`">
-      <button class="btn btn-secondary btn-sm">View</button>
-    </td> -->
+        <button class="btn btn-secondary btn-sm">View</button>
+      </td> -->
 </template>
-
-<script>
+  
+  <script>
 import TagCard from "@/shared/components/card-comps/tag-card";
 
 export default {
-  name: "MoRTransactionTableRow",
+  name: "MoRTaxTableRow",
 
   components: {
     TagCard,
@@ -89,8 +92,9 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
+  
+  <style lang="scss" scoped>
 .transaction-table-row {
 }
 </style>
+  

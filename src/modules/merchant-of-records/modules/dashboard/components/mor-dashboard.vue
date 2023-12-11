@@ -2,8 +2,6 @@
   <div class="mor-dashboard">
     <template>
       <div class="wrapper">
-        <!-- <div class="title-text h5-text grey-900 mgb-8">Your Metrics</div> -->
-
         <div
           class="metric-card-section"
           v-if="$route.name === 'MerchantTransaction'"
@@ -44,7 +42,7 @@
         <div class="title-text h5-text grey-900 mgb-8">Recent transactions</div>
 
         <PageSwitcher
-          :page_data="pages"
+          :page_data="getPages"
           :full_width="false"
           @swapItem="updateTransactionChanges($event)"
         />
@@ -92,6 +90,12 @@ export default {
       return this.active_transaction_view === "MoRTransactionTable"
         ? "MoR Transactions"
         : "Escrow Transactions";
+    },
+
+    getPages() {
+      return this.isMoRSetupEnabled
+        ? this.pages
+        : this.pages.filter((_, key) => key !== 1);
     },
   },
 

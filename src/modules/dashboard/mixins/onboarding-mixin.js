@@ -36,7 +36,7 @@ const OnboardingMixin = {
         });
 
         if (this.$route.name === "VesicashIdentityOnboarding")
-          this.updateMerchantState(true);
+          this.updateMerchantState(false);
 
         if (next_onboarding_route?.length) {
           this.$router.push({ name: next_onboarding_route });
@@ -54,7 +54,7 @@ const OnboardingMixin = {
               is_completed,
               completed_routes: this.getCompletedRoutes,
             },
-            merchant: true,
+            merchant: false,
           },
         };
       } else {

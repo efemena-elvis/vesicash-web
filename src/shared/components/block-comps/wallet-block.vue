@@ -1,5 +1,5 @@
 <template>
-  <div class="wallet-block mgb-20">
+  <div class="wallet-block mgb-40">
     <!-- PRIMARY WALLET SECTION -->
     <PrimaryWalletCard
       :wallet_balance="extractPrimaryWallet"
@@ -15,7 +15,9 @@
     />
 
     <!-- MOR WALLET SECTION -->
-    <MoRWalletBlock v-if="card_type === 'escrow'" />
+    <template v-if="isMoRSetupEnabled">
+      <MoRWalletBlock v-if="card_type === 'escrow'" />
+    </template>
   </div>
 </template>
 
@@ -62,15 +64,13 @@ export default {
         .filter((wallet) => wallet.mor)
         .filter((w) => !exclude_mor_list.includes(w.short));
 
-      return this.getWalletSize.length
-        ? [...primary_wallets, ...mor_wallets]
-        : empty_wallet;
+      return this.getWalletSize.length ? [...primary_wallets] : empty_wallet;
     },
 
     extractEscrowWallet() {
-      return this.getWalletSize.filter((wallet) =>
-        wallet.short.includes("ESCROW")
-      );
+      return this.getWalletSize
+        .filter((wallet) => wallet.short.includes("ESCROW"))
+        .filter((wallet) => wallet.short !== "ESCROW_GBP");
     },
   },
 };

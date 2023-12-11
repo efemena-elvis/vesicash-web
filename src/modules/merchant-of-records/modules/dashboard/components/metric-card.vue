@@ -9,11 +9,11 @@
     <div class="metric-data-row">
       <div
         class="metric-data"
-        v-for="(wallet, index) in metric_data"
+        v-for="(wallet, index) in getMetricData"
         :key="index"
       >
         <div class="title grey-700 mgb-6">
-          {{ wallet.short }}
+          {{ wallet?.description }}
         </div>
 
         <template>
@@ -28,16 +28,31 @@
             }}{{
               is_currency_type
                 ? `${$utils.formatCurrencyWithComma(
-                    wallet?.balance?.split(".")[0] ?? wallet?.balance
-                  )}.${wallet?.balance?.split(".")[1] ?? "00"}`
+                    wallet?.balance?.toString()?.split(".")[0] ??
+                      wallet?.balance
+                  )}.${wallet?.balance?.toString()?.split(".")[1] ?? "00"}`
                 : wallet?.balance ?? 0
             }}
           </div>
         </template>
 
-        <div class="title grey-700">
-          {{ wallet.description }}
+        <div class="title f-size-10 grey-700 mgt-2 mgb-6" v-if="!is_tax_type">
+          Gross:
+          <span class="fw-semibold">
+            {{ is_currency_type ? wallet.sign : ""
+            }}{{
+              is_currency_type
+                ? `${$utils.formatCurrencyWithComma(
+                    wallet?.balance?.toString().split(".")[0] ?? wallet?.balance
+                  )}.${wallet?.balance?.toString()?.split(".")[1] ?? "00"}`
+                : wallet?.balance ?? 0
+            }}</span
+          >
         </div>
+
+        <!-- <div class="title f-size-11-5 grey-600">
+          {{ wallet.description }}
+        </div> -->
       </div>
     </div>
   </div>
@@ -66,9 +81,20 @@ export default {
       default: true,
     },
 
+    is_tax_type: {
+      type: Boolean,
+      default: false,
+    },
+
     is_loading: {
       type: Boolean,
       default: true,
+    },
+  },
+
+  computed: {
+    getMetricData() {
+      return this.metric_data.length ? this.metric_data : [];
     },
   },
 };
@@ -142,7 +168,7 @@ export default {
 
       .value {
         @include generate-font-type("h5");
-        font-size: toRem(21);
+        font-size: toRem(22);
 
         @include breakpoint-down(lg) {
           @include generate-font-type("primary-1");
