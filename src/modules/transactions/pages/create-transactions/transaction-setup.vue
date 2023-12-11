@@ -94,7 +94,7 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters } from "vuex";
+import { mapMutations, mapGetters, mapActions } from "vuex";
 
 export default {
   name: "TransactionSetup",
@@ -107,7 +107,10 @@ export default {
   },
 
   computed: {
-    ...mapGetters({ getTransactionSetup: "transactions/getTransactionSetup" }),
+    ...mapGetters({
+      getTransactionSetup: "transactions/getTransactionSetup",
+      getTransactionCharges: "general/getTransactionCharges",
+    }),
 
     isDisabled() {
       return this.form.transaction_name &&
@@ -199,7 +202,15 @@ export default {
     };
   },
 
+  mounted() {
+    this.fetchCharges("escrow");
+  },
+
   methods: {
+    ...mapActions({
+      fetchCharges: "general/fetchCharges",
+    }),
+
     ...mapMutations({
       UPDATE_TRANSACTION_SETUP: "transactions/UPDATE_TRANSACTION_SETUP",
     }),

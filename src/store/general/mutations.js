@@ -75,4 +75,8 @@ export default {
       ? (state.transaction_charges[type] = charges)
       : (state.transaction_charges = { [type]: charges });
   },
+
+  SAVE_ESCROW_CHARGE: (state, charge) => {
+    state.escrow_charge = charge;
+  },
 };
