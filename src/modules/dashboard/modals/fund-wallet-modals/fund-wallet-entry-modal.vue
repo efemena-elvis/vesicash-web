@@ -61,30 +61,32 @@
       </template>
 
       <!-- TRANSFER OPTION VIEW -->
-      <template v-if="+form.amount >= selected_currency.min_amount">
-        <template
-          v-if="payment_type.slug === 'transfer' && selected_currency.slug"
-        >
-          <!-- TITLE TEXT -->
-          <div class="description-text mgb-10 grey-600 tertiary-2-text">
-            Please send the amount to fund to the bank account below.
-          </div>
+      <template v-if="false">
+        <template v-if="+form.amount >= selected_currency.min_amount">
+          <template
+            v-if="payment_type.slug === 'transfer' && selected_currency.slug"
+          >
+            <!-- TITLE TEXT -->
+            <div class="description-text mgb-10 grey-600 tertiary-2-text">
+              Please send the amount to fund to the bank account below.
+            </div>
 
-          <!-- LOADING TRANSFER DETAILS -->
-          <div class="modal-items-wrapper rounded-4 green-50-bg mgb-20">
-            <template v-if="bank_details_loading">
-              <ModalListItem v-for="(_, index) in 3" :key="index" loading />
-            </template>
+            <!-- LOADING TRANSFER DETAILS -->
+            <div class="modal-items-wrapper rounded-4 green-50-bg mgb-20">
+              <template v-if="bank_details_loading">
+                <ModalListItem v-for="(_, index) in 3" :key="index" loading />
+              </template>
 
-            <template v-else>
-              <ModalListItem
-                v-for="(data, index) in transfer_info"
-                :title="data.title"
-                :value="data.value"
-                :key="index"
-              />
-            </template>
-          </div>
+              <template v-else>
+                <ModalListItem
+                  v-for="(data, index) in transfer_info"
+                  :title="data.title"
+                  :value="data.value"
+                  :key="index"
+                />
+              </template>
+            </div>
+          </template>
         </template>
       </template>
     </div>
@@ -104,9 +106,14 @@
         <button
           :disabled="isValidTransfer"
           class="btn btn-primary btn-md wt-100"
-          @click="handleFundSuccess"
+          @click="
+            $emit('loadBankDetails', {
+              amount: +form.amount,
+              currency: selected_currency,
+            })
+          "
         >
-          I have funded
+          Get Transfer Account
         </button>
       </template>
     </div>
@@ -201,7 +208,7 @@ export default {
 
     // CHECK FORM BUTTON VALIDITY STATE
     isValidTransfer() {
-      return +this.form.amount > 1000 ? false : true;
+      return +this.form.amount >= 1000 ? false : true;
     },
 
     getCurrencyOptions() {
@@ -233,7 +240,7 @@ export default {
     "form.amount": {
       handler(value) {
         if (+value >= 1000) {
-          this.handleFetchingOfTransferDetails();
+          // this.handleFetchingOfTransferDetails();
         }
       },
     },
@@ -321,6 +328,7 @@ export default {
         transaction_id:
           this.$route?.query?.transaction_id ?? this.$route?.params?.id,
         gateway: "rave",
+        new: true,
       };
 
       if (!this.gateway) delete request_payload?.gateway;

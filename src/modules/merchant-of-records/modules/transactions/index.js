@@ -17,6 +17,19 @@ const merchantTransactionRoutes = [
           requiresAuth: true,
         },
       },
+
+      {
+        path: "/merchant/tax-record",
+        name: "MerchantTaxRecord",
+        component: () =>
+          import(
+            /* webpackChunkName: "merchant-module" */
+            "@/modules/merchant-of-records/modules/transactions/pages/mor-taxes"
+          ),
+        meta: {
+          requiresAuth: true,
+        },
+      },
     ],
   },
 ];

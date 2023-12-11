@@ -110,7 +110,7 @@ export default {
         alert_handler: {
           success: "Payment initiated successfully",
           error: "Unable to initiate payment",
-          request_error: "Invalid payment data",
+          request_error: "Shipping data provided is not valid",
         },
       });
 

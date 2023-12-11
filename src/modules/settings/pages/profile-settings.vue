@@ -357,7 +357,7 @@ export default {
         phone_number: this.form.phone_number.value,
         email_address: this.form.email_address.value,
         // username: this.form.username.value,
-        dob: this.form.dob.value,
+        // dob: this.form.dob.value,
         meta: this.uploaded_pic,
         // bio: this.form.bio.value,
         flutterwave_merchant_id: this.form.flutterwave_merchant_id.value,

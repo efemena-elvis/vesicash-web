@@ -33,7 +33,12 @@
                 <img v-lazy="country.flag" :alt="country.country" />
               </div>
 
-              <div>{{ country.country }} (+{{ country.dialing_code }})</div>
+              <div>
+                {{ country.country }}
+                <span v-if="!is_country_only">
+                  (+{{ country.dialing_code }})</span
+                >
+              </div>
             </div>
           </div>
         </div>
@@ -68,6 +73,11 @@ export default {
     allow_search: {
       type: Boolean,
       default: true,
+    },
+
+    is_country_only: {
+      type: Boolean,
+      default: false,
     },
   },
 

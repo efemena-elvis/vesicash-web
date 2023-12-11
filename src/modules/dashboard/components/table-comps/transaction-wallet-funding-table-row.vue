@@ -21,8 +21,8 @@
 
     <td class="body-data" :class="`${table_name}-5`">
       <TagCard
-        :card_text="data.is_paid ? 'Completed' : 'Failed'"
-        :card_type="data.is_paid ? 'success' : 'error'"
+        :card_text="$utils.getCapitalizeText(data.payment_status)"
+        :card_type="getStatusColor"
       />
     </td>
 
@@ -81,6 +81,16 @@ export default {
 
     getUserEmail() {
       return this.data?.user_details?.email || this.getUser.email;
+    },
+
+    getStatusColor() {
+      const { payment_status } = this.data;
+
+      if (payment_status === "successful") return "success";
+      else if (payment_status === "failed") return "error";
+      else if (payment_status === "pending") return "progress";
+
+      return "stale";
     },
 
     getSummaryData() {

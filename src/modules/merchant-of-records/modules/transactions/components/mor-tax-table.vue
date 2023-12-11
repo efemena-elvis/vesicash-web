@@ -2,7 +2,7 @@
   <div class="transaction-table">
     <!-- TABLE CONTAINER -->
     <TableContainer
-      table_name="mor-transaction-tb"
+      table_name="mor-tax-tb"
       :table_data="table_data"
       :table_header="table_header"
       :is_loading="table_loading"
@@ -13,28 +13,24 @@
       @goToPage="getUserTransactions($event)"
     >
       <template v-for="(data, index) in table_data">
-        <MoRTransactionTableRow
-          :key="index"
-          table_name="mor-transaction-tb"
-          :data="data"
-        />
+        <MoRTaxTableRow :key="index" table_name="mor-tax-tb" :data="data" />
       </template>
     </TableContainer>
   </div>
 </template>
-
-<script>
+  
+  <script>
 import { mapActions, mapGetters } from "vuex";
 import TableContainer from "@/shared/components/table-comps/table-container";
 
 export default {
-  name: "MoRTransaction",
+  name: "MoRTaxTable",
 
   components: {
     TableContainer,
-    MoRTransactionTableRow: () =>
+    MoRTaxTableRow: () =>
       import(
-        /* webpackChunkName: "transactions-module" */ "@/modules/merchant-of-records/modules/transactions/components/mor-transaction-table-row"
+        /* webpackChunkName: "transactions-module" */ "@/modules/merchant-of-records/modules/transactions/components/mor-tax-table-row"
       ),
   },
 
@@ -65,9 +61,9 @@ export default {
     return {
       table_header: [
         "Transaction Date",
-        "Customer Info",
         "Payment Reference ID",
         "Payment Info",
+        "Tax Amount",
         "Status",
       ],
       // "Method",
@@ -204,9 +200,9 @@ export default {
   },
 };
 </script>
-
-<style lang="scss">
-.mor-transaction-tb {
+  
+  <style lang="scss">
+.mor-tax-tb {
   &-1 {
     min-width: toRem(150);
   }
@@ -236,3 +232,4 @@ export default {
   }
 }
 </style>
+  

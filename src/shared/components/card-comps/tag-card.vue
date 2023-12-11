@@ -15,7 +15,7 @@ export default {
 
     card_type: {
       type: String,
-      default: "success", // success | error | progress | okay | stale
+    default: "success", // success | error | progress | okay | stale
     },
   },
 };

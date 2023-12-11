@@ -118,7 +118,7 @@ const WalletMixin = {
         if (fetched_wallet !== -1) {
           let wallet_payload = {
             id: wallet.id,
-            balance: wallet.available,
+            balance: wallet.available?.toString() ?? "0",
             code: fetched_wallet.code,
             sign: fetched_wallet.currency.sign,
             short: fetched_wallet.currency.short,
