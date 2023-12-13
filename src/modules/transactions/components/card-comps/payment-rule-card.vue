@@ -100,7 +100,13 @@
               Renew Date
             </button>
 
-            <button class="btn btn-secondary btn-md">Close</button>
+            <button
+              class="btn btn-secondary btn-md"
+              @click="closeTransaction"
+              ref="closeBtn"
+            >
+              Close
+            </button>
           </template>
         </template>
 
@@ -477,6 +483,10 @@ export default {
         "markAsDoneBtn",
         "Mark as done"
       );
+    },
+
+    closeTransaction() {
+      this.updateStatus(this.ms_key["closed"], "closeBtn", "Close");
     },
 
     // CLOSE MILESTONE TRANSACTION
