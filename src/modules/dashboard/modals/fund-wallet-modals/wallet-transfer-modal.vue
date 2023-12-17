@@ -44,6 +44,7 @@
               type: 'required',
               message: 'Enter an amount',
             }"
+            :is_disabled="!!form.amount"
           />
         </div>
       </div>

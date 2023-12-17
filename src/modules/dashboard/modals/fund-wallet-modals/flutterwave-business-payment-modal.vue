@@ -149,6 +149,7 @@ export default {
     return {
       account_reference_id: "",
       naira_wallet_loading: true,
+      retried_account_fetching: false,
     };
   },
 
@@ -179,7 +180,10 @@ export default {
           request_payload
         );
         this.naira_wallet_loading = false;
-        if (response?.code === 500) this.handleFetchingNairaDetails();
+        if (response?.code === 500 && !this.retried_account_fetching) {
+          this.handleFetchingNairaDetails();
+          this.retried_account_fetching = true;
+        }
       } catch (e) {
         console.log("ERROR OCCURED", e);
         this.naira_wallet_loading = false;
