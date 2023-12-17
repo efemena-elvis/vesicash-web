@@ -98,14 +98,14 @@ const merchantRoutes = [
     slug: "payments",
     tour_id: [7],
   },
-  // {
-  //   id: 6,
-  //   title: "Tax Records",
-  //   icon: "TaxIcon",
-  //   link: "/merchant/tax-record",
-  //   slug: "tax-record",
-  //   tour_id: [],
-  // },
+  {
+    id: 6,
+    title: "Tax Records",
+    icon: "TaxIcon",
+    link: "/merchant/tax-record",
+    slug: "tax-record",
+    tour_id: [],
+  },
   // {
   //   id: 7,
   //   title: "Reports",

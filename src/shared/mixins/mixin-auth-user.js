@@ -8,6 +8,7 @@ const MixinAuthUser = {
       getAuthToken: "auth/getAuthToken",
       getMerchantData: "general/getMerchantData",
       getOnboardingData: "general/getOnboardingData",
+      getTaxRate: "merchantTransactions/getTaxRate",
     }),
 
     // ==============================
@@ -84,6 +85,10 @@ const MixinAuthUser = {
 
     getOnboardingState() {
       return this.getOnboardingData;
+    },
+
+    getMoRTaxRates() {
+      return this.getTaxRate;
     },
   },
 };
