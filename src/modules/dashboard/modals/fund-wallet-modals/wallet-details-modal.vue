@@ -199,6 +199,8 @@ export default {
 
       naira_wallet_info_repo: [],
       naira_wallet_info: [],
+
+      retried_account_fetching: false,
     };
   },
 
@@ -259,9 +261,10 @@ export default {
             // this.naira_wallet_info.at(-1).value = `Vesicash-${account_name}`;
 
             this.naira_wallet_loading = false;
-          } else if (response?.code === 500) {
+          } else if (response?.code === 500 && !this.retried_account_fetching) {
             this.naira_wallet_loading = false;
             this.handleFetchingAccountDetails();
+            this.retried_account_fetching = true;
           } else this.naira_wallet_loading = false;
         })
         .catch(() => (this.naira_wallet_loading = false));

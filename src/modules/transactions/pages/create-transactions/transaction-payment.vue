@@ -94,6 +94,7 @@
           @goBackOptionSelection="toggleWalletTransferModal"
           @transfer="transferFromWallet"
           :currency="getCurrency"
+          :amount="transactionAmount"
         />
       </transition>
     </portal>
@@ -134,6 +135,10 @@ export default {
       return charge
         ? { ...amount, escrow_fee: charge.fee_charge, total_fee: charge.total }
         : amount;
+    },
+
+    transactionAmount() {
+      return this.getTransactionCharge?.total || 0;
     },
   },
 
