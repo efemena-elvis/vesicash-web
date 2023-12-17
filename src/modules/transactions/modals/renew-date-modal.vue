@@ -129,7 +129,7 @@ export default {
         transaction_id: this.$route.params.id,
         milestone_id: this.data.milestone_id,
         due_date: this.form.due_date,
-        inspection_period: this.form.inspection_period?.toString(),
+        inspection_period: Number(this.form?.inspection_period),
       };
 
       this.renewMilestoneDate(request_payload)
