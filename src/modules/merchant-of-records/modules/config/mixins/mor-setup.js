@@ -78,6 +78,7 @@ const morSetup = {
 
   methods: {
     ...mapActions({
+      saveUserProfile: "settings/saveUserProfile",
       fetchMoRCountries: "merchant/fetchMoRCountries",
       fetchMoROnboarding: "merchant/fetchMoROnboarding",
       saveMoROnboarding: "merchant/saveMoROnboarding",
@@ -210,6 +211,24 @@ const morSetup = {
         if (this.$route.name === "VesicashMoROnboarding") {
           await this.completeOnboarding();
         } else {
+          await this.handleDataRequest({
+            action: "saveUserProfile",
+            payload: {
+              extra_data: {
+                onboarding: {
+                  is_completed: true,
+                  completed_routes: [
+                    "VesicashBusinessInfoOnboarding",
+                    "VesicashBusinessOnboarding",
+                    "VesicashIdentityOnboarding",
+                  ],
+                },
+                merchant: true,
+              },
+            },
+            show_alert: false,
+          });
+
           this.updateMerchantState(true);
         }
       }

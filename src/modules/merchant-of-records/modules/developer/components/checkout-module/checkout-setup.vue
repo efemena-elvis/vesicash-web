@@ -103,6 +103,7 @@ export default {
     }),
 
     async initializePayment() {
+      console.log("DATA", this.getPayloadData);
       const response = await this.handleDataRequest({
         action: "initializeCheckoutPayment",
         payload: this.getPayloadData,

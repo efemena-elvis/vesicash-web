@@ -44,19 +44,10 @@ export default {
       withdraw_options: [
         {
           id: 1,
-          icon: "MoneyIcon",
-          title: "MoR transfer request",
-          slug: "transfer_request",
-          description: "Initiate an assisted transfer from your MoR wallet(s)",
-        },
-        {
-          id: 2,
           icon: "BusinessIcon",
           title: "Settlement account",
           slug: "settlement",
-          description: this.isBusinessAccount
-            ? "Transfer funds to your business accounts."
-            : "Transfer funds to your personal accounts.",
+          description: "Transfer funds to a settlement account.",
         },
         {
           id: 2,
@@ -66,11 +57,18 @@ export default {
           description: "Transfer funds to a 3rd party account.",
         },
         {
-          id: 4,
+          id: 3,
           icon: "WalletIcon",
           title: "Vesicash wallet",
           slug: "wallet",
           description: "Transfer funds to a Vesicash user wallet.",
+        },
+        {
+          id: 4,
+          icon: "MoneyIcon",
+          title: "MoR fund transfer",
+          slug: "transfer_request",
+          description: "Process MoR funds to primary wallet",
         },
       ],
     };
