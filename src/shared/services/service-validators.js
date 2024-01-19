@@ -130,6 +130,8 @@ class serviceValidators {
     if (!/\d/.test(trimmed_input)) {
       return "Password must contain at least one number.";
     }
+
+    return false;
   }
 }
 
