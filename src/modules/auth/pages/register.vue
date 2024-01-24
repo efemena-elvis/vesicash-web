@@ -65,7 +65,7 @@
           @getInputState="updateFormFieldMx($event, 'password')"
           :error_handler="{
             type: 'password',
-            message: 'Password should contain at least 6 characters',
+            message: '',
           }"
         />
       </div>
