@@ -117,6 +117,7 @@ export default {
       type: Object,
       default: () => ({
         owner: "",
+        members: [],
         title: "",
         amount_paid: "",
         total_amount: "",
@@ -141,8 +142,13 @@ export default {
     },
 
     isTransactionOwner() {
+      console.log(this.getUser.email);
+      console.log(this.transaction.owner);
+
       return this.getUser.email === this.transaction.owner;
     },
+
+    isTransactionStatusPending() {},
 
     getTotalAmount() {
       return Number(

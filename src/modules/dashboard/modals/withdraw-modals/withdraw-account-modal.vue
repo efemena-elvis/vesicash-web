@@ -21,7 +21,7 @@
             :total_value="`${$utils.formatCurrency({
               input: selected_currency.slug,
               output: 'sign',
-            })}${$utils.formatCurrencyWithComma(selected_currency_balance)}`"
+            })}${$utils.formatCurrencyWithComma(getCurrencyBalance)}`"
             use_custom_style
           />
         </div>
@@ -31,8 +31,9 @@
           <BasicInput
             label_title="Amount to withdraw"
             label_id="amount"
-            :input_value="form.amount"
+            :input_value="getAmountValue"
             input_type="number"
+            :is_disabled="account_type.slug === 'transfer_request' && true"
             is_required
             placeholder="0.00"
             :custom_style="{ input_wrapper_style: 'form-prefix' }"
@@ -79,23 +80,10 @@
             ></div>
 
             <div class="text grey-700 tertiary-2-text">
-              On confirmation of your withdrawal request, your requested amount
-              would be processed within 1-3 business working days.
+              The equivalent of your MoR fund would be exchanged and deposited
+              into your local primary wallet
             </div>
           </div>
-
-          <!-- <div class="form-group">
-            <BasicInput
-              label_title="Withdrawal date"
-              label_id="withdrawalDate"
-              input_type="date"
-              :input_value="mor_withdrawal_date"
-              placeholder="Select date"
-              is_required
-              :minimum_date="minimum_date"
-              @getInputState="updateWithdrawalInput($event.value)"
-            />
-          </div> -->
         </template>
 
         <template v-else>
@@ -290,6 +278,26 @@ export default {
       return `${sign}${this.$utils.formatCurrencyWithComma(_cost)}`;
     },
 
+    getTaxValue() {
+      let tax_payload = this.getMoRTaxRates.find(
+        (item) => item.currency === this.selected_currency.short
+      );
+
+      return (tax_payload?.percentage / 100) * +this.selected_currency_balance;
+    },
+
+    getAmountValue() {
+      return this.account_type.slug === "transfer_request"
+        ? +this.selected_currency_balance - this.getTaxValue
+        : this.form.amount;
+    },
+
+    getCurrencyBalance() {
+      if (this.account_type.slug === "transfer_request") {
+        return +this.selected_currency_balance - this.getTaxValue;
+      } else return this.selected_currency_balance;
+    },
+
     // GET ACCOUNT BENEFICIARY INPUT FILED LABEL
     getBeneficiaryLabel() {
       return `Select ${
@@ -335,10 +343,11 @@ export default {
     // CHECK AMOUNT AND BANK ACCOUNT SELECTED
     isFormFieldsValid() {
       if (this.account_type.slug === "transfer_request") {
-        return this.form.amount ? false : true;
+        return false;
       }
 
-      return this.form.amount && this.form.selected_beneficiary.selected
+      return this.form.amount >= this.selected_currency.min_amount &&
+        this.form.selected_beneficiary.selected
         ? false
         : true;
     },
@@ -347,6 +356,10 @@ export default {
   async mounted() {
     this.loadWalletCurrencyOptions();
     await this.fetchUserSavedAccountList(this.account_type.slug);
+
+    if (this.account_type === "transfer_request") {
+      this.form.amount = this.selected_currency_balance;
+    }
   },
 
   watch: {

@@ -28,9 +28,11 @@
             }}{{
               is_currency_type
                 ? `${$utils.formatCurrencyWithComma(
-                    wallet?.balance?.toString()?.split(".")[0] ??
-                      wallet?.balance
-                  )}.${wallet?.balance?.toString()?.split(".")[1] ?? "00"}`
+                    computeTaxData(wallet)?.toString()?.split(".")[0] ??
+                      computeTaxData(wallet)
+                  )}.${
+                    computeTaxData(wallet)?.toString()?.split(".")[1] ?? "00"
+                  }`
                 : wallet?.balance ?? 0
             }}
           </div>
@@ -59,6 +61,8 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 export default {
   name: "MetricCard",
 
@@ -95,6 +99,50 @@ export default {
   computed: {
     getMetricData() {
       return this.metric_data.length ? this.metric_data : [];
+    },
+  },
+
+  data() {
+    return {
+      tax_rates: [],
+    };
+  },
+
+  mounted() {
+    this.fetchMoRTaxRate();
+  },
+
+  methods: {
+    ...mapActions({
+      getMoRTaxRate: "merchantTransactions/getMoRTaxRate",
+    }),
+
+    async fetchMoRTaxRate() {
+      let response = await this.handleDataRequest({
+        action: "getMoRTaxRate",
+        alert_handler: {
+          request_error: "Tax rate was not found",
+          not_found_error: "Tax rate was not found",
+        },
+      });
+
+      if (response.code === 200) this.tax_rates = response.data;
+    },
+
+    computeTaxData(wallet) {
+      let tax_payload = this.tax_rates.find(
+        (item) => item.currency === wallet.short
+      );
+
+      let tax_value = (tax_payload?.percentage / 100) * wallet.balance;
+
+      if (this.is_tax_type) {
+        if (tax_payload !== undefined) return tax_value;
+        else return "0.00";
+      } else {
+        if (tax_payload !== undefined) return wallet.balance - tax_value;
+        else return "0.00";
+      }
     },
   },
 };

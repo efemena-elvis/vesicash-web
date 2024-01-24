@@ -72,7 +72,7 @@
       >
         <template slot="form-area">
           <div class="w-100">
-            <MoRDcoumentTable :dataset="form.documents" />
+            <MoRDocumentTable :dataset="form.documents" />
           </div>
         </template>
       </FieldSetup>
@@ -110,7 +110,7 @@ export default {
 
   components: {
     FieldSetup,
-    MoRDcoumentTable: () =>
+    MoRDocumentTable: () =>
       import(
         /* webpackChunkName: "MoR-module" */ "@/modules/merchant-of-records/modules/config/components/mor-document-table"
       ),

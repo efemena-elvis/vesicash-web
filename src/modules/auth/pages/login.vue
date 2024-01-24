@@ -189,6 +189,8 @@ export default {
       if (response.code === 200) {
         let user_extra_data = response.data.user?.extra_data;
 
+        console.log(user_extra_data);
+
         // EXTRACT COMPLETED STATE AND COMPLETED ROUTES
         let { is_completed, completed_routes } =
           user_extra_data?.onboarding ?? this.default_onboarding_state;

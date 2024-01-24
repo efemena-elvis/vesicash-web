@@ -294,8 +294,7 @@ export default {
           break;
 
         case "password":
-          this.error_message =
-            !this.$validate.validatePasswordInput(value, 8) && message;
+          this.error_message = this.validatePassword(value);
           break;
 
         case "required":
@@ -314,6 +313,11 @@ export default {
       }
     },
 
+    validatePassword(value) {
+      let invalid_pwd = this.$validate.validatePasswordStrength(value);
+      if (invalid_pwd) return invalid_pwd;
+    },
+
     // =================================
     // VALIDATE USER ENTRY INPUT DATA
     // =================================
@@ -322,7 +326,7 @@ export default {
 
       // EMIT CLIENT ENTERED VALUE
       this.$emit("getInputState", {
-        validity: this.error_message.length ? false : true,
+        validity: this.error_message?.length ? false : true,
         value: this.form_value,
       });
     },

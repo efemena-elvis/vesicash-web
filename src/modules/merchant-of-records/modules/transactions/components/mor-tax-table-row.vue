@@ -39,7 +39,11 @@
           output: "sign",
         })
       }}
-      {{ `${$utils.formatCurrencyWithComma("1200")}` }}
+      {{
+        `${$utils.formatCurrencyWithComma(
+          data.tax_fee?.toString()?.split(".")[0] ?? data.tax_fee
+        )}.${data.tax_fee?.toString()?.split(".")[1] ?? "00"}`
+      }}
     </td>
 
     <!-- <td class="body-data" :class="`${table_name}-5`">

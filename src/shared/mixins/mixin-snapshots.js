@@ -1,4 +1,4 @@
-import { mapActions } from "vuex";
+import { mapActions, mapMutations } from "vuex";
 import { serviceStorage } from "@/shared/services";
 
 const SnapshotMixin = {
@@ -40,11 +40,15 @@ const SnapshotMixin = {
       updateOnboardingState: "general/updateOnboardingState",
     }),
 
+    ...mapMutations({
+      UPDATE_TAX_RATE: "merchantTransactions/UPDATE_TAX_RATE",
+    }),
+
     takeSnapshots() {
       this.snaps.map((snap) => {
         serviceStorage.setStorage({
           storage_name: snap.name,
-          storage_value: this[snap.value],
+          storage_value: this[snap?.value],
           storage_type: snap.type,
         });
       });

@@ -303,6 +303,7 @@ export default {
 
     getTransactionModalProps() {
       let transaction_owner = this.getTransaction?.members[0]?.email ?? "Owner";
+      let transaction_members = this.getTransaction?.members ?? [];
       let transaction_title = this.getTransaction.title;
       let transaction_amount =
         this.getTransaction?.total_amount ??
@@ -315,6 +316,7 @@ export default {
 
       return {
         owner: transaction_owner,
+        members: transaction_members,
         title: transaction_title,
         amount_paid: transaction_amount_paid,
         currency: this.$money.getSign(transaction_currency),

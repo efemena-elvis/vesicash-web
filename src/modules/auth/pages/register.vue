@@ -264,29 +264,29 @@ export default {
           this.getRequestPayload.password
         );
 
-        const response = await this.handleDataRequest({
-          action: "registerUser",
-          payload: this.getRequestPayload,
-          btn_text: "Register",
-          alert_handler: {
-            success: "Your vesicash account has been created",
-            error: "Unable to create your account at this time",
-          },
-        });
+        // const response = await this.handleDataRequest({
+        //   action: "registerUser",
+        //   payload: this.getRequestPayload,
+        //   btn_text: "Register",
+        //   alert_handler: {
+        //     success: "Your vesicash account has been created",
+        //     error: "Unable to create your account at this time",
+        //   },
+        // });
 
-        if (response.code === 201) {
-          this.user_details = response.data;
-          this.handleOTPInitiation(); // SEND USER OTP
-          localStorage.clear();
-        }
+        // if (response.code === 201) {
+        //   this.user_details = response.data;
+        //   this.handleOTPInitiation(); // SEND USER OTP
+        //   localStorage.clear();
+        // }
 
-        if (response?.code === 400) {
-          this.handleToastPushMx(
-            this.$utils.capitalizeFirstLetter(response?.message) ??
-              "An error occured while creating account",
-            "error"
-          );
-        }
+        // if (response?.code === 400) {
+        //   this.handleToastPushMx(
+        //     this.$utils.capitalizeFirstLetter(response?.message) ??
+        //       "An error occured while creating account",
+        //     "error"
+        //   );
+        // }
       } catch (error) {
         this.handleToastPushMx(error.message, "error");
       }
