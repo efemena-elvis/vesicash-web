@@ -85,22 +85,6 @@ const authRoutes = [
       // },
 
       // ==================================
-      // VESICASH REGISTER ROUTE
-      // ==================================
-      {
-        path: "/register",
-        alias: "/register-lander",
-        name: "VesicashRegister",
-        component: () =>
-          import(
-            /* webpackChunkName: "auth-module" */ "@/modules/auth/pages/register"
-          ),
-        meta: {
-          guest: true,
-        },
-      },
-
-      // ==================================
       // VESICASH VERIFY OTP ROUTE
       // ==================================
       {
@@ -110,6 +94,33 @@ const authRoutes = [
           import(
             /* webpackChunkName: "auth-module" */ "@/modules/auth/pages/verify-otp"
           ),
+      },
+    ],
+  },
+
+  {
+    path: "/register",
+
+    component: () =>
+      import(
+        /* webpackChunkName: "auth-egister-layout" */ "@/layouts/layout-register"
+      ),
+
+    children: [
+      // ==================================
+      // VESICASH REGISTER ROUTE
+      // ==================================
+      {
+        path: "",
+        alias: "/register-lander",
+        name: "VesicashRegister",
+        component: () =>
+          import(
+            /* webpackChunkName: "auth-module" */ "@/modules/auth/pages/register"
+          ),
+        meta: {
+          guest: true,
+        },
       },
     ],
   },

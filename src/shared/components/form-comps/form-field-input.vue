@@ -3,9 +3,24 @@
     <div :class="getGroupStyle">
       <!-- INPUT LABEL -->
       <template v-if="label_title">
-        <label class="form-label" :for="label_id" :class="getLabelStyle">{{
-          label_title
-        }}</label>
+        <label
+          :class="[
+            'form-label d-block',
+            !!label_subtitle && 'form-label-with-subtitle',
+            getLabelStyle,
+          ]"
+          :for="label_id"
+          >{{ label_title }}</label
+        >
+      </template>
+
+      <template v-if="label_subtitle">
+        <label
+          class="form-label d-block label-subtitle"
+          :for="label_id"
+          :class="getLabelSubtitleStyle"
+          >{{ label_subtitle }}</label
+        >
       </template>
 
       <!-- INPUT WRAPPER AREA -->
@@ -106,6 +121,11 @@ export default {
       default: "",
     },
 
+    label_subtitle: {
+      type: String,
+      default: "",
+    },
+
     label_id: {
       type: String,
       default: "",
@@ -198,6 +218,10 @@ export default {
 
     getLabelStyle() {
       return this.custom_style?.label_style || null;
+    },
+
+    getLabelSubtitleStyle() {
+      return this.custom_style?.label_subtitle_style || null;
     },
 
     getInputStyle() {
@@ -305,5 +329,3 @@ export default {
   },
 };
 </script>
-
-<style></style>
