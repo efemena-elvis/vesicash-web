@@ -238,31 +238,21 @@ export default {
 
 <style lang="scss" scoped>
 .otp-section {
-  margin-top: toRem(100);
-
-  @include breakpoint-down(sm) {
-    margin-top: toRem(80);
-  }
-
-  @include breakpoint-down(xs) {
-    margin-top: toRem(60);
-  }
-
   .auth-page {
     .form-group {
-      @include flex-row-nowrap("flex-start", "center");
+      @include flex-row-nowrap("space-between", "center");
       gap: toRem(12);
-  
+
       .form-control {
         padding: toRem(10) toRem(12);
         @include draw-shape(42);
         text-align: center;
       }
     }
-  
+
     .help-block {
       @include transition(0.4s);
-  
+
       &:hover {
         color: getColor("grey-800");
       }

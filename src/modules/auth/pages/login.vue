@@ -1,74 +1,72 @@
 <template>
-  <div class="login-section">
-    <AuthWrapper
-      :title_text="getLoginMessage"
-      meta_text="Please enter your login details below to gain access into your Vesicash dashboard"
-    >
-      <!-- AUTH PAGE -->
-      <form @submit.prevent="handleUserLogIn" class="auth-page">
-        <!-- EMAIL ADDRESS INPUT -->
-        <div class="form-group">
-          <FormFieldInput
-            label_title="Email address"
-            label_id="emailAddress"
-            input_type="email"
-            is_required
-            placeholder="user@company.com"
-            :input_value="getFormFieldValueMx(form, 'email_address')"
-            @getInputState="updateFormFieldMx($event, 'email_address')"
-            :error_handler="{
-              type: 'email',
-              message: 'Email address is not valid',
-            }"
-          />
-        </div>
+  <AuthWrapper
+    :title_text="getLoginMessage"
+    meta_text="Please enter your login details below to gain access into your Vesicash dashboard"
+  >
+    <!-- AUTH PAGE -->
+    <form @submit.prevent="handleUserLogIn">
+      <!-- EMAIL ADDRESS INPUT -->
+      <div class="form-group">
+        <FormFieldInput
+          label_title="Email address"
+          label_id="emailAddress"
+          input_type="email"
+          is_required
+          placeholder="user@company.com"
+          :input_value="getFormFieldValueMx(form, 'email_address')"
+          @getInputState="updateFormFieldMx($event, 'email_address')"
+          :error_handler="{
+            type: 'email',
+            message: 'Email address is not valid',
+          }"
+        />
+      </div>
 
-        <!-- PASSWORD INPUT -->
-        <div class="form-group mgb-13">
-          <FormFieldInput
-            label_title="Password"
-            label_id="password"
-            input_type="password"
-            is_required
-            placeholder="Enter password"
-            :custom_style="{ input_wrapper_style: 'form-suffix' }"
-            :input_value="getFormFieldValueMx(form, 'password')"
-            @getInputState="updateFormFieldMx($event, 'password')"
-            :error_handler="{
-              type: 'required',
-              message: 'Password is a required field',
-            }"
-          />
-        </div>
+      <!-- PASSWORD INPUT -->
+      <div class="form-group mgb-13">
+        <FormFieldInput
+          label_title="Password"
+          label_id="password"
+          input_type="password"
+          is_required
+          placeholder="Enter password"
+          :custom_style="{ input_wrapper_style: 'form-suffix' }"
+          :input_value="getFormFieldValueMx(form, 'password')"
+          @getInputState="updateFormFieldMx($event, 'password')"
+          :error_handler="{
+            type: 'required',
+            message: 'Password is a required field',
+          }"
+        />
+      </div>
 
-        <!-- FORGOT PASSWORD LINK -->
-        <div class="d-flex justify-content-start">
-          <router-link
-            :to="{ name: 'VesicashForgotPassword' }"
-            class="tertiary-2-text"
-            >Forgot Password?</router-link
-          >
-        </div>
+      <!-- FORGOT PASSWORD LINK -->
+      <div class="d-flex justify-content-start">
+        <router-link
+          :to="{ name: 'VesicashForgotPassword' }"
+          class="tertiary-2-text"
+          >Forgot Password?</router-link
+        >
+      </div>
 
-        <!-- BUTTON AREA -->
-        <div class="btn-area mgt-25 mgb-20">
-          <button
-            class="btn btn-primary btn-md w-100"
-            ref="btnRef"
-            :disabled="isFormValidated"
-          >
-            Login to account
-          </button>
-        </div>
+      <!-- BUTTON AREA -->
+      <div class="btn-area mgt-25 mgb-20">
+        <button
+          class="btn btn-primary btn-md w-100"
+          ref="btnRef"
+          :disabled="isFormValidated"
+        >
+          Login to account
+        </button>
+      </div>
 
-        <!-- HELP BLOCK TEXT -->
-        <div class="help-block text-center">
-          Don’t have an account?
-          <router-link to="/register" class="fw-medium">Register</router-link>
-        </div>
-      </form>
-    </AuthWrapper>
-  </div>
+      <!-- HELP BLOCK TEXT -->
+      <div class="help-block text-center">
+        Don’t have an account?
+        <router-link to="/register" class="fw-medium">Register</router-link>
+      </div>
+    </form>
+  </AuthWrapper>
 </template>
 
 <script>

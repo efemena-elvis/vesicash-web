@@ -6,7 +6,7 @@ const authRoutes = [
     path: "/login",
     alias: "/",
     component: () =>
-      import(/* webpackChunkName: "auth-layout" */ "@/layouts/layout-auth"),
+      import(/* webpackChunkName: "auth-layout" */ "@/layouts/auth-layout"),
 
     children: [
       // ================================
@@ -18,6 +18,23 @@ const authRoutes = [
         component: () =>
           import(
             /* webpackChunkName: "auth-module" */ "@/modules/auth/pages/login"
+          ),
+        meta: {
+          guest: true,
+        },
+      },
+
+      // ================================
+      // VESICASH REGISTER ROUTE
+      // ===============================
+
+      {
+        path: "/register",
+        alias: "/register-lander",
+        name: "VesicashRegister",
+        component: () =>
+          import(
+            /* webpackChunkName: "auth-module" */ "@/modules/auth/pages/register"
           ),
         meta: {
           guest: true,
@@ -94,33 +111,6 @@ const authRoutes = [
           import(
             /* webpackChunkName: "auth-module" */ "@/modules/auth/pages/verify-otp"
           ),
-      },
-    ],
-  },
-
-  {
-    path: "/register",
-
-    component: () =>
-      import(
-        /* webpackChunkName: "auth-egister-layout" */ "@/layouts/layout-register"
-      ),
-
-    children: [
-      // ==================================
-      // VESICASH REGISTER ROUTE
-      // ==================================
-      {
-        path: "",
-        alias: "/register-lander",
-        name: "VesicashRegister",
-        component: () =>
-          import(
-            /* webpackChunkName: "auth-module" */ "@/modules/auth/pages/register"
-          ),
-        meta: {
-          guest: true,
-        },
       },
     ],
   },

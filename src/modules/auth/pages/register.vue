@@ -1,17 +1,6 @@
 <template>
-  <div class="register-container">
-    <div class="about-vesicash">
-      <div class="h1-text neutral-10">Business payments made easy.</div>
-
-      <div class="h7-text grey-400 mgt-20">
-        Access multiple markets across Africa in minutes.
-      </div>
-    </div>
-
-    <form @submit.prevent="handleUserRegister" class="register-form">
-      <div class="h3-text grey-900 mgb-30 text-center">
-        Welcome to vesicash!
-      </div>
+  <AuthWrapper title_text="Welcome to vesicash!">
+    <form @submit.prevent="handleUserRegister">
       <!-- EMAIL ADDRESS INPUT -->
       <div class="form-group">
         <FormFieldInput
@@ -103,7 +92,7 @@
         <router-link to="/login" class="fw-medium">Login</router-link>
       </div>
     </form>
-  </div>
+  </AuthWrapper>
 </template>
 
 <script>
@@ -295,33 +284,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-.register-container {
-  @include flex-row-wrap("space-between", "start");
-
-  .about-vesicash {
-    width: 51%;
-    margin-top: toRem(80);
-
-    @include breakpoint-custom-down(1140) {
-      display: none;
-    }
-  }
-
-  .register-form {
-    width: 40%;
-    max-width: toRem(450);
-    background: getColor("neutral-10");
-    padding: toRem(24);
-    border-radius: toRem(16);
-    box-shadow: 1px 1px 10px 0px rgba(217, 222, 224, 0.5),
-      -1px -1px 10px 0px rgba(217, 221, 224, 0.5);
-
-    @include breakpoint-custom-down(1140) {
-      width: toRem(500);
-      max-width: 100%;
-      margin: auto;
-    }
-  }
-}
-</style>
+<style lang="scss" scoped></style>

@@ -7,6 +7,14 @@
     </a>
 
     <div class="auth-container">
+      <div class="about-vesicash mgt-50">
+        <div class="h1-text neutral-10">Business payments made easy.</div>
+
+        <div class="h7-text grey-400 mgt-20">
+          Access multiple markets across Africa in minutes.
+        </div>
+      </div>
+
       <transition name="fade" mode="out-in">
         <router-view />
       </transition>
@@ -71,7 +79,18 @@ export default {
   }
 
   .auth-container {
+    display: grid;
+    grid-template-columns: 60% 40%;
+    gap: toRem(30);
     margin-top: toRem(40);
+
+    @include breakpoint-custom-down(1140) {
+      grid-template-columns: 100%;
+
+      .about-vesicash {
+        display: none;
+      }
+    }
   }
 
   .support-icon-wrapper {
@@ -82,7 +101,7 @@ export default {
     cursor: pointer;
 
     &:hover {
-      transform: scale(1.01);
+      transform: scale(0.9);
       transition: all ease-in-out 0.2s;
     }
   }

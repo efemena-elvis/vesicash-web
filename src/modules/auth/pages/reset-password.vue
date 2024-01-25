@@ -1,5 +1,4 @@
 <template>
-<div class="reset-section">
   <AuthWrapper title_text="Enter new password">
     <!-- AUTH PAGE -->
     <form @submit.prevent="handleUserResetPassword" class="auth-page">
@@ -69,7 +68,6 @@
       </div>
     </form>
   </AuthWrapper>
-</div>
 </template>
 
 <script>
@@ -154,15 +152,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
- .reset-section {
-    margin-top: toRem(100);
+.reset-section {
+  margin-top: toRem(100);
 
-    @include breakpoint-down(sm) {
-      margin-top: toRem(80);
-    }
+  @include breakpoint-down(sm) {
+    margin-top: toRem(80);
+  }
 
-    @include breakpoint-down(xs) {
-      margin-top: toRem(60);
-    }
- }
+  @include breakpoint-down(xs) {
+    margin-top: toRem(60);
+  }
+}
 </style>
