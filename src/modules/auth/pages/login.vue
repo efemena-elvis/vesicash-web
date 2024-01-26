@@ -164,7 +164,7 @@ export default {
         const is_email_verified = this.getUser?.verifications?.email;
 
         if (is_email_verified) {
-          this.checkOnbordingCompletionStatus();
+          this.checkOnboardingState(response?.data?.profile?.business);
         }
         // REDIRECT USER TO OTP VERIFICATION
         else {
@@ -172,6 +172,18 @@ export default {
           this.handleOTPInitiation();
         }
       }
+    },
+
+    checkOnboardingState(business) {
+      const onboarding_fields = ["business_name", "business_type", "country"];
+
+      const is_onboarded = onboarding_fields.every(
+        (field) => !!business[field]
+      );
+
+      location.href = is_onboarded
+        ? "/dashboard"
+        : "/onboarding/business-details";
     },
 
     async checkOnbordingCompletionStatus() {

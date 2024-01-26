@@ -58,6 +58,7 @@ input[type="number"] {
 .label-subtitle {
   @include font-height(12.75, 20);
   color: getColor("grey-500");
+  margin-bottom: toRem(4)
 }
 
 // FORM HELP BLOCK
