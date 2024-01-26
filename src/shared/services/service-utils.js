@@ -77,18 +77,21 @@ class serviceUtils {
   }
 
   getCapitalizeText(text) {
-    const text_list = text.split(" ");
-    const first_letters = [];
-    const modified_list = [];
+    if (text) {
+      const text_list = text?.split(" ");
+      const first_letters = [];
+      const modified_list = [];
 
-    text_list.map((text) => first_letters.push(text?.charAt(0)));
-    text_list.map((text, index) =>
-      modified_list.push(
-        `${first_letters[index]?.toUpperCase()}${text?.substring(1)}`
-      )
-    );
-
-    return modified_list.join(" ");
+      text_list.map((text) => first_letters.push(text?.charAt(0)));
+      text_list.map((text, index) =>
+        modified_list.push(
+          `${first_letters[index]?.toUpperCase()}${text?.substring(1)}`
+        )
+      );
+      console.log(modified_list.join(" "));
+      return modified_list.join(" ");
+    }
+    return text;
   }
 
   capitalizeFirstLetter(string) {

@@ -7,10 +7,12 @@
     </a>
 
     <div class="auth-container">
-      <div class="about-vesicash mgt-50">
-        <div class="h1-text neutral-10">Business payments made easy.</div>
+      <div class="about-vesicash">
+        <div class="title-text neutral-10 mgb-20">
+          Business payments made easy.
+        </div>
 
-        <div class="h7-text grey-400 mgt-20">
+        <div class="description-text h7-text grey-400">
           Access multiple markets across Africa in minutes.
         </div>
       </div>
@@ -81,8 +83,15 @@ export default {
   .auth-container {
     display: grid;
     grid-template-columns: 60% 40%;
-    gap: toRem(30);
     margin-top: toRem(40);
+
+    .about-vesicash {
+      margin-top: toRem(80);
+
+      .title-text {
+        @include font-height(60, 74, 700);
+      }
+    }
 
     @include breakpoint-custom-down(1140) {
       grid-template-columns: 100%;
@@ -95,8 +104,8 @@ export default {
 
   .support-icon-wrapper {
     position: fixed;
-    bottom: toRem(40);
-    right: toRem(40);
+    bottom: toRem(30);
+    right: toRem(30);
     transform: scale(0.85);
     cursor: pointer;
 

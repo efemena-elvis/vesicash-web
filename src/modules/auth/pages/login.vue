@@ -1,7 +1,7 @@
 <template>
   <AuthWrapper
     :title_text="getLoginMessage"
-    meta_text="Please enter your login details below to gain access into your Vesicash dashboard"
+    meta_text="Enter your login details to access your Vesicash dashboard."
   >
     <!-- AUTH PAGE -->
     <form @submit.prevent="handleUserLogIn">
@@ -186,8 +186,6 @@ export default {
 
       if (response.code === 200) {
         let user_extra_data = response.data.user?.extra_data;
-
-        console.log(user_extra_data);
 
         // EXTRACT COMPLETED STATE AND COMPLETED ROUTES
         let { is_completed, completed_routes } =

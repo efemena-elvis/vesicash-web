@@ -148,9 +148,10 @@
 // ============================
 // FONT STYLING
 // ============================
-@mixin font-height($size, $height) {
+@mixin font-height($size, $height, $weight: '400') {
   font-size: toRem($size);
   line-height: toRem($height);
+  font-weight: $weight;
 }
 
 // ============================
