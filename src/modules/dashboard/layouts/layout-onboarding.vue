@@ -1,7 +1,7 @@
 <template>
   <div class="layout-disbursement">
     <!-- TITLE TEXT -->
-    <div class="title-text h4-text mgb-12 grey-900">Let's get you verified</div>
+    <!-- <div class="title-text h4-text mgb-12 grey-900">Let's get you verified</div> -->
 
     <!-- FUND DISBURSMENT FLOW -->
     <!-- <ProgressFlowCard :flows="getComputedPageFlow" /> -->
@@ -68,14 +68,14 @@ export default {
 
     getOnboardingData: {
       handler() {
-        this.validateUserOnboarding();
+        // this.validateUserOnboarding();
       },
     },
   },
 
   data: () => ({
     computed_page_flow: [],
-    show_welcome_dialog: false,
+    show_welcome_dialog: true,
 
     default_onboarding_state: {
       is_completed: false,

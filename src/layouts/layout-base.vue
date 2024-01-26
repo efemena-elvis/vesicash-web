@@ -44,15 +44,22 @@ export default {
   watch: {
     $route: {
       handler(route) {
-        let { is_completed, completed_routes } = this.getOnboardingData;
-        let is_onbording_route = this.onboarding_paths.includes(route.path);
+        // let { is_completed, completed_routes } = this.getOnboardingData;
+        // let is_onbording_route = this.onboarding_paths.includes(route.path);
+        // if (is_completed && is_onbording_route) {
+        //   this.$router.push("/dashboard");
+        // } else if (!is_completed && !is_onbording_route) {
+        //   this.fetchUserExtraData();
+        //   this.$router.push(this.onboarding_paths[completed_routes.length]);
+        // }
+      },
+      immediate: true,
+      deep: true,
+    },
 
-        if (is_completed && is_onbording_route) {
-          this.$router.push("/dashboard");
-        } else if (!is_completed && !is_onbording_route) {
-          this.fetchUserExtraData();
-          this.$router.push(this.onboarding_paths[completed_routes.length]);
-        }
+    getUser: {
+      handler(user) {
+        this.checkOnboardingState(user);
       },
       immediate: true,
       deep: true,
@@ -88,6 +95,24 @@ export default {
       updateMerchantState: "general/updateMerchantState",
       updateOnboardingState: "general/updateOnboardingState",
     }),
+
+    checkOnboardingState(user) {
+      const onboarding_fields = [
+        "business_name",
+        "business_type",
+        "business_country",
+        "business_currency",
+      ];
+
+      const is_onboarded = onboarding_fields.every((field) => !!user[field]);
+
+      const ONBOARDING_ROUTE_NAME = "VesicashBusinessDetailsOnboarding";
+
+      const route_name = this.$route?.name;
+
+      if (!is_onboarded && route_name != ONBOARDING_ROUTE_NAME)
+        this.$router.push("/onboarding/business-details");
+    },
 
     hideSidebar($event) {
       if ($event.target.classList.contains("sidebar-build-open"))

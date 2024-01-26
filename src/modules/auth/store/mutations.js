@@ -44,6 +44,8 @@ export default {
     let { business } = response_payload.profile;
     userData.business_name = business?.business_name ?? null;
     userData.business_address = business?.business_address ?? null;
+    userData.business_country = business.country ?? null;
+    userData.business_currency = business.currency ?? null;
     userData.business_email = business?.business_email ?? null;
     userData.website = business?.website ?? null;
     userData.business_type = business?.business_type ?? null;
