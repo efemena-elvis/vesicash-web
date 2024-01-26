@@ -175,12 +175,7 @@ export default {
     },
 
     checkOnboardingState(business) {
-      const onboarding_fields = [
-        "business_name",
-        "business_type",
-        "country",
-        "currency",
-      ];
+      const onboarding_fields = ["business_name", "business_type", "country"];
 
       const is_onboarded = onboarding_fields.every(
         (field) => !!business[field]

@@ -141,30 +141,30 @@ const merchantRoutes = [
 ];
 
 const onboardingRoutes = [
-  {
-    id: 1,
-    title: "Business information",
-    icon: "CheckIcon",
-    link: "/onboarding/business-information",
-    slug: "business-information",
-    disabled: false,
-  },
-  {
-    id: 2,
-    title: "Business verification",
-    icon: "CheckIcon",
-    link: "/onboarding/business-verification",
-    slug: "business-verification",
-    disabled: true,
-  },
-  {
-    id: 3,
-    title: "Identity verification",
-    icon: "CheckIcon",
-    link: "/onboarding/identity-verification",
-    slug: "identity-verification",
-    disabled: true,
-  },
+  // {
+  //   id: 1,
+  //   title: "Business information",
+  //   icon: "CheckIcon",
+  //   link: "/onboarding/business-information",
+  //   slug: "business-information",
+  //   disabled: false,
+  // },
+  // {
+  //   id: 2,
+  //   title: "Business verification",
+  //   icon: "CheckIcon",
+  //   link: "/onboarding/business-verification",
+  //   slug: "business-verification",
+  //   disabled: true,
+  // },
+  // {
+  //   id: 3,
+  //   title: "Identity verification",
+  //   icon: "CheckIcon",
+  //   link: "/onboarding/identity-verification",
+  //   slug: "identity-verification",
+  //   disabled: true,
+  // },
   // {
   //   id: 4,
   //   title: "MoR deployment",

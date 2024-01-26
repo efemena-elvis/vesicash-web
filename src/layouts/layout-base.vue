@@ -101,7 +101,6 @@ export default {
         "business_name",
         "business_type",
         "business_country",
-        "business_currency",
       ];
 
       const is_onboarded = onboarding_fields.every((field) => !!user[field]);

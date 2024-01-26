@@ -1,50 +1,106 @@
 <template>
-  <div class="">
-    <div class="title-text h4-text mgb-8 grey-900">Business details</div>
-    <div class="grey-600">Tell us about your business</div>
-    <form class="mgt-35 business-form">
-      <div class="form-group">
-        <FormFieldInput
-          label_title="Registered Business name"
-          label_subtitle="Enter a government registered business name"
-          label_id="businessName"
-          placeholder="Enter a government registered business name"
-          :input_value="getFormFieldValueMx(form, 'business_name')"
-          @getInputState="updateFormFieldMx($event, 'business_name')"
-          :error_handler="{
-            type: 'required',
-            message: 'Business name is a required field',
-          }"
-        />
+  <div class="pdb-40">
+    <transition name="fade" mode="out-in">
+      <div v-if="show_business_info">
+        <div class="title-text h4-text mgb-8 grey-900">Business details</div>
+        <div class="grey-600">Tell us about your business</div>
+        <div class="mgt-35 business-form">
+          <div class="form-group">
+            <FormFieldInput
+              label_title="Registered Business name"
+              label_subtitle="Enter a government registered business name"
+              label_id="businessName"
+              placeholder="Enter a government registered business name"
+              :input_value="getFormFieldValueMx(form, 'business_name')"
+              @getInputState="updateFormFieldMx($event, 'business_name')"
+              :error_handler="{
+                type: 'required',
+                message: 'Business name is a required field',
+              }"
+            />
+          </div>
+
+          <div class="form-group position-relative">
+            <div v-on-clickaway="determineTargetArea" @click="toggleDropdown">
+              <FormFieldInput
+                label_title="Where is your business registered?"
+                label_subtitle="In which country is your business registered?"
+                label_id="businessLocation"
+                placeholder="Select business primary location"
+                :is_readonly="true"
+                :input_value="getFormFieldValueMx(form, 'country')"
+              />
+            </div>
+
+            <template v-if="show_dropdown">
+              <CountryDropSelect
+                :countries="countries_data"
+                is_country_only
+                @countrySelected="updateFormFieldMx($event, 'country', true)"
+              />
+            </template>
+          </div>
+
+          <button
+            class="btn btn-md btn-primary action-button"
+            @click="show_business_info = false"
+            :disabled="nextDisabled"
+          >
+            Next
+          </button>
+        </div>
       </div>
 
-      <div class="form-group position-relative">
-        <div v-on-clickaway="determineTargetArea" @click="toggleDropdown">
-          <FormFieldInput
-            label_title="Business Location"
-            label_id="businessLocation"
-            placeholder="Select business primary location"
-            :is_readonly="true"
-            :input_value="getFormFieldValueMx(form, 'country')"
-          />
+      <div v-else>
+        <PageBackBtn custom_mode @clicked="switchView" />
+        <div class="row mgb-40 business-type-wrapper">
+          <div class="col-12">
+            <div class="title-text h4-text mgb-30 grey-900">
+              Select your business type
+            </div>
+          </div>
+
+          <div
+            class="col-12 col-sm-6"
+            v-for="(item, index) in business_types"
+            :key="index"
+          >
+            <SelectDialogCard
+              :option="item"
+              @dialogSelected="handleRadioSelection($event)"
+            />
+          </div>
+
+          <div class="col-12 col-sm-6" v-if="others_selected">
+            <label class="form-label">Specify business type</label>
+            <textarea
+              placeholder="Specify your business type here"
+              rows="2"
+              class="form-control"
+              v-model="business_type"
+            ></textarea>
+          </div>
         </div>
 
-        <template v-if="show_dropdown">
-          <CountryDropSelect
-            :countries="countries_data"
-            is_country_only
-            @countrySelected="updateFormFieldMx($event, 'country', true)"
-          />
-        </template>
+        <button
+          type="submit"
+          class="btn btn-md btn-primary action-button"
+          :disabled="finishDisabled"
+          @click="updateUserBusinessDetails"
+          ref="btnRef"
+        >
+          Finish
+        </button>
       </div>
-    </form>
+    </transition>
   </div>
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapMutations } from "vuex";
 import onboardingMixin from "@/modules/dashboard/mixins/onboarding-mixin";
 import CountryHelper from "@/shared/mixins/mixin-country-helper";
+import PageBackBtn from "@/shared/components/util-comps/page-back-btn";
 
 export default {
   name: "onboardingBusinessDetails",
@@ -61,6 +117,7 @@ export default {
       import(
         /* webpackChunkName: "onboarding-module" */ "@/shared/components/card-comps/select-dialog-card"
       ),
+    PageBackBtn,
   },
 
   computed: {
@@ -68,6 +125,22 @@ export default {
       return this.business_type && this.form.business_name.validated
         ? false
         : true;
+    },
+
+    nextDisabled() {
+      return !this.form.business_name.validated || !this.form.country.validated;
+    },
+
+    finishDisabled() {
+      return !this.business_type;
+    },
+
+    businessDetails() {
+      return {
+        business_name: this.form.business_name.value,
+        business_type: this.business_type,
+        country: this.form.country.value,
+      };
     },
   },
 
@@ -82,6 +155,8 @@ export default {
         value: "",
       },
     },
+
+    show_business_info: true,
 
     business_type: null,
     other_business_type: "",
@@ -172,6 +247,38 @@ export default {
       updateUserBusinessInfo: "settings/updateUserBusinessInfo",
     }),
 
+    ...mapMutations({ updateAuthUser: "auth/UPDATE_AUTH_USER" }),
+
+    switchView() {
+      this.show_business_info = true;
+    },
+
+    async updateUserBusinessDetails() {
+      const response = await this.handleDataRequest({
+        action: "updateUserBusinessInfo",
+        payload: this.businessDetails,
+        btn_text: "Finish",
+        alert_handler: {
+          success: "Business details updated successfully",
+        },
+      });
+
+      if (response.code === 200) {
+        let user = {
+          ...this.getUser,
+          business_name: this.form.business_name.value,
+          business_country: this.form.country.value,
+          business_type: this.business_type,
+        };
+
+        this.updateAuthUser(user);
+
+        setTimeout(() => {
+          this.$router.push("/dashboard");
+        }, 1000);
+      }
+    },
+
     // UPDATE BUSINESS TYPE DATA
     async handleBusinessTypeSelection() {
       const response = await this.handleDataRequest({
@@ -219,6 +326,16 @@ export default {
 <style lang="scss" scoped>
 .business-form {
   width: toRem(500);
+  max-width: 100%;
+}
+
+.action-button {
+  margin-top: toRem(50);
+  padding: 0.7rem 4rem;
+}
+
+.business-type-wrapper {
+  width: toRem(850);
   max-width: 100%;
 }
 </style>
