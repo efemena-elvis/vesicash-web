@@ -30,6 +30,20 @@ const dashboardRoutes = [
           ),
         children: [
           {
+            path: "/onboarding/business-details",
+            name: "VesicashBusinessDetailsOnboarding",
+            component: () =>
+              import(
+                /* webpackChunkName: "dashboard-module" */
+                "@/modules/dashboard/pages/onboarding-business-details"
+              ),
+            meta: {
+              requiresAuth: true,
+              page_type: "onboarding",
+            },
+          },
+
+          {
             path: "",
             name: "VesicashBusinessInfoOnboarding",
             component: () =>
