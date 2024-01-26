@@ -1,21 +1,22 @@
 <template>
   <div class="auth-wrapper">
     <!-- TITLE TEXT -->
-    <div class="title-text h3-text grey-800">
+    <div
+      :class="['title-text h3-text grey-800', !meta_text && 'mgb-22']"
+      v-if="title_text"
+    >
       {{ title_text }}
     </div>
 
     <!-- META TEXT -->
     <div
-      class="meta-text grey-600 mgt-8"
+      class="meta-text grey-600 mgt-8 mgb-20"
       v-if="meta_text"
       v-html="meta_text"
     ></div>
 
     <!-- AUTH FORM AREA -->
-    <div class="auth-form-area mgt-24">
-      <slot></slot>
-    </div>
+    <slot></slot>
   </div>
 </template>
 
@@ -26,7 +27,7 @@ export default {
   props: {
     title_text: {
       type: String,
-      default: "Title text",
+      default: "",
     },
     meta_text: {
       type: String,
@@ -38,11 +39,14 @@ export default {
 
 <style lang="scss" scoped>
 .auth-wrapper {
-  padding-bottom: toRem(50);
-
-  @include breakpoint-down(sm) {
-    padding-bottom: toRem(70);
-  }
+  width: toRem(500);
+  max-width: 100%;
+  margin: auto;
+  background: getColor("neutral-10");
+  padding: toRem(24);
+  border-radius: toRem(16);
+  box-shadow: 1px 1px 10px 0px rgba(217, 222, 224, 0.5),
+    -1px -1px 10px 0px rgba(217, 221, 224, 0.5);
 
   .title-text {
     font-size: toRem(27);

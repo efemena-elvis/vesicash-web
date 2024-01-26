@@ -37,7 +37,7 @@ input[type="number"] {
 
 // FORM LABEL
 .form-label {
-  @include generate-font-type("secondary-2");
+  @include generate-font-type("secondary-1");
   color: getColor("grey-900");
   padding-bottom: toRem(8);
   text-transform: none;
@@ -47,6 +47,15 @@ input[type="number"] {
   [class*="radio"] & {
     color: inherit;
   }
+}
+
+.form-label-with-subtitle {
+  padding-bottom: toRem(2);
+}
+
+.label-subtitle {
+  @include generate-font-type("tertiary-2");
+  color: getColor("grey-500");
 }
 
 // FORM HELP BLOCK

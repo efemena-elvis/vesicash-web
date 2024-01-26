@@ -1,138 +1,98 @@
 <template>
-  <div class="register-wrapper">
-    <AuthWrapper
-      title_text="Access multiple markets across Africa in a minute."
-    >
-      <!-- meta_text="Register a business account today to gain access to customers across African markets" -->
-      <!-- AUTH PAGE -->
-      <form @submit.prevent="handleUserRegister" class="auth-page">
-        <!-- BUSINESS NAME INPUT -->
-        <!-- <div class="form-group">
-          <FormFieldInput
-            label_title="Business name"
-            label_id="businessName"
-            placeholder="What is your business called?"
-            :input_value="getFormFieldValueMx(form, 'business_name')"
-            @getInputState="updateFormFieldMx($event, 'business_name')"
-            :error_handler="{
-              type: 'required',
-              message: 'Business name is a required field',
-            }"
+  <AuthWrapper title_text="Welcome to vesicash!">
+    <form @submit.prevent="handleUserRegister">
+      <!-- EMAIL ADDRESS INPUT -->
+      <div class="form-group">
+        <FormFieldInput
+          autocomplete="off"
+          label_title="Email address"
+          label_subtitle="Please enter your company’s email address"
+          label_id="emailAddress"
+          input_type="email"
+          is_required
+          placeholder="user@company.com"
+          :input_value="getFormFieldValueMx(form, 'email_address')"
+          @getInputState="updateFormFieldMx($event, 'email_address')"
+          :error_handler="{
+            type: 'email',
+            message: 'Email address is not valid',
+          }"
+        />
+      </div>
+
+      <!-- PHONE INPUT -->
+      <div class="form-group">
+        <FormFieldInput
+          label_title="Phone number"
+          label_subtitle="Please enter your company’s phone number"
+          label_id="phoneNumber"
+          input_type="number"
+          is_phone_type
+          is_required
+          placeholder="Enter your phone number"
+          :custom_style="{ input_wrapper_style: 'form-prefix' }"
+          :input_value="getFormFieldValueMx(form, 'phone_number')"
+          @getInputState="updateFormFieldMx($event, 'phone_number')"
+          :error_handler="{
+            type: 'phone',
+            message: 'Phone number is not valid',
+          }"
+        />
+      </div>
+
+      <!-- PASSWORD INPUT -->
+      <div class="form-group">
+        <FormFieldInput
+          label_title="Password"
+          label_subtitle="Make sure to use a very strong password"
+          label_id="password"
+          input_type="password"
+          is_required
+          placeholder="Enter password"
+          :custom_style="{ input_wrapper_style: 'form-suffix' }"
+          :input_value="getFormFieldValueMx(form, 'password')"
+          @getInputState="updateFormFieldMx($event, 'password')"
+          :error_handler="{
+            type: 'password',
+            message: '',
+          }"
+        />
+      </div>
+
+      <!-- TERMS AND CONDITION -->
+      <div class="form-group">
+        <div class="d-flex justify-content-start align-items-center">
+          <input
+            type="checkbox"
+            v-model="form['accept_terms'].value"
+            class="mgr-10"
           />
-        </div> -->
 
-        <!-- EMAIL ADDRESS INPUT -->
-        <div class="form-group">
-          <FormFieldInput
-            autocomplete="off"
-            label_title="Business email address"
-            label_id="emailAddress"
-            input_type="email"
-            is_required
-            placeholder="user@company.com"
-            :input_value="getFormFieldValueMx(form, 'email_address')"
-            @getInputState="updateFormFieldMx($event, 'email_address')"
-            :error_handler="{
-              type: 'email',
-              message: 'Email address is not valid',
-            }"
-          />
-        </div>
-
-        <!-- BUSINESS LOCATION -->
-        <!-- @getInputState="updateFormFieldMx($event, 'business_location')" -->
-        <div class="form-group position-relative">
-          <div v-on-clickaway="determineTargetArea" @click="toggleDropdown">
-            <FormFieldInput
-              label_title="Business Location"
-              label_id="businessLocation"
-              placeholder="Select business primary location"
-              :is_readonly="true"
-              :input_value="getFormFieldValueMx(form, 'country')"
-            />
-          </div>
-
-          <template v-if="show_dropdown">
-            <CountryDropSelect
-              :countries="countries_data"
-              is_country_only
-              @countrySelected="updateFormFieldMx($event, 'country', true)"
-            />
-          </template>
-        </div>
-
-        <!-- PHONE INPUT -->
-        <div class="form-group">
-          <FormFieldInput
-            label_title="Phone number"
-            label_id="phoneNumber"
-            input_type="number"
-            is_phone_type
-            is_required
-            placeholder="Enter your phone number"
-            :custom_style="{ input_wrapper_style: 'form-prefix' }"
-            :input_value="getFormFieldValueMx(form, 'phone_number')"
-            @getInputState="updateFormFieldMx($event, 'phone_number')"
-            :error_handler="{
-              type: 'phone',
-              message: 'Phone number is not valid',
-            }"
-          />
-        </div>
-
-        <!-- PASSWORD INPUT -->
-        <div class="form-group">
-          <FormFieldInput
-            label_title="Password"
-            label_id="password"
-            input_type="password"
-            is_required
-            placeholder="Enter password"
-            :custom_style="{ input_wrapper_style: 'form-suffix' }"
-            :input_value="getFormFieldValueMx(form, 'password')"
-            @getInputState="updateFormFieldMx($event, 'password')"
-            :error_handler="{
-              type: 'password',
-              message: '',
-            }"
-          />
-        </div>
-
-        <!-- TERMS AND CONDITION -->
-        <div class="form-group">
-          <div class="d-flex justify-content-start align-items-center">
-            <input
-              type="checkbox"
-              v-model="form['accept_terms'].value"
-              class="mgr-10"
-            />
-
-            <div class="tertiary-2-text grey-900">
-              I agree to Vesicash
-              <a href="https://vesicash.com/terms">Terms and Conditions</a>
-            </div>
+          <div class="tertiary-2-text grey-900">
+            I agree to Vesicash
+            <a href="https://vesicash.com/terms">Terms and Conditions</a>
           </div>
         </div>
+      </div>
 
-        <!-- BUTTON AREA -->
-        <div class="btn-area mgt-35 mgb-20">
-          <button
-            class="btn btn-primary btn-md w-100"
-            ref="btnRef"
-            :disabled="isFormValidated"
-          >
-            Create an Account
-          </button>
-        </div>
+      <!-- BUTTON AREA -->
+      <div class="btn-area mgt-35 mgb-20">
+        <button
+          class="btn btn-primary btn-md w-100"
+          ref="btnRef"
+          :disabled="isFormValidated"
+        >
+          Create an Account
+        </button>
+      </div>
 
-        <!-- HELP BLOCK TEXT -->
-        <div class="help-block text-center">
-          Already have an account?
-          <router-link to="/login" class="fw-medium">Login</router-link>
-        </div>
-      </form>
-    </AuthWrapper>
-  </div>
+      <!-- HELP BLOCK TEXT -->
+      <div class="help-block text-center">
+        Already have an account?
+        <router-link to="/login" class="fw-medium">Login</router-link>
+      </div>
+    </form>
+  </AuthWrapper>
 </template>
 
 <script>
@@ -217,10 +177,10 @@ export default {
           validated: false,
           value: "",
         },
-        country: {
-          validated: false,
-          value: "",
-        },
+        // country: {
+        //   validated: false,
+        //   value: "",
+        // },
         password: {
           validated: false,
           value: "",
@@ -324,12 +284,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-.register-wrapper {
-  margin-top: toRem(40);
-
-  @include breakpoint-down(sm) {
-    margin-top: toRem(30);
-  }
-}
-</style>
+<style lang="scss" scoped></style>
