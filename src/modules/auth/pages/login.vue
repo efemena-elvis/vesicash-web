@@ -164,7 +164,7 @@ export default {
         const is_email_verified = this.getUser?.verifications?.email;
 
         if (is_email_verified) {
-          this.checkOnboardingState(response?.data?.profile?.business);
+          this.checkOnboardingState(response?.data);
         }
         // REDIRECT USER TO OTP VERIFICATION
         else {
@@ -174,11 +174,15 @@ export default {
       }
     },
 
-    checkOnboardingState(business) {
+    checkOnboardingState(payload) {
       const onboarding_fields = ["business_name", "business_type", "country"];
+      const business_data = payload?.profile?.business;
+      const extra_data = payload?.user?.extra_data;
+
+      this.updateMerchantState(extra_data?.merchant ?? false);
 
       const is_onboarded = onboarding_fields.every(
-        (field) => !!business[field]
+        (field) => !!business_data[field]
       );
 
       location.href = is_onboarded
@@ -197,30 +201,31 @@ export default {
       });
 
       if (response.code === 200) {
-        let user_extra_data = response.data.user?.extra_data;
+        const user_extra_data = response.data.user?.extra_data;
+        this.updateMerchantState(user_extra_data?.merchant ?? false);
 
         // EXTRACT COMPLETED STATE AND COMPLETED ROUTES
-        let { is_completed, completed_routes } =
-          user_extra_data?.onboarding ?? this.default_onboarding_state;
+        // let { is_completed, completed_routes } =
+        //   user_extra_data?.onboarding ?? this.default_onboarding_state;
 
         // UPDATE AND PERSIST ONBOARDING AND MERCHANT DATA IN STORE
-        this.updateOnboardingState({ is_completed, completed_routes });
-        this.updateMerchantState(user_extra_data?.merchant ?? false);
+        // this.updateOnboardingState({ is_completed, completed_routes });
 
         // NAVIGATE TO DASHBOARD IF ONBOARDING IS COMPLETE
         // IF NOT COMPLETE NAVIGATE TO ONBOARDING PROGRESS ROUTE
-        location.href = is_completed
-          ? "/dashboard"
-          : this.onboarding_paths[completed_routes.length];
+        // location.href = is_completed
+        //   ? "/dashboard"
+        //   : this.onboarding_paths[completed_routes.length];
       } else {
         this.handleToastPushMx("Failed to proceed to login", "error");
       }
     },
 
     async getAPIKeys() {
+      // payload: { regenerate: true },
       const response = await this.handleDataRequest({
         action: "fetchAPIkeys",
-        payload: { regenerate: true },
+        payload: {},
         show_alert: false,
       });
     },

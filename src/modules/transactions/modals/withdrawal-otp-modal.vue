@@ -194,7 +194,7 @@ export default {
         amount: +this.getWithdrawalMeta.amount,
         currency: this.getWalletType.short,
         debit_currency: this.getWalletType.short,
-        gateway: "monnify",
+        gateway: "rave",
         escrow_wallet: "no",
       };
     },

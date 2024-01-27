@@ -8,7 +8,7 @@
           <div class="form-group">
             <FormFieldInput
               label_title="Registered Business name"
-              label_subtitle="Enter a government registered business name"
+              label_subtitle="A government registered business name"
               label_id="businessName"
               placeholder="Enter a government registered business name"
               :input_value="getFormFieldValueMx(form, 'business_name')"

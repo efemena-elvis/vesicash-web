@@ -446,7 +446,7 @@ class serviceDate {
   }
   // GET DATE TIME IN HOUR FORMAT
   getHour(hour) {
-    let get_hour = this.datetime_zone?.getHours() - 1;
+    let get_hour = this.datetime_zone?.getHours();
     get_hour = get_hour === -1 ? 12 : get_hour;
     let twelve_hour_value = get_hour > 12 ? get_hour - 12 : get_hour;
 

@@ -88,7 +88,6 @@ class serviceUtils {
           `${first_letters[index]?.toUpperCase()}${text?.substring(1)}`
         )
       );
-      console.log(modified_list.join(" "));
       return modified_list.join(" ");
     }
     return text;

@@ -72,7 +72,7 @@ input[type="number"] {
   border: toRem(1) solid getColor("grey-300");
   @include generate-font-type("tertiary-2");
   background-color: getColor("neutral-10");
-  padding: toRem(11) toRem(16);
+  padding: toRem(8) toRem(16);
   color: getColor("grey-900");
   @include transition(0.3s);
   border-radius: toRem(8);
@@ -312,8 +312,8 @@ input[type="checkbox"],
     padding-right: toRem(4);
     border-right: none;
     cursor: pointer;
-    height: toRem(44.2);
-    max-height: toRem(44.2);
+    height: toRem(38.2);
+    max-height: toRem(38.2);
 
     img {
       @include draw-shape(24);

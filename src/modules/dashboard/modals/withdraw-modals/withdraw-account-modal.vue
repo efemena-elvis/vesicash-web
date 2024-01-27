@@ -278,6 +278,33 @@ export default {
       return `${sign}${this.$utils.formatCurrencyWithComma(_cost)}`;
     },
 
+    getRawChargeValue() {
+      const type = this.account_type?.slug;
+      if (type === "wallet") return 0;
+
+      const amount = Number(this.form?.amount) || 0;
+      const currency = this.selected_currency.short;
+      const sign = this.$money.getSign(currency);
+
+      const foundCharge = this.withdrawalCharges.find((charge) => {
+        return (
+          charge.currency === currency &&
+          amount >= charge.min_value &&
+          amount <= charge.max_value
+        );
+      });
+
+      if (!foundCharge) return null;
+
+      const cap = foundCharge?.value?.fee_capped_at;
+      const fee = foundCharge?.value?.fee;
+      const is_capped = cap > 0;
+      const is_percentage = foundCharge?.value?.is_percentage_fee;
+      const cost = is_percentage ? (fee / 100) * amount : fee;
+      const _cost = is_capped ? Math.min(cap, cost) : cost;
+      return _cost;
+    },
+
     getTaxValue() {
       let tax_payload = this.getMoRTaxRates.find(
         (item) => item.currency === this.selected_currency.short
@@ -315,8 +342,10 @@ export default {
     },
 
     getWithdrawalCharge() {
+      console.log("Charge", this.getRawChargeValue);
+
       let account_type = this.account_type.slug;
-      return account_type === "wallet" ? 0 : 50;
+      return account_type === "wallet" ? 0 : +this.getRawChargeValue;
     },
 
     // dollarWithdrawalDetails() {
