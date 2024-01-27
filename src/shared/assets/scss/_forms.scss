@@ -37,12 +37,14 @@ input[type="number"] {
 
 // FORM LABEL
 .form-label {
-  @include generate-font-type("secondary-1");
+  @include generate-font-type("secondary-2");
   color: getColor("grey-900");
   padding-bottom: toRem(8);
   text-transform: none;
   margin-bottom: 0;
   padding-top: 0;
+  font-size: toRem(14.5);
+
   [class*="checkbox"] &,
   [class*="radio"] & {
     color: inherit;
@@ -54,7 +56,7 @@ input[type="number"] {
 }
 
 .label-subtitle {
-  @include generate-font-type("tertiary-2");
+  @include font-height(12.75, 20);
   color: getColor("grey-500");
   margin-bottom: toRem(4)
 }
@@ -305,7 +307,7 @@ input[type="checkbox"],
     border: toRem(1) solid getColor("grey-300");
     background-color: getColor("grey-50");
     border-radius: toRem(8) 0 0 toRem(8);
-    padding: toRem(8) toRem(10);
+    padding: toRem(11) toRem(10);
     @include transition(0.3s);
     padding-right: toRem(4);
     border-right: none;

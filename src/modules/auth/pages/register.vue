@@ -6,7 +6,7 @@
         <FormFieldInput
           autocomplete="off"
           label_title="Email address"
-          label_subtitle="Please enter your company’s email address"
+          label_subtitle="Your company’s email address"
           label_id="emailAddress"
           input_type="email"
           is_required
@@ -22,9 +22,9 @@
 
       <!-- PHONE INPUT -->
       <div class="form-group">
+        <!-- label_subtitle="Operational business phone number" -->
         <FormFieldInput
           label_title="Phone number"
-          label_subtitle="Please enter your company’s phone number"
           label_id="phoneNumber"
           input_type="number"
           is_phone_type
@@ -42,9 +42,9 @@
 
       <!-- PASSWORD INPUT -->
       <div class="form-group">
+        <!-- label_subtitle="Make sure to use a very strong password" -->
         <FormFieldInput
           label_title="Password"
-          label_subtitle="Make sure to use a very strong password"
           label_id="password"
           input_type="password"
           is_required
@@ -253,29 +253,29 @@ export default {
           this.getRequestPayload.password
         );
 
-        // const response = await this.handleDataRequest({
-        //   action: "registerUser",
-        //   payload: this.getRequestPayload,
-        //   btn_text: "Register",
-        //   alert_handler: {
-        //     success: "Your vesicash account has been created",
-        //     error: "Unable to create your account at this time",
-        //   },
-        // });
+        const response = await this.handleDataRequest({
+          action: "registerUser",
+          payload: this.getRequestPayload,
+          btn_text: "Register",
+          alert_handler: {
+            success: "Your vesicash account has been created",
+            error: "Unable to create your account at this time",
+          },
+        });
 
-        // if (response.code === 201) {
-        //   this.user_details = response.data;
-        //   this.handleOTPInitiation(); // SEND USER OTP
-        //   localStorage.clear();
-        // }
+        if (response.code === 201) {
+          this.user_details = response.data;
+          this.handleOTPInitiation(); // SEND USER OTP
+          localStorage.clear();
+        }
 
-        // if (response?.code === 400) {
-        //   this.handleToastPushMx(
-        //     this.$utils.capitalizeFirstLetter(response?.message) ??
-        //       "An error occured while creating account",
-        //     "error"
-        //   );
-        // }
+        if (response?.code === 400) {
+          this.handleToastPushMx(
+            this.$utils.capitalizeFirstLetter(response?.message) ??
+              "An error occured while creating account",
+            "error"
+          );
+        }
       } catch (error) {
         this.handleToastPushMx(error.message, "error");
       }

@@ -5,12 +5,12 @@
       :class="['title-text h3-text grey-800', !meta_text && 'mgb-22']"
       v-if="title_text"
     >
-      {{ title_text }}
+      {{ $utils.getCapitalizeText(title_text.toLocaleLowerCase()) }}
     </div>
 
     <!-- META TEXT -->
     <div
-      class="meta-text grey-600 mgt-8 mgb-20"
+      class="meta-text grey-600 mgt-6 mgb-24"
       v-if="meta_text"
       v-html="meta_text"
     ></div>
@@ -39,17 +39,16 @@ export default {
 
 <style lang="scss" scoped>
 .auth-wrapper {
-  width: toRem(500);
+  width: toRem(470);
   max-width: 100%;
   margin: auto;
   background: getColor("neutral-10");
-  padding: toRem(24);
+  padding: toRem(32);
   border-radius: toRem(16);
   box-shadow: 1px 1px 10px 0px rgba(217, 222, 224, 0.5),
     -1px -1px 10px 0px rgba(217, 221, 224, 0.5);
 
   .title-text {
-    font-size: toRem(27);
     @include font-height(26, 36);
 
     @include breakpoint-down(sm) {
@@ -58,7 +57,7 @@ export default {
   }
 
   .meta-text {
-    @include font-height(14.75, 24);
+    @include font-height(14.75, 23);
   }
 
   .auth-page {
