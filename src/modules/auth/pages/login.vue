@@ -185,9 +185,11 @@ export default {
         (field) => !!business_data[field]
       );
 
-      location.href = is_onboarded
-        ? "/dashboard"
-        : "/onboarding/business-details";
+      setTimeout(() => {
+        location.href = is_onboarded
+          ? "/dashboard"
+          : "/onboarding/business-details";
+      }, 1500);
     },
 
     async checkOnbordingCompletionStatus() {
@@ -201,16 +203,13 @@ export default {
       });
 
       if (response.code === 200) {
-        const user_extra_data = response.data.user?.extra_data;
-        this.updateMerchantState(user_extra_data?.merchant ?? false);
-
+        // const user_extra_data = response.data.user?.extra_data;
+        // this.updateMerchantState(user_extra_data?.merchant ?? false);
         // EXTRACT COMPLETED STATE AND COMPLETED ROUTES
         // let { is_completed, completed_routes } =
         //   user_extra_data?.onboarding ?? this.default_onboarding_state;
-
         // UPDATE AND PERSIST ONBOARDING AND MERCHANT DATA IN STORE
         // this.updateOnboardingState({ is_completed, completed_routes });
-
         // NAVIGATE TO DASHBOARD IF ONBOARDING IS COMPLETE
         // IF NOT COMPLETE NAVIGATE TO ONBOARDING PROGRESS ROUTE
         // location.href = is_completed

@@ -531,8 +531,8 @@ class serviceDate {
     let get_hour = this.datetime_zone.getHours() - 1;
 
     if (get_hour < 12) return "am";
-    else if (get_hour >= 13) return "pm";
-    else return "noon";
+    // else if (get_hour >= 13) return "pm";
+    else return "pm";
   }
 
   // GET ALL DATE TIME FORMAT AVAILABLE

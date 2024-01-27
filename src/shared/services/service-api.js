@@ -154,7 +154,7 @@ class serviceApi {
         if (error.response) {
           if ([401].includes(error.response.status) && !originalConfig._retry) {
             originalConfig._retry = true;
-            // serviceUtils.logOutUser();
+            serviceUtils.logOutUser();
 
             return axios(originalConfig);
           }
