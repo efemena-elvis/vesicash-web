@@ -34,8 +34,8 @@ export default {
 
     getWithdrawalOptions() {
       return this.isMoRSetupEnabled
-        ? this.withdraw_options
-        : this.withdraw_options.slice(1);
+        ? [...this.withdraw_options, ...this.mor_withdraw_option]
+        : this.withdraw_options;
     },
   },
 
@@ -63,6 +63,9 @@ export default {
           slug: "wallet",
           description: "Transfer funds to a Vesicash user wallet.",
         },
+      ],
+
+      mor_withdraw_option: [
         {
           id: 4,
           icon: "MoneyIcon",
