@@ -13,6 +13,9 @@
     <!-- TITLE TOP BLOCK -->
     <TitleTopBlock />
 
+    <!-- VERIFICATION BLOCK -->
+    <VerificationBlock />
+
     <!-- WALLET BALANCE SECTION -->
     <WalletBlock />
 
@@ -84,6 +87,7 @@ import { mapActions, mapMutations, mapGetters } from "vuex";
 import MoRDocValidate from "@/modules/merchant-of-records/modules/config/mixins/mor-docs-mixin";
 import TitleTopBlock from "@/shared/components/block-comps/title-top-block";
 import WalletBlock from "@/shared/components/block-comps/wallet-block";
+import VerificationBlock from "@/modules/dashboard/components/card-comps/verification-block";
 
 export default {
   name: "DashboardPage",
@@ -98,6 +102,7 @@ export default {
   components: {
     TitleTopBlock,
     WalletBlock,
+    VerificationBlock,
     ActionsBlock: () =>
       import(
         /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/card-comps/actions-block"
