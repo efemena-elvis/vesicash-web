@@ -342,8 +342,6 @@ export default {
     },
 
     getWithdrawalCharge() {
-      console.log("Charge", this.getRawChargeValue);
-
       let account_type = this.account_type.slug;
       return account_type === "wallet" ? 0 : +this.getRawChargeValue;
     },

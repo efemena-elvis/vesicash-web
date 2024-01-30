@@ -360,12 +360,12 @@ export default {
           code: "us",
           flag: "https://flagsapi.com/US/flat/64.png",
         },
-        // {
-        //   country: "United Kingdom",
-        //   dialing_code: "44",
-        //   code: "gb",
-        //   flag: "https://dyclassroom.com/image/flags/gb.png",
-        // },
+        {
+          country: "United Kingdom",
+          dialing_code: "44",
+          code: "gb",
+          flag: "https://flagsapi.com/GB/flat/64.png",
+        },
       ],
 
       form: {
