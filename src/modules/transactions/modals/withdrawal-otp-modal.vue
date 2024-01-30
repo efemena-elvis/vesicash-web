@@ -190,7 +190,9 @@ export default {
           this.getWithdrawalMeta.selected_beneficiary.account_name,
         bank_account_number:
           this.getWithdrawalMeta.selected_beneficiary.account_no.toString(),
-        bank_code: this.getWithdrawalMeta.selected_beneficiary.sort_code,
+        bank_code:
+          this.getWithdrawalMeta?.selected_beneficiary?.sort_code ??
+          this.getWithdrawalMeta?.selected_beneficiary?.bank_code,
         amount: +this.getWithdrawalMeta.amount,
         currency: this.getWalletType.short,
         debit_currency: this.getWalletType.short,

@@ -14,7 +14,7 @@
     <TitleTopBlock />
 
     <!-- VERIFICATION BLOCK -->
-    <VerificationBlock />
+    <!-- <VerificationBlock /> -->
 
     <!-- WALLET BALANCE SECTION -->
     <WalletBlock />
