@@ -208,6 +208,7 @@ export default {
           this.EVALUATE_TRANSACTION_FEES(charge);
         }
       },
+      immediate: true,
     },
   },
 
@@ -243,8 +244,10 @@ export default {
       let card_charge = null;
       let transfer_charge = null;
       let fee_charge = null;
+      let processing_fee = null;
 
-      if (!escrowCharge) return { card_charge, transfer_charge, fee_charge };
+      if (!escrowCharge)
+        return { card_charge, transfer_charge, processing_fee, fee_charge };
 
       const card_cap = escrowCharge?.value?.card_fee_capped_at;
       const card_fee = escrowCharge?.value?.card_fee;
@@ -278,12 +281,15 @@ export default {
       const fee_cost = is_fee_percentage ? (fee / 100) * amount : fee;
       fee_charge = is_fee_capped ? Math.min(fee_cap, fee_cost) : fee_cost;
 
-      const total = fee_charge ? amount + fee_charge : null;
+      processing_fee = escrowCharge?.processingFee || 0;
+
+      const total = fee_charge ? amount + fee_charge + processing_fee : null;
 
       return {
         card_charge,
         transfer_charge,
         fee_charge,
+        processing_fee,
         amount,
         total,
       };
@@ -489,7 +495,7 @@ export default {
             this.sendOutCreatedTransaction(transaction_id);
           } else {
             this.pushToast(
-              "Transaction cannot be created at this time",
+              response?.message || "Transaction cannot be created at this time",
               "error"
             );
             this.handleClick("createEscrowBtn", "Create Escrow", false);
