@@ -232,10 +232,10 @@ const paymentHelper = {
       const response = await this.handleDataRequest({
         action: "startCardPayment",
         payload: this.getCardPaymentDetails,
-        alert_handler: {
-          error: "Failed to initiate card payment",
-          request_error: "Failed to initiate card payment",
-        },
+        // alert_handler: {
+        //   error: "Failed to initiate card payment",
+        //   request_error: "Failed to initiate card payment",
+        // },
       });
 
       this.hidePageLoader();

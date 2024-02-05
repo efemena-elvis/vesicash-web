@@ -51,6 +51,18 @@
       ></div>
     </div>
 
+    <div class="item-row">
+      <div class="item grey-600 tertiary-2-text">Disbursement fee</div>
+      <div
+        class="value grey-900 secondary-2-text"
+        v-html="
+          `${getCurrencySign} ${$utils.formatCurrencyWithComma(
+            charge?.processing_fee || '0'
+          )}`
+        "
+      ></div>
+    </div>
+
     <!-- TOTAL ROW -->
     <div class="total-row">
       <div class="item grey-900 tertiary-2-text">TOTAL AMOUNT</div>
