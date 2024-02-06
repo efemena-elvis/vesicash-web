@@ -17,7 +17,8 @@
       <VerificationBlock
         :verifications="relevantVerifications"
         :loading="fetching_verifications"
-        v-if="!validateUserPhone || true"
+        @toggle="toggleVerificationModal($event, 'OPEN')"
+        v-if="!validateUserPhone"
       />
     </transition>
 
