@@ -6,12 +6,20 @@
       <div class="alert-msg tertiary-2-text grey-800 mgb-12">
         {{ alert_message }}
       </div>
-
       <router-link
+        v-if="upgrade_link"
         class="btn btn-sm btn-secondary d-inline-block"
         :to="upgrade_link"
         >{{ upgrade_action }}</router-link
       >
+
+      <button
+        class="btn btn-sm btn-secondary d-inline-block"
+        v-else
+        @click="$emit('upgrade')"
+      >
+        {{ upgrade_action }}
+      </button>
     </div>
   </div>
 </template>
