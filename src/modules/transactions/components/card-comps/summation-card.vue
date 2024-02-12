@@ -8,7 +8,7 @@
         <div
           class="value grey-900 secondary-2-text"
           v-html="
-            `${getCurrencySign} ${$utils.formatCurrencyWithComma(
+            `${getCurrencySign}${$utils.formatCurrencyWithComma(
               amount_data.milestone_amounts[0] || 0
             )}`
           "
@@ -31,7 +31,7 @@
         <div
           class="value grey-900 secondary-2-text"
           v-html="
-            `${getCurrencySign} ${$utils.formatCurrencyWithComma(
+            `${getCurrencySign}${$utils.formatCurrencyWithComma(
               amount_data.milestone_amounts[index] || 0
             )}`
           "
@@ -44,7 +44,7 @@
       <div
         class="value grey-900 secondary-2-text"
         v-html="
-          `${getCurrencySign} ${$utils.formatCurrencyWithComma(
+          `${getCurrencySign}${$utils.formatCurrencyWithComma(
             charge?.fee_charge || amount_data.escrow_fee
           )}`
         "
@@ -52,13 +52,14 @@
     </div>
 
     <div class="item-row">
-      <div class="item grey-600 tertiary-2-text">Disbursement fee</div>
+      <div class="item grey-600 tertiary-2-text">
+        <span>Disbursement fee</span> <span>{{ disbursementBreakdown }}</span>
+      </div>
+
       <div
         class="value grey-900 secondary-2-text"
         v-html="
-          `${getCurrencySign} ${$utils.formatCurrencyWithComma(
-            charge?.processing_fee || '0'
-          )}`
+          `${getCurrencySign}${$utils.formatCurrencyWithComma(disbursementFee)}`
         "
       ></div>
     </div>
@@ -69,7 +70,7 @@
       <div
         class="value grey-900 primary-2-text"
         v-html="
-          `${getCurrencySign} ${$utils.formatCurrencyWithComma(
+          `${getCurrencySign}${$utils.formatCurrencyWithComma(
             charge?.total || amount_data.total_fee
           )}`
         "
@@ -99,6 +100,24 @@ export default {
   },
 
   computed: {
+    disbursementFee() {
+      return this.charge?.processing_fee
+        ? this.charge?.processing_fee * this.milestones?.length || 1
+        : 0;
+    },
+
+    disbursementBreakdown() {
+      if (this.milestones?.length < 2) return "";
+
+      const disbursement_fee = `${
+        this.getCurrencySign
+      }${this.$utils.formatCurrencyWithComma(
+        this.charge?.processing_fee || 0
+      )}`;
+
+      return `(${disbursement_fee} per milestone)`;
+    },
+
     getCurrencySign() {
       return this.$money.getSign(this.amount_data.currency.slug);
     },
