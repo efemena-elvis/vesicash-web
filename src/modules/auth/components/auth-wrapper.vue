@@ -43,21 +43,29 @@ export default {
   max-width: 100%;
   margin: auto;
   background: getColor("neutral-10");
-  padding: toRem(32);
+  padding: toRem(28);
   border-radius: toRem(16);
   box-shadow: 1px 1px 10px 0px rgba(217, 222, 224, 0.5),
     -1px -1px 10px 0px rgba(217, 221, 224, 0.5);
+
+  @include breakpoint-down(sm) {
+    padding: toRem(22);
+  }
 
   .title-text {
     @include font-height(26, 36);
 
     @include breakpoint-down(sm) {
-      font-size: toRem(26);
+      font-size: toRem(22);
     }
   }
 
   .meta-text {
     @include font-height(14.75, 23);
+
+    @include breakpoint-down(sm) {
+      @include font-height(14.25, 21);
+    }
   }
 
   .auth-page {

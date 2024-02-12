@@ -56,7 +56,7 @@
           ref="btnRef"
           :disabled="isFormValidated"
         >
-          Login to account
+          Login to Dashboard
         </button>
       </div>
 
