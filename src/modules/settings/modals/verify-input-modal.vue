@@ -161,8 +161,8 @@ export default {
       this.handleClick("continue");
 
       let request_payload = {
-        account_id: this.getAccountId,
-        // phone_number: this.form.phone_number.value,
+        // account_id: this.getAccountId,
+        phone_number: this.form.phone_number.value,
       };
 
       let request_email_otp_payload = {
