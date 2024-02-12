@@ -1,20 +1,26 @@
 <template>
   <div class="dashboard-view">
-    <transition name="fade" mode="out-in" v-if="false">
+    <!-- TITLE TOP BLOCK -->
+    <TitleTopBlock />
+
+    <transition name="fade" mode="out-in">
       <div class="alert-wrapper" v-if="validateUserPhone">
         <UpgradeAlertCard
           alert_message="Great news! Your account verification is almost complete. Simply verify your phone number to finish the process."
-          upgrade_link="/settings/profile"
           upgrade_action="Verify phone number"
+          @upgrade="show_phone_entry = true"
         />
       </div>
     </transition>
 
-    <!-- TITLE TOP BLOCK -->
-    <TitleTopBlock />
-
-    <!-- VERIFICATION BLOCK -->
-    <!-- <VerificationBlock /> -->
+    <transition name="fade" mode="out-in">
+      <VerificationBlock
+        :verifications="relevantVerifications"
+        :loading="fetching_verifications"
+        @toggle="toggleVerificationModal($event, 'OPEN')"
+        v-if="!validateUserPhone"
+      />
+    </transition>
 
     <!-- WALLET BALANCE SECTION -->
     <WalletBlock />
@@ -39,7 +45,7 @@
         name="fade"
         v-if="
           show_phone_entry &&
-          !isPhoneVerified &&
+          validateUserPhone &&
           !getTourData.ongoing &&
           !show_start_walkthrough_modal &&
           !show_end_walkthrough_modal
@@ -55,15 +61,15 @@
       <transition name="fade" v-if="show_phone_otp_entry">
         <VerifyOTPModal
           :input="verify_phone_number"
-          @done="closeAndShowSuccess"
+          @done="closeAndShowSuccess('phone')"
           @closeTriggered="show_phone_otp_entry = false"
         />
       </transition>
 
       <transition name="fade" v-if="show_success">
         <successModal
-          message="Your phone number has been verified successfully"
-          main_cta_title="Back to home"
+          :message="success_message"
+          main_cta_title="Close"
           @done="closeModal"
         />
       </transition>
@@ -78,6 +84,34 @@
           :tour="tour_data[getTourData.count === 8 ? 4 : getTourData.count - 1]"
         />
       </transition>
+
+      <transition name="fade" v-if="show_bvn_modal">
+        <VerifyBVNModal
+          @closeTriggered="toggleVerificationModal('bvn', 'CLOSE')"
+          @saved="closeAndShowSuccess('bvn')"
+        />
+      </transition>
+
+      <transition name="fade" v-if="show_nin_modal">
+        <VerifyIDModal
+          @closeTriggered="toggleVerificationModal('nin', 'CLOSE')"
+          @saved="closeAndShowSuccess('nin')"
+        />
+      </transition>
+
+      <transition name="fade" v-if="show_tin_modal">
+        <VerifyTINModal
+          @closeTriggered="toggleVerificationModal('tin', 'CLOSE')"
+          @saved="closeAndShowSuccess('tin')"
+        />
+      </transition>
+
+      <transition name="fade" v-if="show_cac_modal">
+        <VerifyCACModal
+          @closeTriggered="toggleVerificationModal('cac', 'CLOSE')"
+          @saved="closeAndShowSuccess('cac')"
+        />
+      </transition>
     </portal>
   </div>
 </template>
@@ -87,7 +121,7 @@ import { mapActions, mapMutations, mapGetters } from "vuex";
 import MoRDocValidate from "@/modules/merchant-of-records/modules/config/mixins/mor-docs-mixin";
 import TitleTopBlock from "@/shared/components/block-comps/title-top-block";
 import WalletBlock from "@/shared/components/block-comps/wallet-block";
-import VerificationBlock from "@/modules/dashboard/components/card-comps/verification-block";
+import VerificationBlock from "@/modules/dashboard/components/card-comps/verification-block.vue";
 
 export default {
   name: "DashboardPage",
@@ -143,6 +177,22 @@ export default {
       import(
         /* webpackChunkName: "shared-module" */ "@/modules/settings/modals/verify-otp-modal"
       ),
+    VerifyBVNModal: () =>
+      import(
+        /* webpackChunkName: "shared-module" */ "@/modules/settings/modals/verification-bvn-modal"
+      ),
+    VerifyIDModal: () =>
+      import(
+        /* webpackChunkName: "shared-module" */ "@/modules/settings/modals/verification-document-modal"
+      ),
+    VerifyTINModal: () =>
+      import(
+        /* webpackChunkName: "shared-module" */ "@/modules/settings/modals/tin-verification-modal"
+      ),
+    VerifyCACModal: () =>
+      import(
+        /* webpackChunkName: "shared-module" */ "@/modules/settings/modals/coporation-verification-modal"
+      ),
     successModal: () =>
       import(
         /* webpackChunkName: "shared-module" */ "@/shared/modals/success-modal"
@@ -151,6 +201,7 @@ export default {
       import(
         /* webpackChunkName: "shared-module" */ "@/shared/components/util-comps/tour-cover"
       ),
+    VerificationBlock,
   },
 
   computed: {
@@ -160,6 +211,29 @@ export default {
       getTourData: "general/getTourData",
       hasUserSeenTour: "auth/hasUserSeenTour",
     }),
+
+    relevantVerifications() {
+      const verification_names = {
+        cac: "Business Registration Number",
+        bvn: "Bank Verification Number",
+        tin: "Tax Identification Number",
+        nin: "Identification Document",
+      };
+
+      return ["cac", "bvn", "tin", "nin"].map((type) => {
+        const verified = this.user_verifications?.find(
+          (item) => item.verification_type === type
+        )?.is_verified
+          ? true
+          : false;
+
+        return {
+          type,
+          name: verification_names[type],
+          verified,
+        };
+      });
+    },
 
     isPhoneVerified() {
       if (!this.getUserVerifications) return false;
@@ -220,6 +294,14 @@ export default {
       show_success: false,
       verify_phone_number: this.getUser?.phone,
 
+      show_bvn_modal: false,
+      show_nin_modal: false,
+      show_cac_modal: false,
+      show_tin_modal: false,
+
+      success_message: "Your phone number has been verified successfully",
+      fetching_verifications: false,
+
       tour_data: [
         {
           title: "Your dashboard",
@@ -262,8 +344,10 @@ export default {
     };
   },
 
-  mounted() {
-    // this.fetchVerifications();
+  async mounted() {
+    this.fetching_verifications = true;
+    await this.fetchVerifications();
+    this.fetching_verifications = false;
 
     // CLEAR OUT TRANSACTION STORE
     if (this.getTransactions?.name?.length) {
@@ -280,6 +364,26 @@ export default {
       saveUserProfile: "settings/saveUserProfile",
     }),
 
+    toggleVerificationModal(type, state) {
+      switch (type) {
+        case "bvn":
+          this.show_bvn_modal = state === "OPEN";
+          break;
+        case "nin":
+          this.show_nin_modal = state === "OPEN";
+          break;
+        case "cac":
+          this.show_cac_modal = state === "OPEN";
+          break;
+        case "tin":
+          this.show_tin_modal = state === "OPEN";
+          break;
+        default:
+          this.show_bvn_modal = state === "OPEN";
+          break;
+      }
+    },
+
     updateProfile() {
       const updatedUser = {
         ...this.getUser,
@@ -293,6 +397,7 @@ export default {
       const updatedUser = {
         ...this.getUser,
         phone: this.verify_phone_number,
+        verifications: { ...this.getUser.verifications, phone: true },
       };
 
       this.UPDATE_AUTH_USER(updatedUser);
@@ -346,10 +451,61 @@ export default {
       this.show_phone_otp_entry = true;
     },
 
-    closeAndShowSuccess() {
-      this.show_phone_otp_entry = false;
-      this.show_success = true;
-      this.updateUserPhone();
+    async closeAndShowSuccess(type) {
+      this.fetching_verifications = true;
+      await this.fetchVerifications();
+      this.fetching_verifications = false;
+
+      const updatedUser = {
+        ...this.getUser,
+        verifications: { ...this.getUser.verifications, [type]: true },
+      };
+
+      this.UPDATE_AUTH_USER(updatedUser);
+
+      switch (type) {
+        case "phone":
+          {
+            this.success_message =
+              "Your phone number has been verified successfully";
+            this.show_phone_otp_entry = false;
+            this.show_success = true;
+            this.updateUserPhone();
+          }
+          break;
+        case "nin":
+          {
+            this.success_message = "Your NIN has been verified successfully";
+            this.show_nin_modal = false;
+            this.show_success = true;
+          }
+          break;
+        case "cac":
+          {
+            this.success_message =
+              "Business’s information have been uploaded successfully and awaiting verification. This should take 3 working days.";
+            this.show_cac_modal = false;
+            this.show_success = true;
+          }
+          break;
+        case "bvn":
+          {
+            this.success_message = "Your BVN has been verified successfully";
+            this.show_bvn_modal = false;
+            this.show_success = true;
+          }
+          break;
+        case "tin":
+          {
+            this.success_message =
+              "Your Tax Identification Number has been verified successfully";
+            this.show_tin_modal = false;
+            this.show_success = true;
+          }
+          break;
+        default:
+          break;
+      }
     },
 
     toggleStartWalkthrough() {

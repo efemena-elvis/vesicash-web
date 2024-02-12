@@ -283,7 +283,11 @@ export default {
 
       processing_fee = escrowCharge?.processingFee || 0;
 
-      const total = fee_charge ? amount + fee_charge + processing_fee : null;
+      const total = fee_charge
+        ? amount +
+          fee_charge +
+          (processing_fee * this.getTransactionMilestones?.length || 1)
+        : null;
 
       return {
         card_charge,
@@ -327,6 +331,7 @@ export default {
               this.signupBulkUsers();
               return false;
             }
+            //∞ <<hmm>>
 
             let user_payload = [];
             let updated_beneficiaries = [];
