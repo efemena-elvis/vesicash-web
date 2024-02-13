@@ -87,21 +87,6 @@ const authRoutes = [
       },
 
       // ==================================
-      // VESICASH REGISTER LANDER ROUTE
-      // ==================================
-      // {
-      //   path: "/register-lander",
-      //   name: "VesicashRegisterLander",
-      //   component: () =>
-      //     import(
-      //       /* webpackChunkName: "auth-module" */ "@/modules/auth/pages/register-lander"
-      //     ),
-      //   meta: {
-      //     guest: true,
-      //   },
-      // },
-
-      // ==================================
       // VESICASH VERIFY OTP ROUTE
       // ==================================
       {

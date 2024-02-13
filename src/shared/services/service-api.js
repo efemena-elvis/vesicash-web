@@ -9,9 +9,21 @@ import { constants } from "@/utilities";
 // SERVICE API CLSS
 // ===============================
 class serviceApi {
+  API_BASE_URL = constants.VESICASH_API_URL;
+  API_VERSION = constants.VESICASH_API_VERSION;
+
   // INSTANTIATE BASE API URL
   constructor() {
     this.injectTokenInterceptor();
+  }
+
+  // ===============================
+  // SETUP SERVICE NAME AND BASE URL
+  // ===============================
+  service(service_name) {
+    const BASE_API_ROUTE = `https://${service_name}${this.API_BASE_URL}/${this.API_VERSION}/`;
+    axios.defaults.baseURL = BASE_API_ROUTE;
+    return this;
   }
 
   // ===============================

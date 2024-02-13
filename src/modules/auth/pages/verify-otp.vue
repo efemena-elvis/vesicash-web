@@ -119,8 +119,6 @@ export default {
 
   methods: {
     ...mapActions({
-      // sendUserOTP: "auth/sendUserOTP",
-      // verifyUserOTP: "auth/verifyUserOTP",
       sendEmailOTP: "settings/requestEmailOTP",
       verifyEmailOTP: "settings/verifyEmailOTP",
     }),

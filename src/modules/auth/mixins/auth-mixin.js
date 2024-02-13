@@ -14,7 +14,6 @@ const authMixin = {
         action: "sendEmailOTP",
         payload: {
           account_id: +this.user_details?.account_id,
-          // email_address: this.user_details?.email_address,
         },
       });
 
