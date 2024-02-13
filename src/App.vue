@@ -23,7 +23,6 @@
 
 <script>
 import { mapActions } from "vuex";
-import SnapshotMixin from "@/shared/mixins/mixin-snapshots";
 
 export default {
   name: "App",
@@ -36,8 +35,6 @@ export default {
       amp: true,
     },
   },
-
-  mixins: [SnapshotMixin],
 
   components: {
     PageLoader: () =>

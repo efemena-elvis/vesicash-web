@@ -56,7 +56,7 @@
           ref="btnRef"
           :disabled="isFormValidated"
         >
-          Login to account
+          Login to Dashboard
         </button>
       </div>
 
@@ -115,18 +115,6 @@ export default {
       },
 
       user_details: {},
-
-      onboarding_paths: [
-        "/onboarding/business-information",
-        "/onboarding/business-verification",
-        "/onboarding/identity-verification",
-        "/onboarding/mor-deployment",
-      ],
-
-      default_onboarding_state: {
-        is_completed: false,
-        completed_routes: [],
-      },
     };
   },
 
@@ -134,9 +122,6 @@ export default {
     ...mapActions({
       loginUser: "auth/loginUser",
       fetchAPIkeys: "developer/fetchAPIkeys",
-      saveUserProfile: "settings/saveUserProfile",
-      updateMerchantState: "general/updateMerchantState",
-      updateOnboardingState: "general/updateOnboardingState",
     }),
 
     // ============================
@@ -161,10 +146,8 @@ export default {
         this.getAPIKeys();
 
         // CHECK IF USER EMAIL IS VERIFIED
-        const is_email_verified = this.getUser?.verifications?.email;
-
-        if (is_email_verified) {
-          this.checkOnboardingState(response?.data);
+        if (this.getUser?.verifications?.email) {
+          this.verifyUserOnboarding(response?.data);
         }
         // REDIRECT USER TO OTP VERIFICATION
         else {
@@ -174,12 +157,9 @@ export default {
       }
     },
 
-    checkOnboardingState(payload) {
+    verifyUserOnboarding(payload) {
       const onboarding_fields = ["business_name", "business_type", "country"];
       const business_data = payload?.profile?.business;
-      const extra_data = payload?.user?.extra_data;
-
-      this.updateMerchantState(extra_data?.merchant ?? false);
 
       const is_onboarded = onboarding_fields.every(
         (field) => !!business_data[field]
@@ -192,39 +172,9 @@ export default {
       }, 1500);
     },
 
-    async checkOnbordingCompletionStatus() {
-      const response = await this.handleDataRequest({
-        action: "saveUserProfile",
-        payload: {},
-        alert_handler: {
-          request_error: "User profile not found",
-          not_found_error: "User profile not found",
-        },
-      });
-
-      if (response.code === 200) {
-        // const user_extra_data = response.data.user?.extra_data;
-        // this.updateMerchantState(user_extra_data?.merchant ?? false);
-        // EXTRACT COMPLETED STATE AND COMPLETED ROUTES
-        // let { is_completed, completed_routes } =
-        //   user_extra_data?.onboarding ?? this.default_onboarding_state;
-        // UPDATE AND PERSIST ONBOARDING AND MERCHANT DATA IN STORE
-        // this.updateOnboardingState({ is_completed, completed_routes });
-        // NAVIGATE TO DASHBOARD IF ONBOARDING IS COMPLETE
-        // IF NOT COMPLETE NAVIGATE TO ONBOARDING PROGRESS ROUTE
-        // location.href = is_completed
-        //   ? "/dashboard"
-        //   : this.onboarding_paths[completed_routes.length];
-      } else {
-        this.handleToastPushMx("Failed to proceed to login", "error");
-      }
-    },
-
     async getAPIKeys() {
-      // payload: { regenerate: true },
-      const response = await this.handleDataRequest({
+      await this.handleDataRequest({
         action: "fetchAPIkeys",
-        payload: {},
         show_alert: false,
       });
     },

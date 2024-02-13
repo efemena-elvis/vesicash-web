@@ -669,9 +669,16 @@ export default {
         // REMOVE THE SELECTED KEY FROM SELECTED BENEFICIARY
         delete this.form.selected_beneficiary.selected;
 
+        const updatedPayload = {
+          ...this.form.selected_beneficiary,
+          sort_code: this.form.selected_beneficiary.bank_code,
+        };
+
+        delete updatedPayload.bank_code;
+
         const response = await this.addNewBank({
           account_id: this.getAccountId,
-          ...this.form.selected_beneficiary,
+          ...updatedPayload,
         });
 
         this.handleClick("btnRef", "Continue", false);

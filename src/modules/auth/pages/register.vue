@@ -22,7 +22,6 @@
 
       <!-- PHONE INPUT -->
       <div class="form-group">
-        <!-- label_subtitle="Operational business phone number" -->
         <FormFieldInput
           label_title="Phone number"
           label_id="phoneNumber"
@@ -42,7 +41,6 @@
 
       <!-- PASSWORD INPUT -->
       <div class="form-group">
-        <!-- label_subtitle="Make sure to use a very strong password" -->
         <FormFieldInput
           label_title="Password"
           label_id="password"
@@ -97,7 +95,6 @@
 
 <script>
 import { mapActions } from "vuex";
-import CountryHelper from "@/shared/mixins/mixin-country-helper";
 import authMixin from "@/modules/auth/mixins/auth-mixin";
 import AuthWrapper from "@/modules/auth/components/auth-wrapper";
 import countries from "@/utilities/countries";
@@ -105,7 +102,7 @@ import countries from "@/utilities/countries";
 export default {
   name: "RegisterPage",
 
-  mixins: [authMixin, CountryHelper],
+  mixins: [authMixin],
 
   metaInfo: {
     title: "Register",
@@ -123,17 +120,11 @@ export default {
 
     getRequestPayload() {
       let form_payload = this.getFormPayloadMx(this.form);
-      // let [firstname, lastname] = form_payload.fullname.split(" ");
 
-      // firstname,
-      // lastname,
-      let request_payload = {
+      return {
         ...form_payload,
         phone_number: this.sanitizeUserPhoneNumber(form_payload.phone_number),
       };
-
-      // delete request_payload.fullname;
-      return request_payload;
     },
 
     isBusinessEmail() {
@@ -153,22 +144,10 @@ export default {
   data() {
     return {
       form: {
-        // business_name: {
-        //   validated: false,
-        //   value: "",
-        // },
         account_type: {
           validated: true,
           value: "business",
         },
-        // fullname: {
-        //   validated: false,
-        //   value: "",
-        // },
-        // business_type: {
-        //   validated: true,
-        //   value: "",
-        // },
         email_address: {
           validated: false,
           value: "",
@@ -177,10 +156,6 @@ export default {
           validated: false,
           value: "",
         },
-        // country: {
-        //   validated: false,
-        //   value: "",
-        // },
         password: {
           validated: false,
           value: "",
@@ -191,10 +166,7 @@ export default {
         },
       },
 
-      show_country: false,
-      business_type_options: [],
       user_details: {},
-
       country_selected_code: "234",
     };
   },
@@ -207,8 +179,6 @@ export default {
       this.country_selected_code = countries.find(
         (data) => data.country === country
       ).dialing_code;
-
-      // this.form.country.value = country.toLowerCase();
     });
   },
 
@@ -219,20 +189,6 @@ export default {
 
     sanitizeUserPhoneNumber(phone_number) {
       return this.sanitizePhone(this.country_selected_code, phone_number);
-    },
-
-    // ===========================================
-    // HANDLE BUSINESS TYPE USER SELECTION
-    // ===========================================
-    selectBusinessType(selected_id) {
-      this.form.business_type.value = this.business_type_options.find(
-        (business) => business.id === selected_id
-      ).name;
-      this.form.business_type.validated = true;
-    },
-
-    toggleShowCountry() {
-      this.show_country = !this.show_country;
     },
 
     // ===========================================
