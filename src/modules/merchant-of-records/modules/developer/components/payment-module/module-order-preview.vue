@@ -65,7 +65,7 @@
         :checked="payment.selected"
         :check_id="payment.id"
         :primary_text="`Pay by ${payment.name}`"
-        @change="updatePaymentMethod(index)"
+        @change="updatePaymentMethod($event, index)"
       />
     </template>
 
@@ -116,7 +116,7 @@ export default {
     }),
 
     isDisabled() {
-      return this.isPaymentInfoCompleted && this.payment_method_selected
+      return this.isPaymentInfoCompleted && !!this.selected_payment_slug
         ? false
         : true;
     },
@@ -160,7 +160,7 @@ export default {
         name: this.getPaymentMethod(option),
         id: `Preview${option}`,
         slug: option,
-        selected: false,
+        selected: this.selected_payment_slug === option,
       }));
     },
   },
@@ -177,6 +177,8 @@ export default {
 
   data: () => ({
     payment_method_selected: false,
+
+    selected_payment_slug: "",
 
     form: {
       promo_code: {
@@ -207,25 +209,10 @@ export default {
       else return payment_methods[method];
     },
 
-    updatePaymentMethod(index) {
+    updatePaymentMethod(state, index) {
       let selected_option = this.paymentMethods[index];
-
-      if (selected_option.selected) selected_option.selected = false;
-      else selected_option.selected = true;
-
-      this.paymentMethods
-        .filter((_, itemIndex) => itemIndex !== index)
-        .map((item) => (item.selected = false));
-
-      let selected = this.paymentMethods.findIndex((pay) => pay.selected);
-
-      if (selected >= 0) {
-        this.payment_method_selected = true;
-        this.UPDATE_SELECTED_PAYMENT(this.paymentMethods[selected].slug);
-      } else {
-        this.UPDATE_SELECTED_PAYMENT("");
-        this.payment_method_selected = false;
-      }
+      this.selected_payment_slug = state ? selected_option.slug : "";
+      this.UPDATE_SELECTED_PAYMENT(this.selected_payment_slug);
     },
   },
 };
