@@ -180,7 +180,8 @@
         <BulkTransferSuccessModal
           :currency="selected_currency.short"
           :total_amount="getTotalAmount"
-          @closeTriggered="toggleTransferSuccessModal()"
+          @viewPayments="closeTransaction($event)"
+          @closeTriggered="closeTransaction($event)"
           @processTransfer="processTransferRequest()"
         />
       </transition>
@@ -417,11 +418,16 @@ export default {
 
       if (response.code == 200) {
         this.$bus.$emit("hide-page-loader");
-        this.clearOutAccountList();
-        this.form.narration.value = "";
-
         this.toggleTransferSuccessModal();
       }
+    },
+
+    closeTransaction(type) {
+      this.clearOutAccountList();
+      this.form.narration.value = "";
+      this.toggleTransferSuccessModal();
+
+      if (type === "payments") this.$router.push("/payments");
     },
   },
 };

@@ -26,14 +26,14 @@
           <div class="btn-area mgt-24 wt-100">
             <button
               class="btn btn-primary btn-md wt-100 mgb-10"
-              @click="$router.push('/payments')"
+              @click="$emit('viewPayments', 'payments')"
             >
               View Payments
             </button>
 
             <button
               class="btn btn-md btn-secondary wt-100"
-              @click="$emit('closeTriggered')"
+              @click="$emit('closeTriggered', 'close')"
             >
               Send money again
             </button>

@@ -18,9 +18,10 @@
         <div class="base-amount mgb-38">
           <div class="grey-500 f-size-13-5 mgb-8">Amount Paid</div>
           <div class="amount" :class="is_inflow ? 'green-600' : 'red-800'">
-            <span class="f-size-18"
+            <span class="f-size-21"
               >{{ is_inflow ? "+" : "-" }}{{ getCurrency }}</span
-            ><span>{{ getFormattedAmount }}</span>
+            >
+            <span>{{ getFormattedAmount }}</span>
           </div>
         </div>
 
