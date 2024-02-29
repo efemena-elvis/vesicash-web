@@ -3,7 +3,7 @@
     <!-- TITLE TOP BLOCK -->
     <TitleTopBlock />
 
-    <transition name="fade" mode="out-in">
+    <!-- <transition name="fade" mode="out-in">
       <div class="alert-wrapper" v-if="validateUserPhone">
         <UpgradeAlertCard
           alert_message="Great news! Your account verification is almost complete. Simply verify your phone number to finish the process."
@@ -11,16 +11,16 @@
           @upgrade="show_phone_entry = true"
         />
       </div>
-    </transition>
+    </transition> -->
 
-    <transition name="fade" mode="out-in">
+    <!-- <transition name="fade" mode="out-in">
       <VerificationBlock
         :verifications="relevantVerifications"
         :loading="fetching_verifications"
         @toggle="toggleVerificationModal($event, 'OPEN')"
         v-if="!validateUserPhone"
       />
-    </transition>
+    </transition> -->
 
     <!-- WALLET BALANCE SECTION -->
     <WalletBlock />
@@ -28,19 +28,14 @@
     <!-- ACTIONS BLOCK -->
     <ActionsBlock />
 
-    <MoRDashboard />
+    <template>
+      <div class="wrapper mgt-59 mgb-40">
+        <DashboardTransactions />
+      </div>
+    </template>
 
     <!-- MODALS -->
-    <!-- v-if="show_start_walkthrough_modal && !hasUserSeenTour" -->
     <portal to="vesicash-modals">
-      <transition name="fade" v-if="show_start_walkthrough_modal">
-        <startWalkthroughModal @closeTriggered="toggleStartWalkthrough" />
-      </transition>
-
-      <transition name="fade" v-if="show_end_walkthrough_modal">
-        <endWalkthroughModal @endTour="closeTourAndVerifyUser" />
-      </transition>
-
       <transition
         name="fade"
         v-if="
@@ -71,17 +66,6 @@
           :message="success_message"
           main_cta_title="Close"
           @done="closeModal"
-        />
-      </transition>
-
-      <transition name="fade" v-if="getTourData.ongoing">
-        <tourCover />
-      </transition>
-
-      <transition name="fade" v-if="show_walkthrough_card">
-        <walkthroughModal
-          @skipTour="skipTour"
-          :tour="tour_data[getTourData.count === 8 ? 4 : getTourData.count - 1]"
         />
       </transition>
 
@@ -121,7 +105,7 @@ import { mapActions, mapMutations, mapGetters } from "vuex";
 import MoRDocValidate from "@/modules/merchant-of-records/modules/config/mixins/mor-docs-mixin";
 import TitleTopBlock from "@/shared/components/block-comps/title-top-block";
 import WalletBlock from "@/shared/components/block-comps/wallet-block";
-import VerificationBlock from "@/modules/dashboard/components/card-comps/verification-block.vue";
+import VerificationBlock from "@/modules/dashboard/components/card-comps/verification-block";
 
 export default {
   name: "DashboardPage",
@@ -129,7 +113,7 @@ export default {
   mixins: [MoRDocValidate],
 
   metaInfo: {
-    title: "Dashboard",
+    title: "Overview",
     titleTemplate: "%s - Vesicash",
   },
 
@@ -141,33 +125,13 @@ export default {
       import(
         /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/card-comps/actions-block"
       ),
-    MoRDashboard: () =>
+    DashboardTransactions: () =>
       import(
-        /* webpackChunkName: "MoR-module" */ "@/modules/merchant-of-records/modules/dashboard/components/mor-dashboard"
+        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/dashboard-transactions"
       ),
-    // TransactionTable: () =>
-    //   import(
-    //     /* webpackChunkName: "transactions-module" */ "@/modules/transactions/components/table-comps/transaction-table"
-    //   ),
-    // DashboardTransactions: () =>
-    //   import(
-    //     /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/dashboard-transactions"
-    //   ),
     UpgradeAlertCard: () =>
       import(
         /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/card-comps/upgrade-alert-card"
-      ),
-    startWalkthroughModal: () =>
-      import(
-        /* webpackChunkName: "shared-module" */ "@/shared/modals/app-walkthrough/start-walkthrough-modal"
-      ),
-    endWalkthroughModal: () =>
-      import(
-        /* webpackChunkName: "shared-module" */ "@/shared/modals/app-walkthrough/end-walkthrough-modal"
-      ),
-    walkthroughModal: () =>
-      import(
-        /* webpackChunkName: "shared-module" */ "@/shared/modals/app-walkthrough/walkthrough-modal"
       ),
     VerifyInputModal: () =>
       import(
@@ -197,11 +161,6 @@ export default {
       import(
         /* webpackChunkName: "shared-module" */ "@/shared/modals/success-modal"
       ),
-    tourCover: () =>
-      import(
-        /* webpackChunkName: "shared-module" */ "@/shared/components/util-comps/tour-cover"
-      ),
-    VerificationBlock,
   },
 
   computed: {
@@ -248,47 +207,8 @@ export default {
     },
   },
 
-  watch: {
-    // getTourData: {
-    //   handler(value) {
-    //     if (!value.ongoing) {
-    //       // SCROLL TO TOP
-    //       window.scrollTo(0, 0);
-    //       if (this.getTourData.count === 0 && !this.getUser.has_seen_tour) {
-    //         if (window.innerWidth > 1024)
-    //           this.show_start_walkthrough_modal = true;
-    //         // else this.show_phone_entry = true;
-    //       } else if (this.getTourData.count === this.getTourData.total + 1)
-    //         this.show_end_walkthrough_modal = true;
-    //     }
-    //   },
-    //   immediate: true,
-    //   deep: true,
-    // },
-    // "getTourData.count": {
-    //   handler(value) {
-    //     this.show_walkthrough_card = false;
-    //     this.show_escrow_btn = false;
-    //     if (this.getTourData.ongoing) {
-    //       if (value > 0 && value < this.getTourData.total + 1) {
-    //         setTimeout(() => (this.show_walkthrough_card = true), 300);
-    //         if (value === 4) {
-    //           this.show_escrow_btn = true;
-    //         }
-    //       }
-    //     }
-    //   },
-    //   immediate: true,
-    // },
-  },
-
   data() {
     return {
-      show_start_walkthrough_modal: false,
-      show_end_walkthrough_modal: false,
-      show_walkthrough_card: false,
-      show_escrow_btn: false,
-
       show_phone_entry: false,
       show_phone_otp_entry: false,
       show_success: false,
@@ -301,46 +221,6 @@ export default {
 
       success_message: "Your phone number has been verified successfully",
       fetching_verifications: false,
-
-      tour_data: [
-        {
-          title: "Your dashboard",
-          description:
-            "Your dashboard shows your Wallet balances at a glance. Any funds currently being held in Escrow are also displayed here.",
-          marker: "center-top",
-          position: "tour-one-position",
-        },
-        {
-          title: "Funding",
-          description:
-            "Easily add funds to your Wallet(s) here. Funding can be made via Bank or Wire transfer to any of your selected wallet",
-          marker: "center-top",
-          position: "tour-two-position",
-        },
-
-        {
-          title: "Withdrawals",
-          description:
-            "You can initiate wallet withdrawals here. The entered amount would settle in your designated bank account(s) immediately.",
-          marker: "center-top",
-          position: "tour-three-position",
-        },
-        {
-          title: "Create Escrow",
-          description:
-            "Initiate One–to-one or Multi-party Escrow transactions and specify either a one time or milestone disbursement payment type.",
-          marker: "center-left",
-          position: "tour-four-position",
-        },
-
-        {
-          title: "Business ID",
-          description:
-            "Your Business ID is unique to your account. Access and copy it here to receive payments from other businesses on the Vesicash platform.",
-          marker: "center-bottom",
-          position: "tour-eight-position",
-        },
-      ],
     };
   },
 
@@ -360,7 +240,6 @@ export default {
     ...mapActions({
       clearAttachedFile: "general/clearAttachedFile",
       fetchUserVerifications: "settings/fetchUserVerifications",
-      updateUserTourStatus: "auth/updateUserTourStatus",
       saveUserProfile: "settings/saveUserProfile",
     }),
 
@@ -412,38 +291,14 @@ export default {
       this.closeAndVerifyOTP();
     },
 
-    async upateTourStatus() {
-      const payload = {
-        account_id: this.getAccountId,
-        status: true,
-      };
-      await this.updateUserTourStatus(payload);
-    },
-
     ...mapMutations({
       RESET_TRANSACTION: "transactions/RESET_TRANSACTION",
-      END_TOUR_FLOW: "general/END_TOUR_FLOW",
       UPDATE_AUTH_USER: "auth/UPDATE_AUTH_USER",
     }),
-
-    skipTour() {
-      this.show_walkthrough_card = false;
-      this.END_TOUR_FLOW();
-      this.updateProfile();
-    },
 
     // RELOAD PAGE ON COMPLETE VERIFICATION
     closeModal() {
       location.reload();
-    },
-
-    closeTourAndVerifyUser() {
-      this.show_end_walkthrough_modal = false;
-      this.show_phone_entry = true;
-      this.END_TOUR_FLOW();
-      this.updateProfile();
-
-      // this.upateTourStatus();
     },
 
     closeAndVerifyOTP() {
@@ -507,14 +362,6 @@ export default {
           break;
       }
     },
-
-    toggleStartWalkthrough() {
-      this.show_start_walkthrough_modal = !this.show_start_walkthrough_modal;
-    },
-
-    toggleEndWalkthrough() {
-      this.show_end_walkthrough_modal = !this.show_end_walkthrough_modal;
-    },
   },
 };
 </script>
@@ -529,77 +376,5 @@ export default {
     max-width: 99%;
     margin-bottom: toRem(24);
   }
-
-  .section-row {
-    @include flex-row-nowrap("space-between", "center");
-
-    .section-title {
-      @include breakpoint-down(sm) {
-        font-size: toRem(18.75);
-      }
-
-      @include breakpoint-down(xs) {
-        font-size: toRem(18.5);
-      }
-    }
-  }
-
-  .disbursement-table-wrapper {
-    margin-bottom: toRem(50);
-
-    @include breakpoint-down(lg) {
-      margin-bottom: toRem(40);
-    }
-  }
-}
-
-.tour-index {
-  @include transition(0.3s);
-  z-index: 1099;
-}
-
-.tour-one-position {
-  top: 46.5%;
-  left: 47%;
-
-  @include breakpoint-down(xl) {
-    top: 48%;
-    left: 58%;
-  }
-}
-
-.tour-two-position {
-  top: 45%;
-  left: 15%;
-
-  @include breakpoint-down(xl) {
-    top: 47%;
-    left: 18%;
-  }
-}
-
-.tour-three-position {
-  top: 45%;
-  left: 26%;
-
-  @include breakpoint-down(xl) {
-    top: 47%;
-    left: 31%;
-  }
-}
-
-.tour-four-position {
-  top: 5%;
-  left: 64.75%;
-
-  @include breakpoint-down(xl) {
-    top: 6.5%;
-    left: 56.5%;
-  }
-}
-
-.tour-eight-position {
-  top: 59.25%;
-  left: 4%;
 }
 </style>

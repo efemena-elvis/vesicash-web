@@ -17,17 +17,6 @@
         <ExchangeTable />
       </div>
     </template>
-
-    <!-- MODALS -->
-    <portal to="vesicash-modals">
-      <transition name="fade" v-if="getTourData.ongoing">
-        <tourCover />
-      </transition>
-
-      <transition name="fade" v-if="show_walkhthrough_card">
-        <walkthroughModal :tour="tour_data" />
-      </transition>
-    </portal>
   </div>
 </template>
 
@@ -51,21 +40,9 @@ export default {
       import(
         /* webpackChunkName: "exchange-module" */ "@/modules/exchange/components/table-comps/exchange-table"
       ),
-    walkthroughModal: () =>
-      import(
-        /* webpackChunkName: "shared-module" */ "@/shared/modals/app-walkthrough/walkthrough-modal"
-      ),
-    tourCover: () =>
-      import(
-        /* webpackChunkName: "shared-module" */ "@/shared/components/util-comps/tour-cover"
-      ),
   },
 
   computed: {
-    ...mapGetters({
-      getTourData: "general/getTourData",
-    }),
-
     successActions() {
       return [
         {
@@ -81,55 +58,9 @@ export default {
     },
   },
 
-  watch: {
-    "getTourData.count": {
-      handler(value) {
-        this.show_walkhthrough_card = false;
-        this.show_exchange_btn = false;
-
-        if (value === 6) {
-          setTimeout(() => (this.show_walkhthrough_card = true), 300);
-
-          if (value === 6) {
-            this.show_exchange_btn = true;
-          }
-        }
-      },
-      immediate: true,
-    },
-  },
-
   data() {
     return {
-      show_walkhthrough_card: false,
       show_exchange_btn: false,
-
-      tour_data: {
-        title: "Exchange currency",
-        description:
-          "Swap currencies at the best rates on the market. View your exchange history here",
-        marker: "center-top",
-        position: "tour-six-position",
-      },
-
-      naira_dollar_wallet: [
-        {
-          title: "NGN",
-          value: "0.00",
-          sign: "naira",
-        },
-        {
-          title: "USD",
-          value: "0.00",
-          sign: "dollar",
-        },
-        {
-          title: "GBP",
-          value: "0.00",
-          sign: "pound",
-        },
-      ],
-
       loading_wallet: true,
     };
   },

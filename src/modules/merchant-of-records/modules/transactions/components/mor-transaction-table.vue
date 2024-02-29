@@ -12,8 +12,9 @@
       :pagination="pagination"
       @goToPage="getUserTransactions($event)"
     >
-      <template v-for="(data, index) in table_data">
+      <template>
         <MoRTransactionTableRow
+          v-for="(data, index) in table_data"
           :key="index"
           table_name="mor-transaction-tb"
           :data="data"
@@ -66,8 +67,8 @@ export default {
       table_header: [
         "Transaction Date",
         "Customer Info",
-        "Payment Reference ID",
         "Payment Info",
+        "Tax Amount",
         "Status",
       ],
       // "Method",
@@ -212,11 +213,11 @@ export default {
   }
 
   &-2 {
-    min-width: toRem(150);
+    min-width: toRem(220);
   }
 
   &-3 {
-    min-width: toRem(150);
+    min-width: toRem(180);
   }
 
   &-4 {
@@ -224,7 +225,7 @@ export default {
   }
 
   &-5 {
-    min-width: toRem(120);
+    min-width: toRem(80);
   }
 
   &-6 {

@@ -3,14 +3,18 @@ import { getRequest, postRequest } from "@/utilities/micro-services";
 
 const routes = {
   wallet_balance: "account/wallet",
-  dollar_funding: "/payment/pay/headless",
   transfer_account_list: "payment_account/list",
   verify_payment: "payment_account/verify",
-  wallet_transactions: "/payment/list/wallet_funding",
-  wallet_withdrawals: "/payment/list/wallet_withdrawals",
+
+  wallet_funding: "records/funding",
+  wallet_withdrawal: "records/withdrawal",
+
   bank_details: "user/fetch/bank?array=true",
   withdraw_fund: "disbursement/wallet/withdraw",
   transaction_payments: "list",
+
+  // !! REVIEW
+  dollar_funding: "/payment/pay/headless",
 };
 
 export default {
@@ -27,7 +31,7 @@ export default {
   },
 
   // =============================================
-  // INITIATE AYMENT GATEWAY FOR DOLLAR FUNDING
+  // !! INITIATE AYMENT GATEWAY FOR DOLLAR FUNDING
   // =============================================
   async initiateDollarFunds(_, payload) {
     return await $api.push(routes.dollar_funding, { payload });
@@ -47,24 +51,29 @@ export default {
     return await postRequest("payment", routes.verify_payment, payload);
   },
 
-  // =====================================
+  // ============================================
   // FETCH ALL USER WALLET FUNDING TRANSACTIONS
-  // =====================================
-  async fetchWalletTransactions(_, { account_id, page }) {
-    return await $api.push(
-      `${routes.wallet_transactions}/${account_id}?page=${page}`,
-      {}
-    );
+  // ============================================
+  async fetchAllFundings(
+    _,
+    { account_id, page = 1, start_date = "", end_date = "", currency = "" }
+  ) {
+    return await $api
+      .service("payment")
+      .fetch(
+        `${routes.wallet_funding}/${account_id}?status=true&page=${page}&start_date=${start_date}&end_date=${end_date}&currency=${currency}`
+      );
   },
 
-  // =====================================
-  // FETCH ALL USER WALLET WITHDRAWALS TRANSACTIONS
-  // =====================================
-  async fetchWalletWithdrawals(_, { account_id, page }) {
-    return await $api.push(
-      `${routes.wallet_withdrawals}/${account_id}?page=${page}`,
-      {}
-    );
+  async fetchAllWithdrawals(
+    _,
+    { account_id, page = 1, start_date = "", end_date = "", currency = "" }
+  ) {
+    return await $api
+      .service("payment")
+      .fetch(
+        `${routes.wallet_withdrawal}/${account_id}?status=true&page=${page}&start_date=${start_date}&end_date=${end_date}&currency=${currency}`
+      );
   },
 
   // =====================================

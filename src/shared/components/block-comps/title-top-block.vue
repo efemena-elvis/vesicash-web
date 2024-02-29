@@ -1,5 +1,5 @@
 <template>
-  <div class="top-block">
+  <div class="top-block" :class="className">
     <!-- WELCOME MESSAGE -->
     <div class="welcome-message h4-text grey-900">
       <template v-if="title.length">{{ title }}</template>
@@ -33,6 +33,10 @@ export default {
     type: {
       type: String,
     },
+
+    className: {
+      type: String,
+    },
   },
 
   computed: {
@@ -50,11 +54,11 @@ export default {
 <style lang="scss" scoped>
 .top-block {
   @include flex-row-wrap("space-between", "center");
+  margin-bottom: toRem(32);
   gap: toRem(24);
-  margin-bottom: toRem(24);
 
   @include breakpoint-down(lg) {
-    margin-bottom: toRem(16);
+    margin-bottom: toRem(18);
   }
 
   .welcome-message {

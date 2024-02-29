@@ -1,3 +1,5 @@
+
+<!-- !! component is depreceated -->
 <template>
   <div class="mor-dashboard">
     <template>
@@ -12,28 +14,7 @@
             :metric_data="getTransactionRevenue"
             :is_loading="loading"
           />
-
-          <MetricCard
-            v-if="false"
-            metric_title="MoR Transaction volume"
-            metric_theme="teal"
-            :metric_data="getTransactionVolume"
-            :is_currency_type="false"
-            :is_loading="loading"
-          />
         </div>
-
-        <!-- <div class="cards-area">
-          <MetricCard
-            metric_title="MoR Collected Tax metrics"
-            metric_theme="yellow"
-          />
-
-          <MetricCard
-            metric_title="MoR Remitted Tax metrics"
-            metric_theme="yellow"
-          />
-        </div> -->
       </div>
     </template>
 
@@ -41,17 +22,8 @@
       <div class="wrapper mgy-40">
         <div class="title-text h5-text grey-900 mgb-8">Recent transactions</div>
 
-        <PageSwitcher
-          :page_data="getPages"
-          :full_width="false"
-          @swapItem="updateTransactionChanges($event)"
-        />
-
         <template>
-          <div class="table-title primary-1-text grey-900 mgb-16">
-            <!-- {{ getTableTitle }} -->
-          </div>
-          <component :is="active_transaction_view" />
+          <DashboardTransactions />
         </template>
       </div>
     </template>
@@ -85,49 +57,10 @@ export default {
       ),
   },
 
-  computed: {
-    getTableTitle() {
-      return this.active_transaction_view === "MoRTransactionTable"
-        ? "MoR Transactions"
-        : "Escrow Transactions";
-    },
-
-    getPages() {
-      return this.isMoRSetupEnabled
-        ? this.pages
-        : this.pages.filter((_, key) => key !== 1);
-    },
-  },
-
   data() {
     return {
       active_transaction_view: "DashboardTransactions",
-
-      pages: [
-        {
-          title: "Payments",
-          value: "DashboardTransactions",
-          active: true,
-        },
-        {
-          title: "Merchant of Records",
-          value: "MoRTransactionTable",
-          active: false,
-        },
-        {
-          title: "Escrow",
-          value: "TransactionTable",
-          active: false,
-        },
-      ],
     };
-  },
-
-  methods: {
-    updateTransactionChanges(selected_value) {
-      this.active_transaction_view = selected_value;
-      this.pages.find((page) => page.value === selected_value).active = true;
-    },
   },
 };
 </script>

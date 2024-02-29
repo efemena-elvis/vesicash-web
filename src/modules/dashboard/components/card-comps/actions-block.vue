@@ -1,8 +1,6 @@
 <template>
-  <div class="actions-block teal-50-bg rounded-12 mgb-32">
-    <div class="card-title grey-900 primary-1-text mgb-16">
-      Get started with quick actions
-    </div>
+  <div class="actions-block rounded-12 mgb-48">
+    <div class="card-title grey-900 primary-1-text mgb-16">Quick actions</div>
 
     <div class="row">
       <div
@@ -90,48 +88,55 @@ export default {
   data: () => ({
     success_message: "",
     card_actions: [
+      // {
+      //   title: "Transfer money anywhere",
+      //   description: "Send money globally with ease",
+      //   icon: "cash-icon.svg",
+      //   action: "toggleTransferFlow",
+      //   isMor: false,
+      // },
+      // {
+      //   title: "Fund your wallet",
+      //   description: "Top up wallet for swift payments",
+      //   icon: "wallet-icon.svg",
+      //   action: "toggleFundingFlow",
+      //   isMor: false,
+      // },
+      // {
+      //   title: "Create escrow",
+      //   description: "Engage in transparent transactions",
+      //   icon: "central-icon.svg",
+      //   link: "/transactions/setup",
+      //   isMor: false,
+      // },
       {
-        title: "Transfer money anywhere",
-        description: "Send money globally with ease",
-        icon: "cash-icon.svg",
-        action: "toggleTransferFlow",
-        isMor: false,
-      },
-      {
-        title: "Fund your wallet",
-        description: "Top up wallet for swift payments",
-        icon: "wallet-icon.svg",
-        action: "toggleFundingFlow",
-        isMor: false,
-      },
-      {
-        title: "Create escrow",
-        description: "Engage in transparent transactions",
-        icon: "central-icon.svg",
-        link: "/transactions/setup",
-        isMor: false,
-      },
-      {
-        title: "Exchange money",
+        title: "Exchange funds",
         description: "Exchange money across currencies",
         icon: "swap-icon.svg",
         link: "/exchange/setup",
-        isMor: false,
+        internal: true,
       },
       {
         title: "Deploy MoR",
         description: "Setup MoR for any country",
         icon: "subscription-icon.svg",
         link: "/settings/mor-setup",
-        isMor: false,
+        internal: true,
       },
       {
-        title: "Payment via checkout",
-        description: "Integrate MoR checkout api",
+        title: "API Documentation",
+        description: "Explore our API documentation",
         icon: "subscription-icon.svg",
-        link: "/merchant/developer?type=checkout",
-        isMor: true,
+        link: "https://docs.vesicash.com/",
+        internal: false,
       },
+      // {
+      //   title: "Payment via checkout",
+      //   description: "Integrate MoR checkout api",
+      //   icon: "subscription-icon.svg",
+      //   link: "/merchant/developer?type=checkout",
+      //   isMor: true,
+      // },
     ],
 
     show_funding_flow: false,
@@ -143,22 +148,6 @@ export default {
     withdrawn_amount: "",
     selected_withdraw_account: "",
   }),
-
-  watch: {
-    $route: {
-      handler(value) {
-        // INITIATE FUNDING OR WITHDRAWAL BASED ON QUERY PARAMS
-        if (value?.query?.fund_wallet) {
-          this.show_fund_wallet_select_modal = true;
-          this.$router.replace({ name: this.$route.name });
-        } else if (value?.query?.withdraw_money) {
-          this.show_wallet_modal = true;
-          this.$router.replace({ name: this.$route.name });
-        }
-      },
-      immediate: true,
-    },
-  },
 
   created() {
     this.$bus.$on("cardActionClicked", (action) => this[action]());
@@ -213,11 +202,6 @@ export default {
 
       this.success_message = `Your transfer of ${cost} has been sent to Vesicash account ${name}`;
       this.show_success_modal = !this.show_success_modal;
-
-      // this.$router.push({
-      //   name: "SuccessfulWithdrawal",
-      //   query: { amount, currency },
-      // });
     },
   },
 };
@@ -226,7 +210,7 @@ export default {
 <style lang="scss" scoped>
 .actions-block {
   padding: toRem(24);
-
+  background: rgba(getColor("teal-100"), 0.78);
   .row {
     row-gap: toRem(18);
   }

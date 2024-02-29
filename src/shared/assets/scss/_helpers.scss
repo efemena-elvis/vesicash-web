@@ -88,6 +88,7 @@
 }
 
 .tooltip-wrapper {
+  @include transition(0.3s);
   left: 0;
   top: 40%;
   visibility: hidden;
@@ -95,8 +96,8 @@
 
   .tooltip-data {
     position: relative;
-    border: toRem(1) solid getColor("grey-100");
-    @include generate-font-type("tertiary-2");
+    border: toRem(1) solid getColor("green-100");
+    @include font-height(13, 21);
     padding: toRem(14) toRem(16);
 
     @include breakpoint-down(sm) {
@@ -111,7 +112,7 @@
       right: toRem(17);
       @include draw-shape(18);
       transform: rotate(45deg);
-      background: getColor("grey-10");
+      background: getColor("green-50");
       border-top: toRem(1) solid getColor("grey-100");
       border-left: toRem(1) solid getColor("grey-100");
     }

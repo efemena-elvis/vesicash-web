@@ -1,5 +1,5 @@
 <template>
-  <div class="page-back-btn mgb-24">
+  <div class="page-back-btn mgb-24" :class="classStyle">
     <button class="btn btn-secondary btn-md" @click="goToPreviousPage">
       <!-- BUTTON ICON WRAPPER -->
       <div class="icon-wrapper position-relative mgr-4">
@@ -35,6 +35,11 @@ export default {
     btn_text: {
       type: String,
       default: "Back",
+    },
+
+    classStyle: {
+      type: String,
+      default: "",
     },
   },
 

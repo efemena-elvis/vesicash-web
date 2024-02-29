@@ -1,3 +1,4 @@
+import readXlsxFile from "read-excel-file";
 import countries from "@/utilities/countries";
 import { serviceStorage } from "@/shared/services";
 import { constants } from "@/utilities";
@@ -105,13 +106,13 @@ class serviceUtils {
   }
 
   getStringInitials(string) {
-    const string_list = string.replace(/\s+/g, " ").split(" ");
+    const string_list = string?.replace(/\s+/g, " ")?.split(" ");
 
-    return string_list.length === 1
-      ? string_list[0].slice(0, 1).toUpperCase()
-      : `${string_list[0].slice(0, 1).toUpperCase()}${string_list[1]
-          .slice(0, 1)
-          .toUpperCase()}`;
+    return string_list?.length === 1
+      ? string_list[0]?.slice(0, 1)?.toUpperCase()
+      : `${string_list[0]?.slice(0, 1)?.toUpperCase()}${string_list[1]
+          ?.slice(0, 1)
+          ?.toUpperCase()}`;
   }
 
   getFirstCharacter(string) {
@@ -159,10 +160,10 @@ class serviceUtils {
   formatCurrency({ input, output = "" }) {
     let country_data = countries.find(
       (country) =>
-        country.code.toLowerCase() === input.toLowerCase() ||
-        country.currency.sign.toLowerCase() === input.toLowerCase() ||
-        country.currency.short.toLowerCase() === input.toLowerCase() ||
-        country.currency.long.toLowerCase() === input.toLowerCase()
+        country.code?.toLowerCase() === input?.toLowerCase() ||
+        country.currency.sign?.toLowerCase() === input?.toLowerCase() ||
+        country.currency.short?.toLowerCase() === input?.toLowerCase() ||
+        country.currency.long?.toLowerCase() === input?.toLowerCase()
     );
 
     if (country_data !== "undefined") {
@@ -175,8 +176,14 @@ class serviceUtils {
     }
   }
 
-  formatCurrencyWithComma(currency) {
-    return new Intl.NumberFormat().format(currency);
+  formatCurrencyWithComma(currency, showDecimal = false) {
+    const options = {
+      style: "decimal",
+      minimumFractionDigits: showDecimal ? 2 : 0,
+      maximumFractionDigits: showDecimal ? 2 : 0,
+    };
+
+    return new Intl.NumberFormat("en-US", options).format(currency);
   }
 
   createAndClickAnchor(href, target = "_self") {
@@ -188,6 +195,106 @@ class serviceUtils {
     document.body.appendChild(anchor);
     anchor.click();
     document.body.removeChild(anchor);
+  }
+
+  sortByDate(data = [], order = "asc") {
+    return data.sort((a, b) => {
+      const dateA = new Date(a?.created_at);
+      const dateB = new Date(b?.created_at);
+
+      return order === "desc" ? dateB - dateA : dateA - dateB;
+    });
+  }
+
+  // FILE HANDLER
+  getFileType(fileName) {
+    if (/\.csv$/i.test(fileName)) return "csv";
+    else if (/\.(xlsx|xls)$/i.test(fileName)) return "excel";
+
+    return "";
+  }
+
+  readUploadedFile(file, fileType = "csv") {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        const readFile = e.target.result;
+
+        if (fileType === "csv") resolve(this.parseCSV(readFile));
+        else resolve(this.parseExcel(readFile));
+      };
+
+      reader.onerror = (e) => {
+        reject(e);
+      };
+
+      if (fileType === "csv") reader.readAsText(file);
+      else reader.readAsArrayBuffer(file);
+    });
+  }
+
+  parseCSV(csvContent) {
+    let csv_data = [];
+
+    // Split the CSV content into rows
+    const rows = csvContent.split("\n");
+
+    rows.forEach((row) => {
+      const columns = row.split(",");
+      csv_data.push(columns);
+    });
+
+    return this.formatFileRowsToObject(csv_data);
+  }
+
+  parseExcel(excelContent) {
+    return readXlsxFile(excelContent).then((rows) => {
+      return this.formatFileRowsToObject(rows);
+    });
+  }
+
+  formatFileRowsToObject(rows) {
+    const keys = rows[0];
+    const result = [];
+
+    // Iterate over the remaining sub-arrays
+    for (let i = 1; i < rows.length; i++) {
+      const newObj = {};
+
+      // Iterate over each key and assign the corresponding value
+      for (let j = 0; j < keys.length; j++) {
+        newObj[keys[j]?.toLowerCase()?.replace(/ /g, "_")] = rows[i][j] + "";
+      }
+      result.push(newObj);
+    }
+
+    return result;
+  }
+
+  extractBankIdUpdateAccountList(account_list, bank_list) {
+    let new_account_list = [];
+    let match_not_found = false;
+    let failed_match_bank = {};
+
+    if (Array.isArray(account_list)) {
+      account_list?.map((account) => {
+        let match_found = bank_list.find(
+          (bank) => bank.name?.toLowerCase() == account.bank_name?.toLowerCase()
+        );
+
+        if (match_found) {
+          new_account_list.push({ ...account, bank_code: match_found?.code });
+        } else {
+          match_not_found = true;
+          failed_match_bank = { ...account };
+        }
+      });
+
+      if (match_not_found)
+        return { message: "validation error", data: failed_match_bank };
+      else return { message: "success", data: new_account_list };
+    }
   }
 }
 

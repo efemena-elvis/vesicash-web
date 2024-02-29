@@ -1,13 +1,13 @@
 .modal-overlay {
   @include fixed-display-area;
-  @include transition(0.5s);
+  @include transition(0.55s);
   overflow: auto;
   z-index: 2099;
   background: linear-gradient(
     180deg,
-    rgba(1, 26, 39, 0.3) 4.69%,
-    rgba(1, 26, 39, 0.3) 56.25%,
-    rgba(1, 26, 39, 0.4) 100%
+    rgba(1, 12, 19, 0.55) 12%,
+    rgba(1, 12, 19, 0.55) 60.25%,
+    rgba(1, 12, 19, 0.575) 100%
   );
 
   .modal-outer-container {
@@ -38,9 +38,8 @@
     z-index: 3999;
 
     .modal-cover-body-wrapper {
+      @include width-height(100%);
       position: relative;
-      width: 100%;
-      height: auto;
     }
 
     .dialog-dismiss {
@@ -70,6 +69,27 @@
     }
   }
 
+  .modal-right-placement {
+    animation: drift-from-right 0.4s ease-in-out forwards;
+    @include flex-column("center", "center");
+    @include transition(0.3s);
+    position: absolute;
+    bottom: toRem(12);
+    right: toRem(12);
+    top: toRem(12);
+    left: unset;
+    transform: unset;
+
+    .modal-cover {
+      height: 100%;
+
+      .modal-cover-body-wrapper {
+        height: 100%;
+      }
+    }
+   
+  }
+
   .modal-xs {
     width: toRem(362) !important;
 
@@ -78,8 +98,24 @@
     }
   }
 
+  .modal-pre-sm {
+    width: toRem(440) !important;
+
+    @include breakpoint-down(sm) {
+      width: 93% !important;
+    }
+  }
+
   .modal-sm {
     width: toRem(460) !important;
+
+    @include breakpoint-down(sm) {
+      width: 93% !important;
+    }
+  }
+
+  .modal-mid {
+    width: toRem(500) !important;
 
     @include breakpoint-down(sm) {
       width: 93% !important;

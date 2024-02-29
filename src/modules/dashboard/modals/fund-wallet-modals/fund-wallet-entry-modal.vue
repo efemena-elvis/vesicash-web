@@ -278,7 +278,6 @@ export default {
 
   methods: {
     ...mapActions({
-      initiateDollarFunds: "dashboard/initiateDollarFunds",
       verifyPaymentAccount: "dashboard/verifyPaymentAccount",
       fetchTransferAccountBankDetails:
         "dashboard/fetchTransferAccountBankDetails",
@@ -414,38 +413,6 @@ export default {
       //     },
       //   });
       // }
-    },
-
-    // =======================================
-    // HANDLE PROCESSING OF DOLLAR FUNDING
-    // =======================================
-    handleDollarFunding() {
-      this.handleClick("fundBtn");
-
-      let request_payload = {
-        account_id: this.getAccountId,
-        currency: "USD",
-        country: "US",
-        amount: this.form.dollar_amount,
-        fund_wallet: true,
-        success_url: `${constants.VESICASH_APP_URL}/fund-wallet-success`,
-        fail_url: `${constants.VESICASH_APP_URL}/fund-wallet-error`,
-      };
-
-      this.initiateDollarFunds(request_payload)
-        .then((response) => {
-          if (response?.code === 200) {
-            // REDIRECT USER TO PAYMENT GATEWAY
-            this.handleClick("fundBtn", "Make payment", false);
-            location.href = response.data.link;
-          }
-
-          // HANDLE NON 200 RESPONSE
-          else this.handlePaymentError(response.message);
-        })
-        .catch(() =>
-          this.handlePaymentError("Unable to make payment at this time")
-        );
     },
 
     handlePaymentError(message) {

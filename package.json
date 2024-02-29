@@ -18,8 +18,8 @@
     "bootstrap": "^5.2.1",
     "core-js": "^3.6.5",
     "env-cmd": "^10.0.1",
-    "node-sass": "^9.0.0",
     "portal-vue": "^2.1.7",
+    "read-excel-file": "^5.7.1",
     "register-service-worker": "^1.7.1",
     "sass-math": "^1.0.0",
     "vue": "^2.6.11",
@@ -45,6 +45,7 @@
     "cross-env": "^7.0.3",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
+    "file-loader": "^6.2.0",
     "sass": "^1.32.7",
     "sass-loader": "^8.0.2",
     "vue-template-compiler": "^2.6.11"

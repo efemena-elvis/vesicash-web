@@ -36,19 +36,7 @@ export default {
     },
 
     getPages() {
-      if (this.isBusiness) {
-        if (this.isMoREnabled) {
-          return [
-            ...this.individual_pages,
-            ...this.business_pages,
-            ...this.mor_pages,
-          ];
-        } else {
-          return [...this.individual_pages, ...this.business_pages];
-        }
-      } else {
-        return this.individual_pages;
-      }
+      return [...this.individual_pages];
     },
   },
 
@@ -73,15 +61,12 @@ export default {
           route: "VerificationSettings",
           active: false,
         },
-        {
-          id: 4,
-          name: "Account",
-          route: "AccountSettings",
-          active: false,
-        },
-      ],
-
-      business_pages: [
+        // {
+        //   id: 4,
+        //   name: "Account",
+        //   route: "AccountSettings",
+        //   active: false,
+        // },
         // {
         //   id: 5,
         //   name: "Users",
@@ -94,15 +79,6 @@ export default {
           route: "MerchantConfig",
           active: false,
         },
-      ],
-
-      mor_pages: [
-        // {
-        //   id: 7,
-        //   name: "MoR Preferences",
-        //   route: "UsersSettings",
-        //   active: false,
-        // },
       ],
     };
   },

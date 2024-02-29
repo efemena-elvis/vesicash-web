@@ -4,3 +4,4 @@ export { default as serviceStorage } from "./service-storage";
 export { default as serviceValidators } from "./service-validators";
 export { default as serviceDate } from "./service-date";
 export { default as serviceApi } from "./service-api";
+export { default as serviceColors } from "./service-colors";

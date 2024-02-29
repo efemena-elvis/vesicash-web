@@ -1,7 +1,10 @@
 <template>
   <div
-    class="page-switcher rounded-8 grey-50-bg mgb-16"
-    :class="full_width ? 'wt-100' : 'wt-fit'"
+    class="page-switcher rounded-8 grey-50-bg"
+    :class="[
+      full_width ? 'wt-100' : 'wt-fit',
+      remove_margin ? 'mgb-0' : 'mgb-16',
+    ]"
   >
     <!-- PAGE ITEMS -->
     <template>
@@ -32,6 +35,11 @@ export default {
       type: Boolean,
       default: true,
     },
+
+    remove_margin: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   data() {
@@ -53,11 +61,11 @@ export default {
 <style lang="scss" scoped>
 .page-switcher {
   @include flex-row-nowrap("flex-start", "center");
-  padding: toRem(7) toRem(8);
+  padding: toRem(8);
 
   .page-item {
     @include generate-font-type("secondary-3");
-    padding: toRem(7) toRem(16);
+    padding: toRem(9) toRem(16);
     color: getColor("grey-600");
     @include transition(0.4s);
     border-radius: toRem(8);

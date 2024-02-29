@@ -65,7 +65,7 @@
                 class="inner-lining wt-100"
                 :class="index + 1 === options.length && 'no-bottom-border'"
               >
-                <span v-html="option.name"></span>
+                <span v-html="extend_value ? option.value : option.name"></span>
               </div>
             </div>
           </div>
@@ -86,7 +86,7 @@
                   index + 1 === getInputOptions.length && 'no-bottom-border'
                 "
               >
-                <span v-html="option.name"></span>
+                <span v-html="extend_value ? option.value : option.name"></span>
                 <input
                   type="checkbox"
                   class="mgr-10"
@@ -164,6 +164,10 @@ export default {
     class_name: {
       type: String,
       default: "",
+    },
+    extend_value: {
+      type: Boolean,
+      default: false,
     },
   },
 

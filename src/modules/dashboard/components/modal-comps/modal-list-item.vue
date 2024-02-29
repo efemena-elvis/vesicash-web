@@ -6,7 +6,7 @@
     </template>
 
     <template v-else>
-      <div class="item tertiary-2-text grey-600 text-capitalize">
+      <div class="item tertiary-2-text grey-600">
         {{ title }}
       </div>
       <div

@@ -20,6 +20,26 @@ module.exports = {
       .options({
         name: "./src/assets/files/[name].[hash:8].[ext]",
       });
+
+    // Handle CSV files
+    config.module
+      .rule("csv")
+      .test(/\.(csv)(\?.*)?$/)
+      .use("file-loader")
+      .loader("file-loader")
+      .options({
+        name: "./src/assets/files/[name].[hash:8].[ext]",
+      });
+
+    // Handle XLSX files
+    config.module
+      .rule("xlsx")
+      .test(/\.(xlsx|xls)(\?.*)?$/)
+      .use("file-loader")
+      .loader("file-loader")
+      .options({
+        name: "./src/assets/files/[name].[hash:8].[ext]",
+      });
   },
 
   configureWebpack: {

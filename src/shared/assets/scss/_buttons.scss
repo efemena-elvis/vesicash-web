@@ -108,7 +108,7 @@ button {
 
 .btn-secondary {
   background-color: getColor("neutral-10") !important;
-  border: toRem(1) solid getColor("grey-200") !important;
+  border: toRem(1) solid darken(getColor("grey-200"), 2%) !important;
   color: getColor("grey-900") !important;
 
   &:hover {

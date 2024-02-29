@@ -52,7 +52,7 @@
       <!-- BUTTON AREA -->
       <div class="btn-area mgt-25 mgb-20">
         <button
-          class="btn btn-primary btn-md w-100"
+          class="btn btn-primary btn-md pdy-10 w-100"
           ref="btnRef"
           :disabled="isFormValidated"
         >

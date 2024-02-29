@@ -2,7 +2,10 @@
   <div class="modal-overlay" @click.self="selfCloseModal">
     <div
       class="modal-outer-container"
-      :class="place_center && 'modal-center-placement'"
+      :class="[
+        place_center && 'modal-center-placement',
+        place_side && 'modal-right-placement',
+      ]"
       @click.self="selfCloseModal"
     >
       <div
@@ -64,6 +67,11 @@ export default {
     },
 
     place_center: {
+      type: Boolean,
+      default: false,
+    },
+
+    place_side: {
       type: Boolean,
       default: false,
     },

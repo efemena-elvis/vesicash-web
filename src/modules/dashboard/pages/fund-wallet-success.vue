@@ -6,18 +6,18 @@
       <SuccessIcon backgroundColor="#043B56" v-else />
 
       <!-- TITLE TEXT -->
-      <div class="title-text primary-1-text neutral-100 mgb-8 text-center">
+      <div class="h4-text grey-800 mgb-10 text-center">
         {{ getTitle }}
       </div>
 
       <!-- DESCRIPTION TEXT -->
       <div
-        class="description-text tertiary-2-text grey-400 text-center"
+        class="description-text grey-600 text-center"
         v-html="getDescription"
       ></div>
 
       <!-- BUTTON AREA -->
-      <div class="btn-area mgt-30 mgb-10 wt-100">
+      <div class="btn-area mgt-30 wt-100">
         <button
           @click="handleGoToDashboard"
           class="btn btn-primary btn-md wt-100"
@@ -106,22 +106,19 @@ export default {
 <style lang="scss" scoped>
 .auth-page-success {
   @include flex-column("center", "center");
-  margin-top: toRem(70);
+  margin-top: toRem(10);
 
   svg {
-    @include draw-shape(120);
+    @include draw-shape(115);
     margin-bottom: toRem(24);
-
-    @include breakpoint-down(xs) {
-      @include draw-shape(115);
-    }
   }
 
   .description-text {
+    @include font-height(15, 23);
     width: 90%;
 
     @include breakpoint-down(xs) {
-      font-size: toRem(13.75);
+      @include font-height(14, 21);
     }
   }
 }

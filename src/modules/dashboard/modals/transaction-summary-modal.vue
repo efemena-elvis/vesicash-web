@@ -1,21 +1,50 @@
 <template>
   <ModalCover
     @closeModal="$emit('closeTriggered')"
-    :modal_style="{ size: 'modal-md' }"
+    :modal_style="{ size: 'modal-pre-sm' }"
+    place_side
   >
     <!-- MODAL COVER HEADER -->
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
-        <div class="modal-cover-title">Transaction summary</div>
+        <div class="modal-cover-title">Transaction Summary</div>
       </div>
     </template>
 
     <!-- MODAL COVER BODY -->
     <template slot="modal-cover-body">
-      <div class="modal-cover-body">
-        <template v-for="(data, index) in getTxnSummary">
-          <ModalItem :title="data.title" :value="data.value" :key="index" />
-        </template>
+      <div class="modal-cover-body mgt-6">
+        <!-- AMOUNT TOP -->
+        <div class="base-amount mgb-38">
+          <div class="grey-500 f-size-13-5 mgb-8">Amount Paid</div>
+          <div class="amount" :class="is_inflow ? 'green-600' : 'red-800'">
+            <span class="f-size-18"
+              >{{ is_inflow ? "+" : "-" }}{{ getCurrency }}</span
+            ><span>{{ getFormattedAmount }}</span>
+          </div>
+        </div>
+
+        <!-- DATA BLOCK -->
+        <div class="data-block">
+          <div
+            class="data-row"
+            v-for="(data, index) in getSummaryData"
+            :key="index"
+          >
+            <template v-if="data.title.toLowerCase() === 'transaction status'">
+              <div class="item-title">{{ data.title }}</div>
+              <TagCard
+                :card_text="data.value.text"
+                :card_type="data.value.type"
+              />
+            </template>
+
+            <template v-else>
+              <div class="item-title">{{ data.title }}</div>
+              <div class="item-value">{{ data.value }}</div>
+            </template>
+          </div>
+        </div>
       </div>
     </template>
 
@@ -23,10 +52,6 @@
     <template slot="modal-cover-footer">
       <div class="modal-cover-footer" v-if="false">
         <button class="btn btn-primary btn-md mgr-24">Download receipt</button>
-
-        <button class="btn btn-secondary btn-md" v-if="type === 'disbursement'">
-          Go to disbursements
-        </button>
       </div>
     </template>
   </ModalCover>
@@ -34,89 +59,93 @@
 
 <script>
 import ModalCover from "@/shared/components/util-comps/modal-cover";
-import ModalItem from "@/modules/dashboard/components/modal-comps/modal-item";
+import TagCard from "@/shared/components/card-comps/tag-card";
 
 export default {
   name: "TransactionSummaryModal",
 
   components: {
     ModalCover,
-    ModalItem,
+    TagCard,
   },
 
   props: {
-    type: {
-      type: String,
-      default: "disbursement",
+    amount: {
+      type: Number | String,
+      default: "",
     },
 
-    prepared_summary: {
-      type: Array,
-      default: () => [],
+    currency: {
+      type: String,
+      default: "",
+    },
+
+    is_inflow: {
+      type: Boolean,
+      default: true,
     },
 
     summary_data: {
-      type: Object,
-      default: () => ({}),
-    },
-
-    withdrawals: {
-      type: Boolean,
-      default: false,
+      type: Array,
+      default: () => [],
     },
   },
 
   computed: {
-    getSummaryData() {
-      delete this.summary_data.payment_made_at;
-      delete this.summary_data.shipping_fee;
-      delete this.summary_data.deleted_at;
-      delete this.summary_data.broker_charge;
-      delete this.summary_data.payment_type;
-      delete this.summary_data.transaction_id;
-      delete this.summary_data.disburse_currency;
-
-      for (const prop in this.summary_data) {
-        let prop_obj = {};
-        prop_obj.title = prop.split("_").join(" ");
-        prop_obj.value = this.summary_data[prop];
-
-        this.summary_list.push(prop_obj);
-      }
-
-      return this.summary_list;
+    getFormattedAmount() {
+      return this.$utils.formatCurrencyWithComma(this.amount, true);
     },
 
-    getTxnSummary() {
-      if (this.prepared_summary.length) return this.prepared_summary;
-      return this.summary_data;
+    getCurrency() {
+      let currency_slice = this.currency.split("_");
+
+      return `${this.$utils.formatCurrency({
+        input: currency_slice.length > 1 ? currency_slice[1] : this.currency,
+        output: "sign",
+      })}`;
+    },
+
+    getSummaryData() {
+      return this.summary_data.filter((obj) => Object.keys(obj).length !== 0);
     },
   },
 
   data() {
-    return {
-      summary_list: [],
-      summary_withdrawal_list: [],
-    };
+    return {};
   },
 
-  methods: {
-    processSummaryData(summary) {
-      for (const prop in summary) {
-        let prop_obj = {};
-        prop_obj.title = prop.split("_").join(" ");
-        prop_obj.value = summary[prop];
-
-        this.summary_list.push(prop_obj);
-      }
-    },
-  },
+  methods: {},
 };
 </script>
 
 <style lang="scss" scoped>
 .modal-cover-body {
-  @include flex-row-wrap("space-between", "flex-start");
+  .base-amount {
+    .amount {
+      @include font-height(26, 28, 700);
+    }
+  }
+
+  .data-block {
+    @include flex-column("flex-start", "space-between");
+    gap: toRem(32);
+
+    .data-row {
+      @include flex-row-nowrap("space-between", "center");
+      @include font-height(14.5, 18, 400);
+      gap: toRem(10);
+
+      .item-title {
+        @include font-height(14, 18, 400);
+        color: getColor("grey-500");
+      }
+
+      .item-value {
+        @include font-height(14.5, 18, 500);
+        color: getColor("grey-700");
+      }
+    }
+  }
 }
 
 .modal-cover-footer {

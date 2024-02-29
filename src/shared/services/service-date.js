@@ -228,7 +228,7 @@ class serviceDate {
   // FORMAT DATE TIME
   formatDate(date, date_string = true) {
     this.datetime_zone = date_string
-      ? new Date(date.endsWith("Z") ? date : date.replace(/\s/, "T") + "Z")
+      ? new Date(date?.endsWith("Z") ? date : date.replace(/\s/, "T") + "Z")
       : date;
 
     return this;

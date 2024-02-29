@@ -253,6 +253,22 @@ export default {
       },
       immediate: true,
     },
+
+    currency_country: {
+      handler(value) {
+        this.$emit("update-currency-state", value);
+      },
+      immediate: true,
+    },
+
+    currency_type: {
+      handler(value) {
+        if (this.is_currency_type && value?.country) {
+          this.currency_country = value;
+        }
+      },
+      immediate: true,
+    },
   },
 
   data() {

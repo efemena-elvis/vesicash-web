@@ -1,3 +1,5 @@
+import $api from "@/shared/services/service-api";
+
 import {
   getRequest,
   postRequest,
@@ -7,9 +9,15 @@ import {
 
 const routes = {
   user_banks: "user/fetch/bank?array=true",
-  add_user_bank: "user/bank_details",
+  add_user_bank: "user/bank_detail",
   update_user_banks: "user/bank_details/update",
-  remove_user_bank: "user/remove/bank",
+
+  fetch_group_accounts: "user/groups/bank-details",
+  fetch_group_account_beneficiary: "user/group/bank-details",
+  create_update_group: "user/bank_details",
+
+  remove_user_bank: "user/bank_details",
+  remove_user_bank_group: "user/group/bank_details",
   fetch_connected_users: "user/fetch-users-by-business",
   delete_connected_user: "user/delete",
 
@@ -49,14 +57,55 @@ export default {
   },
 
   // ==============================
-  // REMOVE BANK ACCOUNT
+  // FETCH BENEFICIARY GROUP
   // ==============================
+  async fetchGroupAccounts() {
+    return await $api.service("auth").fetch(routes.fetch_group_accounts);
+  },
 
+  // ===================================
+  // FETCH BENEFICIARY GROUP ACCOUNTS
+  // ===================================
+  async fetchGroupBeneficiaryAccounts(_, payload) {
+    return await $api
+      .service("auth")
+      .fetch(`${routes.fetch_group_account_beneficiary}/${payload.group_id}`);
+  },
+
+  // ==============================
+  // ADD BENEFICIARY GROUP
+  // ==============================
+  async createUpdateBankGroup(_, payload) {
+    return await $api
+      .service("auth")
+      .push(routes.create_update_group, { payload });
+  },
+
+  // ======================================
+  // UPDATE A BENEFICIARY ACCOUNT DETAILS
+  // ======================================
+  async updateBeneficiaryAccount(_, { id, payload }) {
+    return await $api
+      .service("auth")
+      .patch(`${routes.create_update_group}/${id}`, { payload });
+  },
+
+  // ==============================
+  // REMOVE BANK BENEFICIARY
+  // ==============================
   async removeUserBank(_, payload) {
-    return await deleteRequest(
-      "auth",
-      `${routes.remove_user_bank}/${payload.bank_id}`
-    );
+    return await $api
+      .service("auth")
+      .remove(`${routes.remove_user_bank}/${payload.id}`);
+  },
+
+  // ================================
+  // REMOVE BANK BENEFICIARY GROUP
+  // ================================
+  async removeUserBankGroup(_, payload) {
+    return await $api
+      .service("auth")
+      .remove(`${routes.remove_user_bank_group}/${payload.id}`);
   },
 
   // ==============================

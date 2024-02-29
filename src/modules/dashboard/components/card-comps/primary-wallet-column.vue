@@ -1,11 +1,17 @@
 <template>
   <div class="primary-column" :class="is_escrow_type && 'escrow-column'">
     <!-- TITLE TEXT -->
-    <div class="title-text tertiary-3-text mgb-15" :class="is_escrow_type ? 'grey-800' : 'teal-100'">
+    <div
+      class="title-text tertiary-3-text mgb-15"
+      :class="is_escrow_type ? 'grey-800' : 'teal-100'"
+    >
       <template>
         {{ formatWalletDisplayName }}
-        <span class="icon f-size-12 mgl-4 pointer" :class="isBalanceHidden ? 'icon-show' : 'icon-hide'"
-          @click="toggleWalletBalance"></span>
+        <span
+          class="icon f-size-12 mgl-4 pointer"
+          :class="isBalanceHidden ? 'icon-show' : 'icon-hide'"
+          @click="toggleWalletBalance"
+        ></span>
       </template>
     </div>
 
@@ -22,19 +28,23 @@
           <span class="hidden-balance smooth-transition">****</span>
         </template>
 
-        <template v-else><span class="smooth-transition">{{
-          $utils.formatCurrencyWithComma(
-            wallet.balance?.split(".")[0] ?? wallet.balance
-          )
-        }}</span><span class="amount-zero smooth-transition">.{{ wallet.balance?.split(".")[1] ?? "00" }}</span>
+        <template v-else
+          ><span class="smooth-transition">{{
+            $utils.formatCurrencyWithComma(
+              wallet.balance?.split(".")[0] ?? wallet.balance
+            )
+          }}</span
+          ><span class="amount-zero smooth-transition"
+            >.{{ wallet.balance?.split(".")[1] ?? "00" }}</span
+          >
         </template>
       </div>
     </template>
 
     <!-- TITLE DESCRIPTION -->
-    <div class="title-description f-size-11-5 mgt-8" :class="is_escrow_type ? 'grey-700' : 'neutral-10'">
+    <!-- <div class="title-description f-size-11-5 mgt-8" :class="is_escrow_type ? 'grey-700' : 'neutral-10'">
       {{ wallet?.description ?? "-----------" }}
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -59,8 +69,8 @@ export default {
 
     is_escrow_type: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
 
   computed: {
@@ -75,13 +85,13 @@ export default {
         "green-300",
       ];
 
-      return this.is_escrow_type ? 'teal-800' : amount_styles[this.index];
+      return this.is_escrow_type ? "teal-800" : amount_styles[this.index];
     },
 
     formatWalletDisplayName() {
-      if (this.wallet?.short?.includes('ESCROW')) {
-        return this.wallet.short.split('_').join(" ");
-      } else return this.wallet?.short ?? "----"
+      if (this.wallet?.short?.includes("ESCROW")) {
+        return this.wallet.short.split("_").join(" ");
+      } else return this.wallet?.short ?? "----";
     },
 
     isBalanceHidden() {
@@ -107,9 +117,9 @@ export default {
 .primary-column {
   position: relative;
   padding: toRem(12) toRem(24);
-  min-width: toRem(170);
+  min-width: toRem(190);
   width: auto;
-  max-width: toRem(240);
+  max-width: toRem(220);
 
   &::after {
     content: "";

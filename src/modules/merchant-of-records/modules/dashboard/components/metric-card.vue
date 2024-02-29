@@ -1,9 +1,25 @@
 <template>
   <div
-    class="metric-card rounded-12 teal-10-bg border-teal-100 mgb-8"
-    :class="`border-${metric_theme}-100 ${metric_theme}-10-bg`"
+    class="metric-card rounded-12 border-teal-100 mgb-8"
+    :class="`border-${metric_theme}-100 ${metric_theme}-50-bg`"
   >
-    <div class="metric-title primary-1-text grey-900">{{ metric_title }}</div>
+    <div class="d-flex justify-content-between align-items-center mgb-18">
+      <div class="metric-title primary-1-text grey-900">
+        {{ metric_title }}
+      </div>
+
+      <div class="tax-toggler">
+        <label
+          for="taxToggle"
+          class="d-flex justify-content-end align-items-center pointer"
+        >
+          <input type="checkbox" id="taxToggle" @change="toggleTaxSummary" />
+          <div class="mgl-8 f-size-14-5 fw-medium grey-800">
+            Show tax summary
+          </div>
+        </label>
+      </div>
+    </div>
 
     <!-- METRIC DATA ROW -->
     <div class="metric-data-row">
@@ -38,9 +54,9 @@
           </div>
         </template>
 
-        <div class="title f-size-10 grey-700 mgt-2 mgb-6" v-if="!is_tax_type">
+        <div class="title f-size-8 grey-900 mgt-2 mgb-6" v-if="!is_tax">
           Gross:
-          <span class="fw-semibold">
+          <span class="fw-medium">
             {{ is_currency_type ? wallet.sign : ""
             }}{{
               is_currency_type
@@ -105,6 +121,7 @@ export default {
   data() {
     return {
       tax_rates: [],
+      is_tax: this.is_tax_type,
     };
   },
 
@@ -116,6 +133,10 @@ export default {
     ...mapActions({
       getMoRTaxRate: "merchantTransactions/getMoRTaxRate",
     }),
+
+    toggleTaxSummary() {
+      this.is_tax = !this.is_tax;
+    },
 
     async fetchMoRTaxRate() {
       let response = await this.handleDataRequest({
@@ -134,9 +155,12 @@ export default {
         (item) => item.currency === wallet.short
       );
 
-      let tax_value = (tax_payload?.percentage / 100) * wallet.balance;
+      let tax_value = (
+        (tax_payload?.percentage / 100) *
+        wallet.balance
+      ).toFixed(2);
 
-      if (this.is_tax_type) {
+      if (this.is_tax) {
         if (tax_payload !== undefined) return tax_value;
         else return "0.00";
       } else {
@@ -156,8 +180,9 @@ export default {
     width: 100%;
   }
 
-  .metric-title {
-    padding: toRem(16) toRem(24) 0;
+  .metric-title,
+  .tax-toggler {
+    padding: toRem(18) toRem(24) 0;
     font-size: toRem(16);
 
     @include breakpoint-down(lg) {
@@ -175,7 +200,7 @@ export default {
     .metric-data {
       position: relative;
       padding: toRem(16) toRem(24) toRem(20);
-      min-width: toRem(170);
+      min-width: toRem(180);
       width: auto;
       max-width: toRem(240);
 

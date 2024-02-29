@@ -5,19 +5,17 @@
       <ErrorIcon />
 
       <!-- TITLE TEXT -->
-      <div class="title-text primary-1-text neutral-100 mgb-8 text-center">
-        Funding unsucessful!
-      </div>
+      <div class="h4-text grey-800 mgb-10 text-center">Funding failed!</div>
 
       <!-- DESCRIPTION TEXT -->
-      <div class="description-text tertiary-2-text grey-400 text-center">
+      <div class="description-text grey-600 text-center">
         Your wallet funding of
         <span class="fw-bold"> {{ getFormattedAmount }}</span> was not
         successful, please try again.
       </div>
 
       <!-- BUTTON AREA -->
-      <div class="btn-area mgt-30 mgb-10 wt-100">
+      <div class="btn-area mgt-30 wt-100">
         <router-link to="/dashboard" class="btn btn-primary btn-md wt-100"
           >Go to Dashboard</router-link
         >
@@ -80,23 +78,19 @@ export default {
 <style lang="scss" scoped>
 .auth-page-success {
   @include flex-column("center", "center");
-  margin-top: toRem(70);
+  margin-top: toRem(10);
 
   svg {
-    @include draw-shape(120);
+    @include draw-shape(115);
     margin-bottom: toRem(24);
-
-    @include breakpoint-down(xs) {
-      @include draw-shape(115);
-    }
   }
 
   .description-text {
-    @include font-height(14, 22);
+    @include font-height(15, 23);
     padding: 0 toRem(15);
 
     @include breakpoint-down(xs) {
-      font-size: toRem(13.75);
+      @include font-height(14, 21);
       padding: 0;
     }
   }

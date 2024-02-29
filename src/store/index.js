@@ -9,6 +9,7 @@ import auth from "@/modules/auth/store";
 import dashboard from "@/modules/dashboard/store";
 import transactions from "@/modules/transactions/store";
 import settings from "@/modules/settings/store";
+import payments from "@/modules/payments/store";
 import exchange from "@/modules/exchange/store";
 import developer from "@/modules/developer/store";
 import mor from "@/modules/mor/store";
@@ -28,6 +29,7 @@ export default new Vuex.Store({
     dashboard,
     transactions,
     settings,
+    payments,
     exchange,
     developer,
     mor,

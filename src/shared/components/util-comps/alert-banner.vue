@@ -23,7 +23,9 @@ export default {
 
   computed: {
     renderAlertBg() {
-      return this.status === "success" ? "green-600-bg" : "red-500-bg";
+      if (this.status === "success") return "green-600-bg";
+      else if (this.status === "warning") return "red-500-bg";
+      else return "red-500-bg";
     },
   },
 

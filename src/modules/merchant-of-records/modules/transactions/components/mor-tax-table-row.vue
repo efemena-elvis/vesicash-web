@@ -22,7 +22,7 @@
 
       <div class="f-size-13 grey-500 mgt-4">
         Method:
-        <span class="fw-semibold grey-600">
+        <span class="fw-medium grey-800">
           {{
             data.payment_method.includes("mobilemoney")
               ? "Mobilemoney"
@@ -32,7 +32,7 @@
       </div>
     </td>
 
-    <td class="body-data" :class="`${table_name}-4`">
+    <td class="body-data fw-medium" :class="`${table_name}-4`">
       {{
         $utils.formatCurrency({
           input: data.currency,
@@ -83,11 +83,11 @@ export default {
 
   computed: {
     getTransactionDate() {
-      let { d3, m4, y1 } = this.$date
+      let { w2, d3, m4, y1 } = this.$date
         .formatDate(this.data.transaction_date)
         .getAll();
 
-      return `${d3} ${m4}, ${y1}`;
+      return `${w2}, ${d3} ${m4} ${y1}`;
     },
   },
 

@@ -3,87 +3,80 @@
     <!-- PAGE TITILE -->
     <TitleTopBlock title="Payments" />
 
-    <!-- DASHBOARD TRANSACTIONS -->
-    <div class="wrapper pdb-30">
-      <DashboardTransactions />
+    <!-- BENEFICIARY BLOCK -->
+    <BeneficiaryBlock />
+
+    <div class="title-text h5-text grey-900 mgt-20 mgb-30">
+      Payment transactions
     </div>
 
-    <!-- MODALS -->
-    <portal to="vesicash-modals">
-      <transition name="fade" v-if="getTourData.ongoing">
-        <tourCover />
-      </transition>
+    <!-- PAYMENT TRANSACTIONS -->
+    <div class="wrapper pdb-30">
+      <div class="mgb-30">
+        <PageSwitcher
+          :page_data="pages"
+          :full_width="false"
+          @swapItem="updateTransactionChanges($event)"
+        />
+      </div>
 
-      <transition name="fade" v-if="show_walkhthrough_card">
-        <walkthroughModal :tour="tour_data" />
-      </transition>
-    </portal>
+      <component
+        :is="
+          active_view === 'outflow'
+            ? 'PaymentWithdrawalTable'
+            : 'PaymentFundingTable'
+        "
+      />
+    </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
 import TitleTopBlock from "@/shared/components/block-comps/title-top-block";
+import BeneficiaryBlock from "@/modules/payments/components/beneficiary-block";
+import PageSwitcher from "@/shared/components/util-comps/page-switcher";
 
 export default {
   name: "PaymentPage",
 
   components: {
     TitleTopBlock,
-    DashboardTransactions: () =>
+    BeneficiaryBlock,
+    PageSwitcher,
+    PaymentWithdrawalTable: () =>
       import(
-        /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/dashboard-transactions"
+        /* webpackChunkName: "payment-module" */ "@/modules/payments/components/payment-withdrawal-table"
       ),
-    walkthroughModal: () =>
+    PaymentFundingTable: () =>
       import(
-        /* webpackChunkName: "shared-module" */ "@/shared/modals/app-walkthrough/walkthrough-modal"
+        /* webpackChunkName: "payment-module" */ "@/modules/payments/components/payment-funding-table"
       ),
-    tourCover: () =>
-      import(
-        /* webpackChunkName: "shared-module" */ "@/shared/components/util-comps/tour-cover"
-      ),
-  },
-
-  computed: {
-    ...mapGetters({
-      getTourData: "general/getTourData",
-    }),
-  },
-
-  watch: {
-    "getTourData.count": {
-      handler(value) {
-        this.show_walkhthrough_card = false;
-
-        if (value === 7)
-          setTimeout(() => (this.show_walkhthrough_card = true), 300);
-      },
-      immediate: true,
-    },
   },
 
   data: () => ({
-    show_walkhthrough_card: false,
+    active_view: "outflow",
 
-    tour_data: {
-      title: "All payments",
-      description:
-        "A record of all your payments can be found here; Disbursements, Wallet payments etc",
-      marker: "center-right",
-      position: "tour-seven-position",
-    },
+    pages: [
+      {
+        title: "Payment Outflow",
+        value: "outflow",
+        active: true,
+      },
+      {
+        title: "Payment Inflow",
+        value: "inflow",
+        active: false,
+      },
+    ],
   }),
+
+  methods: {
+    updateTransactionChanges(selected_value) {
+      this.active_view = selected_value;
+    },
+  },
 };
 </script>
 
 <style lang="scss" scoped>
-.tour-seven-position {
-  top: 22.75%;
-  left: 18.75%;
-
-  @include breakpoint-down(xl) {
-    top: 23%;
-    left: 22%;
-  }
-}
 </style>

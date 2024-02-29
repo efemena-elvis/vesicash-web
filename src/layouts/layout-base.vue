@@ -195,7 +195,7 @@ export default {
     }
 
     .content-build {
-      padding: toRem(32) toRem(32) 0;
+      padding: toRem(40) toRem(32) 0;
 
       @include breakpoint-down(lg) {
         padding: toRem(32) toRem(24) 0;

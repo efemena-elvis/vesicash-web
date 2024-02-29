@@ -78,4 +78,48 @@
       }
     }
   }
+
+  .rounded-corners {
+    border-spacing: 0;
+    border-collapse: separate;
+    border-radius: 10px;
+    border: toRem(1) solid getColor("grey-200");
+
+    td {
+      @include font-height(13, 18, 400);
+      padding: toRem(10) toRem(20);
+      color: getColor("grey-500");
+    }
+    
+    tbody {
+      td {
+        color: getColor("grey-700");
+      }
+
+      tr {
+        border-bottom: toRem(1) solid transparent;
+      }
+    }
+  }
+
+    /* Apply a border to the right of all but the last column */
+    table.rounded-corners th:not(:last-child),
+    table.rounded-corners td:not(:last-child) {
+      border-right: toRem(1) solid getColor("grey-200");
+    }
+
+    /* Apply a border to the bottom of all but the last row */
+    table.rounded-corners > thead > tr:not(:last-child) > th,
+    table.rounded-corners > thead > tr:not(:last-child) > td,
+    table.rounded-corners > tbody > tr:not(:last-child) > th,
+    table.rounded-corners > tbody > tr:not(:last-child) > td,
+    table.rounded-corners > tfoot > tr:not(:last-child) > th,
+    table.rounded-corners > tfoot > tr:not(:last-child) > td,
+    table.rounded-corners > tr:not(:last-child) > td,
+    table.rounded-corners > tr:not(:last-child) > th,
+    table.rounded-corners > thead:not(:last-child),
+    table.rounded-corners > tbody:not(:last-child),
+    table.rounded-corners > tfoot:not(:last-child) {
+      border-bottom: toRem(1) solid getColor("grey-200");
+    }
 }

@@ -13,8 +13,9 @@
       @goToPage="getUserTransactions($event)"
       @emptyAction="initiateEscrowTransaction"
     >
-      <template v-for="(data, index) in table_data">
+      <template>
         <TransactionTableRow
+          v-for="(data, index) in table_data"
           :key="index"
           table_name="transaction-tb"
           :data="data"

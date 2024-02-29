@@ -45,15 +45,20 @@ export default {
         icon: "",
         link: "",
         action: "",
+        internal: true,
       }),
     },
   },
 
   methods: {
     actionClicked() {
-      if (this.card_detail?.action?.length) {
-        this.$bus.$emit("cardActionClicked", this.card_detail.action);
-      } else this.$router.push(this.card_detail.link);
+      if (this.card_detail.internal) {
+        if (this.card_detail?.action?.length) {
+          this.$bus.$emit("cardActionClicked", this.card_detail.action);
+        } else this.$router.push(this.card_detail.link);
+      } else {
+        this.$utils.createAndClickAnchor(this.card_detail.link, "_blank");
+      }
     },
   },
 };

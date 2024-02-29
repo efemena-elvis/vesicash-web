@@ -274,6 +274,14 @@ export default {
       },
       immediate: true,
     },
+
+    error_message: {
+      handler(value) {
+        if (value.length) {
+          setTimeout(() => (this.error_message = ""), 6000);
+        }
+      },
+    },
   },
 
   data() {

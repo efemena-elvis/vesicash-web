@@ -15,9 +15,10 @@
     />
 
     <!-- MOR WALLET SECTION -->
-    <template v-if="isMoRSetupEnabled">
+    <!-- <template>
+      
       <MoRWalletBlock v-if="card_type === 'escrow'" />
-    </template>
+    </template> -->
   </div>
 </template>
 

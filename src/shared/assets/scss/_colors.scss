@@ -131,3 +131,76 @@ $color-scheme: (
   $color-map: map-get($color-scheme, nth($splitted-color, 1));
   @return map-get($color-map, nth($splitted-color, 2));
 }
+
+
+
+/*------------------------------------*\
+	Avatar Profiling Color Palette
+\*------------------------------------*/
+$chestnut: rgb(184, 129, 53);
+$pampers: rgb(0, 169, 164);
+$cherry-tomato: rgb(233, 75, 60);
+$aspen-gold: rgb(218, 174, 55);
+$verdant-green: rgb(32, 143, 34);
+$orange-shire: rgb(249, 87, 0);
+$fuschia: rgb(46, 204, 99);
+$toffee: rgb(117, 81, 57);
+$pale-yellow: rgb(255, 174, 0);
+$black-cloud: rgb(14, 29, 44);
+$navy-blue: rgb(37, 50, 79);
+$forest-green: rgb(41, 114, 42);
+$deep-blue: rgb(1, 59, 131);
+$bright-red: rgb(233, 68, 8);
+$crimson: rgb(172, 80, 103);
+$royal-blue: rgb(41, 0, 189);
+$light-green: rgb(3, 201, 85);
+$royal-purple: rgb(164, 3, 186);
+$scarlet: rgb(213, 14, 123);
+$kelly-green: rgb(51, 158, 102);
+$miami: rgb(220, 124, 40);
+$deep-purple: rgb(51, 13, 72);
+$windsor-wine: rgb(100, 62, 70);
+$sprout: rgb(57, 65, 65);
+$slack: rgb(74, 21, 75);
+$fedex: rgb(37, 12, 119);
+
+$profile-color: () !default;
+$profile-color: map-merge(
+  (
+    "chestnut": $chestnut,
+    "pampers": $pampers,
+    "cherry-tomato": $cherry-tomato,
+    "aspen-gold": $aspen-gold,
+    "verdant-green": $verdant-green,
+    "orange-shire": $orange-shire,
+    "fuschia": $fuschia,
+    "toffee": $toffee,
+    "pale-yellow": $pale-yellow,
+    "black-cloud": $black-cloud,
+    "navy-blue": $navy-blue,
+    "forest-green": $forest-green,
+    "deep-blue": $deep-blue,
+    "bright-red": $bright-red,
+    "crimson": $crimson,
+    "royal-blue": $royal-blue,
+    "scarlet": $scarlet,
+    "kelly-green": $kelly-green,
+    "miami": $miami,
+    "deep-purple": $deep-purple,
+    "windsor-wine": $windsor-wine,
+    "sprout": $sprout,
+    "slack": $slack,
+    "fedex": $fedex,
+  ),
+  $profile-color
+);
+
+@each $color-name, $color in $profile-color {
+  .#{$color-name} {
+    color: $color !important;
+  }
+
+  .#{$color-name}-bg {
+    background-color: $color !important;
+  }
+}

@@ -1,83 +1,24 @@
 <template>
   <div class="dashboard-transactions">
-    <!-- <PageSwitcher
-      :page_data="pages"
-      :full_width="false"
-      @swapItem="updateTransactionChanges($event)"
-    /> -->
+    <div class="section-row mgb-30">
+      <div class="section-title h5-text grey-900">Recent transactions</div>
 
-    <!-- DATA FILTERS -->
-    <div class="filters mgt-28 mgb-28 row">
-      <div class="select-field col-6 col-lg-3">
-        <DropSelectInput
-          placeholder="Transaction type"
-          @selectedOption="updateTransactionChanges($event)"
-          :options="transaction_options"
-          :pre_select="preselect_transaction"
-          class_name="custom-drop-input"
-        />
-      </div>
-
-      <!-- SELECT WALLET TYPE -->
-      <div class="select-field col-6 col-lg-3">
-        <DropSelectInput
-          placeholder="Select wallet type"
-          @selectedOption="selectUserOption('wallet', $event, wallet_options)"
-          :options="wallet_options"
-          :pre_select="preselect_wallet"
-          class_name="custom-drop-input"
-        />
-      </div>
-
-      <!-- SELECT PAYMENT ENTRY -->
-      <div class="select-field col-6 col-lg-3">
-        <DropSelectInput
-          placeholder="Payment source"
-          @selectedOption="
-            selectUserOption('source', $event, payment_source_options)
-          "
-          :options="source_options"
-          :pre_select="preselect_source"
-          class_name="custom-drop-input"
-        />
-      </div>
-
-      <!-- SELECT DATE RANGE -->
-      <div class="select-field col-6 col-lg-3">
-        <!-- prefix-class="xmx" -->
-        <!-- :formatter="{ stringify: () => '' }" -->
-        <date-picker
-          v-model="filters.date_range"
-          type="date"
-          range
-          input-class="my-picker-class"
-          placeholder="Select date"
-          :clearable="true"
-          :editable="false"
-          :append-to-body="false"
-          :disabled-date="disabledDate"
-          :shortcuts="shortcutConfig"
-        >
-        </date-picker>
-      </div>
-
-      <div class="select-field mgt-5" v-if="showFilters">
-        <button class="btn btn-md red-500 px-0 reset-btn" @click="resetFilters">
-          <span class="icon-close f-size-20"></span> Reset filters
-        </button>
-      </div>
+      <router-link
+        to="/payments"
+        class="action-text btn-tertiary btn-sm rounded-8 smooth-transition link-no-underline secondary-2-text green-500 pointer btn-link"
+        v-if="table_repo.length > 5"
+      >
+        View All
+      </router-link>
     </div>
 
-    <!-- DISPLAY AREA FOR PAYMENTS/DISBURSEMENTS/WALLET -->
+    <!-- DISPLAY AREA FOR PAYMENTS WALLET -->
     <transition name="fade" mode="out-in">
-      <component
-        :is="getCurrentTable"
+      <TransactionWalletTable
         :table_data="table_data"
         :table_loading="table_loading"
-        :pagination="pagination"
         :empty_message="empty_message"
         @showTransactionModal="toggleTransactionSummaryModal"
-        @changePageView="changePageNumber"
       />
     </transition>
 
@@ -93,37 +34,15 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
-import PageSwitcher from "@/shared/components/util-comps/page-switcher";
-import DatePicker from "vue2-datepicker";
-import { MixinDateFilter } from "@/shared/mixins";
+import { mapActions } from "vuex";
 
 export default {
   name: "DashboardTransactions",
 
-  mixins: [MixinDateFilter],
-
   components: {
-    PageSwitcher,
-    DatePicker,
-    TransactionWalletExchangeTable: () =>
+    TransactionWalletTable: () =>
       import(
-        /* webpackChunkName: "dashboard-table-module" */ "@/modules/dashboard/components/table-comps/transaction-wallet-exchange-table"
-      ),
-
-    TransactionWalletEscrowTable: () =>
-      import(
-        /* webpackChunkName: "dashboard-table-module" */ "@/modules/dashboard/components/table-comps/transaction-wallet-escrow-table"
-      ),
-
-    TransactionWalletTransferTable: () =>
-      import(
-        /* webpackChunkName: "dashboard-table-module" */ "@/modules/dashboard/components/table-comps/transaction-wallet-transfer-table"
-      ),
-
-    TransactionWalletFundingTable: () =>
-      import(
-        /* webpackChunkName: "dashboard-table-module" */ "@/modules/dashboard/components/table-comps/transaction-wallet-funding-table"
+        /* webpackChunkName: "dashboard-table-module" */ "@/modules/dashboard/components/table-comps/transaction-wallet-table"
       ),
 
     TransactionSummaryModal: () =>
@@ -133,180 +52,41 @@ export default {
   },
 
   computed: {
-    ...mapGetters({ getWalletSize: "general/getWalletSize" }),
-
-    getCurrentTable() {
-      if (this.filters?.source?.length) {
-        let table = this.$utils.getCapitalizeText(
-          this.filters?.source || "funding"
-        );
-
-        return `TransactionWallet${table}Table`;
-      } else return "TransactionWalletFundingTable";
+    showPagination() {
+      return this.$route?.name === "PaymentsPage" ? true : false;
     },
 
-    showFilters() {
-      return this.filters.wallet?.length ||
-        this.filters.source?.length ||
-        this.filters.date_range?.length
-        ? true
-        : false;
-    },
-
-    getTransactionPayload() {
-      let payload = {
-        wallet_type: this.filters.wallet,
-        tx_type: this.filters.transaction,
-        payment_entry: this.filters.source,
-        start_date: this.filters.date_range.length
-          ? this.formatSelectedDate(this.filters.date_range[0])
-          : 0,
-        end_date: this.filters.date_range.length
-          ? this.formatSelectedDate(this.filters.date_range[1])
-          : 0,
+    getRequestPayload() {
+      return {
+        page: 1,
         account_id: this.getAccountId,
-        page: this.pageNumber,
+        start_date: "",
+        end_date: "",
+        currency: "",
       };
-
-      return payload;
-    },
-  },
-
-  watch: {
-    "filters.date_range": {
-      handler(value) {
-        if (value.length)
-          this.$router
-            .replace({
-              name: this.$route.name,
-              query: {
-                ...this.$route.query,
-                start_date: this.formatSelectedDate(value[0]),
-                end_date: this.formatSelectedDate(value[1]),
-              },
-            })
-            .catch((error) => {
-              if (error.name != "NavigationDuplicated") throw error;
-            });
-      },
-    },
-
-    $route: {
-      handler(value) {
-        let { wallet, source, pageNumber, start_date, end_date } = value.query;
-
-        if (
-          (wallet && this.filters.transaction && source) ||
-          pageNumber ||
-          start_date ||
-          end_date
-        ) {
-          this.fetchTransactionData();
-        } else {
-          this.table_data = [];
-          this.table_loading = false;
-          this.pagination = {};
-        }
-      },
-    },
-
-    getWalletSize: {
-      handler(wallet) {
-        if (wallet.length > 4) {
-          this.populateWalletOptions();
-        }
-      },
-      immediate: true,
     },
   },
 
   data: () => ({
-    wallet_options: [],
-
-    payment_source_options: [
-      {
-        id: 1,
-        name: "Funding",
-        slug: "funding",
-      },
-      {
-        id: 2,
-        name: "Exchange",
-        slug: "exchange",
-      },
-      {
-        id: 3,
-        name: "Escrow",
-        slug: "escrow",
-      },
-      {
-        id: 4,
-        name: "Transfer",
-        slug: "transfer",
-      },
-    ],
-
-    transaction_options: [
-      {
-        id: 1,
-        name: "Inflow",
-        slug: "inflow",
-      },
-      {
-        id: 2,
-        name: "Outflow",
-        slug: "outflow",
-      },
-    ],
-
-    pages: [
-      {
-        title: "Inflow",
-        value: "inflow",
-        active: true,
-      },
-      {
-        title: "Outflow",
-        value: "outflow",
-        active: false,
-      },
-    ],
-
-    source_options: [],
-
-    preselect_wallet: null,
-    preselect_source: null,
-    preselect_transaction: null,
-
-    filters: {
-      wallet: "",
-      transaction: "inflow",
-      source: "funding",
-      date_range: [],
-    },
-
     show_transaction_summary_modal: false,
 
+    table_repo: [],
     table_data: [],
     table_loading: false,
     pageNumber: 1,
-    pagination: {},
 
     empty_message:
-      "You have not made any payment selections yet. You can fund your wallet to get started",
+      "You have not made any transactions yet. Fund your wallet to get started",
   }),
 
-  created() {
-    this.source_options = this.payment_source_options;
-
-    this.$bus.$on("showTransactionSummary", () =>
-      this.toggleTransactionSummaryModal()
-    );
+  mounted() {
+    this.fetchTransactionData();
   },
 
   methods: {
     ...mapActions({
-      getTransactionPayments: "dashboard/getTransactionPayments",
+      fetchAllFundings: "dashboard/fetchAllFundings",
+      fetchAllWithdrawals: "dashboard/fetchAllWithdrawals",
     }),
 
     toggleTransactionSummaryModal() {
@@ -314,266 +94,42 @@ export default {
         !this.show_transaction_summary_modal;
     },
 
-    populateWalletOptions() {
-      this.getWalletSize
-        .filter((wallet) => wallet.enabled)
-        .map((wallet_type) => {
-          this.wallet_options.push({
-            id: wallet_type.id,
-            name: wallet_type.short.includes("ESCROW")
-              ? `${wallet_type.short.split("_").join(" ")} wallet`
-              : `${wallet_type.short} wallet`,
-            slug: wallet_type.short,
-          });
-        });
-
-      this.checkFilterStateOnRoute();
-    },
-
-    // CHECK FILTER STATE ON ROUTE
-    checkFilterStateOnRoute() {
-      let queries = this.$route.query;
-
-      if (Object.keys(queries).length) {
-        for (let query in queries) {
-          if (["start_date", "end_date"].includes(query)) {
-            this.filters.date_range[0] = new Date(queries.start_date);
-            this.filters.date_range[1] = new Date(queries.end_date);
-          }
-
-          // NON DATE SELECTIONS
-          else {
-            let selected_option = this[`${query}_options`]?.find(
-              (option) => option.slug === queries[query]
-            );
-
-            this.filters[query] = queries[query];
-            this[`preselect_${query}`] = selected_option;
-          }
-        }
-
-        // FETCH TRANSACTION PAYMENT DATA
-        this.fetchTransactionData();
-      }
-
-      // LOAD DEFAULT OPTION
-      else {
-        // CHECK IF WALLET HAS FEASIBLE LENGTH
-        if (this.wallet_options.length) {
-          this.filters.wallet = this.wallet_options[0]?.slug;
-          this.preselect_wallet = this.wallet_options[0];
-
-          this.filters.source = this.payment_source_options[0]?.slug;
-          this.preselect_source = this.payment_source_options[0];
-
-          this.filters.transaction = this.transaction_options[0].slug;
-          this.preselect_transaction = this.transaction_options[0];
-
-          this.$router
-            .replace({
-              name: this.$route.name,
-              query: {
-                transaction: this.filters.transaction,
-                wallet: this.filters.wallet,
-                source: this.filters.source,
-              },
-            })
-            .catch((error) => {
-              if (error.name != "NavigationDuplicated") throw error;
-            });
-
-          // FETCH TRANSACTION PAYMENT DATA
-          this.fetchTransactionData();
-        }
-      }
-    },
-
-    // FORMAT SELECTED FILTER DATE RANGE
-    formatSelectedDate(date) {
-      const date_value = this.$date.formatDate(new Date(date), false);
-
-      const day = date_value?.getDay("d2");
-      const month = date_value?.getMonth("m2");
-      const year = date_value?.getYear("y1");
-
-      return `${year}-${month}-${day}`;
-    },
-
-    // RESET ALL SELECTED FILTERS
-    resetFilters() {
-      this.preselect_wallet = {};
-      this.preselect_source = {};
-
-      this.filters.date_range = [];
-      this.filters.wallet = "";
-      this.filters.source = "";
-
-      this.table_data = [];
-      this.table_loading = false;
-      this.pagination = {};
-
-      // RESET ROUTE URL
-      this.$router
-        .replace({ name: this.$route.name, query: {} })
-        .catch((error) => {
-          if (error.name != "NavigationDuplicated") throw error;
-        });
-    },
-
-    // UPDATE USER FILTER SELECTION
-    selectUserOption(type, value, list) {
-      let selected_option = list.find((item) => item.id === value).slug;
-
-      // VALIDATE PREVIOUS SELECTIONS
-      if (this.validateFilterSelection(type, selected_option)) return true;
-      this.filters[type] = selected_option;
-
-      // UPDATE ROUTE URL QUERY
-      this.$router
-        .replace({
-          name: this.$route.name,
-          query: { ...this.$route.query, [type]: selected_option },
-        })
-        .catch((error) => {
-          if (error.name != "NavigationDuplicated") throw error;
-        });
-    },
-
-    // MANUALLY UPDATE TRANSACTION CHANGES
-    updateTransactionChanges(selected_value) {
-      let filtered_transaction = this.transaction_options.find(
-        (item) => item.id === selected_value
-      ).slug;
-      this.filters.transaction = filtered_transaction;
-
-      this.$router
-        .replace({
-          name: this.$route.name,
-          query: { ...this.$route.query, transaction: filtered_transaction },
-        })
-        .catch((error) => {
-          if (error.name != "NavigationDuplicated") throw error;
-        });
-    },
-
-    validateFilterSelection(filter_type, filter_value) {
-      let { wallet, transaction, source } = this.filters;
-
-      // WALLET SELECTION VALIDATION
-      if (filter_type === "wallet") {
-        if (filter_value.toLowerCase().includes("escrow")) {
-          this.source_options = this.payment_source_options.filter(
-            (item) => item.slug === "escrow"
-          );
-        } else if (transaction.length && transaction === "outflow") {
-          this.source_options = this.payment_source_options.filter(
-            (item) => item.slug !== "funding"
-          );
-        } else this.source_options = this.payment_source_options;
-
-        // CHECK IF PAYMENT SOURCE HAS BEEN SELECTED
-        if (source.length) {
-          this.resetPaymentSource();
-          return false;
-        }
-      }
-
-      // TRANSACTION SELECTION VALIDATION
-      if (filter_type === "transaction") {
-        // CHECK IF WALLET TYPE HAS BEEN SELECTED
-        if (!wallet.length) {
-          this.pushToast(`Please select a wallet type`, "error");
-          this.preselect_transaction = {};
-          return true;
-        } else {
-          // WALLET SELECTED
-          if (
-            ["outflow", "inflow"].includes(filter_value) &&
-            wallet.toLowerCase().includes("escrow")
-          ) {
-            this.source_options = this.payment_source_options.filter(
-              (item) => item.slug === "escrow"
-            );
-          } else {
-            if (filter_value === "outflow") {
-              this.source_options = this.payment_source_options.filter(
-                (item) => item.slug !== "funding"
-              );
-            } else this.source_options = this.payment_source_options;
-          }
-
-          // RESET SELECTED PAYMENT SOURCE
-          this.resetPaymentSource();
-        }
-      }
-
-      // PAYMENT SOURCE SELECTION VALIDATION
-      if (filter_type === "source") {
-        // CHECK IF WALLET TYPE HAS BEEN SELECTED
-        if (!wallet.length) {
-          this.pushToast(`Please select a wallet type`, "error");
-          this.preselect_source = {};
-          return true;
-        }
-
-        // CHECK IF TRANSACTION TYPE HAS BEEN SELECTED
-        else if (!transaction.length) {
-          this.pushToast(`Please select a transaction type`, "error");
-          this.preselect_source = {};
-          return true;
-        }
-      }
-    },
-
-    // RESET SELECTED PAYMENT SOURCE
-    resetPaymentSource() {
-      this.filters.source = "";
-      this.preselect_source = {};
-
-      const queryParams = Object.assign({}, this.$route.query);
-      delete queryParams.source;
-
-      // Navigate to the current route with the updated query parameters
-      this.$router.replace({ query: queryParams }).catch((error) => {
-        if (error.name != "NavigationDuplicated") throw error;
-      });
-    },
-
-    // CHANGE PAGE NUMBER VIEW
-    changePageNumber(pageNumber) {
-      this.pageNumber = pageNumber;
-
-      this.$router
-        .replace({
-          name: this.$route.name,
-          query: { ...this.$route.query, page: this.pageNumber },
-        })
-        .catch((error) => {
-          if (error.name != "NavigationDuplicated") throw error;
-        });
-    },
-
     // FETCH TRANSACTION DATA
-    fetchTransactionData() {
+    async fetchTransactionData() {
       this.table_loading = true;
 
-      this.getTransactionPayments(this.getTransactionPayload)
-        .then((response) => {
-          let { data, ...pagination } = response.data;
+      const [funding, withdrawal] = await Promise.all([
+        this.handleDataRequest({
+          action: "fetchAllFundings",
+          payload: this.getRequestPayload,
+          alert_handler: {
+            error: "Unable fetch wallet transactions",
+            not_found_error: "Wallet transactions not found",
+          },
+        }),
 
-          if (response?.code === 200) {
-            this.table_loading = false;
+        this.handleDataRequest({
+          action: "fetchAllWithdrawals",
+          payload: this.getRequestPayload,
+          alert_handler: {
+            error: "Unable fetch wallet transactions",
+            not_found_error: "Wallet transactions not found",
+          },
+        }),
+      ]);
 
-            this.table_data =
-              this.$route.name === "VesicashDashboard"
-                ? data.slice(0, 3)
-                : data;
-            this.pagination = pagination;
-          } else {
-            this.handleErrorResponse();
-          }
-        })
-        .catch(() => this.handleErrorResponse());
+      if (funding.code === 200 && withdrawal.code === 200) {
+        let transactions = this.$utils.sortByDate(
+          [...funding.data, ...withdrawal.data],
+          "desc"
+        );
+
+        this.table_loading = false;
+        this.table_repo = transactions;
+        this.table_data = transactions.slice(0, 5);
+      } else {
+        this.handleErrorResponse();
+      }
     },
 
     // ==========================
@@ -582,7 +138,6 @@ export default {
     handleErrorResponse() {
       this.table_loading = false;
       this.table_data = [];
-      this.pagination = {};
     },
   },
 };
@@ -590,25 +145,23 @@ export default {
 
 <style lang="scss">
 .dashboard-transactions {
-  .filters {
-    .select-field {
-      &:nth-of-type(3),
-      &:nth-of-type(4) {
-        @include breakpoint-down(lg) {
-          margin-top: toRem(18);
-        }
+  .section-row {
+    @include flex-row-nowrap("space-between", "center");
+
+    .section-title {
+      @include breakpoint-down(sm) {
+        font-size: toRem(18.75);
+      }
+
+      @include breakpoint-down(xs) {
+        font-size: toRem(18.5);
       }
     }
-  }
-}
 
-.custom-drop-input {
-  .select-input {
-    border: toRem(1) solid getColor("grey-200");
-    background-color: getColor("grey-10");
-
-    .placeholder-text {
-      color: getColor("grey-500") !important;
+    .action-text {
+      &:hover {
+        color: getColor("green-600");
+      }
     }
   }
 }

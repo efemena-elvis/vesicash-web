@@ -14,6 +14,7 @@ import {
 // APPLICATION SERVICES
 // ===========================
 import {
+  serviceColors,
   serviceUtils,
   serviceCurrency,
   serviceStorage,
@@ -47,6 +48,7 @@ Vue.mixin(MixinAuthUser);
 
 Vue.mixin({
   computed: {
+    $colors: () => serviceColors,
     $utils: () => serviceUtils,
     $storage: () => serviceStorage,
     $date: () => serviceDate,

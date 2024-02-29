@@ -9,22 +9,17 @@
       <div class="sidebar-content w-100">
         <!-- SIDE NAV ITEMS -->
         <div class="sidebar-item-list">
-          <component
-            :is="sidebar_view"
+          <SidebarItem
             v-for="(nav, index) in getSidebarRoutes"
             :key="index"
             :nav="nav"
-            :onboarding_state="getOnboardingRouteState[index]"
           />
         </div>
       </div>
 
       <!-- LOG OUT ACCOUNT SECTION -->
       <div class="wrapper wt-100">
-        <ProfileMenu
-          @exit="handleUserlogOut"
-          :onboarding_view="isBaseView ? false : true"
-        />
+        <ProfileMenu @exit="handleUserlogOut" />
       </div>
     </div>
   </div>
@@ -33,15 +28,10 @@
 <script>
 import { mapActions } from "vuex";
 import MoRDocValidate from "@/modules/merchant-of-records/modules/config/mixins/mor-docs-mixin";
-import {
-  escrowRoutes,
-  merchantRoutes,
-  onboardingRoutes,
-} from "@/shared/nav-routes";
+import { sidebarRoutes } from "@/shared/nav-routes";
 import VesicashBrandLogo from "@/shared/components/icon-comps/vesicash-brand-logo";
 import ExitIcon from "@/shared/components/icon-comps/exit-icon";
 import SidebarItem from "@/shared/components/nav-comps/sidebar-item";
-import SidebarItemCount from "@/shared/components/nav-comps/sidebar-item-count";
 import ProfileMenu from "@/shared/components/nav-comps/profile-menu";
 
 export default {
@@ -52,76 +42,14 @@ export default {
   components: {
     VesicashBrandLogo,
     SidebarItem,
-    SidebarItemCount,
     ExitIcon,
     ProfileMenu,
   },
 
   computed: {
-    isBaseView() {
-      return this.base_view ? true : false;
-    },
-
     getSidebarRoutes() {
-      if (!this.base_view) {
-        this.sidebar_view = "SidebarItemCount";
-        return onboardingRoutes;
-      } else {
-        this.sidebar_view = "SidebarItem";
-        return this.isMoRSetupEnabled ? merchantRoutes : escrowRoutes;
-      }
+      return sidebarRoutes;
     },
-
-    getOnboardingRouteState() {
-      return this.onboarding_route_state;
-    },
-  },
-
-  data() {
-    return {
-      base_view: true,
-      sidebar_view: "SidebarItem",
-
-      onboarding_route_state: [
-        {
-          route: "VesicashBusinessInfoOnboarding",
-          disabled: false,
-        },
-        {
-          route: "VesicashBusinessOnboarding",
-          disabled: true,
-        },
-        {
-          route: "VesicashIdentityOnboarding",
-          disabled: true,
-        },
-        {
-          route: "VesicashMoROnboarding",
-          disabled: true,
-        },
-      ],
-    };
-  },
-
-  watch: {
-    $route: {
-      handler(route) {
-        this.base_view = route.meta?.page_type === "onboarding" ? false : true;
-
-        if (!this.base_view) {
-          if (route.name === "VesicashBusinessOnboarding") {
-            this.onbording_route_state = [];
-          }
-        }
-      },
-      immediate: true,
-    },
-  },
-
-  mounted() {
-    if (this.getAccountType === "business" && !this.isMoRSetupEnabled) {
-      this.fetchVerifications();
-    }
   },
 
   methods: {
