@@ -420,7 +420,7 @@ export default {
         this.clearOutAccountList();
         this.form.narration.value = "";
 
-        setTimeout(() => this.toggleTransferSuccessModal(), 250);
+        this.toggleTransferSuccessModal();
       }
     },
   },
