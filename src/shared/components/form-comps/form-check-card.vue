@@ -4,8 +4,8 @@
       <input
         type="checkbox"
         :id="check_id"
-        v-model="state"
-        @change="$emit('change', state)"
+        :checked="checked"
+        @change="$emit('change', !checked)"
       />
       <div class="check-value">{{ primary_text }}</div>
     </div>
