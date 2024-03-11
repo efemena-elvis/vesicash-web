@@ -6,6 +6,7 @@
       <div class="skeleton-loader"></div>
       <div class="skeleton-loader"></div>
     </div>
+
     <component
       :is="payment_view"
       :modules="modules"
@@ -59,6 +60,7 @@ export default {
       this.loading = true;
       const response = await this.fetchPaymentModules();
       this.loading = false;
+
       if (response?.data?.length) {
         this.modules = response?.data;
         this.payment_view = "PaymentModuleContent";
@@ -67,9 +69,10 @@ export default {
   },
 
   async mounted() {
+    this.fetchModules();
+
     this.RESET_PAYMENT_MODULE();
     if (!this.getMorCountries.length) this.fetchMoRCountries();
-    if (this.isMoRSetupEnabled) this.fetchModules();
   },
 };
 </script>

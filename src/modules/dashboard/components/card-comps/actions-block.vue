@@ -1,5 +1,5 @@
 <template>
-  <div class="actions-block rounded-12 mgb-48">
+  <div class="actions-block rounded-12 mgb-32">
     <div class="card-title grey-900 primary-1-text mgb-16">Quick actions</div>
 
     <div class="row">
@@ -209,8 +209,8 @@ export default {
 
 <style lang="scss" scoped>
 .actions-block {
-  padding: toRem(24);
   background: rgba(getColor("teal-100"), 0.78);
+  padding: toRem(24);
   .row {
     row-gap: toRem(18);
   }

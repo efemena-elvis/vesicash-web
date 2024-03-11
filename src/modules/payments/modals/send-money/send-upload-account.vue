@@ -271,17 +271,21 @@ export default {
               account_number: account.account_number,
             });
 
-            if (response.code === 200) {
-              if (
-                account.account_name.toLowerCase() ===
-                response.data.account_name.toLowerCase()
-              ) {
-                verified_list.push(account);
-              } else {
+            if (response.status !== 400) {
+              if (response.code === 200) {
+                if (
+                  account.account_name.toLowerCase() ===
+                  response.data.account_name.toLowerCase()
+                ) {
+                  verified_list.push(account);
+                } else {
+                  unverified_list.push(account);
+                }
+              } else if (response.code === 400) {
                 unverified_list.push(account);
               }
             } else {
-              throw new Error("Unable to verify account");
+              unverified_list.push(account);
             }
           })
         );

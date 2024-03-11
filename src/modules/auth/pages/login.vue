@@ -122,6 +122,7 @@ export default {
     ...mapActions({
       loginUser: "auth/loginUser",
       fetchAPIkeys: "developer/fetchAPIkeys",
+      updateMerchantState: "general/updateMerchantState",
     }),
 
     // ============================
@@ -147,6 +148,9 @@ export default {
 
         // CHECK IF USER EMAIL IS VERIFIED
         if (this.getUser?.verifications?.email) {
+          this.updateMerchantState(
+            response.data.user?.extra_data?.merchant ?? false
+          );
           this.verifyUserOnboarding(response?.data);
         }
         // REDIRECT USER TO OTP VERIFICATION

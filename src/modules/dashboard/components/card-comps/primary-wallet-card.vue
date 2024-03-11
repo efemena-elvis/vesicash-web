@@ -1,20 +1,26 @@
 <template>
   <div class="wallet-metric-card rounded-12 teal-900-bg">
     <!-- TITLE TEXT -->
-    <div class="wallet-title-text tertiary-2-text neutral-50 fw-semibold">
+    <div
+      class="wallet-title-text tertiary-2-text neutral-50 fw-semibold mgb-18"
+    >
       Primary wallet balance
     </div>
 
     <!-- TOP ROW -->
-    <div class="top-row">
-      <!-- WALLET COLUMN SECTION -->
-      <PrimaryWalletColumn
+    <div class="top-row row mgb-20">
+      <!-- WALLET COLUMN -->
+      <div
+        class="col-12 col-md-4"
         v-for="(wallet, index) in wallet_balance"
         :key="index"
-        :index="index"
-        :wallet="wallet"
-        :loading_wallet="loading_wallet"
-      />
+      >
+        <WalletColumn
+          :index="index"
+          :wallet="wallet"
+          :loading_wallet="loading_wallet"
+        />
+      </div>
     </div>
 
     <div class="bottom-row">
@@ -53,13 +59,13 @@
 </template>
 
 <script>
-import PrimaryWalletColumn from "@/modules/dashboard/components/card-comps/primary-wallet-column";
+import WalletColumn from "@/modules/dashboard/components/card-comps/wallet-column";
 
 export default {
   name: "PrimaryWalletCard",
 
   components: {
-    PrimaryWalletColumn,
+    WalletColumn,
     FundWalletModal: () =>
       import(
         /* webpackChunkName: "dashboard-module" */ "@/modules/payments/modals/fund-wallet/fund-wallet-modal"
@@ -117,28 +123,17 @@ export default {
 
 <style lang="scss" scoped>
 .wallet-metric-card {
-  padding: toRem(16) 0 toRem(12);
-  width: max-content;
-
-  @include breakpoint-custom-down(530) {
-    width: 100%;
-  }
+  padding: toRem(18) toRem(20) toRem(20);
+  width: 100%;
 
   .wallet-title-text {
-    padding: toRem(2) toRem(24) toRem(8);
-
     @include breakpoint-down(xs) {
       font-size: toRem(11.75);
     }
   }
 
-  .top-row {
-    @include flex-row-wrap("flex-start", "center");
-  }
-
   .bottom-row {
     @include flex-row-wrap("flex-start", "center");
-    padding: toRem(6) toRem(22) toRem(6);
     gap: toRem(16);
 
     button {

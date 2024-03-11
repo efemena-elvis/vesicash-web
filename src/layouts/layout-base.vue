@@ -43,18 +43,10 @@ export default {
 
   watch: {
     $route: {
-      handler(route) {
-        // let { is_completed, completed_routes } = this.getOnboardingData;
-        // let is_onbording_route = this.onboarding_paths.includes(route.path);
-        // if (is_completed && is_onbording_route) {
-        //   this.$router.push("/dashboard");
-        // } else if (!is_completed && !is_onbording_route) {
-        //   this.fetchUserExtraData();
-        //   this.$router.push(this.onboarding_paths[completed_routes.length]);
-        // }
+      handler() {
+        this.fetchUserExtraData();
       },
       immediate: true,
-      deep: true,
     },
 
     getUser: {
@@ -131,12 +123,7 @@ export default {
       if (response.code === 200) {
         let user_extra_data = response.data.user?.extra_data;
 
-        // EXTRACT COMPLETED STATE AND COMPLETED ROUTES
-        let { is_completed, completed_routes } =
-          user_extra_data?.onboarding ?? {};
-
-        // UPDATE AND PERSIST ONBOARDING DATAAND MERCHANT IN STORE
-        this.updateOnboardingState({ is_completed, completed_routes });
+        // UPDATE AND PERSIST MERCHANT IN STORE
         this.updateMerchantState(user_extra_data?.merchant ?? false);
       }
     },
@@ -195,7 +182,7 @@ export default {
     }
 
     .content-build {
-      padding: toRem(40) toRem(32) 0;
+      padding: toRem(32) toRem(32) 0;
 
       @include breakpoint-down(lg) {
         padding: toRem(32) toRem(24) 0;

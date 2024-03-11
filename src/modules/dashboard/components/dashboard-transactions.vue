@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-transactions">
-    <div class="section-row mgb-30">
+    <div class="section-row mgb-33">
       <div class="section-title h5-text grey-900">Recent transactions</div>
 
       <router-link

@@ -11,11 +11,11 @@
     <!-- CONTENT AREA -->
     <div class="content-area w-100">
       <div class="text-area">
-        <div class="title-text grey-900 secondary-2-text">
+        <div class="title-text grey-900 primary-2-text">
           {{ card_detail.title }}
         </div>
 
-        <div class="meta-text grey-600 secondary-2-text">
+        <div class="meta-text grey-600 tertiary-2-text">
           {{ card_detail.description }}
         </div>
       </div>
@@ -69,12 +69,12 @@ export default {
   box-shadow: 0px 2px 4px 0px rgba(3, 7, 18, 0.03),
     0px 1px 2px -1px rgba(3, 7, 18, 0.06), 0px 0px 0px 1px rgba(3, 7, 18, 0.06);
   @include flex-row-nowrap("flex-start", "flex-start");
-  padding: toRem(12);
+  padding: toRem(15.5) toRem(12) toRem(12);
   position: relative;
   gap: toRem(12);
 
   &:hover {
-    transform: scale(0.98);
+    transform: scale(1.04);
   }
 
   .img-icon {

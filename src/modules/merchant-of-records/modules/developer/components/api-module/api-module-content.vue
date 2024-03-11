@@ -149,12 +149,13 @@ export default {
         payload: {
           regenerate,
         },
-        alert_handler: {
-          success: "API keys fetched successfully",
-          error: "Failed to load API keys",
-          request_error: "Failed to load API keys",
-          not_found_error: "No API keys found, generate new keys.",
-        },
+        show_alert: false,
+        // alert_handler: {
+        //   success: "API keys fetched successfully",
+        //   error: "Failed to load API keys",
+        //   request_error: "Failed to load API keys",
+        //   not_found_error: "No API keys found, generate new keys.",
+        // },
       });
 
       if (response) {

@@ -294,6 +294,17 @@ input[type="checkbox"],
       @extend %checked-check-box;
     }
   }
+
+  &.sm-size {
+    &:after {
+      border-radius: toRem(6);
+      @include draw-shape(20);
+    }
+
+    &:before {
+      @include draw-shape(5, 10);
+    }
+  }
 }
 
 // FORM PREFIX

@@ -1,5 +1,5 @@
 <template>
-  <div class="primary-column" :class="is_escrow_type && 'escrow-column'">
+  <div class="wallet-column" :class="is_escrow_type && 'escrow-column'">
     <!-- TITLE TEXT -->
     <div
       class="title-text tertiary-3-text mgb-15"
@@ -40,17 +40,12 @@
         </template>
       </div>
     </template>
-
-    <!-- TITLE DESCRIPTION -->
-    <!-- <div class="title-description f-size-11-5 mgt-8" :class="is_escrow_type ? 'grey-700' : 'neutral-10'">
-      {{ wallet?.description ?? "-----------" }}
-    </div> -->
   </div>
 </template>
-
-<script>
+  
+  <script>
 export default {
-  name: "PrimaryWalletColumn",
+  name: "WalletColumn",
 
   props: {
     index: {
@@ -90,7 +85,7 @@ export default {
 
     formatWalletDisplayName() {
       if (this.wallet?.short?.includes("ESCROW")) {
-        return this.wallet.short.split("_").join(" ");
+        return this.wallet.short.split("_")[1];
       } else return this.wallet?.short ?? "----";
     },
 
@@ -112,14 +107,14 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.primary-column {
+  
+  <style lang="scss" scoped>
+.wallet-column {
   position: relative;
-  padding: toRem(12) toRem(24);
-  min-width: toRem(190);
-  width: auto;
-  max-width: toRem(220);
+  //   padding: toRem(12) toRem(24);
+  //   min-width: toRem(190);
+  //   width: auto;
+  //   max-width: toRem(220);
 
   &::after {
     content: "";
@@ -195,3 +190,4 @@ export default {
   }
 }
 </style>
+  

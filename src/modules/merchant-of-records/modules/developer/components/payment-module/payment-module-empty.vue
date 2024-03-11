@@ -15,25 +15,26 @@
       class="description-text tertiary-2-text grey-600 mgb-24 text-center"
       v-if="isMoRSetupEnabled"
     >
-      You dont have any payment modules created, please create a payment module
+      You don't have any payment modules created yet. Click create payment
+      module to get started
     </div>
 
     <div
       class="description-text tertiary-2-text grey-600 mgb-24 text-center"
       v-else
     >
-      You are yet to set up your mor, please do to create a payment module
+      You don't have a Merchant of Record deployed for any country yet
     </div>
 
     <router-link
       v-if="isMoRSetupEnabled"
       :to="{ name: 'MerchantModuleCustomer' }"
       class="btn btn-md btn-primary"
-      >Create a payment module</router-link
+      >Create payment module</router-link
     >
 
     <router-link v-else to="/settings/mor-setup" class="btn btn-md btn-primary"
-      >Set up mor</router-link
+      >Deploy a Merchant of Record</router-link
     >
   </div>
 </template>

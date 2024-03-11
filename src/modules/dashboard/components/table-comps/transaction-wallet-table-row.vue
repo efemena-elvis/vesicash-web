@@ -99,17 +99,16 @@ export default {
         input:
           currency_slice.length > 1 ? currency_slice[1] : this.data.currency,
         output: "sign",
-      })}
-   ${this.$utils.formatCurrencyWithComma(this.data.total_amount, true)}`;
+      })}${this.$utils.formatCurrencyWithComma(this.data.total_amount, true)}`;
     },
 
     getTransactionAmount() {
       if (this.data.wallet_funded) {
-        return `<span class='green-600'>+${this.getAmount}</span>`;
+        return `<span class='green-600'>+ ${this.getAmount}</span>`;
       } else if (this.getTransactionType === "Funding") {
-        return `<span class='green-600'>+${this.getAmount}</span>`;
+        return `<span class='green-600'>+ ${this.getAmount}</span>`;
       } else if (this.getTransactionType === "Transfer") {
-        return `<span class='red-800'>-${this.getAmount}</span>`;
+        return `<span class='grey-600'>- ${this.getAmount}</span>`;
       } else {
         return this.getAmount;
       }

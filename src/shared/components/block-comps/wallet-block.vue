@@ -1,24 +1,24 @@
 <template>
-  <div class="wallet-block mgb-40">
-    <!-- PRIMARY WALLET SECTION -->
-    <PrimaryWalletCard
-      :wallet_balance="extractPrimaryWallet"
-      :loading_wallet="loading_wallet"
-      :card_type="card_type"
-    />
+  <div class="wallet-block mgb-32">
+    <div class="wallet-row">
+      <div class="primary-wallet">
+        <!-- PRIMARY WALLET -->
+        <PrimaryWalletCard
+          :wallet_balance="extractPrimaryWallet"
+          :loading_wallet="loading_wallet"
+          :card_type="card_type"
+        />
+      </div>
 
-    <!-- ESCROW WALLET SECTION -->
-    <EscrowWalletCard
-      v-if="card_type === 'escrow'"
-      :escrow_balance="extractEscrowWallet"
-      :loading_wallet="loading_wallet"
-    />
-
-    <!-- MOR WALLET SECTION -->
-    <!-- <template>
-      
-      <MoRWalletBlock v-if="card_type === 'escrow'" />
-    </template> -->
+      <div class="escrow-wallet">
+        <!-- ESCROW WALLET -->
+        <EscrowWalletCard
+          v-if="card_type === 'escrow'"
+          :escrow_balance="extractEscrowWallet"
+          :loading_wallet="loading_wallet"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -39,10 +39,6 @@ export default {
       import(
         /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/components/card-comps/escrow-wallet-card"
       ),
-    MoRWalletBlock: () =>
-      import(
-        /* webpackChunkName: "mor-module" */ "@/modules/merchant-of-records/modules/dashboard/components/mor-wallet-block"
-      ),
   },
 
   props: {
@@ -55,23 +51,19 @@ export default {
   computed: {
     extractPrimaryWallet() {
       let empty_wallet = Array.from({ length: 3 }, () => this.default_wallet);
-      let exclude_mor_list = ["USD", "GBP"];
 
       let primary_wallets = this.getWalletSize.filter(
         (wallet) => !wallet.short.includes("ESCROW") && !wallet.mor
       );
 
-      let mor_wallets = this.getWalletSize
-        .filter((wallet) => wallet.mor)
-        .filter((w) => !exclude_mor_list.includes(w.short));
-
       return this.getWalletSize.length ? [...primary_wallets] : empty_wallet;
     },
 
     extractEscrowWallet() {
-      return this.getWalletSize
-        .filter((wallet) => wallet.short.includes("ESCROW"))
-        .filter((wallet) => wallet.short !== "ESCROW_GBP");
+      return this.getWalletSize.filter((wallet) =>
+        wallet.short.includes("ESCROW")
+      );
+      // .filter((wallet) => wallet.short !== "ESCROW_GBP");
     },
   },
 };
@@ -79,7 +71,25 @@ export default {
 
 <style lang="scss" scoped>
 .wallet-block {
-  @include flex-row-wrap("flex-start", "stretch");
-  gap: toRem(28);
+  .wallet-row {
+    @include flex-row-nowrap("space-between", "center");
+    gap: 2%;
+  }
+
+  .primary-wallet {
+    width: 54%;
+
+    @include breakpoint-down(md) {
+      width: 100%;
+    }
+  }
+
+  .escrow-wallet {
+    width: 44%;
+
+    @include breakpoint-down(md) {
+      width: 100%;
+    }
+  }
 }
 </style>

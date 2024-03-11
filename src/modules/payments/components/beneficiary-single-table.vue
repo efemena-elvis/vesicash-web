@@ -80,6 +80,7 @@ export default {
       show_beneficiary_dialog: false,
 
       table_header: [
+        // "<input type='checkbox' class='position-relative sm-size' disabled='true' style='top: 1.75px' />",
         "Account Name",
         "Account Number",
         "Account Bank",
@@ -155,7 +156,7 @@ export default {
 <style lang="scss">
 .single-beneficiary-tb {
   &-1 {
-    max-width: toRem(170);
+    max-width: toRem(160);
   }
 
   &-2 {
@@ -164,10 +165,14 @@ export default {
   }
 
   &-3 {
-    max-width: toRem(210);
+    max-width: toRem(160);
   }
 
   &-4 {
+    max-width: toRem(210);
+  }
+
+  &-5 {
     max-width: toRem(140);
   }
 

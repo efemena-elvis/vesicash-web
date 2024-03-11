@@ -112,7 +112,7 @@ class serviceApi {
   // HANDLE API REQUEST ERRORS
   // ===============================
   async handleErrors(err) {
-    return await err.response?.data;
+    return await err.response;
   }
 
   // ===============================

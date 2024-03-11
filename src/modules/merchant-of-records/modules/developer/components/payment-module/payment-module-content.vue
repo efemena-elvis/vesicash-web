@@ -6,7 +6,7 @@
       <router-link
         class="btn btn-md btn-primary"
         :to="{ name: 'MerchantModuleCustomer' }"
-        >Add a payment module</router-link
+        >Create payment module</router-link
       >
     </div>
 

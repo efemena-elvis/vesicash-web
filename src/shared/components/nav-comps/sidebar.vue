@@ -67,10 +67,10 @@ export default {
 
 <style lang="scss" scoped>
 .sidebar {
+  border: toRem(1) solid transparent;
   @include stretch-area;
   position: relative;
   height: 100vh;
-  border: toRem(1) solid transparent;
 
   @include breakpoint-down(lg) {
     width: 60%;
@@ -85,8 +85,7 @@ export default {
   }
 
   .brand-logo {
-    padding: toRem(28) toRem(20);
-    margin-top: toRem(8);
+    padding: toRem(32) toRem(20);
     height: 12%;
 
     svg {

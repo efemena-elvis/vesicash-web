@@ -61,4 +61,24 @@ export default {
   clearOutAccountList({ commit }) {
     commit("UPDATE_RECIPIENT_ACCOUNT", []);
   },
+
+  updateTempAccount({ commit, getters }, account) {
+    let current_accounts = [...getters.getTempAccounts];
+
+    let account_found = current_accounts.findIndex(
+      (acc) => acc.account_no === account.account_no
+    );
+
+    if (account_found === -1)
+      commit("UPDATE_TEMP_ACCOUNT", [...current_accounts, account]);
+    else {
+      commit("UPDATE_TEMP_ACCOUNT", [
+        ...current_accounts.splice(account_found, 1),
+      ]);
+    }
+  },
+
+  clearOutTempAccount({ commit }) {
+    commit("UPDATE_TEMP_ACCOUNT", []);
+  },
 };

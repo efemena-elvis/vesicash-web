@@ -242,7 +242,7 @@ class serviceUtils {
 
     rows.forEach((row) => {
       const columns = row.split(",");
-      csv_data.push(columns);
+      csv_data.push(columns.map((data) => data.trim()));
     });
 
     return this.formatFileRowsToObject(csv_data);

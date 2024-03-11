@@ -2,13 +2,6 @@
   <div>
     <div class="d-flex justify-content-between align-items-center mgb-40">
       <PageBackBtn :history_mode="true" btn_text="Back" classStyle="mgb-0" />
-
-      <!-- <button
-        class="btn btn-primary btn-md"
-        @click="$router.push('/payments/send-money')"
-      >
-        <div class="text">Send Money</div>
-      </button> -->
     </div>
 
     <!-- TOP ROW -->
@@ -20,9 +13,22 @@
         @swapItem="switchPageView($event)"
       />
 
-      <button class="btn btn-primary btn-md" @click="toggleBeneficiaryModal()">
-        <div class="text">Add Beneficiary</div>
-      </button>
+      <div class="btn-row">
+        <button
+          class="btn btn-secondary btn-md"
+          @click="$router.push('/payments/send-money')"
+        >
+          <div class="text">Send Money</div>
+        </button>
+
+        <button
+          class="btn btn-primary btn-md"
+          @click="toggleBeneficiaryModal()"
+        >
+          Add
+          {{ active_view === "single" ? "Beneficiary" : "Group" }}
+        </button>
+      </div>
     </div>
 
     <!-- BENEFICIARY LIST TABLE -->
@@ -49,7 +55,7 @@
   </div>
 </template>
   
-  <script>
+<script>
 import PageBackBtn from "@/shared/components/util-comps/page-back-btn";
 import PageSwitcher from "@/shared/components/util-comps/page-switcher";
 
@@ -104,7 +110,7 @@ export default {
           active: true,
         },
         {
-          title: "Grouped Beneficiaries",
+          title: "Group Beneficiaries",
           value: "group",
           active: false,
         },
@@ -132,5 +138,10 @@ export default {
   @include flex-row-wrap("space-between", "center");
   column-gap: toRem(12);
   row-gap: toRem(12);
+
+  .btn-row {
+    @include flex-row-wrap("flex-end", "center");
+    gap: toRem(16);
+  }
 }
 </style>
