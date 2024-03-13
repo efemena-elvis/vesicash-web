@@ -258,6 +258,7 @@ export default {
           beneficiary_name: account.account_name,
           bank_account_number: account.account_no,
           bank_code: account.sort_code,
+          bank_name: account.bank_name,
         };
       });
     },

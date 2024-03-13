@@ -47,12 +47,24 @@ export default {
         });
       },
     },
+
+    account: {
+      handler() {
+        this.account_amount = this.account.amount;
+      },
+      immediate: true,
+      deep: true,
+    },
   },
 
   computed: {
     ...mapGetters({
       getTransactionCharges: "general/getTransactionCharges",
     }),
+
+    getTransferAmount() {
+      return this.account_amount;
+    },
 
     getWithdrawalCharges() {
       const withdrawal_charge = this.getTransactionCharges?.wallet_withdrawal;

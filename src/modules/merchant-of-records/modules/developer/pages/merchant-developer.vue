@@ -57,12 +57,12 @@ export default {
         slug: "checkout",
         active: false,
       },
-      {
-        title: "Payment Modules",
-        value: "PaymentModule",
-        slug: "payment",
-        active: false,
-      },
+      // {
+      //   title: "Payment Modules",
+      //   value: "PaymentModule",
+      //   slug: "payment",
+      //   active: false,
+      // },
     ],
   }),
 

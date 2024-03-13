@@ -33,7 +33,7 @@
 
             <button
               class="btn btn-md btn-secondary wt-100"
-              @click="$emit('closeTriggered', 'close')"
+              @click="reloadPage()"
             >
               Send money again
             </button>
@@ -81,7 +81,11 @@ export default {
     return {};
   },
 
-  methods: {},
+  methods: {
+    reloadPage() {
+      location.reload();
+    },
+  },
 };
 </script>
 

@@ -108,7 +108,7 @@ export default {
       } else if (this.getTransactionType === "Funding") {
         return `<span class='green-600'>+ ${this.getAmount}</span>`;
       } else if (this.getTransactionType === "Transfer") {
-        return `<span class='grey-600'>- ${this.getAmount}</span>`;
+        return `<span class='red-900'>- ${this.getAmount}</span>`;
       } else {
         return this.getAmount;
       }
@@ -156,28 +156,11 @@ export default {
           title: "Transaction Type",
           value: this.getTransactionType || "---",
         },
-        this.getTransactionType === "Escrow"
-          ? {
-              title: "Escrow Transacion ID",
-              value: this.data.transaction_id || "---",
-            }
-          : {},
         {
           title: "Currency",
           value: this.data.currency || "---",
         },
-        this.getTransactionType === "Funding"
-          ? {
-              title: "Payment Method",
-              value:
-                this.$utils.getCapitalizeText(
-                  this.data.payment_method?.split("_")?.join(" ")
-                ) || "---",
-            }
-          : {
-              title: "Beneficiary Name",
-              value: this.data.beneficiary_name || "---",
-            },
+        ...this.getExtraSummaryData(),
         {
           title: "Paid By",
           value: this.data.paid_by || "---",
@@ -198,6 +181,42 @@ export default {
     toggleTransactionSummaryModal() {
       this.show_transaction_summary_modal =
         !this.show_transaction_summary_modal;
+    },
+
+    getExtraSummaryData() {
+      if (this.getTransactionType === "Transfer") {
+        return [
+          {
+            title: "Beneficiary Name",
+            value: this.data.beneficiary_name || "---",
+          },
+          {
+            title: "Beneficiary Account",
+            value: this.data.bank_account_number || "---",
+          },
+          {
+            title: "Beneficiary Bank",
+            value: this.data.bank_name || "---",
+          },
+        ];
+      } else if (this.getTransactionType === "Funding") {
+        return [
+          {
+            title: "Payment Method",
+            value:
+              this.$utils.getCapitalizeText(
+                this.data.payment_method?.split("_")?.join(" ")
+              ) || "---",
+          },
+        ];
+      } else if (this.getTransactionType === "Escrow") {
+        return [
+          {
+            title: "Escrow Transacion ID",
+            value: this.data.transaction_id || "---",
+          },
+        ];
+      } else return [{}];
     },
   },
 };
