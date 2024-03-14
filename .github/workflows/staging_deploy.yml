@@ -1,0 +1,53 @@
+name: Staging Deploy
+
+# Controls when the action will run.
+on:
+  push:
+    branches: [staging]
+
+#   pull_request:
+#     branches: [staging]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: staging
+    env:
+      AWS_S3_BUCKET_NAME: ${{ vars.AWS_S3_BUCKET_NAME }}
+      AWS_CLOUDFRONT_DISTRIBUTION: ${{ vars.AWS_CLOUDFRONT_DISTRIBUTION }}
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: Setup node.js environment
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+
+      - name: Run npm install and npm build
+        run: |
+          npm install
+          npm run build:staging
+
+      - name: S3 sync
+        uses: jakejarvis/s3-sync-action@v0.5.1
+        with:
+          args: --acl public-read --delete
+        env:
+          AWS_S3_BUCKET: ${{ env.AWS_S3_BUCKET_NAME }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          SOURCE_DIR: "dist"
+
+      - name: Invalidate Cloudfront
+        uses: chetan/invalidate-cloudfront-action@v1.3
+        env:
+          DISTRIBUTION: ${{ env.AWS_CLOUDFRONT_DISTRIBUTION }}
+          PATHS: "/*"
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
