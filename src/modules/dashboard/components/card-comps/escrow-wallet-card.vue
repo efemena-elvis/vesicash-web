@@ -3,12 +3,12 @@
     class="escrow-metric-card position-relative rounded-12 border-green-200 green-50-bg"
   >
     <!-- TITLE TEXT -->
-    <div class="wallet-title-text tertiary-2-text grey-700 fw-semibold mgb-18">
+    <div class="wallet-title-text tertiary-2-text grey-700 fw-semibold mgb-22">
       Escrow wallet balance
     </div>
 
     <!-- TOP ROW -->
-    <div class="top-row row mgb-20">
+    <div class="top-row row g-0 mgb-20">
       <!-- WALLET COLUMN -->
       <div
         class="col-12 col-md-4"
@@ -17,9 +17,11 @@
       >
         <WalletColumn
           :index="index"
+          :item_length="escrow_balance.length - 1"
           :wallet="wallet"
           :loading_wallet="loading_wallet"
           is_escrow_type
+          border_color="green-300"
         />
       </div>
     </div>
@@ -79,13 +81,16 @@ export default {
 
 <style lang="scss" scoped>
 .escrow-metric-card {
-  padding: toRem(18) toRem(20) toRem(20);
-  width: 100%;
-
   .wallet-title-text {
+    padding: toRem(18) toRem(20) 0;
+
     @include breakpoint-down(xs) {
       font-size: toRem(11.75);
     }
+  }
+
+  .bottom-row {
+    padding: 0 toRem(20) toRem(20);
   }
 }
 </style>

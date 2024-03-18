@@ -242,6 +242,36 @@ export default {
       return this.selected_currency.balance;
     },
 
+    isAmountNegativeValue() {
+      let amountInvalid = false;
+      let recipientAccounts = this.getRecipientAccounts;
+
+      for (let i = 0; i < recipientAccounts.length; i++) {
+        const account = recipientAccounts[i];
+        if (account.amount < 0) {
+          amountInvalid = true;
+          break;
+        }
+      }
+
+      return amountInvalid;
+    },
+
+    isAmountBelowThreshold() {
+      let amountInvalid = false;
+      let recipientAccounts = this.getRecipientAccounts;
+
+      for (let i = 0; i < recipientAccounts.length; i++) {
+        const account = recipientAccounts[i];
+        if (account.amount < 1000) {
+          amountInvalid = true;
+          break;
+        }
+      }
+
+      return amountInvalid;
+    },
+
     isTransferAmountFilled() {
       const found_unfilled_amount = this.getRecipientAccounts.find((account) =>
         [0, null, ""].includes(account.amount)
@@ -388,6 +418,16 @@ export default {
     },
 
     async prepareTransferAccount() {
+      if (this.isAmountNegativeValue) {
+        this.pushToast("An amount is having a negative value", "warning");
+        return false;
+      }
+
+      if (this.isAmountBelowThreshold) {
+        this.pushToast("An amount is below 1000 threshold value", "warning");
+        return false;
+      }
+
       if (this.getTotalAmount > this.getSelectedWalletBalance) {
         this.pushToast(
           "Total amount entered excceds your wallet balance",
