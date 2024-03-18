@@ -106,6 +106,14 @@ $color-scheme: (
     .border-bottom-#{$color-type}-#{$color-shade} {
       border-bottom: 0.0625rem solid $color;
     }
+
+    .border-left-#{$color-type}-#{$color-shade} {
+      border-left: 0.0625rem solid $color;
+    }
+
+    .border-right-#{$color-type}-#{$color-shade} {
+      border-right: 0.0625rem solid $color;
+    }
   }
 }
 

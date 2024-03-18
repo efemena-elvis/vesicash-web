@@ -1,14 +1,14 @@
 <template>
-  <div class="wallet-metric-card rounded-12 teal-900-bg">
+  <div class="wallet-metric-card rounded-12 teal-900-bg wt-100">
     <!-- TITLE TEXT -->
     <div
-      class="wallet-title-text tertiary-2-text neutral-50 fw-semibold mgb-18"
+      class="wallet-title-text tertiary-2-text neutral-50 fw-semibold mgb-22"
     >
       Primary wallet balance
     </div>
 
     <!-- TOP ROW -->
-    <div class="top-row row mgb-20">
+    <div class="top-row row g-0 mgb-20">
       <!-- WALLET COLUMN -->
       <div
         class="col-12 col-md-4"
@@ -17,6 +17,7 @@
       >
         <WalletColumn
           :index="index"
+          :item_length="wallet_balance.length - 1"
           :wallet="wallet"
           :loading_wallet="loading_wallet"
         />
@@ -123,16 +124,16 @@ export default {
 
 <style lang="scss" scoped>
 .wallet-metric-card {
-  padding: toRem(18) toRem(20) toRem(20);
-  width: 100%;
-
   .wallet-title-text {
+    padding: toRem(18) toRem(20) 0;
+
     @include breakpoint-down(xs) {
       font-size: toRem(11.75);
     }
   }
 
   .bottom-row {
+    padding: 0 toRem(20) toRem(20);
     @include flex-row-wrap("flex-start", "center");
     gap: toRem(16);
 

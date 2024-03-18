@@ -1,5 +1,8 @@
 <template>
-  <div class="wallet-column" :class="is_escrow_type && 'escrow-column'">
+  <div
+    class="wallet-column"
+    :class="[is_escrow_type && 'escrow-column', renderColumnBorder]"
+  >
     <!-- TITLE TEXT -->
     <div
       class="title-text tertiary-3-text mgb-15"
@@ -66,6 +69,16 @@ export default {
       type: Boolean,
       default: false,
     },
+
+    item_length: {
+      type: Number,
+      default: 0,
+    },
+
+    border_color: {
+      type: String,
+      default: "teal-800",
+    },
   },
 
   computed: {
@@ -84,13 +97,19 @@ export default {
     },
 
     formatWalletDisplayName() {
-      if (this.wallet?.short?.includes("ESCROW")) {
-        return this.wallet.short.split("_")[1];
-      } else return this.wallet?.short ?? "----";
+      if (this.wallet?.short?.includes("ESCROW"))
+        return `ESCROW ${this.wallet.short.split("_")[1]}`;
+      else return this.wallet?.short ?? "----";
     },
 
     isBalanceHidden() {
       return this.is_hidden;
+    },
+
+    renderColumnBorder() {
+      if (this.index !== 0 && this.index !== this.item_length) {
+        return `border-left-${this.border_color} border-right-${this.border_color}`;
+      }
     },
   },
 
@@ -111,25 +130,7 @@ export default {
   <style lang="scss" scoped>
 .wallet-column {
   position: relative;
-  //   padding: toRem(12) toRem(24);
-  //   min-width: toRem(190);
-  //   width: auto;
-  //   max-width: toRem(220);
-
-  &::after {
-    content: "";
-    width: toRem(1);
-    background: getColor("teal-800");
-    height: 66%;
-    @include center-placement("y-axis");
-    right: 0;
-  }
-
-  &:last-of-type {
-    &::after {
-      width: 0;
-    }
-  }
+  padding: 0 toRem(20);
 
   @include breakpoint-custom-down(530) {
     width: 100%;
