@@ -274,8 +274,8 @@ export default {
             if (response.status !== 400) {
               if (response.code === 200) {
                 if (
-                  account.account_name.toLowerCase() ===
-                  response.data.account_name.toLowerCase()
+                  account.account_name.toLowerCase().replace(/\s+/g, " ") ===
+                  response.data.account_name.toLowerCase().replace(/\s+/g, " ")
                 ) {
                   verified_list.push(account);
                 } else {
@@ -292,7 +292,7 @@ export default {
 
         if (unverified_list.length) {
           this.pushToast(
-            `Unable to verify ${unverified_list[0].account_name}`,
+            `Unable to verify ${unverified_list[0].account_name}- ${unverified_list[0].bank_name}`,
             "error"
           );
           this.updateFileValidationState();
