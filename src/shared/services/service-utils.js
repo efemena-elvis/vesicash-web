@@ -240,7 +240,10 @@ class serviceUtils {
     // Split the CSV content into rows
     const rows = csvContent.split("\n");
 
-    rows.forEach((row) => {
+    // Filter out empty rows
+    const nonEmptyRows = rows.filter((row) => row.trim() !== "");
+
+    nonEmptyRows.forEach((row) => {
       const columns = row.split(",");
       csv_data.push(columns.map((data) => data.trim()));
     });
