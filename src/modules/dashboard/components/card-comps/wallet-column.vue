@@ -98,7 +98,7 @@ export default {
 
     formatWalletDisplayName() {
       if (this.wallet?.short?.includes("ESCROW"))
-        return `ESCROW ${this.wallet.short.split("_")[1]}`;
+        return `${this.wallet.short.split("_")[1]}`;
       else return this.wallet?.short ?? "----";
     },
 
