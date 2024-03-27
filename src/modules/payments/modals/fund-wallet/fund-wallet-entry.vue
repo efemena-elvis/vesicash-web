@@ -270,8 +270,8 @@ export default {
           transaction_id:
             this.$route?.query?.transaction_id ?? this.$route?.params?.id,
           gateway: constants.PAYMENT_GATEWAY,
-          new: true,
         },
+        // new: true,
         alert_handler: {
           error: "Unable to fetch transfer account",
           request_error: "Unable to fetch transfer account",
