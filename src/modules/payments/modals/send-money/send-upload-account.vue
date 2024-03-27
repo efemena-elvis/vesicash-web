@@ -266,10 +266,17 @@ export default {
       try {
         await Promise.all(
           account_list.map(async (account) => {
+            console.log({
+              bank_code: account.bank_code,
+              account_number: account.account_number,
+            });
+
             const response = await this.verifyBankAccount({
               bank_code: account.bank_code,
               account_number: account.account_number,
             });
+
+            console.log(response);
 
             if (response.status !== 400) {
               if (response.code === 200) {
@@ -292,7 +299,7 @@ export default {
 
         if (unverified_list.length) {
           this.pushToast(
-            `Unable to verify ${unverified_list[0].account_name}- ${unverified_list[0].bank_name}`,
+            `Unable to verify ${unverified_list[0].account_name} - ${unverified_list[0].bank_name}`,
             "error"
           );
           this.updateFileValidationState();
