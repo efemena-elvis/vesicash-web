@@ -5,8 +5,8 @@
       <div class="form-group">
         <div class="form-label">Upload beneficiary file</div>
         <div class="label-subtitle mgt--2 mgb-20">
-          You can upload a csv file or an excel (xls, xlsx) file, containing all
-          beneficiary accounts.
+          You can upload an excel (xls, xlsx) file, containing all beneficiary
+          accounts.
         </div>
 
         <div
@@ -63,7 +63,7 @@
               <div
                 class="description-text f-size-13-5 grey-600 text-center pointer"
               >
-                You can upload a csv or an excel file
+                You can upload an excel file
               </div>
             </label>
 
@@ -74,7 +74,7 @@
               ref="fileUpload"
               @change="handleFileUpload"
               class="position-absolute invisible"
-              accept=".csv, .xls, .xlsx"
+              accept=".xls, .xlsx"
             />
           </div>
         </div>
@@ -82,12 +82,12 @@
         <!-- SAMPLE FILE ROW -->
         <div class="sample-file-row mgt-12 f-size-13-5 fw-medium grey-600">
           Download sample file:
-          <a
+          <!-- <a
             href="../../files/bulk-transfer.csv"
             download="bulk-transfer.csv"
             class="btn-link"
             >CSV file</a
-          >
+          > -->
           <a
             href="../../files/bulk-transfer.xlsx"
             download="bulk-transfer.xlsx"
@@ -245,9 +245,9 @@ export default {
             });
         }
 
-        // IF UPLOADED FILE IS NEITHER CSV NOR EXCEL
+        // IF UPLOADED FILE IS NOT EXCEL
         else {
-          this.pushToast("Please upload either a CSV or an xlsx file", "error");
+          this.pushToast("Please upload an xlsx file", "error");
           this.updateFileValidationState();
         }
       }
@@ -266,17 +266,10 @@ export default {
       try {
         await Promise.all(
           account_list.map(async (account) => {
-            console.log({
-              bank_code: account.bank_code,
-              account_number: account.account_number,
-            });
-
             const response = await this.verifyBankAccount({
               bank_code: account.bank_code,
               account_number: account.account_number,
             });
-
-            console.log(response);
 
             if (response.status !== 400) {
               if (response.code === 200) {

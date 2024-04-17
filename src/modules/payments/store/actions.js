@@ -27,7 +27,10 @@ export default {
   },
 
   // Update recipient account amount on the list
-  updateAmountOnAccount({ commit, getters }, { account_no, amount }) {
+  updateAmountOnAccount(
+    { commit, getters },
+    { account_no, amount, total_amount = 0 }
+  ) {
     let current_recipients = [...getters.getRecipientAccounts];
 
     // Find the index of the account to be updated
@@ -38,7 +41,8 @@ export default {
     if (indexToUpdate !== -1) {
       const updatedAccount = {
         ...current_recipients[indexToUpdate],
-        amount: amount,
+        amount,
+        total_transfer_amount: total_amount,
       };
 
       current_recipients.splice(indexToUpdate, 1, updatedAccount);
@@ -46,15 +50,42 @@ export default {
     }
   },
 
+  updateCharges({ commit, getters }, { account_no, amount }) {
+    let current_charges = [...getters.getAccountCharges];
+
+    // Find the index of the account to be updated
+    const indexToUpdate = current_charges.findIndex(
+      (account) => account.account_no === account_no
+    );
+
+    if (indexToUpdate !== -1) {
+      const updatedCharges = {
+        ...current_charges[indexToUpdate],
+        amount,
+      };
+
+      current_charges.splice(indexToUpdate, 1, updatedCharges);
+      commit("UPDATE_CHARGES", current_charges);
+    } else {
+      commit("UPDATE_CHARGES", [...current_charges, { account_no, amount }]);
+    }
+  },
+
   // Remove a selected account from the list of account
   removeAccountFromList({ commit, getters }, account_index) {
     let current_recipients = [...getters.getRecipientAccounts];
+    let current_charges = [...getters.getAccountCharges];
 
     let filtered_account = current_recipients.filter(
       (_, index) => index !== account_index
     );
 
+    let filtered_charges = current_charges.filter(
+      (_, index) => index !== account_index
+    );
+
     commit("UPDATE_RECIPIENT_ACCOUNT", [...filtered_account]);
+    commit("UPDATE_CHARGES", [...filtered_charges]);
   },
 
   // Action to clear out all account from list

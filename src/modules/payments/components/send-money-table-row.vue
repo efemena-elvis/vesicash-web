@@ -4,7 +4,12 @@
     <td class="display-col">{{ account.bank_name }}</td>
     <td class="display-col">{{ account.account_name }}</td>
     <td class="input-col green-50-bg">
-      <input type="number" v-model="account_amount" />
+      {{
+        $utils.formatCurrency({
+          input: account.currency,
+          output: "sign",
+        })
+      }}<input type="number" v-model="account_amount" />
     </td>
     <td class="display-col space-btw">
       <div class="">{{ getTransferFee }}</div>
@@ -19,7 +24,7 @@
     </td>
   </tr>
 </template>
-      
+
 <script>
 import { mapActions, mapGetters } from "vuex";
 
@@ -46,6 +51,7 @@ export default {
           amount: +amount,
         });
       },
+      immediate: true,
     },
 
     account: {
@@ -103,12 +109,15 @@ export default {
 
       charge_fee = is_capped ? Math.min(capped_at, charge) : charge;
 
+      this.updateCharges({
+        account_no: this.account.account_no,
+        amount: charge_fee,
+      });
+
       return `${this.$utils.formatCurrency({
         input: currency,
         output: "sign",
-      })}
-      
-       ${this.$utils.formatCurrencyWithComma(charge_fee, true)}`;
+      })} ${this.$utils.formatCurrencyWithComma(charge_fee, true)}`;
     },
   },
 
@@ -122,6 +131,7 @@ export default {
     ...mapActions({
       removeAccountFromList: "payments/removeAccountFromList",
       updateAmountOnAccount: "payments/updateAmountOnAccount",
+      updateCharges: "payments/updateCharges",
     }),
 
     removeAccountRow() {
@@ -130,14 +140,15 @@ export default {
   },
 };
 </script>
-      
-  <style scoped lang="scss">
+
+<style scoped lang="scss">
 .send-money-row {
   .input-col {
     padding: 0 !important;
+    padding-left: toRem(19) !important;
 
     input {
-      padding: toRem(6) toRem(20) toRem(8);
+      padding: toRem(6) toRem(20) toRem(8) toRem(3);
       width: toRem(120) !important;
       background: transparent;
       outline: none;
@@ -170,5 +181,3 @@ export default {
   }
 }
 </style>
-  
-  
