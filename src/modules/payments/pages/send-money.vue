@@ -102,8 +102,78 @@
                     :account_index="index"
                     :account="account"
                   />
+
+                  <tr class="send-money-row">
+                    <td class="display-col align-right" colspan="3">
+                      Amount total ({{
+                        $utils.formatCurrency({
+                          input: getRecipientAccounts[0].currency,
+                          output: "sign",
+                        })
+                      }})
+                    </td>
+                    <td class="input-col green-50-bg">
+                      {{
+                        $utils.formatCurrency({
+                          input: getRecipientAccounts[0].currency,
+                          output: "sign",
+                        })
+                      }}
+                      {{ $utils.formatCurrencyWithComma(getTotalAmount, true) }}
+                    </td>
+
+                    <td class="display-col space-btw">
+                      {{
+                        $utils.formatCurrency({
+                          input: getRecipientAccounts[0].currency,
+                          output: "sign",
+                        })
+                      }}
+                      {{
+                        $utils.formatCurrencyWithComma(getTotalCharges, true)
+                      }}
+                    </td>
+                  </tr>
                 </tbody>
               </table>
+
+              <div class="table-wrapper">
+                <table class="table rounded-corners mgy-20 overflow-hidden">
+                  <tbody>
+                    <tr class="send-money-row">
+                      <td
+                        class="display-col fw-semibold"
+                        :style="{ background: '#d5f2dd' }"
+                        colspan="4"
+                      >
+                        <div class="align-right grey-800">
+                          Total transfer amount + charges ({{
+                            $utils.formatCurrency({
+                              input: getRecipientAccounts[0].currency,
+                              output: "sign",
+                            })
+                          }})
+                        </div>
+                      </td>
+
+                      <td class="display-col space-btw font-semibold">
+                        {{
+                          $utils.formatCurrency({
+                            input: getRecipientAccounts[0].currency,
+                            output: "sign",
+                          })
+                        }}
+                        {{
+                          $utils.formatCurrencyWithComma(
+                            getTotalTransferAmount,
+                            true
+                          )
+                        }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             <!-- NARRATION INPUT -->
@@ -170,7 +240,7 @@
       <transition name="fade" v-if="show_otp_modal">
         <BulkTransferOtpModal
           :currency="selected_currency.short"
-          :total_amount="getTotalAmount"
+          :total_amount="getTotalTransferAmount"
           @closeTriggered="toggleOTPModal()"
           @processTransfer="processTransferRequest()"
         />
@@ -179,7 +249,7 @@
       <transition name="fade" v-if="show_success_modal">
         <BulkTransferSuccessModal
           :currency="selected_currency.short"
-          :total_amount="getTotalAmount"
+          :total_amount="getTotalTransferAmount"
           @viewPayments="closeTransaction($event)"
           @closeTriggered="closeTransaction($event)"
           @processTransfer="processTransferRequest()"
@@ -225,6 +295,7 @@ export default {
     ...mapGetters({
       getWalletSize: "general/getWalletSize",
       getRecipientAccounts: "payments/getRecipientAccounts",
+      getAccountCharges: "payments/getAccountCharges",
       getTransactionCharges: "general/getTransactionCharges",
     }),
 
@@ -236,6 +307,16 @@ export default {
       return this.getRecipientAccounts.reduce((accumulator, currentValue) => {
         return accumulator + currentValue?.amount || 0;
       }, 0);
+    },
+
+    getTotalCharges() {
+      return this.getAccountCharges.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue?.amount || 0;
+      }, 0);
+    },
+
+    getTotalTransferAmount() {
+      return this.getTotalAmount + this.getTotalCharges;
     },
 
     getSelectedWalletBalance() {
@@ -328,7 +409,7 @@ export default {
       },
 
       tooltip_text:
-        "Easily send money to multiple accounts, by uploading a beneficiary data file (CSV or Excel).",
+        "Easily send money to multiple accounts, by uploading a beneficiary data file (Excel).",
     };
   },
 
@@ -345,6 +426,7 @@ export default {
       fetchCharges: "general/fetchCharges",
       initiateBulkTransfer: "payments/initiateBulkTransfer",
       clearOutAccountList: "payments/clearOutAccountList",
+      updateAmountOnAccount: "payments/updateAmountOnAccount",
     }),
 
     setAccountView(view) {
@@ -402,6 +484,23 @@ export default {
       );
     },
 
+    processTransferAmountPlusCharges() {
+      let accountRecipients = this.getRecipientAccounts;
+      let accountCharges = this.getAccountCharges;
+
+      accountRecipients.map((account) => {
+        let charge_fee = accountCharges.find(
+          (charge) => charge.account_no === account.account_no
+        );
+
+        this.updateAmountOnAccount({
+          account_no: account.account_no,
+          amount: +account.amount,
+          total_amount: +account.amount + charge_fee.amount,
+        });
+      });
+    },
+
     async sendOutOTPVerificationCode() {
       const response = await this.handleDataRequest({
         action: "sendUserOTP",
@@ -428,7 +527,7 @@ export default {
         return false;
       }
 
-      if (this.getTotalAmount > this.getSelectedWalletBalance) {
+      if (this.getTotalTransferAmount > this.getSelectedWalletBalance) {
         this.pushToast(
           "Total amount entered excceds your wallet balance",
           "warning"
@@ -437,6 +536,7 @@ export default {
       }
 
       if (this.isTransferAmountFilled) {
+        this.processTransferAmountPlusCharges();
         this.sendOutOTPVerificationCode();
       } else {
         this.pushToast("A transfer account is missing an amount", "warning");
