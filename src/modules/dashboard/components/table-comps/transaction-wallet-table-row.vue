@@ -1,6 +1,8 @@
 <template>
   <tr @click="toggleTransactionSummaryModal">
-    <td class="body-data" :class="`${table_name}-1`">{{ getCreatedDate }}</td>
+    <td class="body-data" :class="`${table_name}-1`">
+      {{ getCreatedDate }}
+    </td>
 
     <td class="body-data" :class="`${table_name}-2`">
       {{ getTransactionType }}
@@ -92,14 +94,28 @@ export default {
       } else "Transfer";
     },
 
-    getAmount() {
+    getCurrency() {
       let currency_slice = this.data.currency.split("_");
 
-      return `${this.$utils.formatCurrency({
+      return this.$utils.formatCurrency({
         input:
           currency_slice.length > 1 ? currency_slice[1] : this.data.currency,
         output: "sign",
-      })}${this.$utils.formatCurrencyWithComma(this.data.total_amount, true)}`;
+      });
+    },
+
+    getAmount() {
+      return `${this.getCurrency} ${this.$utils.formatCurrencyWithComma(
+        this.data.total_amount,
+        true
+      )}`;
+    },
+
+    getTransactionCharge() {
+      return `${this.getCurrency} ${this.$utils.formatCurrencyWithComma(
+        this.data.escrow_charge,
+        true
+      )}`;
     },
 
     getTransactionAmount() {
@@ -155,6 +171,10 @@ export default {
         {
           title: "Transaction Type",
           value: this.getTransactionType || "---",
+        },
+        {
+          title: "Transaction Charges",
+          value: this.getTransactionCharge || "---",
         },
         {
           title: "Currency",
