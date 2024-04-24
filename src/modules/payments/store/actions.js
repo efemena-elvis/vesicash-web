@@ -15,21 +15,25 @@ export default {
   // Add new transfer account to the recipient list
   addToAccountList({ commit, getters }, accounts = []) {
     let current_recipients = [...getters.getRecipientAccounts];
+    let current_charges = [...getters.getAccountCharges];
 
-    setTimeout(
-      () =>
-        commit("UPDATE_RECIPIENT_ACCOUNT", [
-          ...current_recipients,
-          ...accounts,
-        ]),
-      500
-    );
+    let new_account_charges = accounts.map((account) => {
+      return {
+        account_no: account.account_no,
+        amount: 0,
+      };
+    });
+
+    setTimeout(() => {
+      commit("UPDATE_RECIPIENT_ACCOUNT", [...current_recipients, ...accounts]);
+      commit("UPDATE_CHARGES", [...current_charges, ...new_account_charges]);
+    }, 500);
   },
 
   // Update recipient account amount on the list
   updateAmountOnAccount(
     { commit, getters },
-    { account_no, amount, total_amount = 0 }
+    { account_no, amount, charge_fee = 0, total_amount = 0 }
   ) {
     let current_recipients = [...getters.getRecipientAccounts];
 
@@ -42,6 +46,7 @@ export default {
       const updatedAccount = {
         ...current_recipients[indexToUpdate],
         amount,
+        charge_fee,
         total_transfer_amount: total_amount,
       };
 
@@ -65,9 +70,9 @@ export default {
       };
 
       current_charges.splice(indexToUpdate, 1, updatedCharges);
-      commit("UPDATE_CHARGES", current_charges);
+      // commit("UPDATE_CHARGES", current_charges);
     } else {
-      commit("UPDATE_CHARGES", [...current_charges, { account_no, amount }]);
+      // commit("UPDATE_CHARGES", [...current_charges, { account_no, amount }]);
     }
   },
 

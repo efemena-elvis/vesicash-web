@@ -51,8 +51,65 @@
         </div>
       </div>
 
+      <div v-if="hasBusinessType">
+        <div class="title-text h4-text mgb-6 grey-900">
+          Business verification
+        </div>
+        <div class="grey-600">Tell us about your business</div>
+
+        <div class="verification-block">
+          <verification-card
+            title="RC Number"
+            subtitle="Company Registered Code Number"
+            cta_title="Verify RC Number"
+            @action="toggleRcModal"
+          >
+            <BusinessIcon />
+          </verification-card>
+
+          <div class="tertiary-3-text error-text" v-if="show_error">
+            No directors associated with the RC number. Please update and retry
+          </div>
+
+          <div class="form-group" v-if="show_directors">
+            <div class="form-label">Verify director identity</div>
+
+            <!-- SELECT INPUT FIELD -->
+            <DropSelectInput
+              placeholder="Choose director id type to verify"
+              :options="directors"
+              @optionSelected="updateSelectedDirector"
+            />
+          </div>
+          <!-- 
+          <verification-card
+            title="Bank Verification Number"
+            subtitle="BVN of one of your founders"
+            cta_title="Verify BVN details"
+            @action="toggleBvnModal"
+          >
+            <BvnIcon />
+          </verification-card> -->
+          <button
+            class="btn btn-md btn-primary finish-button"
+            :disabled="!selected_id"
+            @click="toggleDirectorModal"
+            v-if="show_directors"
+          >
+            Verifiy director
+          </button>
+          <router-link
+            to="/dashboard"
+            class="btn btn-md btn-primary finish-button dash-btn"
+            v-if="false"
+          >
+            Skip to Dashboard
+          </router-link>
+        </div>
+      </div>
+
       <div v-else>
-        <PageBackBtn custom_mode @clicked="switchView" />
+        <!-- <PageBackBtn custom_mode @clicked="switchView" /> -->
         <div class="row mgb-40 business-type-wrapper">
           <div class="col-12">
             <div class="title-text h4-text mgb-30 grey-900">
@@ -89,10 +146,37 @@
           @click="updateUserBusinessDetails"
           ref="btnRef"
         >
-          Finish
+          Next
         </button>
       </div>
     </transition>
+    <!-- MODALS -->
+    <portal to="vesicash-modals">
+      <transition name="fade" v-if="show_bvn_modal">
+        <VerificationBvnModal
+          @saved="show_bvn_modal = false"
+          @closeTriggered="toggleBvnModal"
+        />
+      </transition>
+
+      <transition name="fade" v-if="show_rc_modal">
+        <CoporationVerificationModal
+          @saved="rcSaved"
+          @closeTriggered="toggleRcModal"
+        />
+      </transition>
+
+      <transition name="fade" v-if="show_director_modal">
+        <DirectorIdentityModal
+          @saved="completeOnboarding"
+          @closeTriggered="toggleDirectorModal"
+          :director="selected_director"
+          :id="selected_id"
+          :rcn="provided_rcn"
+        />
+      </transition>
+      <!-- 466011 -->
+    </portal>
   </div>
 </template>
 
@@ -101,6 +185,10 @@ import { mapActions, mapMutations } from "vuex";
 import onboardingMixin from "@/modules/dashboard/mixins/onboarding-mixin";
 import CountryHelper from "@/shared/mixins/mixin-country-helper";
 import PageBackBtn from "@/shared/components/util-comps/page-back-btn";
+import VerificationCard from "@/modules/settings/components/card-comps/verification-card";
+import VerificationBvnModal from "@/modules/settings/modals/verification-bvn-modal";
+import CoporationVerificationModal from "@/modules/settings/modals/coporation-verification-modal";
+import DirectorIdentityModal from "../../settings/modals/director-identity-modal";
 
 export default {
   name: "onboardingBusinessDetails",
@@ -117,7 +205,19 @@ export default {
       import(
         /* webpackChunkName: "onboarding-module" */ "@/shared/components/card-comps/select-dialog-card"
       ),
+    BusinessIcon: () =>
+      import(
+        /* webpackChunkName: 'shared-module' */ "@/shared/components/icon-comps/business-icon"
+      ),
+    BvnIcon: () =>
+      import(
+        /* webpackChunkName: 'shared-module' */ "@/shared/components/icon-comps/bvn-icon"
+      ),
     PageBackBtn,
+    VerificationBvnModal,
+    CoporationVerificationModal,
+    VerificationCard,
+    DirectorIdentityModal,
   },
 
   computed: {
@@ -137,14 +237,21 @@ export default {
 
     businessDetails() {
       return {
-        business_name: this.form.business_name.value,
+        // business_name: this.form.business_name.value,
         business_type: this.business_type,
-        country: this.form.country.value,
+        // country: this.form.country.value,
       };
+    },
+
+    hasBusinessType() {
+      return !!this.getUser?.business_type;
     },
   },
 
   data: () => ({
+    show_bvn_modal: false,
+    show_rc_modal: false,
+    show_director_modal: false,
     form: {
       business_name: {
         validated: false,
@@ -156,13 +263,20 @@ export default {
       },
     },
 
-    show_business_info: true,
+    show_business_info: false,
 
     business_type: null,
     other_business_type: "",
     others_selected: false,
 
     use_case: null,
+
+    selected_director: null,
+    selected_id: null,
+    provided_rcn: "",
+    show_directors: false,
+    show_error: false,
+    directors: [],
 
     business_types: [
       {
@@ -253,11 +367,60 @@ export default {
       this.show_business_info = true;
     },
 
+    completeOnboarding() {
+      let updatedUser = {
+        ...this.getUser,
+      };
+
+      updatedUser.verifications.cac = true;
+
+      this.updateAuthUser(updatedUser);
+    },
+
+    rcSaved({ data, rcn }) {
+      this.show_rc_modal = false;
+      this.show_error = !!data.length;
+
+      if (!data.length) {
+        return;
+      }
+      this.provided_rcn = rcn;
+      this.pushToast(
+        "Your business registration number has been submitted",
+        "success"
+      );
+      this.directors = data.map((doc) => ({ name: doc, id: doc }));
+      this.show_directors = true;
+    },
+
+    updateSelectedDirector({ id }) {
+      this.selected_id = id;
+      this.selected_director = {
+        name: "Business Director",
+        id,
+        cac: this.provided_rcn,
+        identity_type: id,
+      };
+    },
+
+    toggleBvnModal() {
+      this.show_bvn_modal = !this.show_bvn_modal;
+    },
+
+    toggleRcModal() {
+      this.show_error = false;
+      this.show_rc_modal = !this.show_rc_modal;
+    },
+
+    toggleDirectorModal() {
+      this.show_director_modal = !this.show_director_modal;
+    },
+
     async updateUserBusinessDetails() {
       const response = await this.handleDataRequest({
         action: "updateUserBusinessInfo",
         payload: this.businessDetails,
-        btn_text: "Finish",
+        btn_text: "Next",
         alert_handler: {
           success: "Business details updated successfully",
         },
@@ -266,16 +429,16 @@ export default {
       if (response.code === 200) {
         let user = {
           ...this.getUser,
-          business_name: this.form.business_name.value,
-          business_country: this.form.country.value,
+          // business_name: this.form.business_name.value,
+          // business_country: this.form.country.value,
           business_type: this.business_type,
         };
 
         this.updateAuthUser(user);
 
-        setTimeout(() => {
-          this.$router.push("/dashboard");
-        }, 1000);
+        // setTimeout(() => {
+        //   this.$router.push("/dashboard");
+        // }, 1000);
       }
     },
 
@@ -337,5 +500,26 @@ export default {
 .business-type-wrapper {
   width: toRem(850);
   max-width: 100%;
+}
+
+.verification-block {
+  display: grid;
+  gap: toRem(30);
+  max-width: toRem(735);
+  margin: toRem(50) 0;
+
+  .finish-button {
+    max-width: max-content;
+    margin-left: auto;
+    margin-top: toRem(-30);
+  }
+
+  .error-text {
+    margin-top: -20px;
+  }
+
+  .dash-btn {
+    margin-top: toRem(40);
+  }
 }
 </style>

@@ -10,6 +10,8 @@ const routes = {
   reset_password: "reset-password/change-password",
   update_tour_status: "user/update_tour_status",
   business_types: "business-types",
+  verify_rc_number: "cac/get-verifications/",
+  verify_business_director: "cac/verify",
   logout: "logout",
 };
 
@@ -92,5 +94,26 @@ export default {
   // ============================================
   async getBusinessTypes() {
     return await getRequest("auth", routes.business_types);
+  },
+
+  // ============================================
+  // VERIFY RC NUMBER
+  // ============================================
+  async verifyRcNumber(_, rc_number) {
+    return await getRequest(
+      "verification",
+      routes.verify_rc_number + rc_number
+    );
+  },
+
+  // ============================================
+  // VERIFY DIRECTOR IDENTITY
+  // ============================================
+  async verifyBusinessDirector(_, payload) {
+    return await postRequest(
+      "verification",
+      routes.verify_business_director,
+      payload
+    );
   },
 };

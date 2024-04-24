@@ -310,8 +310,8 @@ export default {
     },
 
     getTotalCharges() {
-      return this.getAccountCharges.reduce((accumulator, currentValue) => {
-        return accumulator + currentValue?.amount || 0;
+      return this.getRecipientAccounts.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue?.charge_fee || 0;
       }, 0);
     },
 
@@ -486,17 +486,13 @@ export default {
 
     processTransferAmountPlusCharges() {
       let accountRecipients = this.getRecipientAccounts;
-      let accountCharges = this.getAccountCharges;
 
       accountRecipients.map((account) => {
-        let charge_fee = accountCharges.find(
-          (charge) => charge.account_no === account.account_no
-        );
-
         this.updateAmountOnAccount({
           account_no: account.account_no,
           amount: +account.amount,
-          total_amount: +account.amount + charge_fee.amount,
+          charge_fee: +account.charge_fee,
+          total_amount: +account.amount + account.charge_fee,
         });
       });
     },
