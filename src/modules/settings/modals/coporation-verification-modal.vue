@@ -49,7 +49,7 @@
           ref="save"
           class="btn btn-primary btn-md wt-100"
           :disabled="isDisabled"
-          @click="save"
+          @click="verifyRC"
         >
           Submit
         </button>
@@ -130,7 +130,30 @@ export default {
     ...mapActions({
       clearAttachedFile: "general/clearAttachedFile",
       verfiyUserDocument: "settings/verfiyUserDocument",
+      verifyRcNumber: "auth/verifyRcNumber",
     }),
+
+    async verifyRC() {
+      this.handleClick("save");
+
+      try {
+        const response = await this.verifyRcNumber(this.form.doc_number.value);
+
+        this.handleClick("save", "Submit", false);
+
+        if (response?.code === 200) {
+          this.$emit("saved", {
+            data: response.data,
+            rcn: this.form.doc_number.value,
+          });
+        } else {
+          this.pushToast(response.message, "error");
+        }
+      } catch (err) {
+        this.handleClick("save", "Submit", false);
+        this.pushToast("Failed to verify registration number", "error");
+      }
+    },
 
     async save() {
       this.handleClick("save");
