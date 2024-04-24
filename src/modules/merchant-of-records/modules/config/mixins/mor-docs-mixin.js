@@ -22,15 +22,22 @@ const morDocValidate = {
     },
 
     validateUserAccount() {
-      return serviceUtils?.checkAccountStatus([...this.user_verifications])
+      return serviceUtils?.checkAccountStatus([...this.user_verifications]);
     },
 
     validateUserPhone() {
+      return false; // DISABLE FOR NOW
+      if (!this.user_verifications?.length) return false;
       let phone_verification = this.user_verifications.find(
         (item) => item.verification_type === "phone"
       );
 
       return phone_verification?.is_verified ? false : true;
+    },
+
+    validateUserBVN() {
+      if (!this.user_verifications?.length) return false;
+      return !this.validateUserPhone;
     },
   },
 

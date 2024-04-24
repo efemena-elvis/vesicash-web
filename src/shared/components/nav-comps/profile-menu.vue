@@ -16,7 +16,7 @@
         <UserIcon profileMenu />
       </div>
 
-      <div class="profile-data w-100">
+      <div class="profile-data w-100" @click="toggleMenu">
         <div class="">
           <div class="grey-900 primary-2-text mgb-4">
             {{ getUser.business_name || getUser.fullname || getUser.email }}
@@ -25,8 +25,8 @@
           <div class="tertiary-3-text green-500">ID: {{ getAccountId }}</div>
         </div>
 
-        <div class="menu-icon-wrapper pdl-7">
-          <div class="icon icon-ellipsis-h" @click="toggleMenu"></div>
+        <div class="menu-icon-wrapper">
+          <div class="icon icon-ellipsis-h"></div>
 
           <div
             class="profile-menu-block smooth-transition"
