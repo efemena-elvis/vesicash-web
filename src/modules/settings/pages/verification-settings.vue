@@ -73,7 +73,8 @@
           title="Directors information"
           subtitle="Confirm current number of directors and identification details."
           cta_title="Verify directors"
-          :verified="true"
+          :verified="isCACDocVerified.is_verified"
+          :verification_state="isCACDocVerified.verification_state"
           :check_verification_state="true"
           @action="toggleDirectorVerifyModal"
         >

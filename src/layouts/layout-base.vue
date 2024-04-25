@@ -6,7 +6,7 @@
       :class="show_mobile_sidebar && 'sidebar-build-open'"
       @click="hideSidebar"
     >
-      <Sidebar />
+      <Sidebar :show_items="showSideBar" />
     </div>
 
     <!-- BODY AREA -->
@@ -39,6 +39,10 @@ export default {
 
   computed: {
     ...mapGetters({ getOnboardingData: "general/getOnboardingData" }),
+
+    showSideBar() {
+      return this.$route?.name !== "VesicashBusinessDetailsOnboarding";
+    },
   },
 
   watch: {
@@ -89,13 +93,12 @@ export default {
     }),
 
     checkOnboardingState(user) {
-      const onboarding_fields = [
-        "business_name",
-        "business_type",
-        "business_country",
-      ];
+      const onboarding_fields = ["business_type"];
+      const verification_fields = ["cac"];
 
-      const is_onboarded = onboarding_fields.every((field) => !!user[field]);
+      const is_onboarded =
+        onboarding_fields.every((field) => !!user[field]) &&
+        verification_fields.every((field) => user.verifications[field]);
 
       const ONBOARDING_ROUTE_NAME = "VesicashBusinessDetailsOnboarding";
 
@@ -103,6 +106,8 @@ export default {
 
       if (!is_onboarded && route_name != ONBOARDING_ROUTE_NAME)
         this.$router.push("/onboarding/business-details");
+      if (is_onboarded && route_name === ONBOARDING_ROUTE_NAME)
+        this.$router.push("/dashboard");
     },
 
     hideSidebar($event) {
