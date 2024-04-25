@@ -12,7 +12,7 @@
       }}<input type="number" v-model="account_amount" />
     </td>
     <td class="display-col space-btw">
-      <div class="">{{ getTransferFee }}</div>
+      <div class="">{{ getTransferFee.formatted_value }}</div>
 
       <div
         class="icon-wrapper"
@@ -49,6 +49,7 @@ export default {
         this.updateAmountOnAccount({
           account_no: this.account.account_no,
           amount: +amount,
+          charge_fee: this.getTransferFee.raw_value,
         });
       },
       immediate: true,
@@ -109,15 +110,20 @@ export default {
 
       charge_fee = is_capped ? Math.min(capped_at, charge) : charge;
 
-      this.updateCharges({
-        account_no: this.account.account_no,
-        amount: charge_fee,
-      });
+      // this.updateCharges({
+      //   account_no: this.account.account_no,
+      //   amount: charge_fee,
+      // });
 
-      return `${this.$utils.formatCurrency({
+      let formatted_value = `${this.$utils.formatCurrency({
         input: currency,
         output: "sign",
       })} ${this.$utils.formatCurrencyWithComma(charge_fee, true)}`;
+
+      return {
+        formatted_value,
+        raw_value: charge_fee,
+      };
     },
   },
 

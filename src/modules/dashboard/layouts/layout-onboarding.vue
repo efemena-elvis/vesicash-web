@@ -11,7 +11,7 @@
     </transition>
 
     <portal to="vesicash-modals">
-      <transition name="fade" v-if="show_welcome_dialog">
+      <transition name="fade" v-if="show_welcome_dialog && !hasBusinessType">
         <welcomeModal
           @closeDialog="toggleWelcomeDialog"
           @closeTriggered="toggleWelcomeDialog"
@@ -41,6 +41,10 @@ export default {
 
     getComputedPageFlow() {
       return this.page_flows;
+    },
+
+    hasBusinessType() {
+      return !!this.getUser?.business_type;
     },
   },
 

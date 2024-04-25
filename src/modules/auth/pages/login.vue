@@ -162,12 +162,20 @@ export default {
     },
 
     verifyUserOnboarding(payload) {
-      const onboarding_fields = ["business_name", "business_type", "country"];
+      // const onboarding_fields = ["business_name", "business_type", "country"];
+      // expecting the fileds to check to confirm RC number and director verification
+      const onboarding_fields = ["business_type"];
       const business_data = payload?.profile?.business;
+      const verifications = payload?.profile?.verifications;
+      const verification_fields = ["cac"];
 
-      const is_onboarded = onboarding_fields.every(
-        (field) => !!business_data[field]
-      );
+      const is_onboarded =
+        onboarding_fields.every((field) => !!business_data[field]) &&
+        verification_fields.every(
+          (field) =>
+            verifications.find((item) => item.verification_type === field)
+              ?.is_verified
+        );
 
       setTimeout(() => {
         location.href = is_onboarded
