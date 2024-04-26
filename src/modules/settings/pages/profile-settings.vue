@@ -536,7 +536,7 @@ export default {
 
       this.uploaded_pic = meta;
 
-      const [firstname, lastname] = fullname.split(" ");
+      const [firstname, lastname] = fullname ? fullname.split(" ") : ["", ""];
 
       this.form.first_name.value = firstname;
       this.form.first_name.validated = !!firstname;
