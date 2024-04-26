@@ -379,7 +379,7 @@ export default {
 
     rcSaved({ data, rcn }) {
       this.show_rc_modal = false;
-      this.show_error = !!data.length;
+      this.show_error = !data?.length;
 
       if (!data.length) {
         return;
