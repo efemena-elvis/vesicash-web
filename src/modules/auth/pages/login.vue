@@ -177,10 +177,10 @@ export default {
               ?.is_verified
         );
 
+      // /onboarding/business-details
+
       setTimeout(() => {
-        location.href = is_onboarded
-          ? "/dashboard"
-          : "/onboarding/business-details";
+        location.href = is_onboarded ? "/dashboard" : "/dashboard";
       }, 1500);
     },
 
