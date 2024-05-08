@@ -58,20 +58,52 @@
         <div class="grey-600">Tell us about your business</div>
 
         <div class="verification-block">
-          <verification-card
-            title="RC Number"
-            subtitle="Company Registered Code Number"
-            cta_title="Verify RC Number"
-            @action="toggleRcModal"
-          >
-            <BusinessIcon />
-          </verification-card>
+          <div class="verification-width">
+            <verification-card
+              title="RC Number"
+              subtitle="Company Registered Code Number"
+              cta_title="Verify RC Number"
+              @action="toggleRcModal"
+            >
+              <BusinessIcon />
+            </verification-card>
+          </div>
 
           <div class="tertiary-3-text error-text" v-if="show_error">
             No directors associated with the RC number. Please update and retry
           </div>
 
-          <div class="form-group" v-if="show_directors">
+          <div class="mgt-40" v-if="show_directors">
+            <div class="h5-text mgb-8 grey-900 font-semibold">
+              Verify director’s credential
+            </div>
+            <div class="grey-600 tertiary-2-text verification-width">
+              We have displayed below a list of your directors below with the
+              type of verification associated with them. Please select one.
+            </div>
+            <div class="director-cards">
+              <div
+                class="card"
+                v-for="director in directors"
+                :key="director.name + director.email"
+                @click="verifyDirector(director)"
+              >
+                <div class="grey-500">
+                  <div class="secondary-2-text">{{ director.name }}</div>
+                  <div class="tertiary-3-text mgt-2">{{ director.email }}</div>
+                  <div class="secondary-3-text grey-700 mgt-8">
+                    {{ director.id || "------" }}
+                  </div>
+                  <div class="secondary-3-text grey-700 mgt-2">
+                    Bank Verification Number
+                  </div>
+                </div>
+                <span class="icon icon-caret-right"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group" v-if="false">
             <div class="form-label">Verify director identity</div>
 
             <!-- SELECT INPUT FIELD -->
@@ -94,7 +126,7 @@
             class="btn btn-md btn-primary finish-button"
             :disabled="!selected_id"
             @click="toggleDirectorModal"
-            v-if="show_directors"
+            v-if="false"
           >
             Verifiy director
           </button>
@@ -367,6 +399,11 @@ export default {
       this.show_business_info = true;
     },
 
+    verifyDirector(director) {
+      this.updateSelectedDirector(director);
+      this.toggleDirectorModal();
+    },
+
     completeOnboarding() {
       let updatedUser = {
         ...this.getUser,
@@ -389,14 +426,18 @@ export default {
         "Your business registration number has been submitted",
         "success"
       );
-      this.directors = data.map((doc) => ({ name: doc, id: doc }));
+      this.directors = data.map((doc) => ({
+        name: doc?.director_name,
+        id: doc?.identity_type,
+        email: doc?.director_Email || doc?.director_email,
+      }));
       this.show_directors = true;
     },
 
-    updateSelectedDirector({ id }) {
+    updateSelectedDirector({ id, name }) {
       this.selected_id = id;
       this.selected_director = {
-        name: "Business Director",
+        name: director?.name,
         id,
         cac: this.provided_rcn,
         identity_type: id,
@@ -505,8 +546,11 @@ export default {
 .verification-block {
   display: grid;
   gap: toRem(30);
-  max-width: toRem(735);
   margin: toRem(50) 0;
+
+  .verification-width {
+    max-width: toRem(735);
+  }
 
   .finish-button {
     max-width: max-content;
@@ -520,6 +564,29 @@ export default {
 
   .dash-btn {
     margin-top: toRem(40);
+  }
+
+  .director-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(toRem(204.8), 1fr));
+    margin-top: toRem(20);
+    gap: toRem(30);
+
+    .card {
+      box-shadow: 0px 2px 4px 0px rgba(3, 7, 18, 0.03),
+        0px 1px 2px -1px rgba(3, 7, 18, 0.06),
+        0px 0px 0px 1px rgba(3, 7, 18, 0.06);
+      padding: toRem(16) toRem(14);
+      border-radius: toRem(12);
+      border: toRem(1) solid getColor("grey-100");
+      @include flex-setup("row", "now-wrap");
+      @include flex-alignment("space-between", "flex-start");
+      cursor: pointer;
+      transition: all ease-in-out 0.25s;
+      &:hover {
+        border-color: getColor("grey-400");
+      }
+    }
   }
 }
 </style>
