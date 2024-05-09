@@ -658,7 +658,7 @@ export default {
     updateSelectedDirector({ id, name }) {
       this.selected_id = id;
       this.selected_director = {
-        name: director?.name,
+        name,
         id,
         cac: this.provided_rcn,
         identity_type: id,
