@@ -12,6 +12,7 @@ const routes = {
   business_types: "business-types",
   verify_rc_number: "cac/get-verifications/",
   verify_business_director: "cac/verify",
+  search_business: "global-business-search/verify",
   logout: "logout",
 };
 
@@ -115,5 +116,12 @@ export default {
       routes.verify_business_director,
       payload
     );
+  },
+
+  // ============================================
+  // SEARCH BUSINESS
+  // ============================================
+  async searchBusinessDetails(_, payload) {
+    return await postRequest("verification", routes.search_business, payload);
   },
 };
