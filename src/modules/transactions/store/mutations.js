@@ -1,4 +1,9 @@
-import { CURRENCY_OPTIONS } from "@/modules/transactions/constants";
+import {
+  CURRENCY_OPTIONS,
+  updateEscrowConfig,
+  DEFAULT_ESCROW_CONFIG,
+  clearEscrowConfig,
+} from "@/modules/transactions/constants";
 
 export default {
   UPDATE_CACHED_TRANSACTION: (state, payload) => {
@@ -98,5 +103,15 @@ export default {
 
   UPDATE_TRANSACTION_DETAILS: (state, payload) => {
     state.transaction_details = payload;
+  },
+
+  UPDATE_TRANSACTION_CONFIG: (state, payload) => {
+    state.transaction_config = payload;
+    updateEscrowConfig(payload);
+  },
+
+  CLEAR_TRANSACTION_CONFIG: (state) => {
+    state.transaction_config = DEFAULT_ESCROW_CONFIG;
+    clearEscrowConfig();
   },
 };

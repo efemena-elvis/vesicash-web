@@ -8,6 +8,7 @@ const routes = {
   all_transactions: "listByUser",
   fetch_single_transaction: "listById",
   create_transaction: "create",
+  create_escrow: "create",
   send_transaction: "send",
   head_payment: "pay",
   headless_payment: "pay/headless",
@@ -49,6 +50,13 @@ export default {
       `${routes.create_transaction}`,
       payload
     );
+  },
+
+  // ==================================
+  // CREATE ESCROW TRANSACTION
+  // ==================================
+  async createEscrowTransaction(_, payload) {
+    return await postRequest("escrow", `${routes.create_escrow}`, payload);
   },
 
   // ==================================

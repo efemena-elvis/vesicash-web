@@ -42,3 +42,42 @@ export const CURRENCY_CODE = {
   dollar: "USD",
   pound: "GBP",
 };
+
+export const ESCROW_CONFIG_KEY = "ESCROW_CONFIG_KEY";
+
+export const DEFAULT_ESCROW_CONFIG = {
+  currency: "NGN",
+  dashboard_url: "https://vesicash.com",
+  title: "",
+  type: "",
+  description: "",
+  parties: [],
+  milestones: [
+    {
+      title: "",
+      amount: "",
+      description: "",
+      inspection_period: "",
+      grace_period: "",
+      due_date: "",
+      id: "milestone-one",
+    },
+  ],
+  dispute_handler: "",
+};
+
+export const getEscrowConfig = () => {
+  const config = localStorage.getItem(ESCROW_CONFIG_KEY);
+  return config ? JSON.parse(config) : DEFAULT_ESCROW_CONFIG;
+};
+
+export const updateEscrowConfig = (config) => {
+  localStorage.setItem(ESCROW_CONFIG_KEY, JSON.stringify(config));
+};
+
+export const clearEscrowConfig = () => {
+  localStorage.setItem(
+    ESCROW_CONFIG_KEY,
+    JSON.stringify(DEFAULT_ESCROW_CONFIG)
+  );
+};
