@@ -13,7 +13,7 @@
 
     <MilestoneCard
       v-for="(milestone, index) in allMilestones"
-      :key="index + milestone.title"
+      :key="index + milestone.title + milestone.id"
       :txn_milestone="milestone"
       @saved="updateMilestone($event, index)"
       @delete="deleteMilestone"

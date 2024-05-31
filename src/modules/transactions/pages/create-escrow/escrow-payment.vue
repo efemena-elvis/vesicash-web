@@ -1,6 +1,16 @@
 <template>
   <div>
-    <div class="h5-text mgy-30">{{ getTransactionConfig.title || "" }}</div>
+    <div class="h4-text mgy-30">{{ getTransactionConfig.title || "" }}</div>
+
+    <div class="party-card">
+      <div class="party-row" v-for="party in parties" :key="party.user_id">
+        <div class="party-meta grey-600">{{ party.email }}</div>
+        <div class="party-meta grey-600">
+          {{ party.first_name }} {{ party.last_name }}
+        </div>
+        <div class="party-meta grey-800 text-capitalize">{{ party.role }}</div>
+      </div>
+    </div>
 
     <MilestoneCard
       v-for="(milestone, index) in allMilestones"
@@ -44,6 +54,10 @@ export default {
     ...mapGetters({
       getTransactionConfig: "transactions/getTransactionConfig",
     }),
+
+    parties() {
+      return this.getTransactionConfig?.parties || [];
+    },
 
     currencies() {
       return countries.map((country) => ({
@@ -149,7 +163,22 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.total-card {
-  max-width: toRem(820);
+.party-card {
+  background: getColor("green-10");
+  padding: toRem(20);
+  border: toRem(1) solid getColor("grey-100");
+  border-radius: toRem(20);
+  position: relative;
+  display: grid;
+  gap: toRem(20) 0;
+  margin: toRem(30) 0;
+
+  .party-row {
+    @include flex-row-nowrap("space-between", "center");
+
+    .party-meta {
+      font-size: 0.9rem;
+    }
+  }
 }
 </style>

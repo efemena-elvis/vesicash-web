@@ -125,11 +125,21 @@ export default {
       },
       immediate: true,
     },
+
+    user_type: {
+      handler(type) {
+        if (type) {
+          // RESTART ON CHANGING USER TYPE
+          this.RESET_CONFIG();
+        }
+      },
+    },
   },
 
   methods: {
     ...mapMutations({
       UPDATE_TRANSACTION_CONFIG: "transactions/UPDATE_TRANSACTION_CONFIG",
+      RESET_CONFIG: "transactions/CLEAR_TRANSACTION_CONFIG",
     }),
 
     proceed() {
