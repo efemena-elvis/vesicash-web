@@ -49,13 +49,13 @@
       />
     </div>
 
-    <div class="grey-500 tertiary-2-text mgt-20 mgb-40">
+    <div class="grey-500 tertiary-2-text mgt-20" v-if="isBuyer">
       Note: Make sure your account is funded with the right amount for the
       escrow transaction before you click on Proceed. To fund, go to Dashboard
       on the side panel and click on Fund wallet.
     </div>
     <button
-      class="btn btn-md btn-primary"
+      class="btn btn-md btn-primary mgt-40"
       :disabled="disabled"
       @click="proceed"
     >
@@ -74,6 +74,13 @@ export default {
     ...mapGetters({
       getTransactionConfig: "transactions/getTransactionConfig",
     }),
+
+    isBuyer() {
+      const initiator = this.getTransactionConfig?.parties?.find(
+        (party) => party?.is_initiator
+      );
+      return initiator && initiator.role === "buyer";
+    },
 
     currencies() {
       return countries.map((country) => ({
