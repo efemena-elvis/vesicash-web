@@ -17,6 +17,8 @@ const routes = {
   update_milestone_status: "api/updateStatus",
   renew_milestone_date: "approve/due_date_extension",
   wallet_to_wallet_transfer: "disbursement/wallet/wallet-transfer",
+  get_charges: "charges",
+  escrow_pay: "pay/wallet-transfer",
 };
 
 export default {
@@ -57,6 +59,21 @@ export default {
   // ==================================
   async createEscrowTransaction(_, payload) {
     return await postRequest("escrow", `${routes.create_escrow}`, payload);
+  },
+
+  // ==================================
+  // GET ESCROW CHARGE
+  // ==================================
+
+  async getEscrowCharge(_, payload) {
+    return await postRequest("payment", `${routes.get_charges}`, payload);
+  },
+
+  // ==================================
+  // PAY FOR ESCROW TRANSACTION
+  // ==================================
+  async makePayment(_, payload) {
+    return await postRequest("escrow", `${routes.escrow_pay}`, payload);
   },
 
   // ==================================

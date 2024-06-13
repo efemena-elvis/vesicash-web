@@ -45,9 +45,9 @@
     />
 
     <template v-if="milestone.saved">
-      <div class="secondary-2-text span-full milestone-desc">
+      <!-- <div class="secondary-2-text span-full milestone-desc">
         {{ milestone.description }}
-      </div>
+      </div> -->
       <div class="milestone-metas span-full">
         <div class="meta">
           <div class="meta-key">Due date:</div>
@@ -63,6 +63,21 @@
           <div class="meta-key">Amount:</div>
           <div class="meta-value">
             {{ milestoneAmount }}
+          </div>
+        </div>
+      </div>
+      <div class="span-full">
+        <div
+          class="party-row"
+          v-for="(party, index) in milestone.parties"
+          :key="party.user_id + index"
+        >
+          <div class="party-meta grey-600">
+            {{ party.email }}{{ party.is_initiator ? " (You)" : "" }}
+          </div>
+          <div class="party-meta grey-600">{{ party.role }}</div>
+          <div class="party-meta grey-800 text-capitalize cost">
+            {{ formattedAmount(currencySign, party.amount) }}
           </div>
         </div>
       </div>
@@ -115,7 +130,7 @@
         }"
       />
 
-      <div class="span-full">
+      <div class="span-full" v-if="false">
         <div class="form-label">Milestone description</div>
         <textarea
           name="description"
@@ -404,30 +419,21 @@ export default {
     }
   }
 
-  .party-row-wrapper {
-    max-width: 100%;
-    overflow-x: auto;
+  .party-row {
+    display: grid;
+    grid-template-columns: 1fr 150px 200px;
+    padding: toRem(15) 0;
+    border-bottom: toRem(0.3) solid getColor("grey-200");
+    &:last-child {
+      border-bottom: 0;
+    }
 
-    .party-row {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      color: getColor("grey-500");
-      font-size: 0.95rem;
+    .party-meta {
+      font-size: 0.9rem;
+    }
 
-      .party-email {
-        min-width: toRem(350);
-
-        @include breakpoint-down(md) {
-          min-width: toRem(250);
-        }
-        @include breakpoint-down(sm) {
-          min-width: toRem(200);
-        }
-      }
-
-      .party-amount {
-        color: getColor("grey-900");
-      }
+    .cost {
+      justify-self: end;
     }
   }
 }

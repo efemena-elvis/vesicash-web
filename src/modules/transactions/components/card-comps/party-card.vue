@@ -24,9 +24,25 @@
           type: 'email',
           message: 'Email is required',
         }"
+        :class="[party_type !== 'broker' ? 'span-full' : '']"
+        :is_disabled="party_disabled"
       />
 
       <BasicInput
+        v-if="party_type === 'broker'"
+        label_title="Broker share"
+        label_id="percentage"
+        input_type="number"
+        placeholder="2%"
+        :currency="`${party.percentage || '0'}%`"
+        :input_value="party.percentage"
+        :custom_style="{
+          input_wrapper_style: 'form-prefix form-prefix-right',
+        }"
+        @getInputState="setPartyField($event, 'percentage')"
+      />
+
+      <!-- <BasicInput
         label_title="Phone"
         label_id="phone"
         input_type="number"
@@ -59,7 +75,7 @@
         placeholder="Service buyer"
         :input_value="party.role_description"
         @getInputState="setPartyField($event, 'role_description')"
-      />
+      /> -->
     </div>
   </div>
 </template>
@@ -85,6 +101,11 @@ export default {
     currency: {
       type: String,
       default: "NGN(₦)",
+    },
+
+    party_disabled: {
+      type: Boolean,
+      default: false,
     },
   },
 
@@ -121,7 +142,21 @@ export default {
         this.$emit("updated", this.party);
         return;
       }
-      this.party[field] = value;
+      if (field === "percentage") {
+        if (Number(value) < 0) {
+          this.pushToast("Share cant be less than 0%", "warning");
+          this.party[field] = 0;
+          this.$emit("updated", this.party);
+          return;
+        }
+        if (Number(value) > 100) {
+          this.pushToast("Share cant be more than 100%", "warning");
+          this.party[field] = 100;
+          this.$emit("updated", this.party);
+          return;
+        }
+      }
+      this.party[field] = field === "percentage" ? Number(value) : value;
       this.$emit("updated", this.party);
     },
   },

@@ -147,7 +147,7 @@ export default {
       const { email, fullname, phone } = this.getUser;
       const user_id = `${this.getAccountId}`;
 
-      const initiator = {
+      let initiator = {
         user_id,
         email,
         first_name: fullname?.split(" ")?.[0],
@@ -163,6 +163,8 @@ export default {
           account_name: "",
         },
       };
+
+      if (initiator.role === "broker") initiator.percentage = "";
 
       const hasInitiator = saved_config?.parties?.some(
         (party) => party?.is_initiator

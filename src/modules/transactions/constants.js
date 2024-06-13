@@ -64,6 +64,7 @@ export const DEFAULT_ESCROW_CONFIG = {
     },
   ],
   dispute_handler: "",
+  files: [],
 };
 
 export const getEscrowConfig = () => {

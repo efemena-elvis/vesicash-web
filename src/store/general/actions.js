@@ -44,6 +44,7 @@ export default {
         storage_name: constants.VESICASH_AUTH_TOKEN,
       }) || null;
 
+    const formData = new FormData();
     formData.append("files", file);
     let file_payload = [];
 
@@ -126,8 +127,8 @@ export default {
 
     let form_data = new FormData();
 
-    files.forEach((file, index) => {
-      form_data.append(`files[${index}]`, file);
+    files.forEach((file) => {
+      form_data.append(`files`, file);
     });
 
     try {

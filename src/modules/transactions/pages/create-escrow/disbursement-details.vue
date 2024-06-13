@@ -1,6 +1,15 @@
 <template>
   <div class="pdb-40">
     <PartyCard
+      v-if="initiator.role === 'broker'"
+      :party_detail="initiator"
+      party_type="broker"
+      class="mgy-30"
+      @updated="updateParties"
+      party_disabled
+    />
+
+    <PartyCard
       v-for="(party, index) in parties"
       :party_detail="party"
       :key="party.user_id + index"
@@ -32,7 +41,11 @@
       <button class="btn btn-md btn-secondary" @click="addNewMilestone">
         + Add a milestone
       </button>
-      <button class="btn btn-md btn-secondary" @click="addNewbroker">
+      <button
+        class="btn btn-md btn-secondary"
+        @click="addNewbroker"
+        v-if="!hasBroker"
+      >
         + Add {{ hasBroker ? "another" : "" }} broker
       </button>
     </div>
@@ -71,8 +84,16 @@ export default {
       );
     },
 
+    initiator() {
+      return this.getTransactionConfig?.parties?.find(
+        (party) => party.is_initiator
+      );
+    },
+
     hasBroker() {
-      return this.parties?.some((party) => party.role === "broker");
+      return this.getTransactionConfig?.parties?.some(
+        (party) => party.role === "broker"
+      );
     },
 
     currencies() {
@@ -99,10 +120,32 @@ export default {
     },
 
     allMilestones() {
+      const parties = this.getTransactionConfig?.parties;
+
+      const broker = this.getTransactionConfig?.parties?.find(
+        (party) => party.role === "broker"
+      );
+
+      const brokerShare =
+        broker && broker?.percentage ? Number(broker.percentage) / 100 : 0;
+
+      const estimateShare = (role, amount) => {
+        if (role === "buyer") return 0;
+        if (role === "seller")
+          return Number(amount) - Number(amount) * brokerShare;
+        if (role === "broker") return Number(amount) * brokerShare;
+        return amount;
+      };
+
       return this.getTransactionConfig?.milestones?.map((item) => {
         return {
           ...item,
           currency: this.configCurrency,
+          share: brokerShare,
+          parties: [...parties].map((party) => ({
+            ...party,
+            amount: estimateShare(party.role, item.amount),
+          })),
         };
       });
     },
@@ -114,11 +157,35 @@ export default {
     }),
 
     proceed() {
-      this.$router.push("/escrow/payment");
+      const partyEmails = this.getTransactionConfig?.parties?.reduce(
+        (email, party) => {
+          if (email[party.email]) {
+            email[party.email] = email[party.email] + 1;
+          } else {
+            email[party.email] = 1;
+          }
+          return email;
+        },
+        {}
+      );
+
+      let can_continue = true;
+
+      Object.entries(partyEmails).some(([email, count]) => {
+        if (count > 1) {
+          this.pushToast(
+            `Duplicate email - ${email} found. Party shuold have unique emails`
+          );
+          can_continue = false;
+        }
+        return count > 1;
+      });
+
+      can_continue && this.$router.push("/escrow/payment");
     },
 
     checkPartyValidity(party) {
-      return party.email && (party.first_name || party.last_name);
+      return party.email;
     },
 
     addNewbroker() {
@@ -131,6 +198,7 @@ export default {
         is_initiator: false,
         role: "broker",
         role_description: "",
+        pecentage: "",
         bank_account: {
           bank_name: "",
           bank_code: "",
@@ -239,7 +307,7 @@ export default {
 
 <style lang="scss" scoped>
 .button-row {
-  @include flex-row-nowrap("flex-start", "center");
+  @include flex-row-wrap("flex-start", "center");
   gap: toRem(20);
   margin-top: toRem(30);
 }
