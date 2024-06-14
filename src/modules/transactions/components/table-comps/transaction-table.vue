@@ -101,7 +101,7 @@ export default {
     }),
 
     initiateEscrowTransaction() {
-      this.$router.push({ name: "TransactionSetup" });
+      this.$router.push({ name: "CreateEscrowPage" });
     },
 
     // ====================================

@@ -30,4 +30,6 @@ export default {
   getTransactionDetails: (state) => state.transaction_details,
 
   getTransactionCharge: (state) => state.transaction.escrow_charge,
+
+  getTransactionConfig: (state) => state.transaction_config,
 };

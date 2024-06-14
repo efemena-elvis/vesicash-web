@@ -17,6 +17,7 @@
           :name="card_name"
           :checked="isChecked"
           :class="single_type ? 'mgr-18' : 'mgr-8'"
+          @change="$emit('checked')"
         />
       </template>
 
