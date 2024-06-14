@@ -1,4 +1,7 @@
-import { CURRENCY_OPTIONS } from "@/modules/transactions/constants";
+import {
+  CURRENCY_OPTIONS,
+  getEscrowConfig,
+} from "@/modules/transactions/constants";
 
 export default () => ({
   transaction: {
@@ -27,4 +30,6 @@ export default () => ({
   },
 
   transaction_details: {},
+
+  transaction_config: getEscrowConfig(),
 });
