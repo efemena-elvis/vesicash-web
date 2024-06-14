@@ -198,7 +198,7 @@ export default {
         is_initiator: false,
         role: "broker",
         role_description: "",
-        pecentage: "",
+        percentage: "",
         bank_account: {
           bank_name: "",
           bank_code: "",
