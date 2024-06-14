@@ -1,5 +1,7 @@
 <template>
-  <div class="party-card">
+  <div
+    :class="['party-card', party_type === 'broker' ? 'party-card__broker' : '']"
+  >
     <div class="secondary-1-text span-full text-capitalize">
       {{ partyType }}
     </div>
@@ -175,6 +177,11 @@ export default {
   border: toRem(1) solid getColor("grey-100");
   border-radius: toRem(20);
   position: relative;
+  background: getColor("green-10");
+
+  &__broker {
+    background: transparent;
+  }
 
   .broker-btn {
     max-width: max-content;
