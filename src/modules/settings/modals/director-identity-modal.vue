@@ -9,7 +9,7 @@
       <div class="modal-cover-header">
         <div class="modal-cover-title">Director identity verification</div>
         <div class="tertiary-2-text grey-600">
-          Verify <b>Director</b> identity
+          Verify <b>{{ director.name }}</b> identity
         </div>
       </div>
     </template>
@@ -28,6 +28,21 @@
             :error_handler="{
               type: 'required',
               message: 'Enter verification number',
+            }"
+          />
+        </div>
+
+        <div class="form-group">
+          <BasicInput
+            label_title="Bank Verification Number"
+            label_id="bvn-number"
+            :input_value="form.bvn"
+            is_required
+            placeholder="Enter bank verification number (BVN)"
+            @getInputState="updateFormState($event, 'bvn')"
+            :error_handler="{
+              type: 'required',
+              message: 'Enter bank verification number',
             }"
           />
         </div>
@@ -83,22 +98,24 @@ export default {
 
   computed: {
     verificationPlaceholder() {
-      return "Enter identity number";
+      return `Enter ${this.director.id || "identity"} number`;
     },
 
     verificationTitle() {
-      return this.director.identity_type;
+      return this.director?.id || "Identity";
     },
 
     isDisabled() {
-      return !this.form.doc_number;
+      return !this.form.doc_number || !this.form.bvn;
     },
 
     verfiyDocPayload() {
       return {
         cac: this.director.cac,
-        identity_type: this.director.identity_type,
+        identity_type: this.director.identity_type || "Permanent Voters' Card",
         identity_number: this.form.doc_number,
+        country_code: "NG",
+        verification_route: "automated",
       };
     },
   },
@@ -107,6 +124,7 @@ export default {
     return {
       form: {
         doc_number: "",
+        bvn: "",
       },
     };
   },
