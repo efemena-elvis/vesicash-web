@@ -1,12 +1,20 @@
 <template>
   <div class="sidebar teal-50-bg">
     <!-- BRAND LOGO -->
-    <router-link :to="{ name: 'VesicashDashboard' }" class="brand-logo d-block">
+    <router-link
+      :to="{ name: 'VesicashDashboard' }"
+      class="brand-logo d-block"
+      v-if="show_items"
+    >
       <VesicashBrandLogo />
     </router-link>
 
+    <div class="brand-logo d-block pointer" v-else @click="handleUserlogOut">
+      <VesicashBrandLogo />
+    </div>
+
     <div class="sidebar-wrapper d-flex flex-column justify-content-between">
-      <div class="sidebar-content w-100">
+      <div class="sidebar-content w-100" v-if="show_items">
         <!-- SIDE NAV ITEMS -->
         <div class="sidebar-item-list">
           <SidebarItem
@@ -18,7 +26,7 @@
       </div>
 
       <!-- LOG OUT ACCOUNT SECTION -->
-      <div class="wrapper wt-100">
+      <div class="wrapper wt-100 mt-auto">
         <ProfileMenu @exit="handleUserlogOut" />
       </div>
     </div>
@@ -38,6 +46,13 @@ export default {
   name: "SidebarComp",
 
   mixins: [MoRDocValidate],
+
+  props: {
+    show_items: {
+      type: Boolean,
+      default: true,
+    },
+  },
 
   components: {
     VesicashBrandLogo,

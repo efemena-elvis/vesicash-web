@@ -5,8 +5,8 @@
 
     <!-- PAGE META -->
     <div class="page-meta tertiary-2-text grey-600">
-      Verify your bvn, business documents and identity here to be able to carry
-      out transactions
+      Verify your business details and identity here to be able to carry out
+      transactions
     </div>
 
     <div class="cards-container" v-if="loading_verification">
@@ -44,7 +44,7 @@
       </verification-card>
 
       <verification-card
-        v-if="isBusiness"
+        v-if="false"
         title="Tax identification number"
         subtitle="Validate your business tax identification number."
         cta_title="Verify TIN"
@@ -73,7 +73,8 @@
           title="Directors information"
           subtitle="Confirm current number of directors and identification details."
           cta_title="Verify directors"
-          :verified="true"
+          :verified="isCACDocVerified.is_verified"
+          :verification_state="isCACDocVerified.verification_state"
           :check_verification_state="true"
           @action="toggleDirectorVerifyModal"
         >
@@ -96,6 +97,7 @@
         subtitle="Verify your BVN details"
         cta_title="Verify BVN details"
         :verified="isBvnVerified"
+        v-if="false"
         @action="toggleBvnModal"
       >
         <BvnIcon />

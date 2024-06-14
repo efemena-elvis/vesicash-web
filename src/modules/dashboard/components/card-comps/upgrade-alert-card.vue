@@ -3,6 +3,9 @@
     <div class="icon icon-info yellow-500 mgr-12"></div>
 
     <div>
+      <div class="secondary-2-text mgb-6" v-if="title">
+        {{ title }}
+      </div>
       <div class="alert-msg tertiary-2-text grey-800 mgb-12">
         {{ alert_message }}
       </div>
@@ -29,6 +32,10 @@ export default {
   name: "UpgradeAlertCard",
 
   props: {
+    title: {
+      type: String,
+      default: "",
+    },
     alert_message: {
       type: String,
       default:
