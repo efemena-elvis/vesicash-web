@@ -8,6 +8,7 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 import PageBackBtn from "@/shared/components/util-comps/page-back-btn";
 import ProgressBar from "@/shared/components/block-comps/progress-bar";
 
@@ -17,6 +18,11 @@ export default {
   components: {
     ProgressBar,
     PageBackBtn,
+  },
+
+  mounted() {
+    this.fetchCharges("escrow");
+    this.fetchCharges("wallet_withdrawal");
   },
 
   computed: {
@@ -67,6 +73,12 @@ export default {
           return "/dashboard";
       }
     },
+  },
+
+  methods: {
+    ...mapActions({
+      fetchCharges: "general/fetchCharges",
+    }),
   },
 };
 </script>

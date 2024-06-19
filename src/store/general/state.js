@@ -44,6 +44,6 @@ export default () => ({
     beneficiary: null,
   },
 
-  transaction_charges: null,
+  transaction_charges: {},
   escrow_charge: null,
 });
