@@ -76,8 +76,18 @@
             {{ party.email }}{{ party.is_initiator ? " (You)" : "" }}
           </div>
           <div class="party-meta grey-600">{{ party.role }}</div>
-          <div class="party-meta grey-800 text-capitalize cost">
-            {{ formattedAmount(currencySign, party.amount) }}
+          <div
+            :class="[
+              'party-meta text-capitalize cost',
+              party.role === 'buyer' ? 'grey-800' : 'grey-800',
+            ]"
+          >
+            {{ party.role === "buyer" ? "" : ""
+            }}{{
+              party.role === "buyer"
+                ? "----"
+                : formattedAmount(currencySign, party.amount)
+            }}
           </div>
         </div>
       </div>

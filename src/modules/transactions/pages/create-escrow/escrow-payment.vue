@@ -25,6 +25,12 @@
         <div class="value grey-600 primary-2-text">{{ escrowFee }}</div>
       </div>
       <div class="card-row">
+        <div class="title grey-700 tertiary-2-text text-capitalize">
+          Disbursement fee
+        </div>
+        <div class="value grey-600 primary-2-text">{{ disbursementFee }}</div>
+      </div>
+      <div class="card-row">
         <div class="title grey-900 tertiary-2-text text-capitalize">
           TOTAL AMOUNT
         </div>
@@ -97,7 +103,9 @@ export default {
 
     totalAmount() {
       const total =
-        (this.escrowCost || 0) + (this.escrowCharge?.fee_charge || 0);
+        (this.escrowCost || 0) +
+        (this.escrowCharge?.fee_charge || 0) +
+        (this.disbursementCharge?.fee_charge || 0);
       return `${this.currencySign}${this.$utils.formatCurrencyWithComma(
         total
       )}`;
@@ -129,7 +137,7 @@ export default {
         broker && broker?.percentage ? Number(broker.percentage) / 100 : 0;
 
       const estimateShare = (role, amount) => {
-        if (role === "buyer") return 0;
+        if (role === "buyer") return amount;
         if (role === "seller")
           return Number(amount) - Number(amount) * brokerShare;
         if (role === "broker") return Number(amount) * brokerShare;
@@ -157,16 +165,12 @@ export default {
     },
 
     escrowCharge() {
-      const escrow_charges = this.getTransactionCharges?.escrow;
-
-      const charges = !escrow_charges
-        ? []
-        : escrow_charges.map((charge) => {
-            charge.min_value = charge.MinValue;
-            if (charge.MaxValue == 0 || charge.max_value == 0)
-              charge.max_value = Number.MAX_SAFE_INTEGER;
-            return charge;
-          });
+      const charges = this.allEscrowCharges.map((charge) => {
+        charge.min_value = charge.MinValue;
+        if (charge.MaxValue == 0 || charge.max_value == 0)
+          charge.max_value = Number.MAX_SAFE_INTEGER;
+        return charge;
+      });
 
       const amount = this.escrowCost;
       const currency = this.configCurrency?.short;
@@ -174,10 +178,40 @@ export default {
 
       return charge;
     },
-  },
 
-  mounted() {
-    this.fetchCharges("escrow");
+    allEscrowCharges() {
+      const all_charges = this.getTransactionCharges?.escrow
+        ? [...this.getTransactionCharges?.escrow]
+        : [];
+      return all_charges;
+    },
+
+    allDisbursementCharges() {
+      const all_charges = this.getTransactionCharges?.wallet_withdrawal
+        ? [...this.getTransactionCharges?.wallet_withdrawal]
+        : [];
+      return all_charges;
+    },
+
+    disbursementCharge() {
+      const charges = this.allDisbursementCharges.map((charge) => {
+        charge.min_value = charge.MinValue;
+        if (charge.MaxValue == 0 || charge.max_value == 0)
+          charge.max_value = Number.MAX_SAFE_INTEGER;
+        return charge;
+      });
+
+      const amount = this.escrowCost;
+      const currency = this.configCurrency?.short;
+      const charge = this.estimateEscrowCharge(charges, amount, currency);
+
+      return charge;
+    },
+
+    disbursementFee() {
+      const fee = this.disbursementCharge?.fee_charge || 0;
+      return `${this.currencySign}${this.$utils.formatCurrencyWithComma(fee)}`;
+    },
   },
 
   methods: {
