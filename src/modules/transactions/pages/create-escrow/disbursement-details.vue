@@ -130,7 +130,7 @@ export default {
         broker && broker?.percentage ? Number(broker.percentage) / 100 : 0;
 
       const estimateShare = (role, amount) => {
-        if (role === "buyer") return 0;
+        if (role === "buyer") return amount;
         if (role === "seller")
           return Number(amount) - Number(amount) * brokerShare;
         if (role === "broker") return Number(amount) * brokerShare;
