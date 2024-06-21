@@ -203,6 +203,20 @@ export default {
 
       const amount = this.escrowCost;
       const currency = this.configCurrency?.short;
+      if (currency === "NGN")
+        return {
+          card_charge: 100,
+          transfer_charge: 100,
+          processing_fee: 100,
+          fee_charge: 100,
+        };
+      if (currency === "USD")
+        return {
+          card_charge: 1,
+          transfer_charge: 1,
+          processing_fee: 1,
+          fee_charge: 1,
+        };
       const charge = this.estimateEscrowCharge(charges, amount, currency);
 
       return charge;
@@ -224,6 +238,7 @@ export default {
     }),
 
     estimateEscrowCharge(charges, amount, currency) {
+      console.log({ currency });
       const escrowCharge = charges.find((charge) => {
         return (
           charge.currency === currency &&
