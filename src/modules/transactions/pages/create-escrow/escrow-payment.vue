@@ -186,6 +186,7 @@ export default {
       getEscrowCharge: "transactions/getEscrowCharge",
       fetchCharges: "general/fetchCharges",
       makePayment: "transactions/makePayment",
+      sendTransaction: "transactions/sendTransaction",
     }),
 
     estimateEscrowCharge(charges, amount, currency) {
@@ -263,7 +264,6 @@ export default {
       try {
         const response = await this.makePayment({ transaction_id });
         const message = response?.data?.message || response?.message;
-        console.log({ response });
         const type = [200, 201].includes(response?.code)
           ? "success"
           : "warning";
@@ -277,7 +277,7 @@ export default {
         if (type == "success" || message === "insufficient balance") {
           setTimeout(() => {
             this.CLEAR_TRANSACTION_CONFIG();
-            this.$router.push("/transactions");
+            this.$router.push("/escrow/transactions");
           }, 1500);
         }
       } catch (err) {
@@ -289,6 +289,11 @@ export default {
     async startEscrow() {
       const payload = {
         ...this.getTransactionConfig,
+        parties: [...this.getTransactionConfig?.parties]?.map((party) => {
+          if (party.percentage !== undefined)
+            party.percentage = Number(party.percentage);
+          return party;
+        }),
         files: [...this.getTransactionConfig?.files]?.map((file) => ({
           url: file.url,
         })),
@@ -317,13 +322,23 @@ export default {
           : "warning";
 
         if (type == "success") {
+          const send_response = await this.sendTransaction({
+            id: response?.data?.transaction_id,
+          });
+          if (send_response?.code !== 200) {
+            this.pushToast(
+              send_response?.message || "Failed to send invites",
+              "warning"
+            );
+            return;
+          }
           if (this.isBuyer) {
             this.payForEscrow(response?.data?.transaction_id);
           } else {
             this.pushToast(message, type);
             setTimeout(() => {
               this.CLEAR_TRANSACTION_CONFIG();
-              this.$router.push("/transactions");
+              this.$router.push("/escrow/transactions");
             }, 1500);
           }
         }

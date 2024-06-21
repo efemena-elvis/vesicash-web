@@ -75,9 +75,25 @@
           <div class="party-meta grey-600">
             {{ party.email }}{{ party.is_initiator ? " (You)" : "" }}
           </div>
+<<<<<<< Updated upstream
           <div class="party-meta grey-600">{{ party.role }}</div>
           <div class="party-meta grey-800 text-capitalize cost">
             {{ formattedAmount(currencySign, party.amount) }}
+=======
+          <div class="party-meta grey-600 role">{{ party.role }}</div>
+          <div
+            :class="[
+              'party-meta text-capitalize cost',
+              party.role === 'buyer' ? 'grey-800' : 'grey-800',
+            ]"
+          >
+            {{ party.role === "buyer" ? "" : ""
+            }}{{
+              party.role === "buyer"
+                ? "----"
+                : formattedAmount(currencySign, party.amount)
+            }}
+>>>>>>> Stashed changes
           </div>
         </div>
       </div>
@@ -421,7 +437,7 @@ export default {
 
   .party-row {
     display: grid;
-    grid-template-columns: 1fr 150px 200px;
+    grid-template-columns: 1fr 1fr 1fr;
     padding: toRem(15) 0;
     border-bottom: toRem(0.3) solid getColor("grey-200");
     &:last-child {
@@ -430,6 +446,10 @@ export default {
 
     .party-meta {
       font-size: 0.9rem;
+    }
+
+    .role {
+      justify-self: center;
     }
 
     .cost {
