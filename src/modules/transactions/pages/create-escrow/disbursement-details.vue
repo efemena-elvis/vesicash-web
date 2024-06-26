@@ -183,6 +183,17 @@ export default {
         return count > 1;
       });
 
+      const saved_config = this.getTransactionConfig;
+      const saved_milestones = [...this.getTransactionConfig?.milestones]?.map(
+        (item) => ({ ...item, saved: true })
+      );
+      const updated_config = {
+        ...saved_config,
+        milestones: saved_milestones,
+      };
+
+      can_continue && this.UPDATE_TRANSACTION_CONFIG(updated_config);
+
       can_continue && this.$router.push("/escrow/payment");
     },
 

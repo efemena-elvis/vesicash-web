@@ -377,6 +377,21 @@ export default {
           if (party.percentage !== undefined)
             party.percentage = Number(party.percentage);
           if (!party.is_initiator) party.user_id = `${IDs[party.email]}`;
+          if (party.is_initiator) {
+            party.bank_account = {
+              account_name: this.getUser?.business_name || "",
+              account_number: `${this.getAccountId}`,
+              bank_code: "VE000",
+              bank_name: "Vesicash",
+            };
+          } else {
+            party.bank_account = {
+              account_name: "",
+              account_number: `${IDs[party.email]}`,
+              bank_code: "VE000",
+              bank_name: "Vesicash",
+            };
+          }
           return party;
         }),
         files: [...this.getTransactionConfig?.files]?.map((file) => ({

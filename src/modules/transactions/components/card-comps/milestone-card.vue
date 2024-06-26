@@ -55,9 +55,7 @@
         </div>
         <div class="meta">
           <div class="meta-key">Inspection period:</div>
-          <div class="meta-value">
-            {{ milestone?.inspection_period }}
-          </div>
+          <div class="meta-value">{{ milestone?.inspection_period }} days</div>
         </div>
         <div class="meta">
           <div class="meta-key">Amount:</div>
