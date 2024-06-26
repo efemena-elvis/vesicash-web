@@ -304,17 +304,28 @@ export default {
     setMilestoneName({ value: name }) {
       this.milestone.name = name;
       this.milestone.title = name;
+      this.$emit("saved", this.milestone);
     },
     setMilestoneAmount({ value: amount }) {
       this.milestone.amount = amount;
+      this.$emit("saved", this.milestone);
     },
     setDueDate({ value: date }) {
       this.milestone.due_date = date;
+      this.$emit("saved", this.milestone);
     },
 
     setInspectionPeriod({ value: period }) {
+      if (Number(period) < 1) {
+        this.pushToast(
+          "Inspection period cannot be less than a day",
+          "warnnig"
+        );
+        return;
+      }
       this.milestone.inspection_period = period;
       this.milestone.grace_period = period;
+      this.$emit("saved", this.milestone);
     },
   },
 };

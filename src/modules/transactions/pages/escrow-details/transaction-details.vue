@@ -4,7 +4,12 @@
     <PageBackBtn back_link="/escrow/transactions" />
 
     <InfoAlertCard
-      v-if="transactionOwner && escrowParty && !escrowParty.has_accepted"
+      v-if="
+        transactionOwner &&
+        escrowParty &&
+        !escrowParty.has_accepted &&
+        transaction_details.status.toLowerCase() !== 'closed'
+      "
       class="mgb-20"
     >
       <div slot="info" class="tertiary-2-text grey-900">
@@ -37,7 +42,8 @@
         transaction_details &&
         escrowParty &&
         escrowParty.role === 'buyer' &&
-        amountLeft > 0
+        amountLeft > 0 &&
+        escrowParty.has_accepted
       "
       class="mgb-20"
     >
@@ -332,15 +338,21 @@ export default {
     partiesYetToAccept() {
       if (!this.transaction_details) return [];
       return this.transaction_details?.parties
-        ?.filter((party) => !party.is_initiator || !party.has_accepted)
+        ?.filter(
+          (party) =>
+            !party.is_initiator &&
+            !party.has_accepted &&
+            this.transaction_details.status.toLowerCase() !== "closed"
+        )
         ?.map((party) => party?.email);
     },
 
     escrowParty() {
       const userEmail = this.getUser?.email;
+      const account_id = `${this.getAccountId}`;
       if (!this.transaction_details) return null;
       return this.transaction_details?.parties?.find(
-        (party) => party.email === userEmail
+        (party) => party.email === userEmail || party.user_id === account_id
       );
     },
 

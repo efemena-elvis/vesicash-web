@@ -74,7 +74,9 @@ export default {
       const validParties = this.parties.every((party) =>
         this.checkPartyValidity(party)
       );
-      const validMilestone = this.allMilestones.every((item) => item.saved);
+      const validMilestone = this.allMilestones.every(
+        (item) => item.saved || this.checkMilestoneValidity(item)
+      );
       return !validMilestone || !validParties;
     },
 
@@ -188,6 +190,15 @@ export default {
       return party.email;
     },
 
+    checkMilestoneValidity(milestone) {
+      return (
+        !!milestone.title &&
+        !!milestone.due_date &&
+        !!milestone.inspection_period &&
+        !!milestone.amount
+      );
+    },
+
     addNewbroker() {
       const broker = {
         user_id: `broker-${this.$utils.getRandomString(10)}`,
@@ -292,7 +303,16 @@ export default {
         saved: false,
         id: `milestone-${this.$utils.getRandomString(10)}`,
       };
-      let updated_milestones = [...saved_config.milestones, new_milestone];
+
+      const old_milestones = [...saved_config.milestones]?.map((milestone) => {
+        const can_save = this.checkMilestoneValidity(milestone);
+        return {
+          ...milestone,
+          saved: can_save,
+        };
+      });
+
+      let updated_milestones = [...old_milestones, new_milestone];
 
       const updated_config = {
         ...saved_config,

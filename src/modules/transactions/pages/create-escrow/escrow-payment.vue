@@ -235,10 +235,42 @@ export default {
       fetchCharges: "general/fetchCharges",
       makePayment: "transactions/makePayment",
       sendTransaction: "transactions/sendTransaction",
+      registerBulkUsers: "auth/registerBulkUsers",
     }),
 
+    async createParties() {
+      try {
+        const parties = this.parties
+          ?.filter?.((party) => !party?.is_initiator)
+          ?.map((party) => ({ email_address: party.email }));
+        const payload = {
+          bulk: parties,
+        };
+
+        const response = await this.registerBulkUsers(payload);
+
+        if (![200, 201].includes(response?.code)) {
+          this.pushToast("Failed to create invited parties account", "warning");
+          return {};
+        }
+
+        const partyIDs = response?.data?.length
+          ? response.data?.reduce((acc, party) => {
+              acc[party.email_address] = party.account_id;
+              return acc;
+            }, {})
+          : {};
+
+        return partyIDs;
+      } catch (err) {
+        this.handleClick("start", "Start escrow", false);
+        console.log("FAILED TO CREATE PARTIES", err);
+        this.pushToast("Failed to create invited parties account", "error");
+        return {};
+      }
+    },
+
     estimateEscrowCharge(charges, amount, currency) {
-      console.log({ currency });
       const escrowCharge = charges.find((charge) => {
         return (
           charge.currency === currency &&
@@ -336,11 +368,15 @@ export default {
     },
 
     async startEscrow() {
+      this.handleClick("start");
+      const IDs = await this.createParties();
+
       const payload = {
         ...this.getTransactionConfig,
         parties: [...this.getTransactionConfig?.parties]?.map((party) => {
           if (party.percentage !== undefined)
             party.percentage = Number(party.percentage);
+          if (!party.is_initiator) party.user_id = `${IDs[party.email]}`;
           return party;
         }),
         files: [...this.getTransactionConfig?.files]?.map((file) => ({
@@ -362,7 +398,6 @@ export default {
       };
 
       try {
-        this.handleClick("start");
         const response = await this.createEscrowTransaction(payload);
         this.handleClick("start", "Start escrow", false);
         const message = response?.message;
