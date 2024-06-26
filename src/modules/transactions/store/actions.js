@@ -73,7 +73,7 @@ export default {
   async acceptTransaction(_, { transaction_id, party_id }) {
     return await postRequest(
       "escrow",
-      routes.accept_transaction(party_id, transaction_id)
+      routes.accept_transaction(transaction_id, party_id)
     );
   },
 
