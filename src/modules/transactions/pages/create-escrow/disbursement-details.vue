@@ -22,9 +22,9 @@
 
     <MilestoneCard
       v-for="(milestone, index) in allMilestones"
-      :key="index + milestone.title + milestone.id"
+      :key="milestone.id"
       :txn_milestone="milestone"
-      @saved="updateMilestone($event, index)"
+      @saved="updateMilestone"
       @delete="deleteMilestone"
       :deletable="index !== 0"
       class="mgy-30"
@@ -272,11 +272,11 @@ export default {
       this.UPDATE_TRANSACTION_CONFIG(updated_config);
     },
 
-    updateMilestone(milestone, index) {
+    updateMilestone(milestone) {
       const saved_config = this.getTransactionConfig;
-      let updated_milestones = saved_config.milestones;
-      updated_milestones = updated_milestones.map((item, i) => {
-        return i == index ? milestone : item;
+      let updated_milestones = [...saved_config.milestones];
+      updated_milestones = updated_milestones.map((item) => {
+        return item.id == milestone.id ? milestone : item;
       });
 
       const updated_config = {

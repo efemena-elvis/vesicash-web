@@ -31,11 +31,11 @@
     </div>
     <BasicInput
       label_title="Milestone name"
-      label_id="milestone_name"
+      label_id="milestone_title"
       input_type="text"
       is_required
       placeholder="Milestone 1"
-      :input_value="milestone.name"
+      :input_value="milestone.title"
       @getInputState="setMilestoneName"
       :error_handler="{
         type: 'required',
@@ -83,7 +83,7 @@
     <template v-else>
       <BasicInput
         label_title="Amount"
-        label_id="amount"
+        label_id="milestone_amount"
         input_type="number"
         is_required
         placeholder="0.00"
@@ -300,7 +300,7 @@ export default {
       this.$emit("saved", this.milestone);
     },
     setMilestoneName({ value: name }) {
-      this.milestone.name = name;
+      // this.milestone.name = name;
       this.milestone.title = name;
       this.$emit("saved", this.milestone);
     },

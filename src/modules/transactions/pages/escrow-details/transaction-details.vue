@@ -173,7 +173,8 @@
               :key="party.user_id + index"
             >
               <div class="party-meta grey-600">
-                {{ party.email }}{{ party.is_initiator ? " (You)" : "" }}
+                {{ party.email
+                }}{{ escrowParty.user_id === party.user_id ? " (You)" : "" }}
               </div>
               <div class="party-meta grey-600 role">{{ party.role }}</div>
               <div

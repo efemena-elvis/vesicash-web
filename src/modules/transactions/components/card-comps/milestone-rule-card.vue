@@ -261,6 +261,7 @@ export default {
       "closed - refunded": "error",
       "closed - not funded": "error",
       closed: "error",
+      "funded - awaiting confirmation": "progress",
     },
 
     ms_key: {

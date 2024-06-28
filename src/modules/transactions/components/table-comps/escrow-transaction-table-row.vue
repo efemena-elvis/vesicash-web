@@ -1,9 +1,7 @@
 <template>
   <tr @click="viewTransactionDetails">
     <td class="body-data" :class="`${table_name}-1`">
-      <div class="text mgb-6 text-no-wrap">
-        {{ getCreatedDate }}
-      </div>
+      <div class="text mgb-6 text-no-wrap">{{ getCreatedDate }}</div>
       <!-- <div class="meta tertiary-3-text grey-600">{{ getTransactionType }}</div> -->
     </td>
 
@@ -107,6 +105,7 @@ export default {
     },
 
     getCurrentTransactionStatus() {
+      return this.data.status;
       let MS = this.getSortedMilestones;
 
       // CHECK IF MILESTONE HAS LENGTH
@@ -169,6 +168,7 @@ export default {
         "closed - refunded": "error",
         "closed - not funded": "error",
         closed: "error",
+        "funded - awaiting confirmation": "progress",
       },
     };
   },
