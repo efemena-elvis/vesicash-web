@@ -203,6 +203,20 @@ export default {
 
       const amount = this.escrowCost;
       const currency = this.configCurrency?.short;
+      if (currency === "NGN")
+        return {
+          card_charge: 100,
+          transfer_charge: 100,
+          processing_fee: 100,
+          fee_charge: 100,
+        };
+      if (currency === "USD")
+        return {
+          card_charge: 1,
+          transfer_charge: 1,
+          processing_fee: 1,
+          fee_charge: 1,
+        };
       const charge = this.estimateEscrowCharge(charges, amount, currency);
 
       return charge;
@@ -220,7 +234,41 @@ export default {
       getEscrowCharge: "transactions/getEscrowCharge",
       fetchCharges: "general/fetchCharges",
       makePayment: "transactions/makePayment",
+      sendTransaction: "transactions/sendTransaction",
+      registerBulkUsers: "auth/registerBulkUsers",
     }),
+
+    async createParties() {
+      try {
+        const parties = this.parties
+          ?.filter?.((party) => !party?.is_initiator)
+          ?.map((party) => ({ email_address: party.email }));
+        const payload = {
+          bulk: parties,
+        };
+
+        const response = await this.registerBulkUsers(payload);
+
+        if (![200, 201].includes(response?.code)) {
+          this.pushToast("Failed to create invited parties account", "warning");
+          return {};
+        }
+
+        const partyIDs = response?.data?.length
+          ? response.data?.reduce((acc, party) => {
+              acc[party.email_address] = party.account_id;
+              return acc;
+            }, {})
+          : {};
+
+        return partyIDs;
+      } catch (err) {
+        this.handleClick("start", "Start escrow", false);
+        console.log("FAILED TO CREATE PARTIES", err);
+        this.pushToast("Failed to create invited parties account", "error");
+        return {};
+      }
+    },
 
     estimateEscrowCharge(charges, amount, currency) {
       const escrowCharge = charges.find((charge) => {
@@ -297,7 +345,6 @@ export default {
       try {
         const response = await this.makePayment({ transaction_id });
         const message = response?.data?.message || response?.message;
-        console.log({ response });
         const type = [200, 201].includes(response?.code)
           ? "success"
           : "warning";
@@ -311,7 +358,7 @@ export default {
         if (type == "success" || message === "insufficient balance") {
           setTimeout(() => {
             this.CLEAR_TRANSACTION_CONFIG();
-            this.$router.push("/transactions");
+            this.$router.push("/escrow/transactions");
           }, 1500);
         }
       } catch (err) {
@@ -321,8 +368,32 @@ export default {
     },
 
     async startEscrow() {
+      this.handleClick("start");
+      const IDs = await this.createParties();
+
       const payload = {
         ...this.getTransactionConfig,
+        parties: [...this.getTransactionConfig?.parties]?.map((party) => {
+          if (party.percentage !== undefined)
+            party.percentage = Number(party.percentage);
+          if (!party.is_initiator) party.user_id = `${IDs[party.email]}`;
+          if (party.is_initiator) {
+            party.bank_account = {
+              account_name: this.getUser?.business_name || "",
+              account_number: `${this.getAccountId}`,
+              bank_code: "VE000",
+              bank_name: "Vesicash",
+            };
+          } else {
+            party.bank_account = {
+              account_name: "",
+              account_number: `${IDs[party.email]}`,
+              bank_code: "VE000",
+              bank_name: "Vesicash",
+            };
+          }
+          return party;
+        }),
         files: [...this.getTransactionConfig?.files]?.map((file) => ({
           url: file.url,
         })),
@@ -342,7 +413,6 @@ export default {
       };
 
       try {
-        this.handleClick("start");
         const response = await this.createEscrowTransaction(payload);
         this.handleClick("start", "Start escrow", false);
         const message = response?.message;
@@ -351,13 +421,23 @@ export default {
           : "warning";
 
         if (type == "success") {
+          const send_response = await this.sendTransaction({
+            id: response?.data?.transaction_id,
+          });
+          if (send_response?.code !== 200) {
+            this.pushToast(
+              send_response?.message || "Failed to send invites",
+              "warning"
+            );
+            return;
+          }
           if (this.isBuyer) {
             this.payForEscrow(response?.data?.transaction_id);
           } else {
             this.pushToast(message, type);
             setTimeout(() => {
               this.CLEAR_TRANSACTION_CONFIG();
-              this.$router.push("/transactions");
+              this.$router.push("/escrow/transactions");
             }, 1500);
           }
         }

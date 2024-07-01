@@ -127,6 +127,32 @@ const transactionRoutes = [
 
     children: [
       {
+        path: "transactions",
+        name: "EscrowTransactions",
+        component: () =>
+          import(
+            /* webpackChunkName: "transactions-module" */
+            "@/modules/transactions/pages/escrow-details/transactions"
+          ),
+        meta: {
+          requiresAuth: true,
+        },
+      },
+
+      {
+        path: "transactions/:id",
+        name: "EscrowTransactionDetailsPage",
+        component: () =>
+          import(
+            /* webpackChunkName: "transactions-module" */
+            "@/modules/transactions/pages/escrow-details/transaction-details"
+          ),
+        meta: {
+          requiresAuth: true,
+        },
+      },
+
+      {
         path: "",
         component: () =>
           import(

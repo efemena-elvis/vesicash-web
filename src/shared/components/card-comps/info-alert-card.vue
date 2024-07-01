@@ -1,7 +1,17 @@
 <template>
   <div class="alert-wrapper">
-    <span class="icon icon-info green-600 tertiary-1-text"></span>
-    <div class="tertiary-2-text grey-900">{{ info }}</div>
+    <span class="icon icon-info yellow-600 tertiary-1-text"></span>
+    <div>
+      <slot name="info"></slot>
+      <div class="tertiary-2-text grey-900" v-if="info">{{ info }}</div>
+      <slot name="actions"></slot>
+      <div
+        v-html="action"
+        v-if="action"
+        class="mgt-10 tertiary-2-text"
+        @click="$emit('action')"
+      ></div>
+    </div>
   </div>
 </template>
 
@@ -12,8 +22,11 @@ export default {
   props: {
     info: {
       tyep: String,
-      default:
-        "Please ensure the date of birth you are providing matches the date of birth on your BVN (Bank verification number)",
+      default: "",
+    },
+    action: {
+      type: String,
+      default: "",
     },
   },
 };
@@ -22,10 +35,10 @@ export default {
 <style lang="scss" scoped>
 .alert-wrapper {
   padding: toRem(16);
-  background: getColor("grey-10");
+  background: getColor("yellow-50");
   border-radius: toRem(8);
   @include flex-row-nowrap("flex-start", "flex-start");
-  gap: toRem(8);
+  gap: toRem(10);
 
   .icon-info {
     font-size: toRem(20);

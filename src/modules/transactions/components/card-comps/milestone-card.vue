@@ -31,11 +31,11 @@
     </div>
     <BasicInput
       label_title="Milestone name"
-      label_id="milestone_name"
+      label_id="milestone_title"
       input_type="text"
       is_required
       placeholder="Milestone 1"
-      :input_value="milestone.name"
+      :input_value="milestone.title"
       @getInputState="setMilestoneName"
       :error_handler="{
         type: 'required',
@@ -55,9 +55,7 @@
         </div>
         <div class="meta">
           <div class="meta-key">Inspection period:</div>
-          <div class="meta-value">
-            {{ milestone?.inspection_period }}
-          </div>
+          <div class="meta-value">{{ milestone?.inspection_period }} days</div>
         </div>
         <div class="meta">
           <div class="meta-key">Amount:</div>
@@ -75,19 +73,9 @@
           <div class="party-meta grey-600">
             {{ party.email }}{{ party.is_initiator ? " (You)" : "" }}
           </div>
-          <div class="party-meta grey-600">{{ party.role }}</div>
-          <div
-            :class="[
-              'party-meta text-capitalize cost',
-              party.role === 'buyer' ? 'grey-800' : 'grey-800',
-            ]"
-          >
-            {{ party.role === "buyer" ? "" : ""
-            }}{{
-              party.role === "buyer"
-                ? "----"
-                : formattedAmount(currencySign, party.amount)
-            }}
+          <div class="party-meta grey-600 role">{{ party.role }}</div>
+          <div class="party-meta grey-800 text-capitalize cost">
+            {{ formattedAmount(currencySign, party.amount) }}
           </div>
         </div>
       </div>
@@ -95,7 +83,7 @@
     <template v-else>
       <BasicInput
         label_title="Amount"
-        label_id="amount"
+        label_id="milestone_amount"
         input_type="number"
         is_required
         placeholder="0.00"
@@ -312,19 +300,30 @@ export default {
       this.$emit("saved", this.milestone);
     },
     setMilestoneName({ value: name }) {
-      this.milestone.name = name;
+      // this.milestone.name = name;
       this.milestone.title = name;
+      this.$emit("saved", this.milestone);
     },
     setMilestoneAmount({ value: amount }) {
       this.milestone.amount = amount;
+      this.$emit("saved", this.milestone);
     },
     setDueDate({ value: date }) {
       this.milestone.due_date = date;
+      this.$emit("saved", this.milestone);
     },
 
     setInspectionPeriod({ value: period }) {
+      if (Number(period) < 1) {
+        this.pushToast(
+          "Inspection period cannot be less than a day",
+          "warnnig"
+        );
+        return;
+      }
       this.milestone.inspection_period = period;
       this.milestone.grace_period = period;
+      this.$emit("saved", this.milestone);
     },
   },
 };
@@ -431,7 +430,7 @@ export default {
 
   .party-row {
     display: grid;
-    grid-template-columns: 1fr 150px 200px;
+    grid-template-columns: 1fr 1fr 1fr;
     padding: toRem(15) 0;
     border-bottom: toRem(0.3) solid getColor("grey-200");
     &:last-child {
@@ -440,6 +439,10 @@ export default {
 
     .party-meta {
       font-size: 0.9rem;
+    }
+
+    .role {
+      justify-self: center;
     }
 
     .cost {

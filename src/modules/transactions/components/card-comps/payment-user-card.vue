@@ -1,5 +1,5 @@
 <template>
-  <div class="payment-user-card rounded-8 border-grey-200">
+  <div class="payment-user-card rounded-8 borde-grey-200">
     <!-- USER DETAILS -->
     <template v-for="(detail, index) in payment_details">
       <div class="item" :key="index">
@@ -10,7 +10,7 @@
           class="value grey-900 text-wrap"
           v-html="
             `${$money.getSign(
-              currency.slug || currency
+              currency?.slug || currency
             )}${$utils.formatCurrencyWithComma(detail.value)}`
           "
         ></div>
