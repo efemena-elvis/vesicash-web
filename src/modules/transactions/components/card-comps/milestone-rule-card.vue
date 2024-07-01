@@ -84,7 +84,9 @@
       <template v-if="party.role === 'seller'">
         <template
           v-if="
-            ['in progress', 'delivered - rejected'].includes(getMilestoneStatus)
+            ['in progress', 'delivered - rejected', 'draft'].includes(
+              getMilestoneStatus
+            )
           "
         >
           <div class="actions-row">
@@ -220,7 +222,11 @@ export default {
     },
 
     party() {
-      return this.transaction?.parties?.find((party) => party.is_initiator);
+      const userEmail = this.getUser?.email;
+      const account_id = `${this.getAccountId}`;
+      return this.transaction?.parties?.find(
+        (party) => party.email === userEmail || party.user_id === account_id
+      );
     },
 
     getMilestoneName() {
