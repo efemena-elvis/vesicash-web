@@ -11,8 +11,9 @@
         transaction_details.status.toLowerCase() !== 'closed'
       "
       class="mgb-20"
+      key="invitation-card"
     >
-      <div slot="info" class="tertiary-2-text grey-900">
+      <div slot="info" class="tertiary-2-text grey-900" key="invitation-slot">
         <b>{{ transactionOwner ? transactionOwner.email : "" }}</b> invited you
         to
         <b>{{ transaction_details ? transaction_details.title : "" }}</b>
@@ -24,6 +25,7 @@
           class="btn btn-sm btn-primary"
           ref="accept"
           @click="acceptOrRejectTransaction('accept')"
+          key="invitation-accept-button"
         >
           Accept
         </button>
@@ -31,6 +33,7 @@
           class="btn btn-sm btn-alert"
           ref="reject"
           @click="show_reject_modal = true"
+          key="invitation-reject-button"
         >
           Reject
         </button>
@@ -46,28 +49,34 @@
         escrowParty.has_accepted
       "
       class="mgb-20"
+      key="payment-card"
     >
-      <div slot="info" class="tertiary-2-text grey-900">
+      <div slot="info" class="tertiary-2-text grey-900" key="payment-slot">
         You have
         <b>
-          {{
-            `${$money.getSign(
-              transaction_details.currency
-            )}${$utils.formatCurrencyWithComma(amountLeft)}`
-          }}
+          {{ totalAmount }}
         </b>
         left to pay for this transaction
       </div>
 
       <div class="invite-actions-row mgt-15" slot="actions">
-        <button class="btn btn-sm btn-primary" ref="pay" @click="payForEscrow">
+        <button
+          class="btn btn-sm btn-primary"
+          ref="pay"
+          @click="show_summary_modal = true"
+          key="payment-button"
+        >
           Make payment
         </button>
       </div>
     </InfoAlertCard>
 
-    <InfoAlertCard v-else-if="partiesYetToAccept.length" class="mgb-20">
-      <div slot="info" class="tertiary-2-text grey-900">
+    <InfoAlertCard
+      v-else-if="partiesYetToAccept.length"
+      class="mgb-20"
+      key="notification-card"
+    >
+      <div slot="info" class="tertiary-2-text grey-900" key="notification-slot">
         Transaction pending,
         <b v-for="email in partiesYetToAccept" :key="email">{{ email }} </b>
         yet to accept invite
@@ -82,6 +91,7 @@
         ]"
         slot="actions"
         @click="resendTransaction"
+        key="notification-action"
       >
         {{ resend_text }}
       </div>
@@ -246,6 +256,16 @@
         <RejectModal
           @closeTriggered="show_reject_modal = false"
           @rejected="rejectTxn"
+          placeholder="...not satisfied"
+        />
+      </transition>
+
+      <transition name="fade" v-if="show_summary_modal">
+        <SummaryModal
+          @closeTriggered="show_summary_modal = false"
+          :amount="totalAmount"
+          @action="payForEscrow"
+          :summary="paymentSummary"
         />
       </transition>
     </portal>
@@ -297,6 +317,10 @@ export default {
       import(
         /* webpackChunkName: "transactions-modal-module" */ "@/modules/transactions/modals/reject-modal"
       ),
+    SummaryModal: () =>
+      import(
+        /* webpackChunkName: "transactions-modal-module" */ "@/modules/transactions/modals/transaction-summary-modal"
+      ),
 
     PaymentActionModal: () =>
       import(
@@ -312,7 +336,125 @@ export default {
   computed: {
     ...mapGetters({
       getTransactionDetails: "transactions/getTransactionDetails",
+      getTransactionCharges: "general/getTransactionCharges",
     }),
+
+    milestoneCount() {
+      return this.transaction_details
+        ? this.transaction_details?.milestones?.length
+        : 1;
+    },
+
+    escrowCharge() {
+      const charges = this.allEscrowCharges.map((charge) => {
+        charge.min_value = charge.MinValue;
+        if (charge.MaxValue == 0 || charge.max_value == 0)
+          charge.max_value = Number.MAX_SAFE_INTEGER;
+        return charge;
+      });
+
+      const amount = this.transaction_details?.amount || 0;
+      const currency = this.transaction_details?.currency;
+      const charge = this.estimateCharge(charges, amount, currency);
+
+      return charge;
+    },
+
+    escrowFee() {
+      const fee = this.escrowCharge?.fee_charge || 0;
+      return `${this.$money.getSign(
+        this.transaction_details.currency
+      )}${this.$utils.formatCurrencyWithComma(fee)}`;
+    },
+
+    allEscrowCharges() {
+      const all_charges = this.getTransactionCharges?.escrow
+        ? [...this.getTransactionCharges?.escrow]
+        : [];
+      return all_charges;
+    },
+
+    allDisbursementCharges() {
+      const all_charges = this.getTransactionCharges?.wallet_withdrawal
+        ? [...this.getTransactionCharges?.wallet_withdrawal]
+        : [];
+      return all_charges;
+    },
+
+    disbursementCharge() {
+      const charges = this.allDisbursementCharges.map((charge) => {
+        charge.min_value = charge.MinValue;
+        if (charge.MaxValue == 0 || charge.max_value == 0)
+          charge.max_value = Number.MAX_SAFE_INTEGER;
+        return charge;
+      });
+
+      const amount = this.transaction_details?.amount || 0;
+      const currency = this.transaction_details?.currency;
+      if (currency === "NGN")
+        return {
+          card_charge: 100,
+          transfer_charge: 100,
+          processing_fee: 100,
+          fee_charge: 100,
+        };
+      if (currency === "USD")
+        return {
+          card_charge: 1,
+          transfer_charge: 1,
+          processing_fee: 1,
+          fee_charge: 1,
+        };
+      const charge = this.estimateCharge(charges, amount, currency);
+
+      return charge;
+    },
+
+    disbursementFee() {
+      const fee =
+        (this.disbursementCharge?.fee_charge || 0) * this.milestoneCount;
+      return `${this.$money.getSign(
+        this.transaction_details.currency
+      )}${this.$utils.formatCurrencyWithComma(fee)}`;
+    },
+
+    totalAmount() {
+      const total = this.total;
+      return `${this.$money.getSign(
+        this.transaction_details.currency
+      )}${this.$utils.formatCurrencyWithComma(total)}`;
+    },
+
+    total() {
+      const total =
+        (this.amountLeft || 0) +
+        (this.escrowCharge?.fee_charge || 0) +
+        (this.disbursementCharge?.fee_charge || 0) * this.milestoneCount;
+      return total;
+    },
+
+    paymentSummary() {
+      return [
+        {
+          title: "Amount",
+          value: this.amountLeftToPay,
+        },
+        {
+          title: "Escrow fee",
+          value: this.escrowFee,
+        },
+        {
+          title: "Disbursement fee",
+          value: this.disbursementFee,
+        },
+      ];
+    },
+
+    amountLeftToPay() {
+      return `${this.$money.getSign(
+        this.transaction_details.currency
+      )}${this.$utils.formatCurrencyWithComma(this.amountLeft)}`;
+    },
 
     attachedFiles() {
       if (!this.transaction_details) return [];
@@ -387,6 +529,7 @@ export default {
       show_accept_modal: false,
       show_payment_modal: false,
       show_reject_modal: false,
+      show_summary_modal: false,
       accept_action: "",
       reason: "",
       resend_text: "Resend invite",
@@ -414,6 +557,8 @@ export default {
   },
 
   mounted() {
+    this.fetchCharges("escrow");
+    this.fetchCharges("wallet_withdrawal");
     this.fetchSingleEscrowTransaction();
   },
 
@@ -424,16 +569,89 @@ export default {
       rejectTransaction: "transactions/rejectTransaction",
       sendTransaction: "transactions/sendTransaction",
       makePayment: "transactions/makePayment",
+      fetchCharges: "general/fetchCharges",
     }),
+
+    estimateCharge(charges, amount, currency) {
+      const escrowCharge = charges.find((charge) => {
+        return (
+          charge.currency === currency &&
+          amount >= charge.min_value &&
+          amount <= charge.max_value
+        );
+      });
+
+      let card_charge = null;
+      let transfer_charge = null;
+      let fee_charge = null;
+      let processing_fee = null;
+
+      if (!escrowCharge)
+        return { card_charge, transfer_charge, processing_fee, fee_charge };
+
+      const card_cap = escrowCharge?.value?.card_fee_capped_at;
+      const card_fee = escrowCharge?.value?.card_fee;
+      const is_card_capped = card_cap > 0;
+
+      const is_card_percentage = escrowCharge?.value?.is_percentage_card_fee;
+
+      const card_bank_cost = is_card_percentage
+        ? (card_fee / 100) * amount
+        : card_fee;
+
+      card_charge = is_card_capped
+        ? Math.min(card_cap, card_bank_cost)
+        : card_bank_cost;
+
+      const bank_cap = escrowCharge?.value?.bank_fee_capped_at;
+      const bank_fee = escrowCharge?.value?.bank_fee;
+      const is_bank_capped = bank_cap > 0;
+      const is_bank_percentage = escrowCharge?.value?.is_percentage_bank_fee;
+      const bank_cost = is_bank_percentage
+        ? (bank_fee / 100) * amount
+        : bank_fee;
+      transfer_charge = is_bank_capped
+        ? Math.min(bank_cap, bank_cost)
+        : bank_cost;
+
+      const fee_cap = escrowCharge?.value?.fee_capped_at;
+      const fee = escrowCharge?.value?.fee;
+      const is_fee_capped = fee_cap > 0;
+      const is_fee_percentage = escrowCharge?.value?.is_percentage_fee;
+      const fee_cost = is_fee_percentage ? (fee / 100) * amount : fee;
+      fee_charge = is_fee_capped ? Math.min(fee_cap, fee_cost) : fee_cost;
+
+      processing_fee = escrowCharge?.processingFee || 0;
+
+      const total = fee_charge
+        ? amount +
+          fee_charge +
+          (processing_fee * this.getTransactionMilestones?.length || 1)
+        : null;
+
+      return {
+        card_charge,
+        transfer_charge,
+        fee_charge,
+        processing_fee,
+        amount,
+        total,
+      };
+    },
 
     async payForEscrow() {
       try {
+        this.show_summary_modal = false;
         this.handleClick("pay");
         const response = await this.makePayment({
           transaction_id: this.$route?.params?.id,
         });
         this.handleClick("pay", "Make payment", false);
-        const message = response?.data?.message || response?.message;
+        const _message = response?.data?.message || response?.message;
+        const message =
+          _message == "insufficient balance"
+            ? "Insufficient balance, top up your wallet and try again."
+            : _message;
         const type = [200, 201].includes(response?.code)
           ? "success"
           : "warning";
@@ -495,7 +713,7 @@ export default {
       if (response?.code == 200 || force) {
         setTimeout(() => {
           this.fetchSingleEscrowTransaction();
-        }, 1500);
+        }, 500);
       }
     },
 

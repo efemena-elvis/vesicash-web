@@ -186,7 +186,9 @@ export default {
       const due_date = this.$date
         ?.formatDate(new Date(this.milestone.due_date), false)
         .getSimpleFormatDate();
-      const inspection_period = `${this.milestone.inspection_period} days`;
+      const inspection_period = `${this.milestone.inspection_period} ${
+        Number(this.milestone.inspection_period) > 1 ? "hours" : "hour"
+      }`;
       const status = this.milestone?.status;
 
       return [

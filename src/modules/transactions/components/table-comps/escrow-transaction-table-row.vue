@@ -105,7 +105,7 @@ export default {
     },
 
     getCurrentTransactionStatus() {
-      return this.data.status;
+      // return this.data.status;
       let MS = this.getSortedMilestones;
 
       // CHECK IF MILESTONE HAS LENGTH

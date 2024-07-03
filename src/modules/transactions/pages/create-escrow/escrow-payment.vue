@@ -27,6 +27,7 @@
       <div class="card-row">
         <div class="title grey-700 tertiary-2-text text-capitalize">
           Disbursement fee
+          {{ milestoneCount > 1 ? `(${milestoneCount} milestones)` : "" }}
         </div>
         <div class="value grey-600 primary-2-text">{{ disbursementFee }}</div>
       </div>
@@ -67,6 +68,10 @@ export default {
       getTransactionCharges: "general/getTransactionCharges",
     }),
 
+    milestoneCount() {
+      return this.getTransactionConfig?.milestones?.length || 1;
+    },
+
     parties() {
       return this.getTransactionConfig?.parties || [];
     },
@@ -105,7 +110,7 @@ export default {
       const total =
         (this.escrowCost || 0) +
         (this.escrowCharge?.fee_charge || 0) +
-        (this.disbursementCharge?.fee_charge || 0);
+        (this.disbursementCharge?.fee_charge || 0) * this.milestoneCount;
       return `${this.currencySign}${this.$utils.formatCurrencyWithComma(
         total
       )}`;
@@ -174,7 +179,7 @@ export default {
 
       const amount = this.escrowCost;
       const currency = this.configCurrency?.short;
-      const charge = this.estimateEscrowCharge(charges, amount, currency);
+      const charge = this.estimateCharge(charges, amount, currency);
 
       return charge;
     },
@@ -217,13 +222,14 @@ export default {
           processing_fee: 1,
           fee_charge: 1,
         };
-      const charge = this.estimateEscrowCharge(charges, amount, currency);
+      const charge = this.estimateCharge(charges, amount, currency);
 
       return charge;
     },
 
     disbursementFee() {
-      const fee = this.disbursementCharge?.fee_charge || 0;
+      const fee =
+        (this.disbursementCharge?.fee_charge || 0) * this.milestoneCount;
       return `${this.currencySign}${this.$utils.formatCurrencyWithComma(fee)}`;
     },
   },
@@ -270,7 +276,7 @@ export default {
       }
     },
 
-    estimateEscrowCharge(charges, amount, currency) {
+    estimateCharge(charges, amount, currency) {
       const escrowCharge = charges.find((charge) => {
         return (
           charge.currency === currency &&
@@ -344,6 +350,7 @@ export default {
     async payForEscrow(transaction_id) {
       try {
         const response = await this.makePayment({ transaction_id });
+        this.handleClick("start", "Start escrow", false);
         const message = response?.data?.message || response?.message;
         const type = [200, 201].includes(response?.code)
           ? "success"
@@ -359,11 +366,12 @@ export default {
           setTimeout(() => {
             this.CLEAR_TRANSACTION_CONFIG();
             this.$router.push("/escrow/transactions");
-          }, 1500);
+          }, 500);
         }
       } catch (err) {
         console.log("FAILED TO PAY FOR ESCROW", err);
         this.pushToast("Payment failed", "error");
+        this.handleClick("start", "Start escrow", false);
       }
     },
 
@@ -414,7 +422,6 @@ export default {
 
       try {
         const response = await this.createEscrowTransaction(payload);
-        this.handleClick("start", "Start escrow", false);
         const message = response?.message;
         const type = [200, 201].includes(response?.code)
           ? "success"
@@ -429,11 +436,13 @@ export default {
               send_response?.message || "Failed to send invites",
               "warning"
             );
+            this.handleClick("start", "Start escrow", false);
             return;
           }
           if (this.isBuyer) {
             this.payForEscrow(response?.data?.transaction_id);
           } else {
+            this.handleClick("start", "Start escrow", false);
             this.pushToast(message, type);
             setTimeout(() => {
               this.CLEAR_TRANSACTION_CONFIG();

@@ -20,14 +20,17 @@ x
           {{ title }}
         </div>
 
+        <label for="reject" class="form-label mgt-20 w-100"
+          >Reason(optional)</label
+        >
         <textarea
           name="reject"
           id="reject"
           cols="30"
           rows="3"
-          class="form-control mgt-20"
+          class="form-control mgt-0"
           v-model="reason"
-          placeholder="..."
+          :placeholder="placeholder"
         ></textarea>
       </div>
     </template>
@@ -63,6 +66,11 @@ export default {
     title: {
       type: String,
       default: "Why do you want to reject this transaction?",
+    },
+
+    placeholder: {
+      type: String,
+      default: "",
     },
   },
 

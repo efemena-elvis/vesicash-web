@@ -174,7 +174,6 @@ export default {
   // PAY FOR ESCROW TRANSACTION
   // ==================================
   async makePayment(_, payload) {
-    console.log({ payload });
     return await postRequest("escrow", `${routes.escrow_pay}`, payload);
   },
 

@@ -55,7 +55,10 @@
         </div>
         <div class="meta">
           <div class="meta-key">Inspection period:</div>
-          <div class="meta-value">{{ milestone?.inspection_period }} days</div>
+          <div class="meta-value">
+            {{ milestone?.inspection_period }}
+            {{ Number(milestone?.inspection_period) > 1 ? "hours" : "hour" }}
+          </div>
         </div>
         <div class="meta">
           <div class="meta-key">Amount:</div>
@@ -75,7 +78,11 @@
           </div>
           <div class="party-meta grey-600 role">{{ party.role }}</div>
           <div class="party-meta grey-800 text-capitalize cost">
-            {{ formattedAmount(currencySign, party.amount) }}
+            {{
+              party.role === "buyer"
+                ? "-----"
+                : formattedAmount(currencySign, party.amount)
+            }}
           </div>
         </div>
       </div>
@@ -115,7 +122,7 @@
       />
 
       <BasicInput
-        label_title="Inspection period (in days)"
+        label_title="Inspection period (in hours)"
         label_id="inspection_period"
         input_type="number"
         is_required
@@ -316,7 +323,7 @@ export default {
     setInspectionPeriod({ value: period }) {
       if (Number(period) < 1) {
         this.pushToast(
-          "Inspection period cannot be less than a day",
+          "Inspection period cannot be less than an hour",
           "warnnig"
         );
         return;
