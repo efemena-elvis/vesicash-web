@@ -107,6 +107,10 @@ export default {
     getCurrentTransactionStatus() {
       // return this.data.status;
       let MS = this.getSortedMilestones;
+      const milestone_active = MS?.every(
+        (item) => item?.status?.toLowerCase() !== "draft"
+      );
+      if (!milestone_active) this.data.status;
 
       // CHECK IF MILESTONE HAS LENGTH
       if (!MS.length) return this.status.cls;
