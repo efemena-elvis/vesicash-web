@@ -84,9 +84,7 @@
       <template v-if="party.role === 'seller'">
         <template
           v-if="
-            ['in progress', 'delivered - rejected', 'draft'].includes(
-              getMilestoneStatus
-            )
+            ['in progress', 'delivered - rejected'].includes(getMilestoneStatus)
           "
         >
           <div class="actions-row">
