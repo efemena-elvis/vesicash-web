@@ -110,7 +110,7 @@ export default {
       const milestone_active = MS?.every(
         (item) => item?.status?.toLowerCase() !== "draft"
       );
-      if (!milestone_active) this.data.status;
+      if (!milestone_active) return this.data.status;
 
       // CHECK IF MILESTONE HAS LENGTH
       if (!MS.length) return this.status.cls;

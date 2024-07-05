@@ -167,6 +167,11 @@ export default {
       default: () => ({}),
     },
 
+    transaction_status: {
+      type: String,
+      default: "",
+    },
+
     has_actions: {
       type: Boolean,
       default: false,
@@ -187,7 +192,11 @@ export default {
       const inspection_period = `${this.milestone.inspection_period} ${
         Number(this.milestone.inspection_period) > 1 ? "hours" : "hour"
       }`;
-      const status = this.milestone?.status;
+      const status =
+        this.transaction_status &&
+        this.milestone?.status?.toLowerCase() === "draft"
+          ? this.transaction_status
+          : this.milestone?.status;
 
       return [
         {

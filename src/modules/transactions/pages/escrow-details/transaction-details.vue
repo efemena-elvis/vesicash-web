@@ -223,6 +223,7 @@
               :milestone="milestone"
               :transaction="getTransaction"
               has_actions
+              :transaction_status="getTransactionStatus"
               @refresh="refresh({}, true)"
             />
           </div>
@@ -338,6 +339,16 @@ export default {
       getTransactionDetails: "transactions/getTransactionDetails",
       getTransactionCharges: "general/getTransactionCharges",
     }),
+
+    getTransactionStatus() {
+      // return this.data.status;
+      let MS = this.getSortedMilestones;
+      const milestone_active = MS?.every(
+        (item) => item?.status?.toLowerCase() !== "draft"
+      );
+      if (!milestone_active) return this.transaction_details?.status;
+      return "";
+    },
 
     milestoneCount() {
       return this.transaction_details
@@ -535,7 +546,8 @@ export default {
       resend_text: "Resend invite",
 
       status: {
-        sac: "sent - awaiting confirmation",
+        sac: "Sent - Awaiting Confirmation",
+        cls: "Closed",
       },
 
       ms_key: {

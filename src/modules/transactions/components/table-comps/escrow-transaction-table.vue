@@ -81,6 +81,7 @@ export default {
             "In Progress",
             "Delivered",
             "Active",
+            "Funded - Awaiting Confirmation",
           ];
         case "closed":
           return [
