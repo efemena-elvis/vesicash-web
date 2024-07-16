@@ -29,7 +29,7 @@
     <div class="bottom-row">
       <button
         class="btn btn-primary btn-md pdy-10"
-        @click="$router.push('/transactions/setup')"
+        @click="$router.push('/escrow/create')"
       >
         <div class="text">Create Escrow</div>
       </button>
