@@ -58,6 +58,18 @@ const paymentsRoutes = [
       },
     ],
   },
+  {
+    name: "EscrowPublicPaymentsPage",
+    path: "/escrow/complete-payment/:reference",
+    component: () =>
+      import(
+        /* webpackChunkName: "payments-module" */
+        "@/modules/payments/pages/public-escrow-payment"
+      ),
+    meta: {
+      requiresAuth: false,
+    },
+  },
 ];
 
 export default paymentsRoutes;
