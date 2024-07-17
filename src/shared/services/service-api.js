@@ -136,7 +136,7 @@ class serviceApi {
             Authorization: `Bearer ${authUserToken}`,
             "V-PUBLIC-KEY": serviceUtils.decodeString(api_keys[0]),
             "V-PRIVATE-KEY": serviceUtils.decodeString(api_keys[1]),
-            "v-app": constants.VUE_APP_VESICASH_APP_KEY,
+            // "v-app": constants.VUE_APP_VESICASH_APP_KEY,
           },
         }
       : {
@@ -145,7 +145,7 @@ class serviceApi {
             Authorization: `Bearer ${authUserToken}`,
             "V-PUBLIC-KEY": serviceUtils.decodeString(api_keys[0]),
             "V-PRIVATE-KEY": serviceUtils.decodeString(api_keys[1]),
-            "v-app": constants.VUE_APP_VESICASH_APP_KEY,
+            // "v-app": constants.VUE_AsPP_VESICASH_APP_KEY,
           },
         };
   }
