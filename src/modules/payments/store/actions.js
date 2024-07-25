@@ -2,6 +2,8 @@ import $api from "@/shared/services/service-api";
 
 const routes = {
   bulk_transfer: "disbursement/wallet/withdraw/bulk",
+  fetch_wire_account: (reference) => `wire-transfer/payments/${reference}`,
+  submit_payment: "wire-transfer/payments",
 };
 
 export default {
@@ -116,5 +118,17 @@ export default {
 
   clearOutTempAccount({ commit }) {
     commit("UPDATE_TEMP_ACCOUNT", []);
+  },
+
+  async fetchWireAccount(_, reference) {
+    return await $api
+      .service("payment")
+      .fetch(routes.fetch_wire_account(reference), {});
+  },
+
+  async submitWirePayment(_, payload) {
+    return await $api
+      .service("payment")
+      .fetch(routes.submit_payment, { payload });
   },
 };

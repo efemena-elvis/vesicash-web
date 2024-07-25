@@ -1,40 +1,60 @@
 <template>
   <div class="payment-layout">
     <div class="payment-card">
-      <div class="h5-text grey-900">Escrow payment</div>
-      <div class="h2-text green-600 mgy-10">$500,000</div>
+      <div class="h5-text grey-900">Complete your payment</div>
+      <div
+        class="skeleton-loader skeleton-loader__price mgy-10"
+        v-if="loading_wire_account"
+      ></div>
+      <div class="h2-text green-600 mgy-10" v-else>$500,000</div>
       <div class="details-section">
         <div>
           <div class="details-card">
             <div class="success-card" v-if="submitted">
               <div class="check-wrapper"><CheckIcon /></div>
-              <div class="h5-text grey-900 text-center">
+              <div class="h5-text grey-900 text-center" @click="paid = true">
                 Your payment will be confirmed in about an hour
               </div>
             </div>
             <template v-else>
-              <div class="detail-item" v-for="item in details" :key="item.name">
-                <div>
-                  <div class="grey-500 tertiary-1-text mgb-2">
-                    {{ item.name }}
-                  </div>
-                  <div class="teal-800 secondary-1-text">{{ item.value }}</div>
-                </div>
-                <button @click="copyItem(item)" class="copy-btn">
-                  <CopyIcon />
-                </button>
+              <template v-if="loading_wire_account">
                 <div
-                  :class="[
-                    'copy-tag tertiary-2-text',
-                    item.copied ? 'copy-tag__visible' : 'copy-tag__hidden',
-                  ]"
+                  v-for="i in [1, 2, 3, 4, 5]"
+                  :key="i"
+                  class="skeleton-loader"
+                ></div>
+              </template>
+
+              <template v-else>
+                <div
+                  class="detail-item"
+                  v-for="item in details"
+                  :key="item.name"
                 >
-                  Copied
+                  <div>
+                    <div class="grey-500 tertiary-1-text mgb-2">
+                      {{ item.name }}
+                    </div>
+                    <div class="teal-800 secondary-1-text">
+                      {{ item.value }}
+                    </div>
+                  </div>
+                  <button @click="copyItem(item)" class="copy-btn">
+                    <CopyIcon />
+                  </button>
+                  <div
+                    :class="[
+                      'copy-tag tertiary-2-text',
+                      item.copied ? 'copy-tag__visible' : 'copy-tag__hidden',
+                    ]"
+                  >
+                    Copied
+                  </div>
                 </div>
-              </div>
+              </template>
             </template>
           </div>
-          <button class="btn btn-md btn-teal w-100 mgy-40">
+          <button class="btn btn-md btn-teal w-100 mgy-40" @click="paid = true">
             I have made payment
           </button>
           <div class="alert-card mgt-0">
@@ -46,6 +66,12 @@
           </div>
         </div>
         <div class="payment-form">
+          <div
+            :class="[
+              'disable-layer',
+              paid && !submitted && 'disable-layer__hidden',
+            ]"
+          ></div>
           <BasicInput
             label_title="Name of sender"
             label_id="SenderName"
@@ -85,6 +111,20 @@
               message: 'Bank name is required',
             }"
           />
+
+          <BasicInput
+            label_title="Bank sort code"
+            label_id="bankSortCode"
+            input_type="text"
+            is_required
+            placeholder="Bank sort code"
+            :input_value="sender.bank_sort_code"
+            @getInputState="setSenderField($event, 'bank_sort_code')"
+            :error_handler="{
+              type: 'required',
+              message: 'Bank sort code is required',
+            }"
+          />
           <div>
             <label for="payment-receipt" class="form-label"
               >Upload payment receipt</label
@@ -121,7 +161,8 @@
           <button
             class="btn btn-md btn-teal w-100"
             :disabled="submitDisabled"
-            @click="submitReceipt"
+            @click="submitPayment"
+            ref="submit"
           >
             Submit
           </button>
@@ -168,22 +209,37 @@ export default {
         !this.receipt
       );
     },
+
+    payload() {
+      return {
+        reference: this.reference,
+        account_name: this.sender.name,
+        account_number: this.sender.account_number,
+        bank_name: this.sender.bank_name,
+        sort_code: this.sender.bank_sort_code,
+        receipt_url: this.receipt?.file_url,
+      };
+    },
   },
 
   mounted() {
     this.$utils.setPageBackgroundColor("#043b56");
+    this.loadAccount();
   },
 
   data() {
     return {
+      wire_account: null,
+      loading_wire_account: false,
       paid: false,
       receipt: null,
       sender: {
         name: "",
         account_number: "",
         bank_name: "",
+        bank_sort_code: "",
       },
-      submitted: true,
+      submitted: false,
       details: [
         {
           name: "Account number",
@@ -213,10 +269,23 @@ export default {
   methods: {
     ...mapActions({
       upload: "general/uploadToCloud",
+      fetchAccountDetails: "payments/fetchWireAccount",
+      submitWirePayment: "payments/submitWirePayment",
     }),
 
-    submitReceipt() {
-      this.submitted = true;
+    async loadAccount() {
+      try {
+        this.loading_wire_account = true;
+        const response = await this.fetchAccountDetails(
+          this.$route?.params?.reference
+        );
+        console.log({ response });
+        this.loading_wire_account = false;
+      } catch (e) {
+        console.log("FAILED TO LOAD WIRE ACCOUNT", e);
+        this.pushToast("Failed to load wire account", "error");
+        this.loading_wire_account = false;
+      }
     },
 
     resetItemCopyState() {
@@ -254,20 +323,39 @@ export default {
 
       this.uploading = true;
 
-      const uploads = { files, id: "PAYMNET-RECIPTS" };
+      const uploads = { files, id: "PAYMENT-RECIPTS" };
 
       const response = await this.upload(uploads);
 
       this.uploading = false;
 
       if (response.data?.length) {
-        console.log(response.data);
         this.receipt = response.data?.[0];
       } else {
         this.pushToast("Failed to upload. retry", "warning");
       }
 
       this.$refs.fileUpload.value = "";
+    },
+
+    async submitPayment() {
+      try {
+        this.handleClick("submit");
+        const _response = await this.submitWirePayment(this.payload);
+        this.handleClick("submit", "Submit", false);
+        const response = _response?.data || _response;
+        const message = response?.data?.message || response?.message;
+        if (response.code === 200) {
+          this.pushToast(message, "success");
+          this.submitted = true;
+        } else {
+          this.pushToast(message, "warning");
+        }
+      } catch (e) {
+        this.handleClick("submit", "Submit", false);
+        console.log("FAILED TO SUBMIT PAYMENT", e);
+        this.pushToast("Failed to submit payment", "error");
+      }
     },
   },
 };
@@ -280,7 +368,16 @@ export default {
   padding: toRem(30);
   width: toRem(1200);
   max-width: 98%;
-  margin: toRem(50) auto;
+  margin: toRem(24) auto;
+}
+
+.skeleton-loader {
+  height: toRem(35);
+
+  &__price {
+    width: toRem(200);
+    height: toRem(50);
+  }
 }
 
 .success-card {
@@ -300,6 +397,21 @@ export default {
   display: flex;
   flex-direction: column;
   gap: toRem(20);
+  position: relative;
+
+  .disable-layer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+    transition: background ease-in-out 0.25s;
+    background: rgba(#000, 0.02);
+
+    &__hidden {
+      background-color: transparent;
+      z-index: -1;
+    }
+  }
 }
 
 .upload-card {

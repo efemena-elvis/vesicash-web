@@ -59,12 +59,12 @@ const paymentsRoutes = [
     ],
   },
   {
-    name: "EscrowPublicPaymentsPage",
-    path: "/escrow/complete-payment/:reference",
+    name: "WireTransferPaymentPage",
+    path: "/complete-payment/:reference",
     component: () =>
       import(
         /* webpackChunkName: "payments-module" */
-        "@/modules/payments/pages/public-escrow-payment"
+        "@/modules/payments/pages/wire-transfer-payment"
       ),
     meta: {
       requiresAuth: false,
