@@ -4,7 +4,7 @@
       <!-- AUTH PAGE -->
       <div class="auth-page auth-payment-success">
         <!-- TITLE TEXT -->
-        <div class="title-text text-center teal-900 h4-text mgb-38 mgt--15">
+        <div class="title-text text-center teal-900 h4-text mgb-28 mgt-5">
           Congratulations
         </div>
 
@@ -15,7 +15,7 @@
               :info="{
                 icon: 'SuccessIcon',
                 title: 'Funding made successfully',
-                description: `Your funding of <b>${getTransactionAmount}</b> has been made sucessfully, Please check your wallet balance on your dashboard.`,
+                description: `Your funding of <b>${getTransactionAmount}</b> has been made sucessfully.`,
               }"
             />
           </template>
@@ -29,9 +29,7 @@
                 } invited successfully`,
                 description: `${$route.query.parties} ${
                   $route.query.parties === 'All' ? 'parties have' : 'has'
-                } been sucessfully invited into the escrow transaction for ${
-                  $route.query.name
-                }.`,
+                } been invited into the escrow transaction.`,
               }"
             />
           </template>
@@ -41,7 +39,7 @@
               :info="{
                 icon: 'SuccessIcon',
                 title: 'Payment made successfully',
-                description: `Your payment of <b>${getTransactionAmount}</b> has been made sucessfully, Please check your escrow account on your dashboard for the payment.`,
+                description: `Your payment of <b>${getTransactionAmount}</b> has been made sucessfully.`,
               }"
             />
 
@@ -51,9 +49,7 @@
                 title: 'Users invited successfully',
                 description: `${$route.query.parties} ${
                   $route.query.parties === 'All' ? 'parties have' : 'has'
-                } been sucessfully invited into the escrow transaction for ${
-                  $route.query.name
-                }.`,
+                } been invited into the escrow transaction.`,
               }"
             />
           </template>
@@ -191,11 +187,7 @@ export default {
 
 <style lang="scss" scoped>
 .auth-payment-success {
-  width: toRem(520) !important;
-
-  @include breakpoint-down(md) {
-    width: toRem(480) !important;
-  }
+  width: auto;
 
   @include breakpoint-down(sm) {
     width: 100% !important;

@@ -104,10 +104,10 @@ export default {
 
       const route_name = this.$route?.name;
 
-      if (!is_onboarded && route_name != ONBOARDING_ROUTE_NAME)
-        this.$router.push("/onboarding/business-details");
-      if (is_onboarded && route_name === ONBOARDING_ROUTE_NAME)
-        this.$router.push("/dashboard");
+      // if (!is_onboarded && route_name != ONBOARDING_ROUTE_NAME)
+      //   this.$router.push("/onboarding/business-details");
+      // if (is_onboarded && route_name === ONBOARDING_ROUTE_NAME)
+      //   this.$router.push("/dashboard");
     },
 
     hideSidebar($event) {
