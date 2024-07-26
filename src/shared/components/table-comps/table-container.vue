@@ -30,7 +30,10 @@
           <!-- PAGINATION -->
           <Pagination
             :pagination="pagination"
-            v-if="show_paging && pagination.last_page > 1"
+            v-if="
+              show_paging &&
+              (pagination.last_page > 1 || pagination.total_pages_count > 1)
+            "
             @goToPage="$emit('goToPage', $event)"
           />
         </div>

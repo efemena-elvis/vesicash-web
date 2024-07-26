@@ -5,6 +5,7 @@
       :class="[
         place_center && 'modal-center-placement',
         place_side && 'modal-right-placement',
+        place_left_side && 'modal-left-placement',
       ]"
       @click.self="selfCloseModal"
     >
@@ -72,6 +73,11 @@ export default {
     },
 
     place_side: {
+      type: Boolean,
+      default: false,
+    },
+
+    place_left_side: {
       type: Boolean,
       default: false,
     },

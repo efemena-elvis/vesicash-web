@@ -22,9 +22,9 @@
 
     <MilestoneCard
       v-for="(milestone, index) in allMilestones"
-      :key="index + milestone.title + milestone.id"
+      :key="milestone.id"
       :txn_milestone="milestone"
-      @saved="updateMilestone($event, index)"
+      @saved="updateMilestone"
       @delete="deleteMilestone"
       :deletable="index !== 0"
       class="mgy-30"
@@ -74,7 +74,9 @@ export default {
       const validParties = this.parties.every((party) =>
         this.checkPartyValidity(party)
       );
-      const validMilestone = this.allMilestones.every((item) => item.saved);
+      const validMilestone = this.allMilestones.every(
+        (item) => item.saved || this.checkMilestoneValidity(item)
+      );
       return !validMilestone || !validParties;
     },
 
@@ -181,11 +183,31 @@ export default {
         return count > 1;
       });
 
+      const saved_config = this.getTransactionConfig;
+      const saved_milestones = [...this.getTransactionConfig?.milestones]?.map(
+        (item) => ({ ...item, saved: true })
+      );
+      const updated_config = {
+        ...saved_config,
+        milestones: saved_milestones,
+      };
+
+      can_continue && this.UPDATE_TRANSACTION_CONFIG(updated_config);
+
       can_continue && this.$router.push("/escrow/payment");
     },
 
     checkPartyValidity(party) {
       return party.email;
+    },
+
+    checkMilestoneValidity(milestone) {
+      return (
+        !!milestone.title &&
+        !!milestone.due_date &&
+        !!milestone.inspection_period &&
+        !!milestone.amount
+      );
     },
 
     addNewbroker() {
@@ -250,11 +272,11 @@ export default {
       this.UPDATE_TRANSACTION_CONFIG(updated_config);
     },
 
-    updateMilestone(milestone, index) {
+    updateMilestone(milestone) {
       const saved_config = this.getTransactionConfig;
-      let updated_milestones = saved_config.milestones;
-      updated_milestones = updated_milestones.map((item, i) => {
-        return i == index ? milestone : item;
+      let updated_milestones = [...saved_config.milestones];
+      updated_milestones = updated_milestones.map((item) => {
+        return item.id == milestone.id ? milestone : item;
       });
 
       const updated_config = {
@@ -292,7 +314,16 @@ export default {
         saved: false,
         id: `milestone-${this.$utils.getRandomString(10)}`,
       };
-      let updated_milestones = [...saved_config.milestones, new_milestone];
+
+      const old_milestones = [...saved_config.milestones]?.map((milestone) => {
+        const can_save = this.checkMilestoneValidity(milestone);
+        return {
+          ...milestone,
+          saved: can_save,
+        };
+      });
+
+      let updated_milestones = [...old_milestones, new_milestone];
 
       const updated_config = {
         ...saved_config,
