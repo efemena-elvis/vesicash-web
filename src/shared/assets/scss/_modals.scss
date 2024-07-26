@@ -90,6 +90,27 @@
    
   }
 
+  .modal-left-placement {
+    animation: drift-from-left 0.4s ease-in-out forwards;
+    @include flex-column("center", "center");
+    @include transition(0.3s);
+    position: absolute;
+    bottom: toRem(12);
+    left: toRem(12);
+    top: toRem(12);
+    right: unset;
+    transform: unset;
+
+    .modal-cover {
+      height: 100%;
+
+      .modal-cover-body-wrapper {
+        height: 100%;
+      }
+    }
+   
+  }
+
   .modal-xs {
     width: toRem(362) !important;
 
