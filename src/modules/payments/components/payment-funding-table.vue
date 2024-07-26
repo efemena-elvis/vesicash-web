@@ -75,6 +75,14 @@ export default {
     };
   },
 
+  watch: {
+    $route: {
+      handler() {
+        this.fetchFundingData();
+      },
+    },
+  },
+
   mounted() {
     this.fetchFundingData();
   },
@@ -96,7 +104,7 @@ export default {
 
       let response = await this.handleDataRequest({
         action: "fetchAllFundings",
-        payload: this.getRequestPayload,
+        payload: { ...this.getRequestPayload, page: this.pageNumber },
         alert_handler: {
           error: "Unable to fetch wallet transactions",
           not_found_error: "Wallet transactions not found",
@@ -106,6 +114,7 @@ export default {
       if (response.code === 200) {
         this.table_loading = false;
         this.table_data = response.data;
+        this.pagination = response.pagination[0];
       } else {
         this.handleErrorResponse();
       }
