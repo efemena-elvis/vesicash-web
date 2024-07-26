@@ -111,7 +111,7 @@ export default {
         },
       });
 
-      if (response.code === 200) {  
+      if (response.code === 200) {
         this.table_loading = false;
         this.table_data = response.data;
         this.pagination = response.pagination[0];
