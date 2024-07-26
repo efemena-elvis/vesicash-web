@@ -2,7 +2,10 @@
   <div class="pagination-row mgt-30">
     <div class="left">
       <!-- PAGINATION TEXT -->
-      <div class="pagination-text text-left tertiary-2-text grey-600">
+      <div
+        class="pagination-text text-left tertiary-2-text grey-600"
+        v-if="pagination.from"
+      >
         Showing {{ pagination.from }} to {{ pagination.to }} of
         {{ pagination.total }} entries.
       </div>
@@ -81,7 +84,11 @@ export default {
 
   computed: {
     isNextDisabled() {
-      return this.page && this.page < this.pagination.last_page ? false : true;
+      return this.page &&
+        (this.page < this.pagination.last_page ||
+          this.page < this.pagination.total_pages_count)
+        ? false
+        : true;
     },
 
     isPrevDisabled() {
