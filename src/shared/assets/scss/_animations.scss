@@ -88,6 +88,15 @@
   }
 }
 
+@keyframes drift-from-left {
+  from {
+    margin-left: -50%;
+  }
+  to {
+    margin-left: 0;
+  }
+}
+
 // LOADING ANIMATION
 @keyframes loading {
   100% {

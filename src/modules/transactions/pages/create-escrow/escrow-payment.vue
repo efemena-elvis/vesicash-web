@@ -27,6 +27,7 @@
       <div class="card-row">
         <div class="title grey-700 tertiary-2-text text-capitalize">
           Disbursement fee
+          {{ milestoneCount > 1 ? `(${milestoneCount} milestones)` : "" }}
         </div>
         <div class="value grey-600 primary-2-text">{{ disbursementFee }}</div>
       </div>
@@ -67,6 +68,10 @@ export default {
       getTransactionCharges: "general/getTransactionCharges",
     }),
 
+    milestoneCount() {
+      return this.getTransactionConfig?.milestones?.length || 1;
+    },
+
     parties() {
       return this.getTransactionConfig?.parties || [];
     },
@@ -105,7 +110,7 @@ export default {
       const total =
         (this.escrowCost || 0) +
         (this.escrowCharge?.fee_charge || 0) +
-        (this.disbursementCharge?.fee_charge || 0);
+        (this.disbursementCharge?.fee_charge || 0) * this.milestoneCount;
       return `${this.currencySign}${this.$utils.formatCurrencyWithComma(
         total
       )}`;
@@ -174,7 +179,7 @@ export default {
 
       const amount = this.escrowCost;
       const currency = this.configCurrency?.short;
-      const charge = this.estimateEscrowCharge(charges, amount, currency);
+      const charge = this.estimateCharge(charges, amount, currency);
 
       return charge;
     },
@@ -203,13 +208,28 @@ export default {
 
       const amount = this.escrowCost;
       const currency = this.configCurrency?.short;
-      const charge = this.estimateEscrowCharge(charges, amount, currency);
+      if (currency === "NGN")
+        return {
+          card_charge: 100,
+          transfer_charge: 100,
+          processing_fee: 100,
+          fee_charge: 100,
+        };
+      if (currency === "USD")
+        return {
+          card_charge: 1,
+          transfer_charge: 1,
+          processing_fee: 1,
+          fee_charge: 1,
+        };
+      const charge = this.estimateCharge(charges, amount, currency);
 
       return charge;
     },
 
     disbursementFee() {
-      const fee = this.disbursementCharge?.fee_charge || 0;
+      const fee =
+        (this.disbursementCharge?.fee_charge || 0) * this.milestoneCount;
       return `${this.currencySign}${this.$utils.formatCurrencyWithComma(fee)}`;
     },
   },
@@ -220,9 +240,43 @@ export default {
       getEscrowCharge: "transactions/getEscrowCharge",
       fetchCharges: "general/fetchCharges",
       makePayment: "transactions/makePayment",
+      sendTransaction: "transactions/sendTransaction",
+      registerBulkUsers: "auth/registerBulkUsers",
     }),
 
-    estimateEscrowCharge(charges, amount, currency) {
+    async createParties() {
+      try {
+        const parties = this.parties
+          ?.filter?.((party) => !party?.is_initiator)
+          ?.map((party) => ({ email_address: party.email }));
+        const payload = {
+          bulk: parties,
+        };
+
+        const response = await this.registerBulkUsers(payload);
+
+        if (![200, 201].includes(response?.code)) {
+          this.pushToast("Failed to create invited parties account", "warning");
+          return {};
+        }
+
+        const partyIDs = response?.data?.length
+          ? response.data?.reduce((acc, party) => {
+              acc[party.email_address] = party.account_id;
+              return acc;
+            }, {})
+          : {};
+
+        return partyIDs;
+      } catch (err) {
+        this.handleClick("start", "Start escrow", false);
+        console.log("FAILED TO CREATE PARTIES", err);
+        this.pushToast("Failed to create invited parties account", "error");
+        return {};
+      }
+    },
+
+    estimateCharge(charges, amount, currency) {
       const escrowCharge = charges.find((charge) => {
         return (
           charge.currency === currency &&
@@ -296,8 +350,8 @@ export default {
     async payForEscrow(transaction_id) {
       try {
         const response = await this.makePayment({ transaction_id });
+        this.handleClick("start", "Start escrow", false);
         const message = response?.data?.message || response?.message;
-        console.log({ response });
         const type = [200, 201].includes(response?.code)
           ? "success"
           : "warning";
@@ -311,18 +365,43 @@ export default {
         if (type == "success" || message === "insufficient balance") {
           setTimeout(() => {
             this.CLEAR_TRANSACTION_CONFIG();
-            this.$router.push("/transactions");
-          }, 1500);
+            this.$router.push("/escrow/transactions");
+          }, 500);
         }
       } catch (err) {
         console.log("FAILED TO PAY FOR ESCROW", err);
         this.pushToast("Payment failed", "error");
+        this.handleClick("start", "Start escrow", false);
       }
     },
 
     async startEscrow() {
+      this.handleClick("start");
+      const IDs = await this.createParties();
+
       const payload = {
         ...this.getTransactionConfig,
+        parties: [...this.getTransactionConfig?.parties]?.map((party) => {
+          if (party.percentage !== undefined)
+            party.percentage = Number(party.percentage);
+          if (!party.is_initiator) party.user_id = `${IDs[party.email]}`;
+          if (party.is_initiator) {
+            party.bank_account = {
+              account_name: this.getUser?.business_name || "",
+              account_number: `${this.getAccountId}`,
+              bank_code: "VE000",
+              bank_name: "Vesicash",
+            };
+          } else {
+            party.bank_account = {
+              account_name: "",
+              account_number: `${IDs[party.email]}`,
+              bank_code: "VE000",
+              bank_name: "Vesicash",
+            };
+          }
+          return party;
+        }),
         files: [...this.getTransactionConfig?.files]?.map((file) => ({
           url: file.url,
         })),
@@ -342,22 +421,32 @@ export default {
       };
 
       try {
-        this.handleClick("start");
         const response = await this.createEscrowTransaction(payload);
-        this.handleClick("start", "Start escrow", false);
         const message = response?.message;
         const type = [200, 201].includes(response?.code)
           ? "success"
           : "warning";
 
         if (type == "success") {
+          const send_response = await this.sendTransaction({
+            id: response?.data?.transaction_id,
+          });
+          if (send_response?.code !== 200) {
+            this.pushToast(
+              send_response?.message || "Failed to send invites",
+              "warning"
+            );
+            this.handleClick("start", "Start escrow", false);
+            return;
+          }
           if (this.isBuyer) {
             this.payForEscrow(response?.data?.transaction_id);
           } else {
+            this.handleClick("start", "Start escrow", false);
             this.pushToast(message, type);
             setTimeout(() => {
               this.CLEAR_TRANSACTION_CONFIG();
-              this.$router.push("/transactions");
+              this.$router.push("/escrow/transactions");
             }, 1500);
           }
         }

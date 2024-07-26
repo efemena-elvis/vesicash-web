@@ -19,6 +19,19 @@ const routes = {
   wallet_to_wallet_transfer: "disbursement/wallet/wallet-transfer",
   get_charges: "charges",
   escrow_pay: "pay/wallet-transfer",
+  all_escrow: "transaction/list",
+  escrow: (id) => `transaction/get/${id}`,
+  accept_transaction: (transaction_id, party_id) =>
+    `transaction/accept/${transaction_id}/${party_id}`,
+  reject_transaction: (party_id) => `transaction/reject/${party_id}`,
+  send_escrow_transaction: (id) => `transaction/send/${id}`,
+  mark_milestone_as_done: (milestone_id, id) =>
+    `delivery/delivered/${milestone_id}/${id}`,
+  approve_milestone: (milestone_id, id) =>
+    `delivery/accept/${milestone_id}/${id}`,
+  reject_milestone: (milestone_id, id) =>
+    `delivery/reject/${milestone_id}/${id}`,
+  extend_milestone_due_date: "due-date/extension",
 };
 
 export default {
@@ -34,6 +47,17 @@ export default {
   },
 
   // ==================================
+  // FETCH ALL USER ESCROW TRANSACTIONS
+  // ==================================
+  async fetchEscrowTransactions(_, { page, statuses, limit = 20, id }) {
+    return await postRequest(
+      "escrow",
+      `${routes.all_escrow}/${id}?limit=${limit}&page=${page}`,
+      { statuses }
+    );
+  },
+
+  // ==================================
   // FETCH TRANSACTION BY ID
   // ==================================
   async fetchTransactionById(_, { transaction_id }) {
@@ -41,6 +65,83 @@ export default {
       "transactions",
       `${routes.fetch_single_transaction}/${transaction_id}`
     );
+  },
+
+  // ==================================
+  // ACCEPT TRANSACTION
+  // ==================================
+  async acceptTransaction(_, { transaction_id, party_id }) {
+    return await postRequest(
+      "escrow",
+      routes.accept_transaction(transaction_id, party_id)
+    );
+  },
+
+  // ==================================
+  // REJECT TRANSACTION
+  // ==================================
+  async rejectTransaction(_, { transaction_id, party_id, reason }) {
+    return await postRequest("escrow", routes.reject_transaction(party_id), {
+      transaction_id,
+      reason,
+    });
+  },
+
+  // ==================================
+  // SEND TRANSACTION
+  // ==================================
+  async sendTransaction(_, { id }) {
+    return await postRequest("escrow", routes.send_escrow_transaction(id));
+  },
+
+  // ==================================
+  // MARK AS DONE TRANSACTION
+  // ==================================
+  async markMilestoneAsDone(_, { milestone_id, id }) {
+    return await postRequest(
+      "escrow",
+      routes.mark_milestone_as_done(milestone_id, id)
+    );
+  },
+
+  // ==================================
+  // APPROVE MILESTONE
+  // ==================================
+  async approveMilestone(_, { milestone_id, id }) {
+    return await postRequest(
+      "escrow",
+      routes.approve_milestone(milestone_id, id)
+    );
+  },
+
+  // ==================================
+  // REJECT MILESTONE
+  // ==================================
+  async rejectMilestone(_, { milestone_id, id, reason }) {
+    return await postRequest(
+      "escrow",
+      routes.reject_milestone(milestone_id, id),
+      { reason }
+    );
+  },
+
+  // ==================================
+  // EXTEND DUE DATE MILESTONE
+  // ==================================
+  async extendMilestoneDueDate(_, { milestone_id, id, reason, due_date }) {
+    return await postRequest("escrow", routes.extend_milestone_due_date, {
+      account_id: id,
+      note: reason,
+      milestone_id,
+      due_date,
+    });
+  },
+
+  // ==================================
+  // FETCH ESCROW TRANSACTION BY ID
+  // ==================================
+  async fetchEscrowTransactionById(_, { id }) {
+    return await getRequest("escrow", routes.escrow(id));
   },
 
   // ==================================

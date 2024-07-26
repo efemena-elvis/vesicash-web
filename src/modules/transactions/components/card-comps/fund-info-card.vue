@@ -22,7 +22,7 @@
           <template v-if="card.file">
             <div
               class="d-flex justify-content-start align-items-center"
-              @click="openAttachedFile(card.file)"
+              @click="openAttachedFile(card.file, card.files)"
             >
               <FileIcon active />
               <div
@@ -67,6 +67,7 @@ export default {
           title: "Disbursement Type",
           value: "One-off disbursment type",
           file: {},
+          files: [],
         },
       ],
     },
@@ -83,7 +84,18 @@ export default {
   },
 
   methods: {
-    openAttachedFile(file) {
+    openAttachedFile(file, files) {
+      if (files?.length) {
+        files.forEach((item) => {
+          let link = document.createElement("a");
+          link.setAttribute("href", item.url);
+          link.setAttribute("download", item.name);
+          link.click();
+        });
+
+        return;
+      }
+
       let link = document.createElement("a");
       link.setAttribute("href", file.url);
       link.setAttribute("download", file.name);
