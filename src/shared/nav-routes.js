@@ -10,7 +10,7 @@ const sidebarRoutes = [
     id: 2,
     title: "Escrow Transactions",
     icon: "TransactionIcon",
-    link: "/transactions",
+    link: "/escrow/transactions",
     slug: "transactions",
   },
   {
