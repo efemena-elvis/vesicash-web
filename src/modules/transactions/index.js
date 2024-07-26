@@ -120,6 +120,103 @@ const transactionRoutes = [
     ],
   },
 
+  {
+    path: "/escrow",
+    component: () =>
+      import(/* webpackChunkName: "base-layout" */ "@/layouts/layout-base"),
+
+    children: [
+      {
+        path: "transactions",
+        name: "EscrowTransactions",
+        component: () =>
+          import(
+            /* webpackChunkName: "transactions-module" */
+            "@/modules/transactions/pages/escrow-details/transactions"
+          ),
+        meta: {
+          requiresAuth: true,
+        },
+      },
+
+      {
+        path: "transactions/:id",
+        name: "EscrowTransactionDetailsPage",
+        component: () =>
+          import(
+            /* webpackChunkName: "transactions-module" */
+            "@/modules/transactions/pages/escrow-details/transaction-details"
+          ),
+        meta: {
+          requiresAuth: true,
+        },
+      },
+
+      {
+        path: "",
+        component: () =>
+          import(
+            /* webpackChunkName: "transaction-layout" */
+            "@/modules/transactions/layouts/escrow-layout"
+          ),
+
+        children: [
+          {
+            path: "create",
+            name: "CreateEscrowPage",
+            component: () =>
+              import(
+                /* webpackChunkName: "transaction-layout" */
+                "@/modules/transactions/pages/create-escrow/create-transaction"
+              ),
+            meta: {
+              requiresAuth: true,
+            },
+          },
+
+          {
+            path: "transaction-details",
+            name: "EscrowDetailsPage",
+            component: () =>
+              import(
+                /* webpackChunkName: "transaction-layout" */
+                "@/modules/transactions/pages/create-escrow/transaction-details"
+              ),
+            meta: {
+              requiresAuth: true,
+            },
+          },
+
+          {
+            path: "disbursement-details",
+            name: "EscrowDisbursementDetailsPage",
+            component: () =>
+              import(
+                /* webpackChunkName: "transaction-layout" */
+                "@/modules/transactions/pages/create-escrow/disbursement-details"
+              ),
+            meta: {
+              requiresAuth: true,
+            },
+          },
+
+          {
+            path: "payment",
+            name: "EscrowPaymentPage",
+            component: () =>
+              import(
+                /* webpackChunkName: "transaction-layout" */
+                "@/modules/transactions/pages/create-escrow/escrow-payment"
+              ),
+            meta: {
+              requiresAuth: true,
+            },
+          },
+        ],
+      },
+    ],
+  },
+
   // ====================================
   // PLAIN AUTH BG LAYOUT ROUTES
   // ====================================

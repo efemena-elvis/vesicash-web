@@ -149,7 +149,8 @@ export default {
 
           setTimeout(() => this.$emit("closeTriggered"), 3000);
         } else {
-          this.pushToast(response.message, "error");
+          const message = response?.data?.message || response?.message;
+          this.pushToast(message, "error");
         }
       } catch (err) {
         this.pushToast("Failed to verify", "error");

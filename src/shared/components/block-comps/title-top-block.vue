@@ -11,7 +11,7 @@
     <!-- DISBURSE MONEY BUTTON -->
     <template v-if="type === 'escrow'">
       <router-link
-        :to="{ name: 'TransactionSetup' }"
+        :to="{ name: 'CreateEscrowPage' }"
         class="btn btn-primary btn-md"
         >Create Escrow</router-link
       >
