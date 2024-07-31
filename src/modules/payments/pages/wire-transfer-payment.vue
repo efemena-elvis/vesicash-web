@@ -3,17 +3,17 @@
     <div class="payment-card">
       <div class="h5-text grey-900">Complete your payment</div>
       <div
-        class="skeleton-loader skeleton-loader__price mgy-10"
+        class="skeleton-loader skeleton-loader__price mgy-12"
         v-if="loading_wire_account"
       ></div>
-      <div class="h2-text green-600 mgy-10" v-else>$500,000</div>
+      <div class="h2-text green-600 mgy-12" v-else>{{ cost }}</div>
       <div class="details-section">
         <div>
           <div class="details-card">
-            <div class="success-card" v-if="submitted">
+            <div class="success-card" v-if="submitted || status !== 'pending'">
               <div class="check-wrapper"><CheckIcon /></div>
               <div class="h5-text grey-900 text-center" @click="paid = true">
-                Your payment will be confirmed in about an hour
+                {{ statusMessage }}
               </div>
             </div>
             <template v-else>
@@ -126,7 +126,7 @@
             }"
           />
           <div>
-            <label for="payment-receipt" class="form-label"
+            <label for="payment-receipt-label" class="form-label z-10"
               >Upload payment receipt</label
             >
             <label for="payment-receipt" class="upload-card">
@@ -153,7 +153,7 @@
               name="payment-receipt"
               id="payment-receipt"
               class="d-none"
-              accept="image/*,.doc,.docx,.pdf"
+              accept="image/*,.pdf"
               @change="handleFileUpload"
               ref="fileUpload"
             />
@@ -201,6 +201,33 @@ export default {
       return this.$route.params.reference;
     },
 
+    cost() {
+      if (!this.payment_details) return "";
+      const currency = this.payment_details.currency;
+      const sign = this.$money.getSign(currency);
+      const amount = this.payment_details.amount;
+      return `${sign}${this.$utils.formatCurrencyWithComma(amount, true)}`;
+    },
+
+    status() {
+      if (!this.payment_details) return "pending";
+      return this.payment_details?.status;
+    },
+
+    statusMessage() {
+      const status = this.status;
+      switch (status) {
+        case "pending":
+          return "Your payment will be confirmed in about an hour";
+        case "failed":
+          return "Sorry, this payment was not successful";
+        case "successful":
+          return "Payment already confirmed";
+        default:
+          return "Your payment will be confirmed in about an hour";
+      }
+    },
+
     submitDisabled() {
       return (
         !this.sender.account_number ||
@@ -240,30 +267,49 @@ export default {
         bank_sort_code: "",
       },
       submitted: false,
+      payment_details: null,
       details: [
         {
           name: "Account number",
-          value: "0159494476",
+          value: "",
           copied: false,
+          slug: "account_number",
         },
         {
           name: "Beneficiary",
-          value: "Vesicash",
+          value: "",
           copied: false,
-        },
-        {
-          name: "Sort code",
-          value: "45679",
-          copied: false,
+          slug: "account_name",
         },
         {
           name: "Bank name",
-          value: "Guaranty Trust Bank",
+          value: "",
           copied: false,
+          slug: "bank_name",
+        },
+        {
+          name: "Sort code",
+          value: "",
+          copied: false,
+          slug: "sort_code",
         },
       ],
+
       uploading: false,
     };
+  },
+
+  watch: {
+    payment_details: {
+      handler(details) {
+        if (details) {
+          this.details = this.details?.map((item) => {
+            item.value = details[item.slug];
+            return item;
+          });
+        }
+      },
+    },
   },
 
   methods: {
@@ -276,10 +322,12 @@ export default {
     async loadAccount() {
       try {
         this.loading_wire_account = true;
-        const response = await this.fetchAccountDetails(
+        const _response = await this.fetchAccountDetails(
           this.$route?.params?.reference
         );
-        console.log({ response });
+        const response = _response?.data || _response;
+        this.payment_details = response.data;
+
         this.loading_wire_account = false;
       } catch (e) {
         console.log("FAILED TO LOAD WIRE ACCOUNT", e);

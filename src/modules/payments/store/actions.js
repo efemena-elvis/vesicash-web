@@ -129,6 +129,6 @@ export default {
   async submitWirePayment(_, payload) {
     return await $api
       .service("payment")
-      .fetch(routes.submit_payment, { payload });
+      .push(routes.submit_payment, { payload });
   },
 };
