@@ -98,7 +98,7 @@
     </div>
   </div>
 </template>
-  
+
 <script>
 import { mapActions, mapGetters } from "vuex";
 import { constants } from "@/utilities";
@@ -252,7 +252,6 @@ export default {
           request_error: "Unable to process card payment",
         },
       });
-
       if (response?.code === 200) {
         this.handleClick("fundBtnRef", "Fund Wallet", false);
         this.$utils.createAndClickAnchor(response?.data?.link);
@@ -270,6 +269,7 @@ export default {
           transaction_id:
             this.$route?.query?.transaction_id ?? this.$route?.params?.id,
           gateway: constants.PAYMENT_GATEWAY,
+          currency: this.selected_currency?.short || "NGN",
         },
         // new: true,
         alert_handler: {
@@ -280,6 +280,13 @@ export default {
 
       if (response.code === 200) {
         this.handleClick("fundBtnRef", "Get Transfer Details", false);
+        const payment_link = response?.data?.payment_url;
+        const gateway = response?.data?.gateway;
+
+        if (payment_link && gateway === "wire_transfer") {
+          this.$utils.createAndClickAnchor(payment_link);
+          return;
+        }
 
         let bank_transfer_details = [
           {
@@ -306,8 +313,8 @@ export default {
   },
 };
 </script>
-  
-  <style lang="scss" scoped>
+
+<style lang="scss" scoped>
 .amount-meta {
   @include flex-row-nowrap("space-between", "center");
 }
@@ -317,4 +324,3 @@ export default {
   padding: toRem(2) toRem(18);
 }
 </style>
-  

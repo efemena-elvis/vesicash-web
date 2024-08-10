@@ -27,8 +27,8 @@
     </template>
   </ModalCover>
 </template>
-  
-  <script>
+
+<script>
 // import { mapActions, mapGetters } from "vuex";
 import ModalCover from "@/shared/components/util-comps/modal-cover";
 
@@ -78,12 +78,11 @@ export default {
   },
 };
 </script>
-  
-  <style lang="scss" scoped>
+
+<style lang="scss" scoped>
 .modal-cover-body {
   min-height: max-content;
   height: auto;
   max-height: 85vh;
 }
 </style>
-  
