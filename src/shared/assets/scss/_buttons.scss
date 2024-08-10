@@ -106,6 +106,23 @@ button {
   }
 }
 
+.btn-teal {
+  background-color: getColor("teal-700") !important;
+  color: getColor("neutral-10");
+  &:hover {
+    background-color: getColor("teal-800") !important;
+    color: getColor("neutral-10") !important;
+  }
+  &:focus {
+    background-color: getColor("teal-700") !important;
+    color: getColor("neutral-10") !important;
+  }
+  &:disabled {
+    background-color: getColor("teal-300") !important;
+    color: getColor("neutral-10") !important;
+  }
+}
+
 .btn-secondary {
   background-color: getColor("neutral-10") !important;
   border: toRem(1) solid darken(getColor("grey-200"), 2%) !important;
