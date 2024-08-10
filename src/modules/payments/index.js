@@ -58,6 +58,18 @@ const paymentsRoutes = [
       },
     ],
   },
+  {
+    name: "WireTransferPaymentPage",
+    path: "/complete-payment/:reference",
+    component: () =>
+      import(
+        /* webpackChunkName: "payments-module" */
+        "@/modules/payments/pages/wire-transfer-payment"
+      ),
+    meta: {
+      requiresAuth: false,
+    },
+  },
 ];
 
 export default paymentsRoutes;
