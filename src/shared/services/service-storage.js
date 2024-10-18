@@ -1,7 +1,11 @@
 class serviceStorage {
   getStorage({ storage_name, storage_type = "string" }) {
     const stored_data = localStorage.getItem(storage_name) ?? null;
-    return storage_type === "string" ? stored_data : JSON.parse(stored_data);
+    return storage_type === "string"
+      ? stored_data
+      : stored_data && stored_data !== "undefined"
+      ? JSON.parse(stored_data)
+      : stored_data;
   }
 
   setStorage({ storage_name, storage_value, storage_type = "string" }) {
