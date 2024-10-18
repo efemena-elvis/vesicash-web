@@ -39,6 +39,17 @@
         />
       </div>
 
+      <div class="form-group">
+        <div class="form-label">Business country</div>
+
+        <!-- SELECT INPUT FIELD -->
+        <DropSelectInput
+          placeholder="Select country"
+          :options="businessCountries"
+          @optionSelected="country = $event"
+        />
+      </div>
+
       <!-- PASSWORD INPUT -->
       <div class="form-group">
         <FormFieldInput
@@ -78,7 +89,7 @@
         <button
           class="btn btn-primary btn-md w-100"
           ref="btnRef"
-          :disabled="isFormValidated"
+          :disabled="isFormValidated || !country"
         >
           Create an Account
         </button>
@@ -114,6 +125,14 @@ export default {
   },
 
   computed: {
+    businessCountries() {
+      return countries.map((item) => ({
+        ...item,
+        id: item.code,
+        name: item.country,
+      }));
+    },
+
     isFormValidated() {
       return this.validateFormFieldMx(this.form);
     },
@@ -124,6 +143,7 @@ export default {
       return {
         ...form_payload,
         phone_number: this.sanitizeUserPhoneNumber(form_payload.phone_number),
+        country: this.country?.name?.toLowerCase(),
       };
     },
 
@@ -168,6 +188,8 @@ export default {
 
       user_details: {},
       country_selected_code: "234",
+      country: null,
+      countries,
     };
   },
 

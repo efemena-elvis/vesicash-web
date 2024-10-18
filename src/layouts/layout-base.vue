@@ -93,8 +93,8 @@ export default {
     }),
 
     checkOnboardingState(user) {
-      const onboarding_fields = ["business_type"];
-      const verification_fields = ["cac"];
+      const onboarding_fields = ["business_name", "business_type", "country"];
+      const verification_fields = ["cac", "national_id", "tin"];
 
       const is_onboarded =
         onboarding_fields.every((field) => !!user[field]) &&
@@ -104,10 +104,10 @@ export default {
 
       const route_name = this.$route?.name;
 
-      // if (!is_onboarded && route_name != ONBOARDING_ROUTE_NAME)
-      //   this.$router.push("/onboarding/business-details");
-      // if (is_onboarded && route_name === ONBOARDING_ROUTE_NAME)
-      //   this.$router.push("/dashboard");
+      if (!is_onboarded && route_name !== ONBOARDING_ROUTE_NAME)
+        this.$router.push("/onboarding/business-details");
+      if (is_onboarded && route_name === ONBOARDING_ROUTE_NAME)
+        this.$router.push("/dashboard");
     },
 
     hideSidebar($event) {

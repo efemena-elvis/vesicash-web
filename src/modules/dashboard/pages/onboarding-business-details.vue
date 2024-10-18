@@ -57,16 +57,32 @@
         </div>
         <div class="grey-600">Tell us about your business</div>
 
-        <div class="verification-block" v-if="isNigerianBusiness">
-          <div class="verification-width">
-            <verification-card
+        <div class="verification-block">
+          <div class="verification-width mx-auto">
+            <DocumentCard
+              v-for="item in onboarding_verifications"
+              :key="item"
+              :type="item"
+              @saved="updateVerificationStatus(item, $event)"
+              class="mgt-30"
+              :uploaded="uploadedDocs.includes(item)"
+            />
+
+            <DocumentCard
+              type="bvn"
+              @saved="updateVerificationStatus('bvn', $event)"
+              class="mgt-30"
+              :uploaded="uploadedDocs.includes('bvn')"
+              v-if="isNigerianBusiness"
+            />
+            <!-- <verification-card
               title="RC Number"
               subtitle="Company Registered Code Number"
               cta_title="Verify RC Number"
               @action="toggleRcModal"
             >
               <BusinessIcon />
-            </verification-card>
+            </verification-card> -->
           </div>
 
           <div class="tertiary-3-text error-text" v-if="show_error">
@@ -139,7 +155,7 @@
           </router-link>
         </div>
 
-        <div v-else class="mgt-30 verification-width">
+        <div v-if="false" class="mgt-30 verification-width">
           <template v-if="business_found">
             <VerificationCard
               verified
@@ -330,6 +346,7 @@ import VerificationBvnModal from "@/modules/settings/modals/verification-bvn-mod
 import CoporationVerificationModal from "@/modules/settings/modals/coporation-verification-modal";
 import DirectorIdentityModal from "../../settings/modals/director-identity-modal";
 import VerificationUploadCard from "../../settings/components/card-comps/verification-upload-card.vue";
+import DocumentCard from "../../settings/components/card-comps/document-card.vue";
 import countries from "@/utilities/countries";
 
 export default {
@@ -365,6 +382,7 @@ export default {
     VerificationCard,
     VerificationUploadCard,
     DirectorIdentityModal,
+    DocumentCard,
   },
 
   computed: {
@@ -372,6 +390,10 @@ export default {
       return this.business_type && this.form.business_name.validated
         ? false
         : true;
+    },
+
+    uploadedDocs() {
+      return this.getUser?.uploaded_verifications || [];
     },
 
     searchDisabled() {
@@ -400,6 +422,8 @@ export default {
     },
 
     isNigerianBusiness() {
+      if (this.getUser?.country)
+        return this.getUser?.country === "NG" ? true : false;
       const NIGERIA_DIALLING_CODE = "234";
       const business_phone_number = this.getUser?.phone || "";
       if (!business_phone_number) return true;
@@ -497,6 +521,13 @@ export default {
     id_card_name: "",
     drivers_license: null,
     drivers_license_name: "",
+    saved_verifications: {
+      national_id: false,
+      cac: false,
+      tin: false,
+    },
+
+    onboarding_verifications: ["national_id", "cac", "tin"],
 
     business_types: [
       {
@@ -582,6 +613,15 @@ export default {
       searchBusinessDetails: "auth/searchBusinessDetails",
       verifyBusinessDirector: "auth/verifyBusinessDirector",
     }),
+
+    updateVerificationStatus(item, type) {
+      this.saved_verifications[item] = true;
+      const updatedUser = {
+        ...this.getUser,
+      };
+      updatedUser.uploaded_verifications.push(type);
+      this.updateAuthUser(updatedUser);
+    },
 
     ...mapMutations({ updateAuthUser: "auth/UPDATE_AUTH_USER" }),
 
@@ -778,6 +818,7 @@ export default {
 }
 
 .verification-width {
+  width: 100%;
   max-width: toRem(735);
 }
 
