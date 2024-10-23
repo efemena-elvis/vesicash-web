@@ -4,7 +4,7 @@
       <div v-if="show_business_info">
         <div class="title-text h4-text mgb-8 grey-900">Business details</div>
         <div class="grey-600">Tell us about your business</div>
-        <div class="mgt-35 business-form">
+        <div class="mgt-5 business-form">
           <div class="form-group">
             <FormFieldInput
               label_title="Registered Business name"
@@ -267,8 +267,27 @@
       <div v-else>
         <!-- <PageBackBtn custom_mode @clicked="switchView" /> -->
         <div class="row mgb-40 business-type-wrapper">
+          <div class="title-text h4-text mgb-5 grey-900">
+            Tell us about your business
+          </div>
+          <div class="mgt-35 business-form">
+            <div class="form-group">
+              <FormFieldInput
+                label_title="Registered Business name"
+                label_subtitle="A government registered business name"
+                label_id="businessName"
+                placeholder="Enter a government registered business name"
+                :input_value="getFormFieldValueMx(form, 'business_name')"
+                @getInputState="updateFormFieldMx($event, 'business_name')"
+                :error_handler="{
+                  type: 'required',
+                  message: 'Business name is a required field',
+                }"
+              />
+            </div>
+          </div>
           <div class="col-12">
-            <div class="title-text h4-text mgb-30 grey-900">
+            <div class="grey-900 primary-1-text mgy-10">
               Select your business type
             </div>
           </div>
@@ -442,12 +461,12 @@ export default {
     },
 
     finishDisabled() {
-      return !this.business_type;
+      return !this.business_type || !this.form.business_name.validated;
     },
 
     businessDetails() {
       return {
-        // business_name: this.form.business_name.value,
+        business_name: this.form.business_name.value,
         business_type: this.business_type,
         // country: this.form.country.value,
       };
