@@ -25,12 +25,11 @@
         :placeholder="docConfig.placeholder"
         v-model="doc_number"
       />
-      <input
-        type="date"
-        v-model="dob"
-        v-if="type === 'bvn'"
-        class="form-control mgy-30"
-      />
+      <div v-if="type === 'bvn'" class="mgy-20">
+        <label for="BVN-DOB" class="form-label">Date of birth</label>
+        <input type="date" id="BVN-DOB" v-model="dob" class="form-control" />
+      </div>
+
       <div
         :class="[
           'upload-card mgy-30',
