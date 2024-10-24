@@ -14,6 +14,7 @@ const routes = {
   verify_business_director: "cac/verify",
   search_business: "global-business-search/verify",
   logout: "logout",
+  fetch_verifications: "fetch",
 };
 
 export default {
@@ -95,6 +96,13 @@ export default {
   // ============================================
   async getBusinessTypes() {
     return await getRequest("auth", routes.business_types);
+  },
+
+  // ============================================
+  // GET VERIFCATIONS
+  // ============================================
+  async fetchVerifications() {
+    return await getRequest("verification", routes.fetch_verifications);
   },
 
   // ============================================
