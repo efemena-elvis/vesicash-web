@@ -1,7 +1,17 @@
 <template>
   <div class="document-card" @click="open = !open">
-    <div :class="['icon-wrapper', saved ? 'icon-wrapper__pending' : '']">
-      <div class="icon icon-info alert-icon h5-text" v-if="saved"></div>
+    <div
+      :class="[
+        'icon-wrapper',
+        saved
+          ? verified
+            ? 'icon-wrapper__verified'
+            : 'icon-wrapper__pending'
+          : '',
+      ]"
+    >
+      <CheckIcon v-if="verified" class="check-icon" />
+      <div class="icon icon-info alert-icon h5-text" v-else-if="saved"></div>
       <component :is="docConfig.icon" active v-else />
     </div>
     <div class="trigger">
@@ -9,7 +19,7 @@
         {{ docConfig?.title }}
       </div>
       <div class="tertiary-2-text grey-500 mgt-4" v-if="saved">
-        Pending verification
+        {{ verified ? "Verification approved" : " Pending verification" }}
       </div>
     </div>
     <div
@@ -96,6 +106,7 @@
 </template>
 
 <script>
+import CheckIcon from "../../../../shared/components/icon-comps/check-icon.vue";
 import VerificationUploadCard from "./verification-upload-card.vue";
 import { mapActions } from "vuex";
 export default {
@@ -114,6 +125,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    verified: {
+      type: Boolean,
+      default: false,
+    },
   },
   components: {
     BusinessIcon: () =>
@@ -127,6 +142,10 @@ export default {
     FileIcon: () =>
       import(
         /* webpackChunkName: 'shared-module' */ "@/shared/components/icon-comps/file-icon"
+      ),
+    CheckIcon: () =>
+      import(
+        /* webpackChunkName: 'shared-module' */ "@/shared/components/icon-comps/check-icon"
       ),
     VerificationUploadCard,
   },
@@ -312,6 +331,14 @@ export default {
 
   .icon-wrapper__pending {
     background: getColor("yellow-500");
+  }
+
+  .check-icon {
+    transform: scale(0.5);
+  }
+
+  .icon-wrapper__verified {
+    background: getColor("green-500");
   }
 
   .form-wrapper {

@@ -59,22 +59,33 @@
 
         <div class="verification-block">
           <div class="verification-width mx-auto">
-            <DocumentCard
-              v-for="item in onboarding_verifications"
-              :key="item"
-              :type="item"
-              @saved="updateVerificationStatus(item, $event)"
-              class="mgt-30"
-              :uploaded="uploadedDocs.includes(item)"
-            />
+            <template v-if="fetching_verification">
+              <div
+                class="skeleton-loader doc-skeleton-card"
+                v-for="i in 3"
+                :key="i"
+              ></div>
+            </template>
+            <template v-else>
+              <DocumentCard
+                v-for="item in onboarding_verifications"
+                :key="item"
+                :type="item"
+                @saved="updateVerificationStatus(item, $event)"
+                class="mgt-30"
+                :uploaded="uploadedDocs.includes(item)"
+                :verified="isDocVerified(item)"
+              />
 
-            <DocumentCard
-              type="bvn"
-              @saved="updateVerificationStatus('bvn', $event)"
-              class="mgt-30"
-              :uploaded="uploadedDocs.includes('bvn')"
-              v-if="isNigerianBusiness"
-            />
+              <DocumentCard
+                type="bvn"
+                @saved="updateVerificationStatus('bvn', $event)"
+                class="mgt-30"
+                :uploaded="uploadedDocs.includes('bvn')"
+                v-if="isNigerianBusiness"
+              />
+            </template>
+
             <!-- <verification-card
               title="RC Number"
               subtitle="Company Registered Code Number"
@@ -502,6 +513,10 @@ export default {
     },
   },
 
+  mounted() {
+    this.fetchUploadedDocs();
+  },
+
   data: () => ({
     countries,
     business_country: null,
@@ -624,6 +639,8 @@ export default {
     ],
 
     business_type_options: [],
+    verifications: [],
+    fetching_verification: false,
   }),
 
   methods: {
@@ -631,7 +648,21 @@ export default {
       updateUserBusinessInfo: "settings/updateUserBusinessInfo",
       searchBusinessDetails: "auth/searchBusinessDetails",
       verifyBusinessDirector: "auth/verifyBusinessDirector",
+      fetchVerifications: "auth/fetchVerifications",
     }),
+
+    isDocVerified(name) {
+      return this.verifications.find((item) => item.verification_type === name)
+        ?.is_verified;
+    },
+
+    async fetchUploadedDocs() {
+      this.fetching_verification = true;
+      const response = await this.fetchVerifications();
+      this.fetching_verification = false;
+      console.log({ response });
+      if (response?.data?.length) this.verifications = response.data;
+    },
 
     updateVerificationStatus(item, type) {
       this.saved_verifications[item] = true;
@@ -887,6 +918,11 @@ export default {
       }
     }
   }
+}
+
+.doc-skeleton-card {
+  height: 100px;
+  margin-bottom: 30px;
 }
 
 .search-button {
