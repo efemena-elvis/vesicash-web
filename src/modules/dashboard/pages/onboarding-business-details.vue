@@ -4,7 +4,7 @@
       <div v-if="show_business_info">
         <div class="title-text h4-text mgb-8 grey-900">Business details</div>
         <div class="grey-600">Tell us about your business</div>
-        <div class="mgt-35 business-form">
+        <div class="mgt-5 business-form">
           <div class="form-group">
             <FormFieldInput
               label_title="Registered Business name"
@@ -57,16 +57,43 @@
         </div>
         <div class="grey-600">Tell us about your business</div>
 
-        <div class="verification-block" v-if="isNigerianBusiness">
-          <div class="verification-width">
-            <verification-card
+        <div class="verification-block">
+          <div class="verification-width mx-auto">
+            <template v-if="fetching_verification">
+              <div
+                class="skeleton-loader doc-skeleton-card"
+                v-for="i in 3"
+                :key="i"
+              ></div>
+            </template>
+            <template v-else>
+              <DocumentCard
+                v-for="item in onboarding_verifications"
+                :key="item"
+                :type="item"
+                @saved="updateVerificationStatus(item, $event)"
+                class="mgt-30"
+                :uploaded="uploadedDocs.includes(item)"
+                :verified="isDocVerified(item)"
+              />
+
+              <DocumentCard
+                type="bvn"
+                @saved="updateVerificationStatus('bvn', $event)"
+                class="mgt-30"
+                :uploaded="uploadedDocs.includes('bvn')"
+                v-if="isNigerianBusiness"
+              />
+            </template>
+
+            <!-- <verification-card
               title="RC Number"
               subtitle="Company Registered Code Number"
               cta_title="Verify RC Number"
               @action="toggleRcModal"
             >
               <BusinessIcon />
-            </verification-card>
+            </verification-card> -->
           </div>
 
           <div class="tertiary-3-text error-text" v-if="show_error">
@@ -139,7 +166,7 @@
           </router-link>
         </div>
 
-        <div v-else class="mgt-30 verification-width">
+        <div v-if="false" class="mgt-30 verification-width">
           <template v-if="business_found">
             <VerificationCard
               verified
@@ -251,8 +278,27 @@
       <div v-else>
         <!-- <PageBackBtn custom_mode @clicked="switchView" /> -->
         <div class="row mgb-40 business-type-wrapper">
+          <div class="title-text h4-text mgb-5 grey-900">
+            Tell us about your business
+          </div>
+          <div class="mgt-35 business-form">
+            <div class="form-group">
+              <FormFieldInput
+                label_title="Registered Business name"
+                label_subtitle="A government registered business name"
+                label_id="businessName"
+                placeholder="Enter a government registered business name"
+                :input_value="getFormFieldValueMx(form, 'business_name')"
+                @getInputState="updateFormFieldMx($event, 'business_name')"
+                :error_handler="{
+                  type: 'required',
+                  message: 'Business name is a required field',
+                }"
+              />
+            </div>
+          </div>
           <div class="col-12">
-            <div class="title-text h4-text mgb-30 grey-900">
+            <div class="grey-900 primary-1-text mgy-10">
               Select your business type
             </div>
           </div>
@@ -330,6 +376,7 @@ import VerificationBvnModal from "@/modules/settings/modals/verification-bvn-mod
 import CoporationVerificationModal from "@/modules/settings/modals/coporation-verification-modal";
 import DirectorIdentityModal from "../../settings/modals/director-identity-modal";
 import VerificationUploadCard from "../../settings/components/card-comps/verification-upload-card.vue";
+import DocumentCard from "../../settings/components/card-comps/document-card.vue";
 import countries from "@/utilities/countries";
 
 export default {
@@ -365,6 +412,7 @@ export default {
     VerificationCard,
     VerificationUploadCard,
     DirectorIdentityModal,
+    DocumentCard,
   },
 
   computed: {
@@ -372,6 +420,10 @@ export default {
       return this.business_type && this.form.business_name.validated
         ? false
         : true;
+    },
+
+    uploadedDocs() {
+      return this.getUser?.uploaded_verifications || [];
     },
 
     searchDisabled() {
@@ -400,6 +452,8 @@ export default {
     },
 
     isNigerianBusiness() {
+      if (this.getUser?.country)
+        return this.getUser?.country === "NG" ? true : false;
       const NIGERIA_DIALLING_CODE = "234";
       const business_phone_number = this.getUser?.phone || "";
       if (!business_phone_number) return true;
@@ -418,12 +472,12 @@ export default {
     },
 
     finishDisabled() {
-      return !this.business_type;
+      return !this.business_type || !this.form.business_name.validated;
     },
 
     businessDetails() {
       return {
-        // business_name: this.form.business_name.value,
+        business_name: this.form.business_name.value,
         business_type: this.business_type,
         // country: this.form.country.value,
       };
@@ -457,6 +511,10 @@ export default {
         },
       };
     },
+  },
+
+  mounted() {
+    this.fetchUploadedDocs();
   },
 
   data: () => ({
@@ -497,6 +555,13 @@ export default {
     id_card_name: "",
     drivers_license: null,
     drivers_license_name: "",
+    saved_verifications: {
+      national_id: false,
+      cac: false,
+      tin: false,
+    },
+
+    onboarding_verifications: ["national_id", "cac", "tin"],
 
     business_types: [
       {
@@ -574,6 +639,8 @@ export default {
     ],
 
     business_type_options: [],
+    verifications: [],
+    fetching_verification: false,
   }),
 
   methods: {
@@ -581,7 +648,30 @@ export default {
       updateUserBusinessInfo: "settings/updateUserBusinessInfo",
       searchBusinessDetails: "auth/searchBusinessDetails",
       verifyBusinessDirector: "auth/verifyBusinessDirector",
+      fetchVerifications: "auth/fetchVerifications",
     }),
+
+    isDocVerified(name) {
+      return this.verifications.find((item) => item.verification_type === name)
+        ?.is_verified;
+    },
+
+    async fetchUploadedDocs() {
+      this.fetching_verification = true;
+      const response = await this.fetchVerifications();
+      this.fetching_verification = false;
+      console.log({ response });
+      if (response?.data?.length) this.verifications = response.data;
+    },
+
+    updateVerificationStatus(item, type) {
+      this.saved_verifications[item] = true;
+      const updatedUser = {
+        ...this.getUser,
+      };
+      updatedUser.uploaded_verifications.push(type);
+      this.updateAuthUser(updatedUser);
+    },
 
     ...mapMutations({ updateAuthUser: "auth/UPDATE_AUTH_USER" }),
 
@@ -778,6 +868,7 @@ export default {
 }
 
 .verification-width {
+  width: 100%;
   max-width: toRem(735);
 }
 
@@ -827,6 +918,11 @@ export default {
       }
     }
   }
+}
+
+.doc-skeleton-card {
+  height: 100px;
+  margin-bottom: 30px;
 }
 
 .search-button {

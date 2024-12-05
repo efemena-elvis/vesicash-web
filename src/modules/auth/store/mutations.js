@@ -68,6 +68,9 @@ export default {
     // USER VERIFICATIONS
     let user_verifications = {};
     let verifications = response_payload.profile?.verifications ?? [];
+    const uploaded_verifications = verifications.map(
+      (item) => item.verification_type
+    );
 
     verifications.map(
       (verification) =>
@@ -76,6 +79,7 @@ export default {
     );
 
     userData.verifications = user_verifications;
+    userData.uploaded_verifications = uploaded_verifications;
 
     // UPDATE AUTH STATE
     state.authUser = userData;
