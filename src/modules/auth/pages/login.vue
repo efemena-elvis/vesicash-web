@@ -166,9 +166,9 @@ export default {
       // expecting the fileds to check to confirm RC number and director verification
 
       const business_data = payload?.profile?.business;
-      const verification_fields = ["cac", "national_id", "tin"];
+      // const verification_fields = ["cac", "national_id", "tin"];
+      const verification_fields = ["cac"];
       const verifications = payload?.profile?.verifications;
-      console.log({ business_data, verifications });
 
       const is_onboarded =
         onboarding_fields.every((field) => !!business_data[field]) &&

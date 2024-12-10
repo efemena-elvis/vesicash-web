@@ -560,8 +560,8 @@ export default {
       cac: false,
       tin: false,
     },
-
-    onboarding_verifications: ["national_id", "cac", "tin"],
+    onboarding_verifications: ["cac"],
+    // onboarding_verifications: ["national_id", "cac", "tin"],
 
     business_types: [
       {

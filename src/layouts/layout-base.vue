@@ -94,7 +94,8 @@ export default {
 
     checkOnboardingState(user) {
       const onboarding_fields = ["business_name", "business_type", "country"];
-      const verification_fields = ["cac", "national_id", "tin"];
+      // const verification_fields = ["cac", "national_id", "tin"];
+      const verification_fields = ["cac"];
 
       const is_onboarded =
         onboarding_fields.every((field) => !!user[field]) &&
